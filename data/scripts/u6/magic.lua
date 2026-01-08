@@ -101,7 +101,7 @@ end
 select_actor = function()
 	if g_magic_target ~= nil then return map_get_actor(g_magic_target) end
 	
-	print("On whom: ");
+	print(korean_translate("On Whom: "));
 
 	local loc = get_target()
 	local actor
@@ -123,7 +123,7 @@ end
 select_obj = function()
 	if g_magic_target ~= nil then return map_get_obj(g_magic_target) end
 	
-	print("On what: ");
+	print(korean_translate("On what: "));
 
 	local obj = get_obj()
 	
@@ -214,7 +214,7 @@ function select_actor_or_obj_with_projectile(projectile_tile, caster)
 	if item ~= nil then
 		print(item.name)
 	else
-		print("nothing")
+		print(korean_translate("nothing"))
 	end
 
 	print("\n")

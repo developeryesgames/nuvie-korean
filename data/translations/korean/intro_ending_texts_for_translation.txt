@@ -1,0 +1,305 @@
+# Ultima 6 Intro/Character Creation/Ending Texts for Korean Translation
+# Format: SECTION|ENGLISH_TEXT
+# Translate the English text to Korean and save as intro_ending_ko.txt
+# Keep the section markers and pipe character
+
+===========================================
+INTRO SEQUENCE - Lounge Scene
+===========================================
+
+INTRO_LOUNGE_1|Upon your world, five seasons have passed since your triumphant homecoming from Britannia.
+
+INTRO_LOUNGE_2|You have traded the Avatar's life of peril and adventure for the lonely serenity of a world at peace. But television supermen cannot take the place of friends who died at your side!
+
+INTRO_LOUNGE_3|Outside, a chill wind rises...
+
+===========================================
+INTRO SEQUENCE - Storm/Window Scene
+===========================================
+
+INTRO_WINDOW_1|...and in moments, the storm is upon you.
+
+INTRO_WINDOW_2|Tongues of lightning lash the sky, conducting an unceasing crescendo of thunder....
+
+INTRO_WINDOW_3|In a cataclysm of sound and light, a bolt of searing blue fire strikes the earth!
+
+INTRO_WINDOW_4|Lightning among the stones! Is this a sign from distant Britannia?
+
+INTRO_WINDOW_5|You bolt from your house, stumbling, running blind in the storm. Into the forest, down the path, through the rain... to the stones.
+
+===========================================
+INTRO SEQUENCE - Stones Scene
+===========================================
+
+INTRO_STONES_1|Near the stones, the smell of damp, blasted earth hangs in the air. In a frozen moment of lightning-struck daylight, you glimpse a tiny obsidian stone in the midst of the circle!
+
+INTRO_STONES_2|Wondering, you pick it up....
+
+INTRO_STONES_3|...and from the heart of the stones, a softly glowing door ascends in silence!
+
+INTRO_STONES_4|Exultant memories wash over you as you clutch the stone. When last you saw an orb such as this, it was cast down by Lord British to banish the tyrant Blackthorn!
+
+INTRO_STONES_5|But your joy soon gives way to apprehension. The gate to Britannia has always been blue... as blue as the morning sky.
+
+INTRO_STONES_6|Abruptly, the portal quivers and begins to sink into the ground. Its crimson light wanes!
+
+INTRO_STONES_7|Desperation makes the decision an easy one.
+
+===========================================
+CHARACTER CREATION
+===========================================
+
+CREATE_NAME|By what name shalt thou be called?
+
+CREATE_GENDER|And art thou Male, or Female?
+
+CREATE_SEX|New Sex
+
+CREATE_PORTRAIT|New Portrait
+
+CREATE_CONTINUE|Continue
+
+CREATE_ESC_ABORT|ESC to Abort
+
+===========================================
+CHARACTER CREATION - Gypsy Wagon
+===========================================
+
+CREATE_GYPSY_1|"Welcome, O Seeker!"
+
+CREATE_GYPSY_2|A lonely stroll along an unfamiliar forest path brings you upon a curious gypsy wagon, its exotic colors dappled in the summer shade.
+
+CREATE_GYPSY_3|A woman's voice rings out with friendship, beckoning you into across the wagon's threshold and, as it happens, into another life....
+
+CREATE_GYPSY_4|"At last thou hast come to fulfill thy destiny," the gypsy says. She smiles, as if in great relief. "Sit before me now, and I shall pour the light of Virtue into the shadows of thy future."
+
+CREATE_GYPSY_5|On a wooden table eight bottles stand, a rainbow of bubbling liquids. "Behold the Virtues of the Avatar," the woman says. "Let us begin the casting!"
+
+CREATE_GYPSY_6|"The path of the Avatar lies beneath thy feet, worthy %NAME%," the gypsy intones. With a mysterious smile, she passes you the flask of shimmering liquids. "Drink of these waters and go forth among our people, who shall receive thee in joy!"
+
+CREATE_GYPSY_7|As you drink from the flask, vertigo overwhelms you. A soothing mist obscures the gypsy's face, and you sink without fear into an untroubled sleep.
+
+CREATE_GYPSY_8|You wake in a different time, upon another world's shore. Though the Avatar's quests bring you both triumph and tragedy, never do you stray from the path of the Eight Virtues.
+
+CREATE_GYPSY_9|The sagas of Ultima IV and Ultima V chronicle your perilous travels, and your name and your deeds are written forever among Britannia's legends....
+
+CREATE_GYPSY_10|Finally, tempered by your struggles against the enemies of Virtue, you are proven ready to answer the epic challenge of Ultima VI!
+
+===========================================
+CHARACTER CREATION - Gypsy Questions (28 Questions)
+===========================================
+
+GYPSY_Q1|"Entrusted to deliver an uncounted purse of gold, thou dost meet a poor beggar. Dost thou A) deliver the gold Honestly, knowing the trust in thee was well-placed; or B) show Compassion and give the beggar a coin, knowing it won't be missed?"
+
+GYPSY_Q2|"Thou has been prohibited by thy absent Lord from joining thy friends in a close-pitched battle. Dost thou A) refrain, so thou may Honestly claim obedience; or B) show Valor and aid thy comrades, knowing thou may deny it later?"
+
+GYPSY_Q3|"A merchant owes thy friend money, now long past due. Thou dost see the same merchant drop a purse of gold. Dost thou A) Honestly return the purse intact; or B) Justly give thy friend a portion of the gold first?"
+
+GYPSY_Q4|"Thee and thy friend are valiant but penniless warriors. Thou both set forth to slay a mighty dragon. Thy friend dost think he slew it, but the killing blow was thine. Dost thou A) Honestly claim the reward; or B) Sacrifice the gold for the sake of thy friendship?"
+
+GYPSY_Q5|"Thou art sworn to protect thy Lord at any cost, yet thou knowest he hath committed a crime. Authorities ask thee of the affair. Dost thou A) Break thine oath by Honestly speaking; or B) uphold Honor by silently keeping thine oath?"
+
+GYPSY_Q6|"Thy friend doth seek admittance to thy spiritual order. Thou art asked to vouch for his purity of spirit, of which thou art uncertain. Dost thou A) Honestly express thy doubt; or B) Vouch for him, hoping for his Spiritual improvement?"
+
+GYPSY_Q7|"Thy Lord doth mistakenly believe he slew a dragon. Thou hast proof that thy lance felled the beast. When asked, dost thou A) Honestly claim the kill; or B) Humbly permit thy Lord his belief?"
+
+GYPSY_Q8|"Thou dost manage to disarm thy mortal enemy in a duel. He is at thy mercy. Dost thou A) Show Compassion by permitting him to yield; or B) Slay him, as expected of a Valiant duelist?"
+
+GYPSY_Q9|"After twenty years thou hast found the slayer of thy best friends. The villain proves to be a man who provides the sole support for a young girl. Dost thou A) Spare him in Compassion for the child; or B) Slay him in the name of Justice?"
+
+GYPSY_Q10|"Thee and thy friends hath been routed and ordered to retreat. In defiance of thy orders, dost thou A) Stop in Compassion to aid a wounded comrade; or B) Sacrifice thyself to slow the pursuing enemy so that others might escape?"
+
+GYPSY_Q11|"Thou art sworn to uphold a Lord who doth participate in the forbidden torture of prisoners. Each night their cries of pain reach thee. Dost thou A) Show Compassion by reporting the deeds; or B) Honor thy oath and ignore the deeds?"
+
+GYPSY_Q12|"Thou hast been taught to preserve all life as sacred. A man lies fatally stung by a venomous serpent. He prays for a merciful death. Dost thou A) Show Compassion and end his pain; or B) heed thy Spiritual beliefs and turn away?"
+
+GYPSY_Q13|"The Captain of the King's Guard asks that one among thee visit a hospital to cheer the children with tales of valiant personal deeds. Dost thou A) Show thy Compassion and play the braggart; or B) Humbly let another go?"
+
+GYPSY_Q14|"Thou hast been sent to secure a needed treaty with a distant Lord. Thy host is agreeable to thy proposal but insults thy country at dinner. Dost thou A) Valiantly bear the slurs; or B) Justly rise and demand an apology?"
+
+GYPSY_Q15|"A burly knight accosts thee and demands thy food. Dost thou A) Valiantly refuse and engage the knight, or B) Sacrifice thy rations unto the hungry knight?"
+
+GYPSY_Q16|"During battle thou art ordered to guard thy commander's empty tent. The battle goes poorly and thou dost yearn to aid thy fellows. Dost thou A) Valiantly enter the battle; or B) Honor thy post as guard?"
+
+GYPSY_Q17|"A local bully pushes for a fight. Dost thou A) Valiantly trounce the rogue; or B) Decline, knowing in thy Spirit that no lasting good will come of it?"
+
+GYPSY_Q18|"Although a simple fisherman, thou art also a skillful swordsman. Thy Lord dost seek to assemble a peacetime guard. Dost thou A) Answer the call, so that all may witness thy Valor; or B) Humbly decline the offer to join thy Lord's largely ceremonial knighthood?"
+
+GYPSY_Q19|"During a pitched battle, thou dost see a fellow desert his post, endangering many. As he flees, he is set upon by several enemies. Dost thou A) Justly let him fight alone; or B) Risk the Sacrifice of thine own life to aid him?"
+
+GYPSY_Q20|"Thou hast sworn to do thy Lord's bidding in all. He covets a piece of land and orders its owner removed. Dost thou A) Serve Justice, refusing to act, thus being disgraced; or B) Honor thine oath and evict the landowner?"
+
+GYPSY_Q21|"Thou dost believe that virtue resides in all people. Thou dost see a rogue steal from thy Lord. Dost thou A) Call him to Justice; or B) Personally try to sway him back to the Spiritual path of good?"
+
+GYPSY_Q22|"Unwitnessed, thou hast slain a mighty dragon in defense of thy life. A poor warrior claims the offered reward. Dost thou A) Justly step forward to claim the bounty; or B) Humbly go about thy life, secure in thy self-esteem?"
+
+GYPSY_Q23|"Thou art a bounty hunter sworn to return an alleged murderer. After his capture, thou dost come to believe him innocent. Dost thou A) Sacrifice thy sizable bounty for thy belief; or B) Honor thine oath to return him as promised?"
+
+GYPSY_Q24|"Thou hast spent thy life in charitable and righteous work. Thine uncle the innkeeper lies ill and asks thee to take over his tavern. Dost thou A) Sacrifice thy life of purity to aid thy kin; or B) Decline and follow the call of Spirituality?"
+
+GYPSY_Q25|"Thou art an elderly, wealthy merchant. Thy end is near. Dost thou A) Sacrifice all thy wealth to feed hundreds of starving children, receiving public adulation; or B) Humbly live out thy life, willing thy fortune to thy heirs?"
+
+GYPSY_Q26|"In thy youth thou didst pledge to marry thy sweetheart. Now thou art on a sacred quest in distant lands. Thy sweetheart doth ask thee to keep thy vow. Dost thou A) Honor thy pledge to wed; or B) Follow thy Spiritual crusade?"
+
+GYPSY_Q27|"Though thou art but a peasant shepherd, thou art discovered to be the sole descendant of a noble family long thought extinct. Dost thou A) Honorably take up the arms of thy ancestors; or B) Humbly resume thy life of simplicity and peace?"
+
+GYPSY_Q28|"Thy parents wish thee to become an apprentice. Two positions are available. Dost thou A) Become an acolyte in a worthy Spiritual order; or B) Become an assistant to a humble village cobbler?"
+
+===========================================
+INTRO SEQUENCE - Altar Scene
+===========================================
+
+INTRO_ALTAR_1|Dazed, you emerge from the portal to find yourself standing on a desolate plain. Nearby rests a massive rune-struck altar, shrouded in moonlit fog.
+
+INTRO_ALTAR_2|At first the plain is still. Then a hundred voices raise a slow, deathlike song, drawing closer and closer with each passing moment. You are seized by an urge to run...
+
+INTRO_ALTAR_3|...but you have no place to go.
+
+INTRO_ALTAR_4|Before you can offer a protest to the creatures who surround you, scaly claws grasp your body.
+
+INTRO_ALTAR_5|With unearthly strength, the monsters bind you to the altar stone!
+
+INTRO_ALTAR_6|Kneeling, the hordes sway and chant as a stately winged nightmare steps forward.
+
+INTRO_ALTAR_7|The leader unwraps a velvet covered, brass-bound book and recites from it in a formal, stilted tongue.
+
+INTRO_ALTAR_8|Shouts and jeers explode from the masses as the priest slams shut the book. In his hand a malignant dagger drips with moonlight.
+
+INTRO_ALTAR_9|You close your eyes. A dying scream, certainly your own, curdles the air.
+
+INTRO_ALTAR_10|Catcalls, the dagger, a scream, Death....
+
+INTRO_ALTAR_11|Pandemonium. Shrieks of rage, of terror.
+
+INTRO_ALTAR_12|From the inevitable, an impossibility emerges.
+
+INTRO_ALTAR_13|You are still alive.
+
+INTRO_ALTAR_14|Silent red light fills the darkness. There is the wooden clack of a crossbow, and a violet-fletched rose blooms in the priest's barren forehead.
+
+INTRO_ALTAR_15|Friendly faces vault from a newborn moongate, while a rain of quarrels holds the furious mob at bay. The knight Dupre's sword flashes twice in the darkness, slicing away your bonds!
+
+INTRO_ALTAR_16|"Quickly, old friend! To the gate!" Accompanied by the swordsman Shamino and a grinning, crossbow-wielding Iolo the Bard, Dupre thrusts a spare sword into your hand.
+
+INTRO_ALTAR_17|Snatching the fallen priest's book, Iolo dives into the redness with Shamino at his heels. The howling throng surges forward, all of one terrible mind.
+
+INTRO_ALTAR_18|The gate wanes rapidly as you and Dupre charge through...
+
+INTRO_ALTAR_19|...but not rapidly enough.
+
+INTRO_ALTAR_20|From the mob's vanguard, three of the abominations scramble toward the gate. Driven by fury, the creatures hurl their bodies into the portal's last handspan of light!
+
+===========================================
+ACKNOWLEDGEMENTS
+===========================================
+
+ACK_TITLE|Ultima VI
+
+ACK_SUBTITLE|A Lord British Production
+
+ACK_PRODUCED_BY|Produced by
+
+ACK_PRODUCERS|Richard Garriott and Warren Spector
+
+ACK_EXEC_PRODUCER|Executive Producer
+
+ACK_EXEC_NAME|Dallas Snell
+
+ACK_PROGRAMMING|Programming
+
+ACK_PROGRAMMERS|Cheryl Chen    John Miles\nHerman Miller    Gary Scott Smith
+
+ACK_WRITING|Writing
+
+ACK_WRITERS|Stephen Beeman    Dr. Cat    'Manda Dee\nRichard Garriott    Greg Malone\nJohn Miles    Herman Miller\nTodd Porter    Warren Spector
+
+ACK_ART|Art
+
+ACK_ARTISTS|Keith Berdak    Daniel Bourbonnais\nJeff Dee    'Manda Dee\nGlen Johnson    Denis Loubet
+
+ACK_MUSIC|Music
+
+ACK_MUSICIANS|Ken Arnold    Iolo Fitzowen\nHerman Miller    Todd Porter
+
+ACK_QA|Quality Assurance
+
+ACK_QA_NAMES|Paul Malone    Mike Romero
+
+ACK_SUPPORT|Additional Support
+
+ACK_SUPPORT_NAMES|Michelle Caddel    Melanie Fleming\nAlan Gardner    Jeff Hillhouse\nSherry Hunter    Steve Muchow\nCheryl Neeld
+
+===========================================
+ENDING SEQUENCE
+===========================================
+
+END_1|A glowing portal springs from the floor!
+
+END_2|From its crimson depths Lord British emerges, trailed by the mage Nystul. Anguish and disbelief prevail on the royal seer's face, but Lord British directs his stony gaze at you and speaks as if to a wayward child.
+
+END_3|"Thou didst have just cause to burgle our Codex, I trust?" His Majesty says. "But for Virtue's sake...
+
+END_4|"WHAT HAST THOU DONE WITH IT?"
+
+END_5|You pick up the concave lens and pass it to the King. "Was the book ever truly ours, Your Majesty? Was it written for Britannia alone? Thou dost no longer hold the Codex, but is its wisdom indeed lost? Look into the Vortex, and let the Codex answer for itself!"
+
+END_6|As Lord British holds the glass before the wall, the Codex of Ultimate Wisdom wavers into view against a myriad of swimming stars!
+
+END_7|Yet the book remains closed.
+
+END_8|And waves of heat shimmer in the air, heralding the birth of another red gate!
+
+END_9|King Draxinusom of the Gargoyles strides forward, flanked by a small army of wingless attendants. Like Lord British, he seems to suppress his rage only through a heroic effort of will. His scaly hand grasps your shoulder, and your Amulet of Submission grows very warm.
+
+END_10|"Thy time hath come, Thief," he says.
+
+END_11|Quickly you reach down to seize the convex lens...
+
+END_12|...and you press it into the hand of the towering Gargoyle king, meeting his sunken eyes. "Join my Lord in his search for peace, I beg thee."
+
+END_13|At your urging, King Draxinusom reluctantly raises his lens to catch the light. As Lord British holds up his own lens, every eye in the room, human and Gargoyle alike, fixes upon the image of the Codex which shines upon the wall.
+
+END_14|The ancient book opens. Both kings gaze upon its pages in spellbound silence, as the eloquence of Ultimate Wisdom is revealed in the tongues of each lord's domain. You, too, can read the answers the Codex gives...
+
+END_15|...and when its wisdom is gleaned, when Lord British and King Draxinusom turn to each other as friends, hating no longer, fearing no more, you know that your mission in Britannia has ended at last.
+
+END_CONGRATS|CONGRATULATIONS
+
+END_COMPLETE|Thou hast completed Ultima VI: The False Prophet, in
+
+END_REPORT|Report thy feat unto Lord British at Origin Systems!
+
+===========================================
+MAIN MENU (Note: These are in image files, may not be translatable)
+===========================================
+
+MENU_INTRO|Introduction
+
+MENU_CREATE|Create a Character
+
+MENU_TRANSFER|Transfer a Character
+
+MENU_ACKNOWLEDGEMENTS|Acknowledgements
+
+MENU_JOURNEY|Journey Onward
+
+===========================================
+VIRTUE NAMES (For reference)
+===========================================
+
+VIRTUE_HONESTY|Honesty
+
+VIRTUE_COMPASSION|Compassion
+
+VIRTUE_VALOR|Valor
+
+VIRTUE_JUSTICE|Justice
+
+VIRTUE_SACRIFICE|Sacrifice
+
+VIRTUE_HONOR|Honor
+
+VIRTUE_SPIRITUALITY|Spirituality
+
+VIRTUE_HUMILITY|Humility
+

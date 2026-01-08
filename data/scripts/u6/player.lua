@@ -1,3 +1,7 @@
 function player_pass()
-    printl("PASS")
+    if is_korean_enabled() then
+        print("패스!\n")
+    else
+        printl("PASS")
+    end
 end

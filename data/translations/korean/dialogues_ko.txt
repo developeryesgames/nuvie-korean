@@ -538,7 +538,7 @@
 16|She smiles. "I would not wish to speak of Iolo amongst his friends."|그녀가 미소 짓는다. "이올로 씨의 친구들 앞에서 그분에 대해 말하고 싶지는 않아요."
 16|She winks at Iolo. "But I think I can trust thee with credit, just this once!"|그녀가 이올로에게 윙크한다. "하지만 이번 딱 한 번만은 당신을 믿고 외상을 드릴 수 있을 것 같네요!"
 16|Sling|슬링
-16|Turning to you, Gwenneth says, "And what can I do for Iolo's friend|당신을 돌아보며 그웨니스가 말한다. "이올로 씨의 친구분을 위해 제가 무엇을|
+16|Turning to you, Gwenneth says, "And what can I do for Iolo's friend|당신을 돌아보며 그웨니스가 말한다. "이올로 씨의 친구분을 위해 제가 무엇을
 16|\"'Course, 'tis still called @Iolo's Bows, out of respect for the master."|"물론, 스승님에 대한 존경의 뜻을 담아 여전히 @이올로의 활(Iolo's Bows) 이라고 부르고 있어요."
 16|s|개
 16|this fine $T?"|이 좋은 $T에 도와드릴까요?"
@@ -546,10 +546,10 @@
 17|a well-dressed man with a very even temper.\n*|매우 침착한 성격의 잘 차려입은 사내다.\n*
 17|"#0 gold for bed and breakfast. Interested?"|"숙박과 아침 식사 포함해서 #0금화입니다. 관심 있으십니까?"
 17|"Did you need something?"|"무엇이 필요하십니까?"
-17|"Good $T, friend|"좋은 $T이오, 친구|
+17|"Good $T, friend|"좋은 $T이오, 친구
 17|"Good morning, and have a good day."|"좋은 아침입니다, 즐거운 하루 되십시오."
 17|"Goodbye. Take care of yourself."|"안녕히 가십시오. 몸조리 잘 하세요."
-17|"Greetings, traveler|"반갑소, 여행자여|
+17|"Greetings, traveler|"반갑소, 여행자여
 17|"I am Peyton, and this is my place." He gestures with his hands.|"나는 페이튼(Peyton)이고, 이곳은 내 가게라오." 그가 손짓으로 안내한다.
 17|"I can offer you a @room for the evening."|"오늘 저녁 묵으실 @방(room) 을 내어드릴 수 있습니다."
 17|"I'm sorry, cash in advance. That's our policy."|"죄송합니다만, 현금 선불입니다. 그게 우리 방침이라서요."
@@ -634,14 +634,14 @@
 19|"She sailed out of port one fine spring day, and headed for distant shores."|"어느 화창한 봄날 항구를 떠나, 머나먼 해안을 향해 돛을 올렸네."
 19|"The match began the grim men fought, to gather in her sails."|"격전이 시작되자 용맹한 이들이 싸우며 돛을 거두어들였네."
 19|"The pride of the people she was hailed, the ruler of all the sea."|"만인의 자랑으로 칭송받던, 온 바다의 지배자였네."
-19|"Then tell me what would please thee more:|그럼 어떤 것이 당신을 더 즐겁게 할지 말해주세요:|
+19|"Then tell me what would please thee more:|그럼 어떤 것이 당신을 더 즐겁게 할지 말해주세요:
 19|"To be of more help, I wish I knew just what this little bird could do."|"더 도움이 되고 싶지만, 이 작은 새가 무엇을 할 수 있을지 저도 알았으면 좋겠네요."
-19|"Was he taken by giants or headless so foul,|거인에게 끌려갔을까, 아니면 불결한 헤들리스에게,|
+19|"Was he taken by giants or headless so foul,|거인에게 끌려갔을까, 아니면 불결한 헤들리스에게,
 19|"When gentle winds danced 'cross the surf, again the followed morn."|"부드러운 바람이 파도 위에서 춤추던, 그다음 날 아침에."
 19|"Wouldst thou like to hear the news I've heard?"|"제가 들은 소식을 들어보시겠어요?"
 19|A soft jingling accompanies her silent walk.|그녀가 조용히 걸을 때마다 부드러운 방울 소리가 함께 울린다.
 19|Rather than talking, she sings in a voice like wind through reeds.|그녀는 말하는 대신 갈대밭을 지나는 바람 같은 목소리로 노래한다.
-19|She sings.\n\n"South of Loch Lake and north of the bay,|그녀가 노래한다.\n\n"로흐 호수 남쪽, 그리고 만의 북쪽,|
+19|She sings.\n\n"South of Loch Lake and north of the bay,|그녀가 노래한다.\n\n"로흐 호수 남쪽, 그리고 만의 북쪽,
 19|She sings.\n\n"The Dutchman was a giant ship with masts from the largest trees."|그녀가 노래한다.\n\n"더치맨 호는 거대한 나무로 만든 돛대를 가진 거대한 배였다네."
 19|a @song of the sea or a @rhyme of the shore?"|바다의 @노래(song) 인가요, 아니면 해변의 @운문(rhyme) 인가요?"
 19|that nary a man could contend with the smell."|그 지독한 냄새를 견딜 수 있는 이는 아무도 없었네."
@@ -669,7 +669,7 @@
 20|"In New Magincia, however, lives the silk-weaver @Charlotte."|"하지만 뉴 마진시아에는 실크를 짜는 @샬롯(Charlotte) 이 살고 있다오."
 20|"It concerns a girl adventurer, a strange land, and a clever @balloonist."|"그건 한 모험가 소녀와 낯선 땅, 그리고 영리한 @열기구 조종사(balloonist) 에 관한 이야기라오."
 20|"It'll cost you #1 gold for the $0. Interested?"|"$0 한 필에 #1금화요. 관심 있소?"
-20|"Lord British treasures antiques. There is one book for which he hath offered a reward:|로드 브리티시께서는 골동품을 소중히 여기시지. 그분이 보상을 내거신 책이 하나 있는데:|
+20|"Lord British treasures antiques. There is one book for which he hath offered a reward:|로드 브리티시께서는 골동품을 소중히 여기시지. 그분이 보상을 내거신 책이 하나 있는데:
 20|"May our paths cross again some day."|"언젠가 다시 만날 수 있기를."
 20|"My father's loom was not so complicated as mine. This design came from one of Lord British's old @books."|"내 아버지의 베틀은 내 것만큼 복잡하지 않았소. 이 디자인은 로드 브리티시의 옛 @책(books) 에서 나온 것이라오."
 20|"My name is Fyodor. What is thy name?"|"내 이름은 표도르(Fyodor)요. 그대의 이름은 무엇이오?"
@@ -695,7 +695,7 @@
 21|a man wearing a long grey cloak.\n*|긴 회색 망토를 입은 남자다.\n*
 21|"...Ah yes, and New Magincia. I hear each of the lords knows a @mantra."|"...아, 그렇지. 뉴 마진시아도 있네. 각 영주들이 @만트라(mantra) 를 알고 있다고 들었어."
 21|"According to the @numbers on the hourglass, you see."|"보시다시피, 모래시계의 @숫자(numbers) 에 따라서 말이야."
-21|"After the Codex of Ultimate Wisdom was brought back from the underworld,|지하 세계에서 궁극의 지혜의 코덱스를 되찾아온 후에,|
+21|"After the Codex of Ultimate Wisdom was brought back from the underworld,|지하 세계에서 궁극의 지혜의 코덱스를 되찾아온 후에,
 21|"Always wanted to visit them. Never had the @time."|"항상 가보고 싶었지만, 도통 @시간(time) 이 나질 않았네."
 21|"Another of Lord British's innovations, this bell thing."|"이 종이라는 물건도 로드 브리티시께서 만드신 또 하나의 혁신이지."
 21|"But just in case, I start this hourglass at sunup, turning it over every nine hours."|"하지만 만약을 위해서, 해 뜰 때 이 모래시계를 시작해서 9시간마다 뒤집어 놓는다네."
@@ -730,7 +730,7 @@
 22|"Hrmmph! Well, I'm busy now."|"흠! 뭐, 난 지금 바쁘오."
 22|"Hrmmph, well, perhaps you could ask someone else."|"흠, 뭐, 다른 사람한테 물어보시든가."
 22|"Hrmmph, well. Haven't we...never mind. Hrmmph."|"흠, 뭐. 우리가... 아니, 됐소. 흠."
-22|"Hrmmph, yes, well, come back to my shop|"흠, 그래, 뭐, 내 상점으로 오쇼|
+22|"Hrmmph, yes, well, come back to my shop|"흠, 그래, 뭐, 내 상점으로 오쇼
 22|"Hrmmph. Hello." His breathing is quite heavy.|"흠. 안녕하쇼." 그의 숨소리가 꽤 거칠다.
 22|"I sell @torches, @oil, @gems, @backpacks, @bags, @shovels, and @powder kegs."|"난 @횃불(torches), @기름(oil), @보석(gems), @배낭(backpacks), @자루(bags), @삽(shovels), 그리고 @화약통(powder kegs) 을 판다오."
 22|"I'm glad you stopped by." He gives you a firm handshake.|"들러줘서 고맙소." 그가 당신과 힘차게 악수한다.
@@ -766,13 +766,13 @@
 
 23|a rough and tumble man with wild, unkempt hair.\n*|헝클어진 머리칼을 가진 거칠고 투박한 남자다.\n*
 23|"'Tis good to see thee, friend!" he says, grabbing your arm.|"만나서 반갑구먼, 친구!" 그가 당신의 팔을 붙잡으며 말한다.
-23|"Aye, and a fine $T to you, my friend|"그래, 자네에게도 좋은 $T이 되길 바라네, 내 친구|
+23|"Aye, and a fine $T to you, my friend|"그래, 자네에게도 좋은 $T이 되길 바라네, 내 친구
 23|"Aye, it saves their feet from stones and such."|"그렇지, 이게 말들의 발을 돌덩이 같은 것들로부터 보호해 준다네."
 23|"Can ya not tell by my hair?"|"내 머리카락을 보고도 모르겠나?"
-23|"Good $T, friend|"좋은 $T이네, 친구|
+23|"Good $T, friend|"좋은 $T이네, 친구
 23|"Good, good!" After accepting $Y's gold, $N hands over the horseshoes.|"좋아, 아주 좋아!" $Y의 금화를 받은 후, $N이 말굽을 건네준다.
 23|"I just @shoe horses, sorry."|"난 그냥 말들에게 @편자(shoe) 를 박아줄 뿐이라네, 미안하이."
-23|"I'm busy just now. Why don't ya come t'my smithy|"지금은 좀 바쁘네. 내 대장간으로 오는 게 어떤가|
+23|"I'm busy just now. Why don't ya come t'my smithy|"지금은 좀 바쁘네. 내 대장간으로 오는 게 어떤가
 23|"If you want to @buy horseshoes, just ask."|"말굽을 @구매(buy) 하고 싶다면, 말만 하게나."
 23|"It'll cost you 2 gold for the horseshoes. Interested?"|"말굽은 2금화라네. 관심 있나?"
 23|"Remember to shoe yer steed often. Bye."|"말에게 편자 박아주는 걸 잊지 말게나. 잘 가게."
@@ -829,8 +829,8 @@
 25|"Come again soon!"|"조만간 또 오쇼!"
 25|"Come to my shop when it's open!"|"문 열었을 때 내 가게로 오쇼!"
 25|"Done!" He hands $Y 5 gold pieces and takes the sack of flour.|"좋소!" 그가 $Y에게 5금화를 건네주고 밀가루 자루를 받는다.
-25|"Hello|"안녕하쇼|
-25|"Here's thy $1|"여기 $1(이)오|
+25|"Hello|"안녕하쇼
+25|"Here's thy $1|"여기 $1(이)오
 25|"Hmmm... $Z..."|"흠... $Z..."
 25|"How about something else, $Y?"|"다른 건 어떠쇼, $Y?"
 25|"How many do you want, $Y?"|"몇 개나 원하쇼, $Y?"
@@ -861,7 +861,7 @@
 25|#2) $Y|#2) $Y
 25|$N turns to $Y, and says "Will you take 5 gold for that sack of flour?"|$N이 $Y를 돌아보며 말한다. "그 밀가루 자루를 5금화에 파시겠소?"
 25|, $Y."|, $Y."
-25|, my friend|, 내 친구|
+25|, my friend|, 내 친구
 25|, plus one for luck!"|, 거기다 행운을 빌며 하나 더 얹어 주겠소!"
 25|As he laughs heartily, more clouds of flour rise off his clothing.|그가 호탕하게 웃자, 그의 옷에서 더 많은 밀가루 먼지가 피어오른다.
 25|As he shakes your hand enthusiastically, clouds of flour fly off his clothes.|그가 열정적으로 당신과 악수하자, 그의 옷에서 밀가루 구름이 날린다.
@@ -879,9 +879,9 @@
 26|"Fret not, for all of you are well!"|"걱정 마시오, 모두 무사하오!"
 26|"Fret not, for all of you are well."|"걱정 마시오, 모두 무사하오."
 26|"Fret not, for thou art well."|"걱정 마시오, 그대는 건강하오."
-26|"Go in peace, my child|"평화롭게 가라, 나의 아이여|
+26|"Go in peace, my child|"평화롭게 가라, 나의 아이여
 26|"Go see a gravedigger. I'll reckon his price'll be lower."|"무덤 파는 사람에게 가보시오. 아마 그의 가격이 더 저렴할 거요."
-26|"Greetings, my child|"반갑구나, 나의 아이여|
+26|"Greetings, my child|"반갑구나, 나의 아이여
 26|"I am Tiberius, healer for this town."|"나는 이 마을의 치료사인 티베리우스(Tiberius)라오."
 26|"I attempt to @heal, @cure, or if needed, @resurrect the fallen."|"나는 부상자를 @치료(heal) 하고, 독을 @해독(cure) 하며, 필요하다면 죽은 이를 @부활(resurrect) 시키려 노력한다오."
 26|"I beg thy pardon?"|"뭐라고 하셨소?"
@@ -927,9 +927,9 @@
 27|"But thou canst not afford one!"|"하지만 살 돈이 없으시잖아요!"
 27|"Come back again!"|"또 오세요!"
 27|"Good!" $N takes $Y's gold, and hands over the reins of a fine horse.|"좋아요!" $N이 $Y의 금화를 받고 훌륭한 말의 고삐를 건네준다.
-27|"Greetings, traveler|"반갑습니다, 여행자여|
-27|"Hello again, my friend|"다시 만났네요, 내 친구|
-27|"How about|"혹시|
+27|"Greetings, traveler|"반갑습니다, 여행자여
+27|"Hello again, my friend|"다시 만났네요, 내 친구
+27|"How about|"혹시
 27|"I work here at the stables, taking care of the horses."|"전 여기 마구간에서 일하며 말들을 돌보고 있어요."
 27|"My name's Wilbur, $G."|"제 이름은 윌버(Wilbur)예요, $G."
 27|"My price is #9 gold pieces, no less. Interested?"|"제 가격은 딱 #9금화예요, 깎아드릴 순 없어요. 관심 있으세요?"
@@ -958,7 +958,7 @@
 28|@skiff.|@작은 배(skiff).
 28|After accepting the gold, $N smiles and hands $Y the deed.|금화를 받은 후, $N이 미소 지으며 $Y에게 증서를 건네준다.
 28|Arty smiles and nods.|아티가 미소 지으며 고개를 끄덕인다.
-28|Arty waves as you leave, then returns to|당신이 떠날 때 아티가 손을 흔들고는 다시|
+28|Arty waves as you leave, then returns to|당신이 떠날 때 아티가 손을 흔들고는 다시
 28|Does $Y want to buy the deed?|$Y(이)가 증서를 사고 싶어 하는가?
 28|He grins widely and waves at you.|그가 활짝 웃으며 당신에게 손을 흔든다.
 28|He looks up from his tankard of ale, sees you and smiles.|그가 에일 맥주잔에서 눈을 떼고 당신을 보며 미소 짓는다.
@@ -973,15 +973,15 @@
 28|The man shakes his head and spreads his hands as if to say "sorry."|사내가 고개를 저으며 "미안하다"는 듯 양손을 펼쳐 보인다.
 28|The man shakes his head.|사내가 고개를 젓는다.
 28|The man smiles and nods.|사내가 미소 지으며 고개를 끄덕인다.
-28|The man smiles and points to|사내가 미소 지으며|
+28|The man smiles and points to|사내가 미소 지으며
 28|Who is buying?|누가 구매합니까?
 28|You don't have enough gold for that.|당신은 그럴 돈이 부족합니다.
 28|Your party doesn't have enough gold for that.|일행에게 그럴 만한 돈이 부족합니다.
 28|Your party takes up a collection to purchase the vessel.|일행이 돈을 모아 배를 구입합니다.
-28|and to a|그리고|
+28|and to a|그리고
 28|his ale.|맥주에 집중한다.
-28|the deed to a|증서를 작성한다.|
-28|the deed to a @ship|@배(ship) 의 증서를|
+28|the deed to a|증서를 작성한다.
+28|the deed to a @ship|@배(ship) 의 증서를
 28|what he was doing.|자신이 하던 일로 돌아간다.
 
 29|a tall, willowy woman with long blond hair.\n*|긴 금발을 가진 키 크고 늘씬한 여인이다.\n*
@@ -1023,13 +1023,13 @@
 30|"Britannia has been so prosperous lately that there's been a lot of demand for gold coinage."\n*\n"Of course we have you to thank for bringing us the Codex and saving Lord British."\n*|"브리타니아는 요즘 정말 번영하고 있어서 금화 수요가 아주 많답니다."\n*\n"물론 코덱스를 가져오시고 로드 브리티시를 구해주신 당신 덕분이죠."\n*
 30|"By royal decree, I am the only one allowed to @mint the official coinage of the realm."\n*"Copper @pence, silver pieces, and @gold crowns - they're all made right here."\n*\n"My @father ran the mint before me. But I get lonely here sometimes..."\n*\n"It's so nice of you to come by and talk to me."\n*\n"@Kytyn will never believe it when I tell her I got to meet the @Avatar in person!"|"왕실 칙령에 따라, 이 왕국의 공식 화폐를 @주조(mint) 할 수 있는 사람은 저뿐이랍니다."\n*"구리 @펜스(pence), 은화, 그리고 @금화(gold) 크라운 - 전부 여기서 만들어지죠."\n*\n"제 @아버지(father) 도 제 앞에서 조판소를 운영하셨어요. 하지만 가끔 여기서 외로울 때가 있어요..."\n*\n"이렇게 들러서 대화해주시니 정말 기쁘네요."\n*\n"@키틴(Kytyn) 이 제가 @아바타(Avatar) 님을 직접 만났다고 하면 절대 믿지 않을 거예요!"
 30|"Do you have any gold nuggets you'd like to trade in for crowns?"|"혹시 크라운으로 바꾸고 싶은 금덩이가 있나요?"
-30|"Hello. My name's Terri - I run the mint."\n*\n"Say, aren't you the Avatar? Yes, I recognize you from your portrait..."\n*\n"My mother used to tell me stories about you when I was a girl."\n*\n"You probably wouldn't remember her, but she was at the big celebration right after you recovered the Codex."\n*\n"Anyway... I just wanted to tell you that I always|"안녕하세요. 제 이름은 테리(Terri)예요. 이곳 조판소를 맡고 있죠."\n*\n"어머, 혹시 아바타님 아니신가요? 네, 초상화에서 뵌 기억이 나요..."\n*\n"제가 어릴 때 어머니께서 당신에 대한 이야기를 자주 해주셨거든요."\n*\n"아바타님은 아마 기억 못 하시겠지만, 코덱스를 회수하신 직후에 열린 큰 축제에 저희 어머니도 계셨대요."\n*\n"아무튼... 제가 꼭 드리고 싶었던 말은, 제가 늘|
+30|"Hello. My name's Terri - I run the mint."\n*\n"Say, aren't you the Avatar? Yes, I recognize you from your portrait..."\n*\n"My mother used to tell me stories about you when I was a girl."\n*\n"You probably wouldn't remember her, but she was at the big celebration right after you recovered the Codex."\n*\n"Anyway... I just wanted to tell you that I always|"안녕하세요. 제 이름은 테리(Terri)예요. 이곳 조판소를 맡고 있죠."\n*\n"어머, 혹시 아바타님 아니신가요? 네, 초상화에서 뵌 기억이 나요..."\n*\n"제가 어릴 때 어머니께서 당신에 대한 이야기를 자주 해주셨거든요."\n*\n"아바타님은 아마 기억 못 하시겠지만, 코덱스를 회수하신 직후에 열린 큰 축제에 저희 어머니도 계셨대요."\n*\n"아무튼... 제가 꼭 드리고 싶었던 말은, 제가 늘
 30|"Here, let me show you." She takes out a sample of each coin for you to look at.\n*\nThe pence has an ankh on one side, and crossed swords on the other.\n*\nThe silver piece has Lord British's face on the front, and a serpent on the back.\n*\nAnd the gold crown is a familiar sight, with a crown and the symbol of the Codex.\n*\nAll three of them look newly minted - they're very shiny.|"자, 보여드릴게요." 그녀가 당신이 볼 수 있도록 동전 견본을 하나씩 꺼낸다.\n*\n펜스 동전은 한쪽에는 앙크 문양이, 다른 쪽에는 엇갈린 칼 문양이 있다.\n*\n은화 앞면에는 로드 브리티시의 얼굴이, 뒷면에는 뱀 문양이 있다.\n*\n그리고 금화 크라운은 우리에게 익숙한, 왕관과 코덱스의 상징이 새겨져 있다.\n*\n세 동전 모두 갓 주조된 듯 아주 반짝거린다.
 30|"I get most of my gold from people who bring in nuggets to @exchange them for coins."\n*|"전 주로 금덩이를 동전으로 @교환(exchange) 하러 오는 사람들로부터 금을 얻는답니다."\n*
 30|"I know you're very busy, saving Britannia and all that, but I hope you'll come and visit me again...\n*|"브리타니아를 구하느라 아주 바쁘시겠지만, 가끔은 저를 보러 다시 와주셨으면 좋겠어요...\n*
 30|"I'm eating right now. Come see me at the mint sometime and we can chat."|"지금은 식사 중이에요. 나중에 조판소로 오시면 그때 대화하죠."
 30|"It really was delightful talking to you."|"당신과 대화해서 정말 즐거웠어요."
-30|"It's Terri...|"테리라고 해요...|
+30|"It's Terri...|"테리라고 해요...
 30|"May he rest in peace."|"아버지가 평안히 잠드셨기를."
 30|"May she rest in peace."|"어머니가 평안히 잠드셨기를."
 30|"My @mother told me all about it."|"저희 @어머니(mother) 께서 그 일에 대해 다 말씀해 주셨어요."
@@ -1039,12 +1039,12 @@
 30|"She's a good friend of mine. She runs the @museum."|"그녀는 제 좋은 친구예요. @박물관(museum) 을 운영하고 있죠."
 30|"Well, if you do later, you know where to find me."|"뭐, 나중에라도 생기면 제가 어디 있는지 아시죠."
 30|"You must be mistaken. But let me know if you come across any gold nuggets later."|"착각하셨나 보네요. 하지만 나중에라도 금덩이를 발견하면 제게 알려주세요."
-30|"You must be the bravest|"당신은 정말 세상에서 가장 용감한|
+30|"You must be the bravest|"당신은 정말 세상에서 가장 용감한
 30|"You should visit there sometime. But please stay and talk to me a bit longer first..."|"언젠가 한번 가보세요. 하지만 먼저 저랑 조금만 더 이야기해주시면 안 될까요..."
 30|But I wish I had been named after you."|하지만 당신의 이름을 따서 지어졌다면 좋았을 텐데."
 30|Don't you think that would be a good name for an Avatar's wife?"|아바타의 아내 이름으로 정말 잘 어울릴 것 같지 않나요?"
 30|She winks at you.|그녀가 당신에게 윙크를 한다.
-30|You notice she was staring at you with a dreamy look in her eyes.\n*\n"Oh, I'm sorry, I wasn't listening. I was just|그녀가 멍한 눈빛으로 당신을 바라보고 있는 것을 눈치챈다.\n*\n"아, 미안해요, 못 들었어요. 전 그냥|
+30|You notice she was staring at you with a dreamy look in her eyes.\n*\n"Oh, I'm sorry, I wasn't listening. I was just|그녀가 멍한 눈빛으로 당신을 바라보고 있는 것을 눈치챈다.\n*\n"아, 미안해요, 못 들었어요. 전 그냥
 30|hoped someday I'd meet a man like you..."|언젠가 당신 같은 남자를 만나길 꿈꿔왔거든요..."
 30|man I've ever met. I can't believe it's really you!"|분일 거예요. 당신을 정말로 만나다니 믿기지 않아요!"
 30|noticing how strong and handsome you are..."\n*\nShe looks away and sighs.|당신이 얼마나 강하고 잘생겼는지 넋을 놓고 보고 있었거든요..."\n*\n그녀는 시선을 돌리며 한숨을 내쉰다.
@@ -1090,7 +1090,7 @@
 32|"I @cook for all those who live in the @castle, and for any @guests who dine with Lord British as well."\n*\n"'Tis sastisfying work, yet at times I wish I could @travel with one such as you..."|"전 @성(castle) 에 사는 모든 사람과 로드 브리티시와 식사하는 모든 @손님(guests) 들을 위해 @요리(cook) 를 한답니다."\n*\n"보람 있는 일이지만, 가끔은 당신 같은 분과 함께 @여행(travel) 을 떠나고 싶다는 생각도 들죠..."
 32|"I like having a job where I can make people happy."|"사람들을 행복하게 해줄 수 있는 직업을 가져서 좋아요."
 32|"I shouldn't even speak of such things."\n*\n"After all, you are the Avatar, and I but a lowly cook. Please forgive me."|"제가 그런 말을 해서는 안 되는 건데 말이죠."\n*\n"당신은 아바타이시고 전 그저 미천한 요리사일 뿐이니까요. 부디 용서해 주세요."
-32|"I'll never tell.|"절대 말하지 않을 겁니다.|
+32|"I'll never tell.|"절대 말하지 않을 겁니다.
 32|"I've heard about all of your adventures. I wish I were a warrior too, and not just a cook!"|"당신의 모험담은 다 들었어요. 저도 그냥 요리사가 아니라 전사였으면 좋았을 텐데요!"
 32|"Lord British has many friends."|"로드 브리티시께는 친구가 많으시죠."
 32|"Maldric, I am. Once Maldric the @boar hunter, now Maldric the cook."|"말드릭(Maldric)이라고 합니다. 한때는 멧돼지(@boar) 사냥꾼이었지만, 지금은 요리사 말드릭이죠."
@@ -1100,12 +1100,12 @@
 32|"The secret is in the spices. It's an old family @recipe."|"비결은 향신료에 있어요. 저희 집안 대대로 내려오는 @조리법(recipe) 이죠."
 32|"There's fire enough in my kitchen, but 'tis no place for romance."|"제 주방에는 불길이 충분하지만, 로맨스를 위한 자리는 없답니다."
 32|"Those were good times. But I'm happy here."|"그때가 좋았죠. 하지만 전 지금 여기서 행복해요."
-32|"Wait a minute," he interrupts, "I recognize you... You're the Avatar! I've always wanted to meet you."\n*\n"|"잠깐만요," 그가 말을 가로막는다, "당신을 알겠어요... 당신이 바로 아바타군요! 항상 한번 만나 뵙고 싶었습니다."\n*\n"|
+32|"Wait a minute," he interrupts, "I recognize you... You're the Avatar! I've always wanted to meet you."\n*\n"|"잠깐만요," 그가 말을 가로막는다, "당신을 알겠어요... 당신이 바로 아바타군요! 항상 한번 만나 뵙고 싶었습니다."\n*\n"
 32|"Yes indeed."|"정말 그렇고말고요."
 32|"Yes, Lord @British himself."|"네, 로드 @브리티시(British) 본인이시죠."
 32|"You're a pretty spicy little number yourself!"|"당신 자신도 꽤나 화끈한 분이시군요!"
 32|*\n\nHe seems about to say more, with a hopeful look in his eyes.\n*\nBut then he turns away without speaking.|*\n\n그는 눈에 기대를 담고 무언가 더 말하려는 듯 보였으나,\n*\n곧 아무 말 없이 고개를 돌린다.
-32|*\n"I wish it were still there, so I could invite you to come spend an evening by the @fireplace with me...|*\n"그 오두막이 아직 거기 있었다면 좋았을 텐데요. 그랬다면 당신을 초대해서 저랑 같이 @벽난로(fireplace) 옆에서 저녁 시간을 보냈을 텐데...|
+32|*\n"I wish it were still there, so I could invite you to come spend an evening by the @fireplace with me...|*\n"그 오두막이 아직 거기 있었다면 좋았을 텐데요. 그랬다면 당신을 초대해서 저랑 같이 @벽난로(fireplace) 옆에서 저녁 시간을 보냈을 텐데...
 32|From the day I first saw your portrait, I knew you must be the most beautiful woman in all Britannia."|당신의 초상화를 처음 본 날부터, 당신이 브리타니아에서 가장 아름다운 여인일 거라는 걸 알았습니다."
 32|Though for one so sweet, I must say I'm tempted.|이렇게 매력적인 분을 보니 정말 마음이 흔들리는군요.
 32|You're the greatest hero in all the land."|당신은 이 땅에서 가장 위대한 영웅이시니까요."
@@ -1168,7 +1168,7 @@
 35|"Absurd!"|"말도 안 되는군요!"
 35|"Afterwards, I will construct a model of how it all works: an @orrery."|"나중에 이 모든 것이 어떻게 작동하는지 보여주는 모델인 @태양계의(orrery) 를 만들 생각입니다."
 35|"Ah, you've brought me a glass sword! Let me just get your lens..."|"아, 유리 검을 가져오셨군요! 그럼 렌즈를 가져와서..."
-35|"Ahem. Yes, what can I help you with,|"에헴. 네, 무엇을 도와드릴까요,|
+35|"Ahem. Yes, what can I help you with,|"에헴. 네, 무엇을 도와드릴까요,
 35|"Angular separation of two celestial bodies (as measured from a third) being ninety degrees, of course. A very safe @tide."|"두 천체의 각도 차이가 (제3의 천체에서 측정했을 때) 당연히 90도인 상태를 말합니다. 아주 안전한 @조수(tide) 지요."
 35|"Britannia's tides are a function of the two @moons, Felucca and Trammel, interacting with our world, Sosaria."|"브리타니아의 조수는 두 @달(moons) 인 펠루카와 트래멀이 우리 세계인 소사리아와 상호작용하며 발생하는 것입니다."
 35|"Goodbye, $G. It was nice talking with you."|"안녕히 가십시오, $G. 즐거운 대화였습니다."
@@ -1563,9 +1563,9 @@
 43|a man with a serpent-and-heart tabard covering his chainmail.\n*|사슬 갑옷 위에 뱀과 하트 문양의 겉옷을 입은 남자다.\n*
 43|"|"
 43|"'Tis on the north side of town."|"마을 북쪽에 있소."
-43|"'Twas the sunset o'er Brittany Bay|"그것은 브리타니 만 위로 지는 저녁노을이었소|
+43|"'Twas the sunset o'er Brittany Bay|"그것은 브리타니 만 위로 지는 저녁노을이었소
 43|"Ah, battle!" he sighs.|"아아, 전투라니!" 그가 한숨을 내쉰다.
-43|"Ah, the Avatar! Lord @British has spoken fondly of thee, $G.|"아, 아바타로군! 로드 @브리티시(British) 께서 그대에 대해 좋게 말씀하셨소, $G.|
+43|"Ah, the Avatar! Lord @British has spoken fondly of thee, $G.|"아, 아바타로군! 로드 @브리티시(British) 께서 그대에 대해 좋게 말씀하셨소, $G.
 43|"Ask him yourself!"|"그에게 직접 물어보시오!"
 43|"Farewell, my friend."|"잘 가시오, 내 친구여."
 43|"Good $T. We meet again."|"좋은 $T이오. 또 만났구료."
@@ -1584,7 +1584,7 @@
 43|"The piers were broken up, but the @shipwrights repaired them swiftly."|"부두가 부서졌지만, @선박 제조사(shipwrights) 들이 신속하게 수리했소."
 43|"The shipwrights of Jhelom are fastidious and frugal craftsmen."|"젤롬의 선박 제조사들은 까다롭지만 검소한 장인들이라오."
 43|"The songs and @tales do the heart good, I say!"|"노래와 @이야기(tales) 는 마음을 즐겁게 해주지!"
-43|"Those who live the warriors' life like to sing,|전사의 삶을 사는 이들은 노래하기를 좋아하고,|
+43|"Those who live the warriors' life like to sing,|"전사의 삶을 사는 이들은 노래하기를 좋아하고,
 43|"Thou mayst call me Zellivan."|"나를 젤리반이라 부르시오."
 43|"We had one just last year."|"작년에 지진이 한 번 있었지."
 43|"You might say that '@no @man' was the victor..." He smiles.|"말하자면 '@아무도(no man)' 승자가 되지 못했다고 할 수 있겠군..." 그가 미소 짓는다. (역주: 노만 Nomaan과의 언어유희)
@@ -1609,7 +1609,7 @@
 44|"Changed your mind, eh?"|"생각이 바뀌었소?"
 44|"Come by my shop when I'm open!"|"문 열었을 때 내 가게로 오시오!"
 44|"Done!" $N hands $Y #7 gold pieces and takes the $0.|"좋소!" $N이 $Y에게 #7금화를 건네주고 $0(을)를 받는다.
-44|"Excellent!"\n\nAfter accepting $Y's gold, $N hands over|"훌륭하오!"\n\n$Y의 금화를 받은 후, $N이 건네주었다|
+44|"Excellent!"\n\nAfter accepting $Y's gold, $N hands over|"훌륭하오!"\n\n$Y의 금화를 받은 후, $N이 건네주었다
 44|"Excellent!"\n\nAfter accepting $Y's gold, $N hands over the $1.|"훌륭하오!"\n\n$Y의 금화를 받은 후, $N이 $1(을)를 건네주었다.
 44|"Go ask around in the tavern."|"술집 주변 사람들에게 물어보시오."
 44|"Hello again, $G."|"또 만났구료, $G."
@@ -1633,9 +1633,9 @@
 44|"That $1 costs #1 gold."|"그 $1(은)는 #1금화요."
 44|"That's when the @rat ran out."|"그때 바로 @쥐(rat) 가 튀어나왔소."
 44|"Thou canst not afford any $1s, $Y!"|"당신은 $1(을)를 살 돈이 없잖소, $Y!"
-44|"Thou canst not afford that many, but I will give thee|"그렇게 많이 살 돈은 없으니, 내가 당신에게 주겠소|
+44|"Thou canst not afford that many, but I will give thee|"그렇게 많이 살 돈은 없으니, 내가 당신에게 주겠소
 44|"Thou canst not carry any $1s, $Y!"|"당신은 $1(을)를 들고 갈 수가 없잖소, $Y!"
-44|"Thou canst not carry that many, but I will give thee|"그렇게 많이는 들고 갈 수 없으니, 내가 당신에게 주겠소|
+44|"Thou canst not carry that many, but I will give thee|"그렇게 많이는 들고 갈 수 없으니, 내가 당신에게 주겠소
 44|"To no avail, though. We haven't seen the rune since."|"하지만 다 소용없었소. 그 후로 룬은 본 적도 없다오."
 44|"We all leapt at it, but the little beast was too quick."|"우리 모두가 달려들었지만, 그 작은 짐승이 훨씬 더 빨랐소."
 44|"We tried everything - banging on the wall, digging, poking with a sword."|"우리는 별짓을 다 해봤소 - 벽을 두드리고, 땅을 파고, 칼로 찔러보기도 했지."
@@ -1710,7 +1710,7 @@
 45|He was just about to punch someone when you approached him.*\n\n"This is no time for talk. There's fighting to do!"|당신이 다가갔을 때 그는 막 누군가에게 주먹을 날리려던 참이었다.*\n\n"지금은 이야기할 때가 아니야. 싸워야 할 적들이 있다고!"
 
 46|a man dressed in velvets and silks of yellow, green and blue.\n*|노란색, 녹색, 파란색의 벨벳과 실크 옷을 입은 남자다.\n*
-46|"'Tis such a topsy-turvy world|"정말 뒤죽박죽인 세상이라오|
+46|"'Tis such a topsy-turvy world|"정말 뒤죽박죽인 세상이라오
 46|"A pleasure, to be sure, $Z."|"만나서 정말 반갑구려, $Z."
 46|"A very good $T to ye, my friend."|"정말 좋은 $T이오, 나의 친구여."
 46|"Aha! That means monsters are not deserving of mercy!" says Stelnar|"아하! 그 말은 괴물들은 자비를 누릴 자격이 없다는 뜻이군!" 스타헬름이 말한다.
@@ -1724,7 +1724,7 @@
 46|"How do you do. I am the bard Van Kellian."|"반갑소. 나는 음유시인 반 켈리안(Van Kellian)이라고 하오."
 46|"I gave him a few coins, of course."|"물론 그에게 동전 몇 개를 쥐어주었지."
 46|"If Lord British suffers him to live, then I will not harm him."|"로드 브리티시께서 그가 살도록 허락하셨다면, 나도 그를 해치지 않겠소."
-46|"If ye let one gargoyle live,|가고일 한 마리라도 살려둔다면,|
+46|"If ye let one gargoyle live,|"가고일 한 마리라도 살려둔다면,
 46|"Just as compassion comes from a love of all mankind."|"자애가 모든 인류에 대한 사랑에서 나오는 것처럼 말이오."
 46|"Please, speak your name, $G."|"부디 존함을 들려주시오, $G."
 46|"Shall I sing for ye?"|"그대를 위해 노래를 불러드릴까?"
@@ -1732,7 +1732,7 @@
 46|"Starhelm and I have often debated the nature of the gargoyle @Sin 'Vraal."|"스타헬름과 나는 가고일 @신브랄(Sin 'Vraal) 의 본성에 대해 자주 토론하곤 한다오."
 46|"Their cries are fierce yowlings to make the blood run cold with fear."|"그들의 울음소리는 피를 얼어붙게 만들 정도로 사나운 울부짖음이라오."
 46|"There is little enough dignity in the life of a beggar."|"거지의 삶에 존엄이란 거의 찾아보기 힘들지."
-46|"Tho' she disdains to speak to me|그녀는 나와 말하기를 거부하지만|
+46|"Tho' she disdains to speak to me|"그녀는 나와 말하기를 거부하지만
 46|"Though, mind ye, I myself have never faced one in combat."|"물론 나 자신은 실제로 그들과 전투에서 마주해본 적은 없지만 말이오."
 46|"Valour comes from the courage to be virtuous."|"용기는 미덕을 지키려는 용기에서 나오는 법이오."
 46|"Well, I hear their skin is stony and rough."|"음, 듣기로 그들의 피부는 돌처럼 단단하고 거칠다고 하더군."
@@ -1740,18 +1740,18 @@
 46|"Well? How about a @song?"|"어떻소? @노래(song) 한 곡 들어보겠소?"
 46|"What possible threat could one @gargoyle living alone in the Dry Lands be?"|"건조 지대에서 혼자 사는 @가고일(gargoyle) 한 마리가 무슨 위협이 되겠소?"
 46|"Why, singing is my trade."|"왜라니요, 노래하는 것이 내 업인걸요."
-46|Ah how I pine and sigh for her|아아 내 얼마나 그녀를 그리워하며 한숨짓는지|
+46|Ah how I pine and sigh for her|아아 내 얼마나 그녀를 그리워하며 한숨짓는지
 46|He glances behind him and ducks, as if expecting someone to throw something at him.\n*\n"Bit of a brawl going on just now. Be glad to talk to you some other time."|그는 뒤를 힐끗 보더니 누군가 무엇을 던지기라도 할 것처럼 몸을 숙인다.\n*\n"지금 막 싸움판이 벌어져서 말이오. 나중에 다시 이야기하면 좋겠구려."
 46|His voice is rich and mellow.|그의 목소리는 풍부하고 부드럽다.
-46|I would that I could catch her eye|그녀의 눈길을 단 한 번이라도 끌 수 있다면|
-46|I would that I were handsome- o|내가 더 잘생겼더라면 - 오|
+46|I would that I could catch her eye|그녀의 눈길을 단 한 번이라도 끌 수 있다면
+46|I would that I were handsome- o|내가 더 잘생겼더라면 - 오
 46|Iolo rolls his eyes and whispers to you.|이올로가 눈을 굴리며 당신에게 속삭인다.
-46|Sing ho eyo he hum!|흥겨운 노래를 부르세!|
+46|Sing ho eyo he hum!|흥겨운 노래를 부르세!
 46|Stelnar says "I'll tell ye, Van."|스타헬름이 말한다. "내가 말해주지, 반."
 46|The bard plays a harp and sings.|음유시인이 하프를 켜며 노래한다.
-46|When my sweet lady-love whirls by|나의 사랑스러운 여인이 스쳐 지나갈 때|
+46|When my sweet lady-love whirls by|나의 사랑스러운 여인이 스쳐 지나갈 때
 46|and then even cyclopses."|그러다 보면 사이클롭스까지 용서하게 될 걸세."
-46|then ye'll be tempted to spare trolls,|트럴들을 살려주고 싶어질 것이고,|
+46|then ye'll be tempted to spare trolls,|트럴들을 살려주고 싶어질 것이고,
 
 47|a beggar, clad in the rags of a sailor, with a hook for a right hand.\n*|누더기 선원 옷을 입고 오른손엔 갈고리를 단 거지다.\n*
 47|"'Twas a bitter fight; I almost died o' the wound."|"정말 처절한 싸움이었지. 그 부상 때문에 거의 죽을 뻔했다네."
@@ -1794,7 +1794,7 @@
 48|"Bye-bye, $G. It was nice talking to you."|"안녕히 가세요, $G. 대화해서 즐거웠어요."
 48|"Culham has oft sung of it, with @Jerris and @Starhelm."|"컬럼(Culham)이 @제리스(Jerris) , @스타헬름(Starhelm) 과 함께 종종 노래하곤 했어요."
 48|"Do ye know of the talking mouse? Lord British's friend?"|"말하는 쥐에 대해 아세요? 로드 브리티시의 친구 말이에요."
-48|"Hallo, $G. Welcome to the 'Sword and @Keg.'|"안녕하세요, $G. '검과 @통(Keg)'에 오신 걸 환영해요.|
+48|"Hallo, $G. Welcome to the 'Sword and @Keg.'|"안녕하세요, $G. '검과 @통(Keg)'에 오신 걸 환영해요.
 48|"He is brave when @fighting, but he is afraid to sing by himself."|"그분은 @전투(fighting) 할 때는 용감하지만, 혼자 노래 부르는 건 무서워해요."
 48|"He would be much nicer if he were not so angry all the time."|"그분이 맨날 그렇게 화만 내지 않는다면 훨씬 더 좋은 분일 텐데."
 48|"His real name is Stelnar."|"그의 진짜 이름은 스텔나예요."
@@ -1828,7 +1828,7 @@
 49|"A great feast is held 'mongst gypsykind."|"집시들 사이에서 성대한 잔치가 벌어졌다오."
 49|"Ah, yes. That's quite a story, too."|"아, 그렇소. 그것도 참 대단한 이야기지."
 49|"Along come the gypsies. 'Aiee!' they cry."|"집시들이 다가와서 '아이쿠!' 하고 외쳤소."
-49|"And then my mantra came to mind|"그리고 내 머릿속에 만트라가 떠올랐지|
+49|"And then my mantra came to mind|"그리고 내 머릿속에 만트라가 떠올랐지
 49|"Arturosis"|"아르투로증(Arturosis)"
 49|"Culham's me name, $G."|"내 이름은 컬럼(Culham)이라오, $G."
 49|"He eats the stuff, swells up and takes ill."|"말이 그걸 먹더니 몸이 부풀어 오르고 병이 났소."
@@ -1838,7 +1838,7 @@
 49|"Immanuelle decides to sacrifice the diseased one and the gypsies agree heartily."|"이매뉴얼(Immanuelle)은 병든 말을 희생시키기로 했고, 집시들은 진심으로 동의했소."
 49|"Immanuelle is too happy to hand them the doomed animal's bridle, plus ten coins."|"이매뉴얼은 너무 기쁜 나머지 운 다한 말의 굴레와 함께 10금화를 그들에게 건네주었소."
 49|"It makes me @sing."|"그게 나를 @노래(sing) 하게 한다오."
-49|"It seemed like such an easy climb|"정말 쉬운 등반처럼 보였는데|
+49|"It seemed like such an easy climb|"정말 쉬운 등반처럼 보였는데
 49|"It's fighting time. Talking's for later."|"지금은 싸울 시간이라오. 대화는 나중에 합시다."
 49|"May we meet again soon, friend."|"곧 다시 만납시다, 친구여."
 49|"Meanwhile, Immanuelle thanks virtue that the equine epidemic was caught early on!"|"그동안 이매뉴얼은 말 전염병을 일찍 발견하게 해준 미덕에 감사했지!"
@@ -1848,7 +1848,7 @@
 49|"Oho, that be a name in need of a story."|"오호, 그 이름엔 이야기가 좀 필요해 보이는구려."
 49|"Once I heard a haunting melody..."|"한때 잊히지 않는 멜로디를 들었소..."
 49|"One goes out and gathers a poisonous weed from the swamps."|"집시 한 명이 밖으로 나가 늪지에서 독초를 모아 왔소."
-49|"Sing 'ra,' my friends, sing 'ra.'|"노래하세 'ra'를, 친구들이여, 노래하세 'ra'를.|
+49|"Sing 'ra,' my friends, sing 'ra.'|"노래하세 'ra'를, 친구들이여, 노래하세 'ra'를.
 49|"So the gypsies make a great kettle of horse stew and bury the rest."|"그래서 집시들은 커다란 가마솥에 말고기 스튜를 끓여 먹고 나머지는 묻어버렸소."
 49|"Sorry, I cannot help ye with that."|"미안하지만, 그건 도와줄 수가 없구려."
 49|"The Mantra of Valour bringeth great cheer."|"용기의 만트라는 큰 기쁨을 가져다준다오."
@@ -1865,21 +1865,21 @@
 49|"Why, hullo there, $P. Have I told ye the one about the gypsies?"|"아니, 안녕하시오, $P. 집시들에 대한 이야기를 해드렸던가요?"
 49|"Would ye really like to hear a story?"|"정말로 이야기를 듣고 싶으시오?"
 49|#|#
-49|'Tho boulders bounced and passed with speed.|바위들이 빠르게 튀어 지나갔어도|
-49|'Tis a song to make thee strong|그대를 강하게 해줄 노래라네|
-49|And the ground be far..."|땅바닥은 저 멀리 있고..."|
+49|'Tho boulders bounced and passed with speed.|바위들이 빠르게 튀어 지나갔어도
+49|'Tis a song to make thee strong|그대를 강하게 해줄 노래라네
+49|And the ground be far..."|땅바닥은 저 멀리 있고..."
 49|As sliding snow swept loose my feet."|미끄러지는 눈더미가 내 발을 휩쓸어 갈 때."
 49|Culham sings for you.|컬럼이 당신을 위해 노래한다.
 49|He laughs and plays a little tune on his lute.|그가 웃으며 류트로 짤막한 곡을 연주한다.
 49|He laughs loudly.|그가 크게 웃는다.
-49|I crawled upon the Serpent's Spine|나는 서펀트의 등뼈(Serpent's Spine) 산맥을 기어올랐지|
-49|I hadn't even time to blanch|얼굴이 창백해질 틈조차 없었네|
-49|My frozen fingers gripped to rock|얼어붙은 손가락으로 바위를 부여잡았는데|
+49|I crawled upon the Serpent's Spine|나는 서펀트의 등뼈(Serpent's Spine) 산맥을 기어올랐지
+49|I hadn't even time to blanch|얼굴이 창백해질 틈조차 없었네
+49|My frozen fingers gripped to rock|얼어붙은 손가락으로 바위를 부여잡았는데
 49|Once again a brawl breaks out!|또 한 번 싸움판이 벌어진다!
 49|The pub is filled with the sound of singing.|주점이 노랫소리로 가득 찬다.
 49|Too loudly. Stelnar and Jerris begin to argue over whether it was a rat or a mouse.|너무 시끄러운 나머지, 스타헬름과 제리스는 그게 쥐(rat)였는지 생쥐(mouse)였는지를 두고 말다툼을 시작한다.
 49|When down there came an avalanche!"|눈사태가 아래로 쏟아져 내렸네!"
-49|When the mountains be high|산이 높고|
+49|When the mountains be high|산이 높고
 
 50|a slender man with boots that come up to his thighs.\n*|허벅지까지 올라오는 장화를 신은 날씬한 남자다.\n*
 50|"Care to join me in a drink?"|"나랑 같이 한잔하시겠소?"
@@ -1908,7 +1908,7 @@
 50|Shamino points to a spot west of the bar where the wall meets the ground. "There it is."|샤미노가 바 서쪽의 벽과 바닥이 만나는 지점을 가리킨다. "저기 있군요."
 
 51|a tavernkeeper.\n*|주점 주인이다.\n*
-51|"'Fraid I can't talk now. I have to cook|"지금은 이야기하기 힘들겠구먼. 요리를 해야 해서 말이오.|
+51|"'Fraid I can't talk now. I have to cook|"지금은 이야기하기 힘들겠구먼. 요리를 해야 해서 말이오.
 51|"All right." $N gives $Y the $1.|"알겠소." $N이 $Y에게 $1(을)를 주었소.
 51|"Anything else I can do for you?"|"더 도와줄 게 있소?"
 51|"Come back when it's ready and have some!"|"준비되면 와서 좀 드시오!"
@@ -1957,9 +1957,9 @@
 52|"Mine name ist Martin, but my friends call me '@Dutch.'"|"내 이름은 마틴(Martin)이무니다. 하지만 친구들은 나를 @더치(Dutch) 라고 부르무니다."
 52|"Room und board ist 5 gold per night per person."|"숙박과 식사는 한 사람당 하룻밤에 5금화이무니다."
 52|"Vat can I be doing for thee this $T?"|"이 $T에 무엇을 도와드릴까무니까?"
-52|"Vell, hello|"어이구, 안녕하무니까|
+52|"Vell, hello|"어이구, 안녕하무니까
 52|"Vell, perhaps some other time, ja?"|"음, 그럼 다음 기회에, 네?"
-52|, mine friend|, 나의 친구여|
+52|, mine friend|, 나의 친구여
 52|He shows you to your room, and you drift off into a well-earned sleep.|그가 당신을 방으로 안내하고, 당신은 달콤한 잠에 빠져든다.
 52|The next morning, Martin serves you a huge, tasty breakfast.|다음 날 아침, 마틴이 푸짐하고 맛있는 아침 식사를 내온다.
 52|again|또 보무니다
@@ -1972,7 +1972,7 @@
 53|"But you bought them all!"|"하지만 자네들이 다 사버렸는걸!"
 53|"Excellent!" After accepting the gold, $N hands $Y the deed.|"훌륭해!" 금화를 받은 후, $N이 $Y에게 증서를 건네준다.
 53|"Hello," he says, lumbering over to you and extending a large hand.|"안녕하신가," 그가 당신에게 육중하게 걸어와 커다란 손을 내밀며 말한다.
-53|"I sell|"나는 판다네|
+53|"I sell|"나는 판다네
 53|"I used to sell ships and skiffs."|"예전에는 배와 작은 배들을 팔았었지."
 53|"My father was a @sailor, but couldn't spell." He laughs out loud.|"내 아버지는 @선원(sailor) 이었지만, 글자는 잘 못 읽으셨어." 그가 크게 웃는다.
 53|"Sail her straight."|"안전하게 항해하시게."
@@ -2004,7 +2004,7 @@
 54|"But $Y can't carry a log!"|"하지만 $Y(은)는 통나무를 들 수 없잖아!"
 54|"But $Y don't have 5 gold!"|"하지만 $Y(은)는 5금화도 없군!"
 54|"But you ain't one of my friends."|"하지만 자네는 내 친구가 아니잖아."
-54|"Careful in those woods now.|"이 숲에선 조심하라고.|
+54|"Careful in those woods now.|"이 숲에선 조심하라고.
 54|"Ever since I won that choppin' contest, the @king's had a notion I'd be good at wittlin' on men the same way."|"그 도끼질 대회에서 우승한 뒤로, @왕(king) 께서는 내가 사람들도 나무처럼 잘 깎아낼 거라고 생각하시는 모양이야."
 54|"Hah, sneakin' around in my @forest, huh?"|"하, 내 @숲(forest) 을 몰래 돌아다니고 있구먼, 응?"
 54|"Have ya never seen a lumberman before?"|"나무꾼 처음 보나?"
@@ -2045,7 +2045,7 @@
 55|"I wouldn't know where to begin. Ask @Marissa in Paws."|"전 어디서부터 시작해야 할지 모르겠네요. 포즈(Paws)에 있는 @마리사(Marissa) 에게 물어보세요."
 55|"I'm a @tailor, $G."|"저는 @재단사(tailor)예요, $G."
 55|"I'm not sure what you mean."|"무슨 뜻인지 잘 모르겠어요."
-55|"I'm sorry! That's|"죄송해요! 그건|
+55|"I'm sorry! That's|"죄송해요! 그건
 55|"I'm sorry, but I really don't think $Y can afford that."|"죄송하지만, $Y(이)가 지불하기엔 좀 비싼 것 같아요."
 55|"I'm sorry, but I really don't think $Y can carry that."|"죄송하지만, $Y(이)가 들기엔 너무 무거운 것 같아요."
 55|"I'm terribly sorry, but I can't sell it for less!"|"정말 죄송하지만, 더 싸게는 못 팔아요!"
@@ -2075,7 +2075,7 @@
 56|"Alright, alright, I admit it - ya won fair an' square."|"알았어, 알았다고. 내가 깔끔하게 졌소."
 56|"Ask around."|"주변에 물어보슈."
 56|"He's never been in here. Can't imagine why--it seems like his kind of establishment."|"그 양반은 여기 온 적이 없소. 왜인지 모르겠네--딱 그 양반 취향일 텐데 말이오."
-56|"Hello|"안녕|
+56|"Hello|"안녕
 56|"Honey, I've had many jobs in my time. But runnin' this pub is the best, 'cause I get to meet the strongest @men."|"자기야, 난 살면서 온갖 일을 다 해봤소. 하지만 이 주점을 운영하는 게 최고지. 왜냐하면 가장 힘센 @남자(men) 들을 만날 수 있거든."
 56|"I sell @ribs, @ale, @mead, @wine, and @rations."|"나는 @갈비(ribs), @에일(ale), @미드(mead), @와인(wine), 그리고 @식량(rations) 을 판다오."
 56|"I wish he'd come into town more often."|"그 양반이 마을에 좀 더 자주 왔으면 좋겠는데."
@@ -2214,7 +2214,7 @@
 58|"But thou cannot carry a staff!"|"하지만 지팡이를 들고 갈 수가 없잖아!"
 58|"But thou hast not a spell@book!"|"하지만 @주문서(book) 가 없구먼!"
 58|"Come back anytime!"|"언제든 다시 오게나!"
-58|"Don't be too nosy,|"너무 참견하지 말게나,|
+58|"Don't be too nosy,|"너무 참견하지 말게나,
 58|"Good $T, Avatar. For what purpose hast thou come?"|"좋은 $T이네, 아바타. 어떤 일로 왔는가?"
 58|"How many dost thou want?"|"몇 개나 원하나?"
 58|"I also do a little @experimenting."|"가끔 가벼운 @실험(experimenting) 도 한다네."
@@ -2621,7 +2621,7 @@
 67|"A good $T and a good bye to the lot of ye!"|"좋은 $T 보내고 다들 잘 가라고!"
 67|"Ach, I can tell that you say that to everyone ye meet."|"에이, 만나는 사람마다 다 그렇게 말하는 거 다 알아."
 67|"Ach, I get it. You're makin' a wee joke!"|"아하, 알겠어. 가벼운 농담을 던지는 거구먼!"
-67|"Ach, aye! I wouldna want to hinder|"아암, 그렇고말고! 방해하고 싶진 않다고|
+67|"Ach, aye! I wouldna want to hinder|"아암, 그렇고말고! 방해하고 싶진 않다고
 67|"Ach, aye, and good wood it is, too. A fine set of pipes this will make!"|"아, 그래, 아주 좋은 나무구먼. 멋진 파이프 한 벌을 만들 수 있겠어!"
 67|"Ach, but give it all up I would for a life of @adventure like your own..."|"아, 하지만 당신처럼 @모험(adventure) 을 즐기는 삶이라면 이 모든 걸 다 포기할 수도 있을 텐데..."
 67|"An' there it is, $G, a set of panpipes fit for any bard in the land!"|"자 여기 있수, $G. 이 땅의 어떤 음유시인에게도 잘 어울릴 팬파이프 한 벌이라오!"
@@ -2660,13 +2660,13 @@
 67|"Sure and you're goin' daft, $G."|"당신이 미쳐가는 게 확실하구먼, $G."
 67|"Then I'll show ye how panpipes are made!"|"그럼 팬파이프가 어떻게 만들어지는지 보여주지!"
 67|"Though now I'm not so sure I want to be led by a crazy person..."|"지금 보니 미친 사람의 뒤를 따르고 싶은지는 잘 모르겠구먼..."
-67|"Well met, Avatar.|"반갑구먼, 아바타.|
+67|"Well met, Avatar.|"반갑구먼, 아바타.
 67|"Well where is it? I canna see any board on ye!"|"그래, 그게 어딨어? 당신한테 판자 같은 건 안 보이는데!"
 67|"Well, that's fine and dandy with me!"|"뭐, 나야 아주 좋지!"
 67|"Well, then the rumors are true!"|"뭐, 그럼 소문이 사실이었구먼!"
-67|"Well, what does|"그래, 대체|
-67|"What are ye, daft?|"당신 바보야?|
-67|"What? Oh, I suppose a craftsman isn't warrior enough to suit|"뭐라고? 오, 기술자는 자네의 성미를 맞출 만큼|
+67|"Well, what does|"그래, 대체
+67|"What are ye, daft?|"당신 바보야?"
+67|"What? Oh, I suppose a craftsman isn't warrior enough to suit|"뭐라고? 오, 기술자는 자네의 성미를 맞출 만큼
 67|"You gotta have the finest wood."|"최고급 나무가 있어야 한다고."
 67|An' what can I be doin' for ye this $T?"|그래, 이 $T에 뭘 도와줄까?"
 67|As you watch, the rough board slowly turns into smooth wood rods.|당신이 지켜보는 동안, 거친 판자가 서서히 매끄러운 나무 막대들로 변한다.
@@ -2692,7 +2692,7 @@
 68|"But thou canst not afford any $1s!"|"하지만 $1(을)를 살 돈이 없으시잖아요!"
 68|"But thou canst not carry any $1s!"|"하지만 $1(을)를 들고 갈 수가 없으시잖아요!"
 68|"Come to my shop when I'm open!"|"문 열었을 때 제 가게로 오세요!"
-68|"Enjoy thy $1|"$1(을)를 즐겁게 쓰세요|
+68|"Enjoy thy $1|"$1(을)를 즐겁게 쓰세요
 68|"Farewell! I hope I've aided thy quest!"|"안녕히 가세요! 제 도움이 당신의 모험에 보탬이 되었기를 바라요!"
 68|"Father once told me a story of weaving a basket large enough for eight people!"|"아버지가 예전에 여덟 명이나 탈 수 있는 큰 바구니를 짰던 이야기를 해주신 적이 있어요!"
 68|"Finished!"|"다 됐어요!"
@@ -2871,7 +2871,7 @@
 72|"But you bought them all!"|"하지만 자네들이 다 사버렸는걸!"
 72|"Excellent!" After accepting the gold, $N hands $Y the deed.|"훌륭해!" 금화를 받은 후, $N이 $Y에게 증서를 건네준다.
 72|"Hello," he says, lumbering over to you and extending a large hand.|"안녕하신가," 그가 당신에게 육중하게 걸어와 커다란 손을 내밀며 말한다.
-72|"I sell|"나는 판다네|
+72|"I sell|"나는 판다네
 72|"I used to sell ships and skiffs."|"예전에는 배와 작은 배들을 팔았었지."
 72|"Sail her straight."|"안전하게 항해하시게."
 72|"So long friend." He lumbers back to his work.|"또 보세나, 친구." 그가 다시 자신의 일로 돌아간다.
@@ -2936,7 +2936,7 @@
 74|"What a pity."|"참 안됐네요."
 74|"Yes, I'm learning the mystic arts from the great @Xiao."|"네, 위대한 @샤오(Xiao) 님에게 신비한 기술을 배우고 있어요."
 74|"Yes, that's what they all say."|"네, 다들 그렇게 말하죠."
-74|"Yes, what do you want|"네, 무엇을 원하시나요|
+74|"Yes, what do you want|"네, 무엇을 원하시나요
 74|?"|?"
 74|It doesn't really sound like she means what she said.|그녀의 말투에선 전혀 진심이 느껴지지 않는다.
 74|Putting all thoughts of the rude innkeeper out of your mind, you drift off into a pleasant sleep.|무례한 여관 주인에 대한 생각을 지워버리고, 당신은 쾌적한 잠에 빠져든다.
@@ -3139,9 +3139,9 @@
 80|"Come back again soon!"|"조만간 다시 봐요!"
 80|"Come to my shop when I'm open!"|"문 열었을 때 가게로 오세요!"
 80|"Good!" $N takes $Y's gold, and hands over the reins of a fine horse.|"좋아요!" $N이 $Y의 금화를 받고 훌륭한 말의 고삐를 건네준다.
-80|"Hello again, my friend|"다시 만났네요, 내 친구|
-80|"Hello, stranger|"안녕하세요, 낯선 분|
-80|"How about|"혹시|
+80|"Hello again, my friend|"다시 만났네요, 내 친구
+80|"Hello, stranger|"안녕하세요, 낯선 분
+80|"How about|"혹시
 80|"I also sell @horses, if you wish to @buy one."|"한 마리 @구매(buy) 하길 원하신다면, @말(horses) 도 팔고 있어요."
 80|"I can hardly bear to part with any of these magnificent beasts."|"이 훌륭한 녀석들 중 누구와도 헤어지는 건 견디기 힘들 정도예요."
 80|"I raise horses here, in the stables."|"전 여기 마구간에서 말들을 키운답니다."
@@ -3284,7 +3284,7 @@
 83|"Come back, dear souls."|"다시 오시오, 친애하는 영혼들이여."
 83|"Elisabeth bowed her head as they sailed off." He looks absently at the floor and attempts to clear his throat.|"그들이 배를 타고 떠날 때 엘리자베스는 고개를 숙였소." 그는 멍하니 바닥을 바라보며 헛기침을 하려 애쓴다.
 83|"Finally, she could take no more and turned and kissed me."|"마침내 그녀는 더 참지 못하고 고개를 돌려 내게 키스했소."
-83|"Good morning, my friend|"좋은 아침이오, 친구|
+83|"Good morning, my friend|"좋은 아침이오, 친구
 83|"Had he been raised by someone with a good heart, he might have been one of Lord @British's greatest knights."|"만약 그가 선한 마음을 가진 사람 밑에서 자랐더라면, 로드 @브리티시(British) 의 가장 위대한 기사 중 한 명이 되었을지도 모르오."
 83|"He lay so quiet, no sign of pain on his face, and just an @amulet in his bloody hand."|"그는 아주 고요하게 누워 있었소. 얼굴엔 고통의 기색도 없었고, 피 묻은 손에는 그저 @아뮬렛(amulet) 하나가 들려 있었지."
 83|"He lives next door. Strange fellow..."|"그는 옆집에 살고 있소. 이상한 친구지..."
@@ -3317,7 +3317,7 @@
 83|"Now there's a sad soul. He was so young when he got tangled up with the wrong group of kids."|"그는 참 슬픈 영혼이라오. 나쁜 무리와 어울리기 시작했을 때 그는 너무나 어렸지."
 83|"Of course it is! Welcome back, traveler."|"물론이지! 다시 온 걸 환영하오, 여행자여."
 83|"Our beliefs held us still."|"우리의 믿음이 우리를 지탱해주었소."
-83|"Perhaps some other time, then.|"그럼 다음에 보지.|
+83|"Perhaps some other time, then.|"그럼 다음에 보지.
 83|"She hasn't come out of that room since she saw that darn ghost in the dining room a few nights ago."|"며칠 전 밤에 식당에서 그 빌어먹을 유령을 본 이후로 그녀는 방에서 나오질 않고 있소."
 83|"She let out such a @scream that I heard her from our bedroom."|"그녀가 어찌나 크게 @비명(scream) 을 질렀는지 침실에 있던 나한테까지 들렸다오."
 83|"She told me the lanterns went out and a spectre drifted in front of her."|"그녀 말로는 등불이 꺼지더니 유령이 그녀 앞을 떠다녔다고 하더군."
@@ -3382,7 +3382,7 @@
 84|"Gideon runs the Haunting @Inn."|"기드온은 혼령 @여관(Inn) 을 운영한다네."
 84|"Go ask old @Horance. He can tell ya - if you can understand him!"|"늙은 @호란스(Horance) 한테 가서 물어보게 - 자네가 그 양반 말을 알아들을 수만 있다면 말이야!"
 84|"Go see @Marney, she'll get you there."|"@마니(Marney) 를 보러 가게. 그녀가 자네를 거기 데려다줄 거네."
-84|"He lives over on @Ivers Rounding by himself.|"그는 아이버의 회랑(@Ivers Rounding) 에 혼자 살고 있지.|
+84|"He lives over on @Ivers Rounding by himself.|"그는 아이버의 회랑(@Ivers Rounding) 에 혼자 살고 있지.
 84|"He was a nice enough soul. I sold many bottles to him."|"꽤 괜찮은 영혼이었어. 그에게 술을 아주 많이 팔았었지."
 84|"His @wife has a garden which you can see from my front door."|"그의 @아내(wife) 는 내 집 앞문에서 보이는 정원을 가지고 있지."
 84|"I couldn't see too clearly. They were about man-@sized though."|"아주 똑똑히 보진 못했어. 그래도 사람 @만한 크기(sized) 였지."
@@ -3628,47 +3628,47 @@
 88|"|"
 88|"$1 costs #1 per portion."|"$1(은)는 개당 #1금화라네."
 88|"$Y lacks the #5 gold required."|"$Y(은)는 필요한 #5금화가 부족하구먼."
-88|"'Step into my parlor,'|" '내 응접실로 들어오게,'|
-88|"A council has a purpose,|"평의회엔 목적이 있지,|
+88|"'Step into my parlor,'|" '내 응접실로 들어오게,'
+88|"A council has a purpose,|"평의회엔 목적이 있지,
 88|"A spellbook costs 50 gold pieces. Interested?"|"주문서는 50금화라네. 관심 있나?"
 88|"As everybody knows, there are only eight circles."|"모두가 알다시피 마법은 8서클까지밖에 없지."
-88|"Ask about a traitor,|"배신자에 대해 묻게나,|
+88|"Ask about a traitor,|"배신자에 대해 묻게나,
 88|"But none of you has a spell@book!"|"하지만 자네들 중엔 @주문서(book) 를 가진 사람이 없잖아!"
 88|"But such matters are not my concern..."|"하지만 그런 건 내 알 바가 아니지..."
 88|"But thou cannot afford a spellbook!"|"하지만 주문서를 살 돈이 없구먼!"
 88|"But thou cannot carry a spellbook!"|"하지만 주문서를 들고 갈 수가 없잖아!"
 88|"But thou hast not a spell@book!"|"하지만 @주문서(book) 가 없구먼!"
-88|"Dogs are at my doorstep,|"개들이 내 문턱에 있네,|
-88|"Don't stick your arm|"자네 팔을 들이밀지 말게나|
-88|"He who has opinions,|"자기 의견이 있는 자는,|
+88|"Dogs are at my doorstep,|"개들이 내 문턱에 있네,
+88|"Don't stick your arm|"자네 팔을 들이밀지 말게나
+88|"He who has opinions,|"자기 의견이 있는 자는,
 88|"How many dost thou want?"|"몇 개나 원하나?"
-88|"I have nice @reagents,|"나에겐 좋은 @시약(reagents) 이 있다네,|
+88|"I have nice @reagents,|"나에겐 좋은 @시약(reagents) 이 있다네,
 88|"I have no spells of that circle."|"그 서클의 주문은 가지고 있지 않네."
-88|"I hear you have a question.|"자네에게 질문이 있다고 들었네.|
-88|"I see that they are going,|"그들이 가고 있는 게 보이네,|
+88|"I hear you have a question.|"자네에게 질문이 있다고 들었네.
+88|"I see that they are going,|"그들이 가고 있는 게 보이네,
 88|"I sense that $Y is only ready for the #1$1 Circle."|"내 느끼기에 $Y(은)는 오직 #1$1 서클의 준비만 된 것 같구먼."
 88|"I'll give thee #5; thou cannot have the rest."|"#5개만 주겠네. 나머지는 가질 수 없네."
 88|"I'll give thee #5; thou dost not need the rest."|"#5개만 주겠네. 나머지는 필요 없네."
 88|"In which Circle does $Y wish to study?"|"$Y(은)는 몇 서클을 공부하고 싶은가?"
-88|"Kindness is a proverb|"친절은 격언이라네|
-88|"Little is the difference,|"그 차이는 미미하네,|
-88|"Love has many rivers,|"사랑에는 많은 강이 있고,|
-88|"Many are pretenders,|"많은 이들이 가식적이라네,|
-88|"Names I'm always thinking,|"이름들을 항상 생각하네,|
-88|"Once they came for wanting,|"예전에 그들이 원해서 왔었지,|
-88|"Pain can run so deeply|"고통은 아주 깊게 흐를 수 있지|
+88|"Kindness is a proverb|"친절은 격언이라네
+88|"Little is the difference,|"그 차이는 미미하네,
+88|"Love has many rivers,|"사랑에는 많은 강이 있고,
+88|"Many are pretenders,|"많은 이들이 가식적이라네,
+88|"Names I'm always thinking,|"이름들을 항상 생각하네,
+88|"Once they came for wanting,|"예전에 그들이 원해서 왔었지,
+88|"Pain can run so deeply|"고통은 아주 깊게 흐를 수 있지
 88|"Perhaps $Y is not ready for this circle."|"아마 $Y(은)는 이 서클을 배울 준비가 안 된 모양이구먼."
 88|"Perhaps one of thy friends then."|"그럼 자네 친구들 중에 한 명이라도."
-88|"Simple has its moment|" 단순함에도 순간이 있고|
-88|"That is my impression.|"그것이 나의 인상이라네.|
-88|"That is too familiar,|"그건 너무 익숙하군,|
+88|"Simple has its moment|" 단순함에도 순간이 있고
+88|"That is my impression.|"그것이 나의 인상이라네.
+88|"That is too familiar,|"그건 너무 익숙하군,
 88|"That spell costs #5 gold. Interested?"|"그 주문은 #5금화라네. 관심 있나?"
 88|"Thou cannot afford any $1!"|"자네는 $1(을)를 살 돈이 없구먼!"
 88|"Thou cannot afford that much!"|"그렇게 많이 살 돈이 없잖나!"
 88|"Thou cannot carry any $1!"|"자네는 $1(을)를 들고 갈 수가 없구먼!"
 88|"Thou cannot carry that much!"|"그렇게 많이 들고 갈 수는 없네!"
-88|"Through a glowing door,|"빛나는 문을 지나서,|
-88|"What is truly fearsome,|"무엇이 진정 두려운가,|
+88|"Through a glowing door,|"빛나는 문을 지나서,
+88|"What is truly fearsome,|"무엇이 진정 두려운가,
 88|"Which of these?"|"이 중에서 어떤 건가?"
 88|"Which of you?"|"어느 분인가?"
 88|#1) $1|#1) $1
@@ -3681,21 +3681,21 @@
 88|2|2
 88|A|A
 88|A harmless game they play.|그들이 즐기는 무해한 놀이라네.
-88|Also wondrous @spells.|또한 경이로운 @주문(spells) 들도.|
-88|And if you are creative,|그리고 자네가 창의적이라면,|
-88|And often is received|그리고 종종 받게 되기도 하지|
-88|And those who share it with you|그리고 자네와 그것을 공유하는 이들은|
+88|Also wondrous @spells.|또한 경이로운 @주문(spells) 들도.
+88|And if you are creative,|그리고 자네가 창의적이라면,
+88|And often is received|그리고 종종 받게 되기도 하지
+88|And those who share it with you|그리고 자네와 그것을 공유하는 이들은
 88|And yet it can be wrong.|하지만 틀릴 수도 있다네.
 88|And you'll achieve the goal."|그리하면 목표를 이룰 것이니."
-88|Ask about a love,|사랑에 대해 묻게나,|
+88|Ask about a love,|사랑에 대해 묻게나,
 88|Ask above the dove."|비둘기 위쪽에서 묻게나."
 88|B|B
-88|Be guided by your wisdom,|자네의 지혜에 인도되어,|
+88|Be guided by your wisdom,|자네의 지혜에 인도되어,
 88|Black Pearl|흑진주
 88|Blood Moss|피이끼
-88|But for the few offenders,|하지만 소수의 범법자들에겐,|
+88|But for the few offenders,|하지만 소수의 범법자들에겐,
 88|By the full moons' light.|만월의 빛 아래서.
-88|Can you learn a lesson,|교훈을 얻을 수 있겠나,|
+88|Can you learn a lesson,|교훈을 얻을 수 있겠나,
 88|Chain Bolt|체인 볼트
 88|Could it be a friend?|친구가 될 수 있을까?
 88|Curse|저주
@@ -3707,48 +3707,48 @@
 88|F|F
 88|Fireball|파이어볼
 88|Flame Wind|화염 바람
-88|For if they lack the knowing,|그들이 앎이 부족하다면,|
-88|For me to tell you more|내가 자네에게 더 말해주려면|
+88|For if they lack the knowing,|그들이 앎이 부족하다면,
+88|For me to tell you more|내가 자네에게 더 말해주려면
 88|From what it has to teach?"|그것이 가르쳐주는 것들로부터?"
 88|G|G
 88|H|H
 88|Hail Storm|우박 폭풍
 88|Harm|위해
-88|Have you any inkling|어떤 낌새라도 채었나|
+88|Have you any inkling|어떤 낌새라도 채었나
 88|He purses his lips and lets out an eery, high-pitched cry.|그가 입술을 오므리더니 기괴하고 높은 비명을 내지른다.
 88|He would not have to die."|그는 죽지 않아도 되었을 텐데."
 88|I'm here to answer some.|내가 몇 가지 답해주려고 여기 있네.
 88|I'm sure they will return.|그들이 돌아올 거라 확신하네.
-88|If I am relenting,|내가 누그러진다면,|
-88|If I may make suggestions,|내가 제안을 좀 하자면,|
-88|If you need a magic @book,|마법 @주문서(book) 가 필요하다면,|
+88|If I am relenting,|내가 누그러진다면,
+88|If I may make suggestions,|내가 제안을 좀 하자면,
+88|If you need a magic @book,|마법 @주문서(book) 가 필요하다면,
 88|In another car!"|다른 마차에 타고서!"
-88|In fear of leading others|다른 이들을 잘못 이끌까 두려워|
+88|In fear of leading others|다른 이들을 잘못 이끌까 두려워
 88|In my mystery."|나의 신비함 속에서."
 88|Is oft a great challenge."|종종 커다란 도전이 되기도 하네."
-88|It may go home|집으로 돌아갈 수도 있겠지|
+88|It may go home|집으로 돌아갈 수도 있겠지
 88|Just pretend that they are eels.|그냥 뱀장어라고 생각하게나.
 88|Kill|살상
 88|Lightning|번개
 88|Magic Arrow|마법 화살
 88|Mandrake Root|만드레이크 뿌리
 88|Mass Curse|집단 저주
-88|Much better than the brilliant,|똑똑한 자들보다 훨씬 낫지,|
+88|Much better than the brilliant,|똑똑한 자들보다 훨씬 낫지,
 88|Names I always see.|내가 항상 보는 이름들.
 88|Nightshade|나이트쉐이드
 88|No way to ignore them.|그들을 무시할 방법은 없네.
-88|No, none is delivered,|아니, 아무것도 전달되지 않았네,|
-88|Not all that growls is gruesome,|으르렁거린다고 다 소름 끼치는 건 아니야,|
+88|No, none is delivered,|아니, 아무것도 전달되지 않았네,
+88|Not all that growls is gruesome,|으르렁거린다고 다 소름 끼치는 건 아니야,
 88|Not all that hates has wings."|증오한다고 다 날개가 있는 건 아니라네."
 88|Of constant night they pray.|끝없는 밤을 위해 그들은 기도하네.
 88|Out too far.|너무 멀리 나갔군.
 88|Paralyze|마비
-88|Perhaps if he could holler,|어쩌면 그가 소리칠 수만 있었다면,|
+88|Perhaps if he could holler,|어쩌면 그가 소리칠 수만 있었다면,
 88|Please ask another one."|다른 사람에게 묻게나."
 88|Poison|독
 88|Poison Wind|독의 바람
 88|Put the melody in a song."|멜로디를 노래에 실어보게."
-88|Remembering this inference,|이 추론을 기억하게나,|
+88|Remembering this inference,|이 추론을 기억하게나,
 88|S|S
 88|Said the spider to the fly.|거미가 파리에게 말했네.
 88|So I must pretend."|그래서 나는 가식적이어야 하네."
@@ -3756,16 +3756,16 @@
 |Sulfurous Ash|유황 재
 88|T|T
 88|Tell me what you think.|자네 생각을 말해보게.
-88|That all can understand,|모두가 이해할 수 있는 것,|
-88|That one becomes a mute,|벙어리가 되어버리는 것,|
+88|That all can understand,|모두가 이해할 수 있는 것,
+88|That one becomes a mute,|벙어리가 되어버리는 것,
 88|That separates ourselves.|우리 자신을 갈라놓는 것.
 88|The mention of business brings the senile man to his senses momentarily.|용건을 언급하자 노망난 사내가 잠시 제정신으로 돌아온다.
-88|There are no notes that singly|단 하나의 음표만으론|
+88|There are no notes that singly|단 하나의 음표만으론
 88|They'll always need to learn."|그들은 언제나 배워야 할 것이네."
-88|Thinks he knows it all,|자기가 다 안다고 생각하지,|
+88|Thinks he knows it all,|자기가 다 안다고 생각하지,
 88|Those I also sell."|그런 것들도 내가 판다네."
 88|Trap|함정
-88|Twice they came to see,|그들이 두 번 보러 왔었지,|
+88|Twice they came to see,|그들이 두 번 보러 왔었지,
 88|Unlock Magic|마법 잠금 해제
 88|W|W
 88|What can evil be?|악이란 무엇일 수 있는가?
@@ -3774,7 +3774,7 @@
 88|Where goodness is in dispute."|선함이 논쟁거리가 되는 곳에서."
 88|Who often will deceive."|종종 속이려 드는 자들."
 88|Will oft be in demand."|종종 수요가 많을 것이라네."
-88|Will someday end up learning|언젠가는 배우게 될 것이네|
+88|Will someday end up learning|언젠가는 배우게 될 것이네
 88|Wing Strike|윙 스트라이크
 88|Would take us half the night!"|밤의 절반은 꼬박 걸릴 게야!"
 88|Yapping at my heels.|내 뒤꿈치에서 짖어대네.
@@ -3846,16 +3846,16 @@
 89|Her blue eyes glisten with new-formed tears.|그녀의 푸른 눈에 새로 맺힌 눈물이 반짝인다.
 89|Her eyes are as blue as the ocean and her movements as rhythmic as the tide.|그녀의 눈은 바다처럼 푸르고 몸짓은 밀물과 썰물처럼 리드미컬하다.
 89|Her eyes brighten at the mention of his name. "He is a very handsome man."|그의 이름을 언급하자 그녀의 눈이 밝아진다. "그는 아주 잘생긴 분이세요."
-89|Inside a @basket made of promise,|약속으로 만든 @바구니(basket) 속에,|
+89|Inside a @basket made of promise,|약속으로 만든 @바구니(basket) 속에,
 89|Inside is a folded piece of cloth with words printed on it. She begins to read.|안에는 글자가 적힌 접힌 천 조각이 들어있다. 그녀가 읽기 시작한다.
 89|Looking at it, you discover that she has read only the first verse of the poem.|살펴보니 그녀가 시의 첫 구절만 읽었다는 것을 알게 된다.
-89|Remember where my love is kept:|내 사랑이 어디에 보관되어 있는지 기억하세요:|
+89|Remember where my love is kept:|내 사랑이 어디에 보관되어 있는지 기억하세요:
 89|She bows her head a moment and with a shaky voice begins to speak.|그녀는 잠시 고개를 숙이더니 떨리는 목소리로 말을 시작한다.
 89|She grabs a @locket that hangs around her neck and opens it.|그녀가 목에 걸린 @로켓(locket) 을 쥐고 연다.
 89|She looks absently out the window. "Yorl would never let me see him though."|그녀가 멍하니 창밖을 내다본다. "하지만 욜 아저씨는 제가 그를 절대 만나지 못하게 하셨죠."
 89|She looks at you and swallows. "I cannot talk about these creatures."|그녀가 당신을 바라보며 침을 꿀꺽 삼킨다. "전 그 생물들에 대해선 말할 수 없어요."
 89|She rubs her nose with the knuckle of her hand.|그녀가 손마디로 코를 문지른다.
-89|The second reads, "If I should leave and you are lonely,|두 번째 구절은 이렇다. "내가 떠나고 당신이 외로워지면,|
+89|The second reads, "If I should leave and you are lonely,|두 번째 구절은 이렇다. "내가 떠나고 당신이 외로워지면,
 89|You'll find my dreams of us have slept."|우리의 꿈들이 잠들어 있는 걸 발견할 거예요."
 
 90|a tall man with muscles looking like huge snakes.\n*|거대한 뱀 같은 근육을 가진 키 큰 남자다.\n*
@@ -4085,9 +4085,9 @@
 97|"Whatever thou thinkest best, $G."|"당신이 최선이라고 생각하는 대로 하세요, $G."
 
 99|a colorfully garbed bard.|화려한 옷을 차려입은 음유시인이다.
-99|"'I will' said the smith and they went off together,|"'그러지요'라고 대장장이가 대답했고 둘은 함께 떠났다네,|
+99|"'I will' said the smith and they went off together,|"'그러지요'라고 대장장이가 대답했고 둘은 함께 떠났다네,
 99|"A fine bard indeed."|"정말 훌륭한 음유시인이지."
-99|"A lusty young smith at his feist stood a-firing,|"팔팔한 젊은 대장장이가 노 뒤에 서서 불을 지피고 있었는데,|
+99|"A lusty young smith at his feist stood a-firing,|"팔팔한 젊은 대장장이가 노 뒤에 서서 불을 지피고 있었는데,
 99|"A pleasure."|"만나서 반갑소."
 99|"A warrior mustn't let his blade grow dull, right?"|"전사가 칼날을 무디게 내버려 둬선 안 되지, 안 그렇소?"
 99|"Ask him yourself."|"그에게 직접 물어보시오."
@@ -4095,7 +4095,7 @@
 99|"Completely self taught, he is. Got some odd ideas about the eight @virtues."|"완전히 독학한 친구지. 여덟 가지 @미덕(virtues) 에 대해 좀 묘한 생각들을 가지고 있더군."
 99|"Don't ask me. If he likes ducks that's his business."|"나한테 묻지 마시오. 그가 오리를 좋아하든 말든 그건 그의 사정이지."
 99|"Fare thee well."|"평안히 가시오."
-99|"Good $T,|"좋은 $T이오,|
+99|"Good $T,|"좋은 $T이오,
 99|"He told me I should learn a story with some @ducks in it, though."|"그런데 그가 내게 @오리(ducks) 가 나오는 이야기를 좀 배워보라고 하더군."
 99|"He's a decent guy, and he doesn't water his @drinks either."|"그는 괜찮은 친구요, @술(drinks) 에 물을 타지도 않지."
 99|"I don't understand it at all, but Dr. @Cat says that's his favorite story."|"난 전혀 이해가 안 가지만, @닥터 캣(Cat) 은 그게 자기가 제일 좋아하는 이야기라고 하더군."
@@ -4109,22 +4109,22 @@
 99|"Patrick's the name. What's yours?"|"패트릭(Patrick)이라오. 그대의 이름은?"
 99|"Same as any @bard - telling @stories, singing @songs, that sort of thing."|"다른 @음유시인(bard) 들과 똑같소 - @이야기(stories) 를 들려주고, @노래(songs) 를 부르는 그런 일들이지."
 99|"That's an excellent question. Ask me another one!"|"참 훌륭한 질문이구려. 다른 것도 물어보시오!"
-99|"The owl and the pussycat sailed to sea| "부엉이와 아기고양이가 바다로 항해를 떠났네|
-99|"Unto the young damsel's forge they did go.|"젊은 처녀의 대장간으로 그들은 향했다네.|
+99|"The owl and the pussycat sailed to sea| "부엉이와 아기고양이가 바다로 항해를 떠났네
+99|"Unto the young damsel's forge they did go.|"젊은 처녀의 대장간으로 그들은 향했다네.
 99|"Well, so also must a bard keep his throat from getting too dry!"|"뭐, 음유시인 또한 목이 너무 마르지 않게 관리해야 하는 법이니까!"
-99|"With a jingle vang jingle vang jingle vang jingle,|"징글 뱅 징글 뱅 징글 뱅 징글거리는 소리와 함께,|
-99|Along came a spider and sat down beside them,|거미 한 마리가 다가와 그들 옆에 앉았고,|
+99|"With a jingle vang jingle vang jingle vang jingle,|"징글 뱅 징글 뱅 징글 뱅 징글거리는 소리와 함께,
+99|Along came a spider and sat down beside them,|거미 한 마리가 다가와 그들 옆에 앉았고,
 99|And asked if to work at her forge he would go."|그의 대장간에서 일할 수 있겠냐고 물었네."
-99|And the cat said 'Whose been sleeping in my bed!'|고양이가 말했네 '누가 내 침대에서 잔 거야!'|
+99|And the cat said 'Whose been sleeping in my bed!'|고양이가 말했네 '누가 내 침대에서 잔 거야!'
 99|And three little piggies went 'Wee wee wee wee wee' all the way home."|그리고 아기 돼지 삼형제는 집으로 돌아가는 내내 '위 위 위 위 위' 하고 울었지."
 99|He clears his throat...|그가 목을 가다듬는다...
-99|His hammer lay by but his forge still aglow,|망치는 옆에 두었으나 화로는 여전히 불타오르고,|
-99|In a beautiful pea green boat.|아름다운 완두콩색 배를 타고서.|
+99|His hammer lay by but his forge still aglow,|망치는 옆에 두었으나 화로는 여전히 불타오르고,
+99|In a beautiful pea green boat.|아름다운 완두콩색 배를 타고서.
 99|She kindled the fire and she soon made him glow."|그녀가 불을 지피자 그는 이내 붉게 달아올랐다네."
-99|The clock struck one, the owl fell down,|시계가 한 번 치자 부엉이가 떨어졌고,|
-99|They stripped to go to it--'twas hot work and hot weather,|그들은 일을 시작하려 옷을 벗었네--일도 날씨도 뜨거웠다네,|
-99|When to him a buxom young damsel came smiling,|풍만한 젊은 처녀가 미소 지으며 그에게 다가와,|
-99|With a jingle vang jingle vang jingle vang jingle hi ho!"|징글 뱅 징글 뱅 징글 뱅 징글 하이 호!"|
+99|The clock struck one, the owl fell down,|시계가 한 번 치자 부엉이가 떨어졌고,
+99|They stripped to go to it--'twas hot work and hot weather,|그들은 일을 시작하려 옷을 벗었네--일도 날씨도 뜨거웠다네,
+99|When to him a buxom young damsel came smiling,|풍만한 젊은 처녀가 미소 지으며 그에게 다가와,
+99|With a jingle vang jingle vang jingle vang jingle hi ho!"|징글 뱅 징글 뱅 징글 뱅 징글 하이 호!"
 99|With a jingle vang jingle vang jingle vang jingle hi ho."|징글 뱅 징글 뱅 징글 뱅 징글 하이 호."
 99|ma'am."|부인."
 99|sirrah."|선생님."
@@ -4241,7 +4241,7 @@
 102|Fine dress|고급 드레스
 102|Pair of pants|바지 한 벌
 102|She bows formally.|그녀가 격식 있게 인사한다.
-102|She bows stiffly. "I'm sorry, good|그녀가 뻣뻣하게 고개를 숙인다. "죄송합니다,|
+102|She bows stiffly. "I'm sorry, good|그녀가 뻣뻣하게 고개를 숙인다. "죄송합니다,
 102|She takes the silk cloth and begins to work, following the balloon plans.|그녀는 실크 천을 받아 열기구 설계도에 따라 작업을 시작한다.
 102|She works in silence, intent on her sewing.|그녀는 바느질에 집중하며 묵묵히 일한다.
 102|Smart tunic|세련된 튜닉
@@ -4390,7 +4390,7 @@
 107|"I'll fix ya up then."|"그럼 내가 준비해주지."
 107|"Makes me a bit unpopular 'ere in the pub!" he laughs.|"그것 때문에 술집에서 인기가 좀 없다오!" 그가 웃는다.
 107|"Strewth! If I carried it around with me, I'd be even more unpopular!"|"정말로! 그걸 들고 다니면 인기가 더 떨어질 거요!"
-107|"Well, hello there,|"어이, 안녕하쇼,|
+107|"Well, hello there,|"어이, 안녕하쇼,
 107|"Whatever."|"뭐든지."
 107|"Which item?"|"어떤 물건?"
 107|"Which of you?"|"어느 분이시죠?"
@@ -4418,8 +4418,8 @@
 108|a tall man with a disarming grin.|무장을 해제시키는 듯한 미소를 띤 키 큰 남자다.
 108|"At your zervice." He snaps to attention.|"대령해쓰무니다." 그가 차렷 자세를 취한다.
 108|"Come by my dairy ven I'm open, ja?"|"문 여러쓸 때 내 농장으로 오쇼, 야?"
-108|"Good!" $N gives $Y the|"조아!" $N이 $Y에게 주어쓰무니다|
-108|"Hello, mein freund|"안녕하쇼, 나의 친구|
+108|"Good!" $N gives $Y the|"조아!" $N이 $Y에게 주어쓰무니다
+108|"Hello, mein freund|"안녕하쇼, 나의 친구
 108|"I @milk de cows und make de @cheese."|"나는 소 젖을 @짜고(milk) @치즈(cheese) 를 만드무니다."
 108|"Ja, sure, vat you vant - milk or @cheese?"|"야, 구럼요, 뭘 워나쇼 - 우유 아님 @치즈(cheese)?"
 108|"Now I not know vat you say."|"그건 무슨 마린지 모르게쓰무니다."
@@ -4445,7 +4445,7 @@
 109|a man with sea-blue eyes and a warm smile.|바다처럼 푸른 눈과 따뜻한 미소를 가진 남자다.
 109|"#0 gold for you to stay and have a meal, good?"|"방과 식사 포함해서 #0금화면 되겠소, 괜찮소?"
 109|"@Timothy." He flashes a friendly smile and nods.|"@티모시(Timothy)라오." 그가 다정한 미소를 지으며 고개를 끄덕인다.
-109|"Farewell, friend|"잘 가시오, 친구|
+109|"Farewell, friend|"잘 가시오, 친구
 109|"Good morning, have a good day."|"좋은 아침이오, 즐거운 하루 되시오."
 109|"He is perhaps best known for his courage in @battle."|"그는 아마 @전투(battle) 에서의 용맹함으로 가장 잘 알려져 있을 거요."
 109|"He once held off a score of men while his own fled to safety across a bridge."|"그는 한때 자기 부하들이 다리를 건너 안전하게 도망칠 수 있도록 홀로 수십 명의 적을 막아냈지."
@@ -4456,8 +4456,8 @@
 109|"Maybe you want a @room, eh?"|"@방(room) 이 필요해서 온 거요, 응?"
 109|"Perhaps some other time, then."|"그럼 다음에 보오."
 109|"Sir Timothy Enders Daverstock. He was a famous @knight in these parts."|"티모시 엔더스 데이버스탁 경 말이오. 이 근방에서 아주 유명한 @기사(knight) 였소."
-109|"Welcome back, my friend|"다시 온 걸 환영하오, 내 친구|
-109|"Welcome, welcome, friend|"어서 오시오, 어서 와요, 친구|
+109|"Welcome back, my friend|"다시 온 걸 환영하오, 내 친구
+109|"Welcome, welcome, friend|"어서 오시오, 어서 와요, 친구
 109|. Here for @lodging this fine $T?"|. 이 좋은 $T에 @숙박(lodging) 하러 오셨소?"
 109|. Travel safely."|. 조심히 여행하시오."
 109|You sleep in a comfortable bed...|편안한 침대에서 잠이 듭니다...
@@ -4478,8 +4478,8 @@
 110|"Don't worry, I was just kidding... Any friend of Lord British is a friend of mine."\n*|"걱정 마시오, 그냥 농담이었소... 로드 브리티시의 친구라면 누구든 나의 친구라오."\n*
 110|"Eeeeek!"|"찍!"
 110|"Excellent! How much would you like to bet?"|"좋소! 얼마나 거시겠소?"
-110|"Good night, sweet prince|"평안한 밤 되길, 친애하는 제군|
-110|"Great! This is the definitive reference on boardgames."\n*\nHe takes the book and gives|"멋지구료! 이것은 보드게임에 관한 결정적인 참고서로군."\n*\n그는 책을 받고 건네준다|
+110|"Good night, sweet prince|"평안한 밤 되길, 친애하는 제군
+110|"Great! This is the definitive reference on boardgames."\n*\nHe takes the book and gives|"멋지구료! 이것은 보드게임에 관한 결정적인 참고서로군."\n*\n그는 책을 받고 건네준다
 110|"Have you got a copy of Snilwit's that you'd be willing to sell?"|"혹시 팔 만한 스닐윗(Snilwit)의 책을 가지고 있소?"
 110|"Here you are." $N gives $Y the $1.|"여기 있소." $N이 $Y에게 $1(을)를 준다.
 110|"I chose @Paws for my tavern because it's right on the King's Way, midway between @Britain and @Trinsic."\n*\n"There's no better travelled spot in all Britannia, and that makes for good business."|"내가 주점을 위해 @포즈(Paws) 를 선택한 이유는 이곳이 @브리튼(Britain) 과 @트린직(Trinsic) 의 중간인 '국왕의 길' 바로 옆에 있기 때문이지."\n*\n"브리타니아 전체에서 이보다 더 통행량이 많은 곳은 없으니, 장사하기에 제격이라오."
@@ -4505,7 +4505,7 @@
 110|"She lives in Britain."|"그녀는 브리튼에 살고 있소."
 110|"Taynith bet me one time I couldn't catch a duck with my bare hands."\n*\n"So I did, and had a leash made for it, so I could give it to her as a pet."\n*\n"I doubt she still has it, though. I saw @Zoltan eyeing it hungrily..."|"테이니스가 예전에 내가 맨손으로 오리를 잡지 못할 거라는 내기를 한 적이 있지."\n*\n"그래서 내가 잡아다가 목줄을 만들어 그녀에게 애완용으로 선물했소."\n*\n"하지만 그녀가 아직도 가지고 있을지는 의문이구려. @졸탄(Zoltan) 이 배고픈 눈으로 쳐다보는 걸 봤거든..."
 110|"Taynith is my dearest friend. Her @gypsy band travels the King's Way."\n*\n"Once a week, she stops in to say hello."|"테이니스는 나의 가장 친한 친구요. 그녀의 @집시(gypsy) 무리는 국왕의 길을 여행하지."\n*\n"일주일에 한 번씩은 들러서 안부를 전한다오."
-110|"Tell you what... I'm in a reckless mood. This time you can bet as much as you like."\n*\n"|"이보시오... 내가 지금 좀 기분이 좋소. 이번엔 원하는 만큼 얼마든지 거셔도 좋소."\n*\n"|
+110|"Tell you what... I'm in a reckless mood. This time you can bet as much as you like."\n*\n"|"이보시오... 내가 지금 좀 기분이 좋소. 이번엔 원하는 만큼 얼마든지 거셔도 좋소."\n*\n"
 110|"That's #1 crowns. Want some?"|"#1크라운이오. 좀 드릴까?"
 110|"That's a little steep for a friendly game. Let's just make it 50 crowns."\n*|"친선 게임치고는 판돈이 좀 크구려. 그냥 50크라운으로 합시다."\n*
 110|"That's all you can afford."|"가진 돈으론 이게 전부요."
@@ -4522,7 +4522,7 @@
 110|"Would you care to wager on the outcome, just to keep things interesting?"|"흥미를 돋우기 위해 승부에 돈을 좀 걸어보시겠소?"
 110|"Yes, Zoltan, @king of the gypsies!"|"그렇소, 집시들의 @왕(king) 졸탄 말이오!"
 110|"You don't have room to carry it."|"그걸 들 자리가 없구려."
-110|"You don't have that much...|"가진 돈이 그렇게 많지 않은 것 같은데...|
+110|"You don't have that much...|"가진 돈이 그렇게 많지 않은 것 같은데...
 110|"You must be mistaken."|"당신이 뭔가 착각한 모양이구려."
 110|"You'll have to excuse me, but the bar's closed right now."\n*\n"@Taynith and I have a lot to talk about."|"미안하지만, 지금은 바 문을 닫았소."\n*\n"@테이니스(Taynith) 와 나눌 이야기가 아주 많아서 말이오."
 110|"You're a bit short on gold."|"금화가 약간 부족하구려."
@@ -4693,7 +4693,7 @@
 115|"Come now, that's a little much don't you think?"|"이보쇼, 그건 좀 심하다고 생각하지 않소?"
 115|"Do you need to buy some supplies?"|"보급품이 좀 필요하신가요?"
 115|"Don't be ridiculous! This is the first time we've ever been in your shop!" says Dupre.|"말도 안 되는 소리 마쇼! 당신 가게에 온 건 이번이 처음이라고!" 듀프레가 말한다.
-115|"Good $T!|"좋은 $T이오!|
+115|"Good $T!|"좋은 $T이오!
 115|"Her hideout is deep below Britain, in the sewers. You'd best watch out for the rats down there!"|"그녀의 은신처는 브리튼 지하 깊은 곳, 하수도에 있소. 거기 있는 쥐들을 조심하는 게 좋을 거요!"
 115|"I can offer you the standard member's discount on all supplies now."|"이제 모든 보급품에 대해 표준 회원 할인을 해드릴 수 있소."
 115|"I don't know what it is, but I've got one on order."|"그게 뭔지는 모르겠지만, 주문은 하나 넣어두었소."
@@ -4702,7 +4702,7 @@
 115|"I think someone told me that was @Nick's name."|"누가 그게 @닉(Nick) 의 이름이라고 말해줬던 것 같소."
 115|"I think you have less gold than you thought."|"당신 생각보다 가진 금화가 적은 것 같구려."
 115|"I'll talk to you when you get back."|"돌아오면 그때 이야기합시다."
-115|"I'm afraid it still hasn't arrived.|"안타깝게도 아직 도착하지 않았구료.|
+115|"I'm afraid it still hasn't arrived.|"안타깝게도 아직 도착하지 않았구료.
 115|"I'm not sure what 'this' and 'that' are, but I @sell a lot of them!"|"그 '이것'과 '저것'이 뭔지는 모르겠지만, 내가 아주 많이 @팔고(sell) 있소!"
 115|"I've never met him, myself."|"나는 그를 직접 만나본 적은 없소."
 115|"If you want one of them, you have to 'retire' a member of the guild."|"그것 중 하나를 원한다면, 길드원 한 명을 '은퇴'시켜야만 하오."
@@ -4714,7 +4714,7 @@
 115|"Now get out of my shop."|"이제 내 가게에서 나가시오."
 115|"Now we have a limited membership, so there's only so many belts in the world."|"우리 길드는 인원 제한이 있어서, 세상에 벨트 숫자가 딱 정해져 있단 말이오."
 115|"Oh, I sell this and that."|"오, 이것저것 다 팝니다."
-115|"Oh, I'm sorry. I must have thought you were somebody you aren't.|"오, 죄송하오. 내가 당신을 딴사람으로 착각한 모양이구려.|
+115|"Oh, I'm sorry. I must have thought you were somebody you aren't.|"오, 죄송하오. 내가 당신을 딴사람으로 착각한 모양이구려.
 115|"One last thing... It would be an embarassment for the guild to have bodies turning up inconveniently."|"마지막으로 하나 더... 시체가 엉뚱한 곳에서 발견되는 건 길드 입장에서 아주 곤혹스러운 일이라오."
 115|"People give me @money for them, that is."|"사람들이 그것들에 대한 대가로 내게 @돈(money) 을 준단 뜻이지."
 115|"So don't get too violent unless you have to."|"그러니 꼭 필요한 경우가 아니라면 너무 폭력적으로 굴지 마시오."
@@ -4848,11 +4848,11 @@
 117|"I'd better not..."|"안 하는 게 좋겠어요..."
 117|"I've still got bruises from the last time I tried yodeling around here."|"여기서 요들을 부르려다 맞은 멍자국이 아직도 남아 있다고요."
 117|"If you should happen to run across Bonn, or Ybarra, or Hawkins, don't tell them I'm here."|"혹시 본(Bonn)이나 이바라(Ybarra), 혹은 호킨스(Hawkins)를 마주치더라도 내가 여기 있다고 말하지 마세요."
-117|"Just one thing will I say|"이것 하나만은 말해주죠|
+117|"Just one thing will I say|"이것 하나만은 말해주죠
 117|"Nobody but fine honest sailors around here."|"여기엔 착하고 정직한 선원들밖에 없답니다."
 117|"Not that there are @pirates around here or anything..."|"이 근처에 @해적(pirates) 이 있다거나 그런 건 아니지만요..."
-117|"Now one fine day in June|"어느 화창한 6월의 날이었지|
-117|"Oh, a loon with a spoon|"오, 숟가락 든 얼간이였어|
+117|"Now one fine day in June|"어느 화창한 6월의 날이었지
+117|"Oh, a loon with a spoon|"오, 숟가락 든 얼간이였어
 117|"Oh, hello. Can I help you with something?"|"오, 안녕하세요. 제가 도와드릴 일이 있나요?"
 117|"Oh, that's just some nonsense that gave me an idea for a song..."|"오, 그건 그냥 노래 가사로 쓸 만한 말도 안 되는 생각이었을 뿐이에요..."
 117|"The salty air just doesn't agree with me."|"바다의 짠 공기가 저랑은 도무지 맞지 않네요."
@@ -4864,7 +4864,7 @@
 117|Did he rise up to glory|그가 영광을 향해 날아올랐을까
 117|He lowers his voice. "By the way..."|그가 목소리를 낮춘다. "그런데 말이죠..."
 117|He spits on the ground and then says, "What?"|그가 바닥에 침을 뱉고는 말한다. "뭐라고요?"
-117|Of the sport of @ballooning:|@열기구(ballooning) 스포츠에 대해서:|
+117|Of the sport of @ballooning:|@열기구(ballooning) 스포츠에 대해서:
 117|On the ground will I stay|나는 땅 위에 머무를 거야
 117|Or fall to his doom?"|아니면 파멸로 추락했을까?"
 117|Said it was quite a tune."|꽤나 멋진 곡조라고 말했다네."
@@ -4981,7 +4981,7 @@
 121|"Excellent!" After accepting the gold, $N hands $Y the deed.|"훌륭해!" 금화를 받은 후, $N이 $Y에게 증서를 건네준다.
 121|"Have a good one." She bows, hands on her hips.|"좋은 하루 되쇼." 그녀가 두 손을 엉덩이에 얹고 고개를 숙여 인사한다.
 121|"I have @ships for sale, but I sold you my last @skiff."|"판매용 @배(ships) 는 있지만, @작은 배(skiff) 는 방금 마지막 물량을 팔아치웠소."
-121|"I sell|"나는 판다오|
+121|"I sell|"나는 판다오
 121|"I sell @ships and @skiffs."|"나는 @배(ships) 와 @작은 배(skiffs) 를 판다오."
 121|"I sold you my last @ship, but I still have some @skiffs left."|"마지막 @배(ship) 를 당신에게 팔아버렸구먼. 하지만 @작은 배(skiffs) 는 아직 좀 남았소."
 121|"I'm out of work after selling you all my ships and skiffs."|"배랑 작은 배를 당신한테 다 팔아버려서 이제 일거리가 없구먼."
@@ -5268,7 +5268,7 @@
 131|, und I already haf!|, 그리고 이미 해쓰무니다!
 
 132|a fine looking horse.|아주 잘생긴 말이다.
-132|"Farewell, two-legger|"잘 가게, 두 발 달린 짐승|
+132|"Farewell, two-legger|"잘 가게, 두 발 달린 짐승
 132|"Hay is the greatest menace to the well being of Britannia."|"@건초(hay) 는 브리타니아의 안녕을 위협하는 가장 큰 해악이라네."
 132|"Hay, thou hath met thy nemesis, thy doom, and his name is Smith!"|"건초여, 그대는 천적을 만났으니 이제 끝장이다. 그의 이름은 바로 스미스(Smith)다!"
 132|"Hello again!"|"또 만났군!"
@@ -5279,7 +5279,7 @@
 132|"I eat Iolo's @hay to keep it from piling up everywhere and making a mess."|"나는 이올로의 @건초(hay) 를 먹어치워서, 그것들이 사방에 쌓여 엉망이 되는 걸 막고 있다네."
 132|"I've devoted my life to the @task."|"나는 평생을 이 @임무(task) 에 바쳐왔지."
 132|"It takes constant vigilance to keep it from engulfing the entire realm."|"건초가 이 왕국 전체를 집어삼키지 못하도록 하려면 끊임없는 경계가 필요하다네."
-132|"It's 'Smith', like in '@blacksmith'.|"내 이름은 '스미스'라네. '@대장장이(blacksmith)' 할 때 그 스미스지.|
+132|"It's 'Smith', like in '@blacksmith'.|"내 이름은 '스미스'라네. '@대장장이(blacksmith)' 할 때 그 스미스지.
 132|"It's a thankless job, but I am a determined horse."|"아무도 알아주지 않는 일이지만, 나는 굳은 의지를 가진 말이라네."
 132|"Now I've seen everything. I suppose we'll be inviting some ducks over for tea next."|"이제 별 꼴을 다 보는군. 조만간 오리들을 차 마시는 자리에 초대하겠다고 하겠어."
 132|"Oh, I had something important to tell you!"|"오, 자네에게 말해줄 중요한 게 하나 있었는데!"
@@ -5492,7 +5492,7 @@
 138|"But ifa some maniac with an axe catches you in a dark alley somewhere, don'ta blame me for not warning you."|"하지만 어디 어두운 골목에서 도끼 든 미친놈한테 붙잡히더라도, 내가 경고 안 해따고 원망하진 마."
 138|"Can'ta you think of something more interesting to talk about?"|"좀 더 재밌는 이야기는 업써?"
 138|"Come back whena you have the money."|"돈 생기면 다시 오라고."
-138|"For justa two gold,|"단돈 2금화면,|
+138|"For justa two gold,|"단돈 2금화면,
 138|"He's a whadda you call, an impostor. You shouldn'ta listen to him."|"그놈은 뭐랄까, 사기꾼이야. 그놈 말은 들을 피료가 업써."
 138|"Hey, paisan! If you were looking to geta your @fortune told, you came to the right place."|"이바, 친구! @운세(fortune) 를 보고 시픈 거라믄 제대로 찾아와써."
 138|"Hey, what are you, a deadbeat? Come back when you can afford the map!"|"이바, 당신 빈털터리야? 지도를 살 여유가 생기믄 다시 오라고!"
@@ -5508,7 +5508,7 @@
 138|"Map. Hmm, map... Oh yeah, thata old thing. Sure, I got that, but she'sa not very interesting."|"지도. 흠, 지도... 아 그래, 그 낡은 거 말이군. 있긴 한데, 별로 재미업는 지도야."
 138|"Nah, I didn't think so. What for would anybody want to buy it, ah?"|"그래, 나도 그렇게 생각했어. 누가 이런 걸 사고 시퍼하게써, 응?"
 138|"Oh! Well, sure you do, she's a very important map!"|"오! 그래, 당연히 사고 시퍼야지, 이건 아주 중요한 지도라고!"
-138|"Oh, hey, you picked the Lovers this time. I thinka maybe you should go talk to|"오, 이바, 이번엔 연인(Lovers) 카드를 뽑아써. 내 생각엔 가서 이야기 좀 해야게써|
+138|"Oh, hey, you picked the Lovers this time. I thinka maybe you should go talk to|"오, 이바, 이번엔 연인(Lovers) 카드를 뽑아써. 내 생각엔 가서 이야기 좀 해야게써
 138|"Ok, have it your way."|"조아, 당신 뜻대로 하라고."
 138|"Okay, here's the map, and may fortune bring you lotsa gold!"|"조아, 여기 지도 있어. 행운이 당신에게 많은 금을 가져다주길!"
 138|"Okay, that'sa #0 extra cards at 5 gold apiece. That makes #1 total."|"조아, 추가 카드 #0장에 한 장당 5금화씩 해서, 총 #1금화야."
@@ -5581,7 +5581,7 @@
 139|"My mind is willing, but the flesh is weak..."\n*\n"Come back later, when I've had some time to rest."|"마음은 굴뚝같지만, 몸이 따라주질 않네요..."\n*\n"제가 쉴 시간을 좀 갖고 난 뒤에 나중에 다시 오세요."
 139|"Naturally, when so lovely a lady as yourself comes along, I offer, shall we say, my @services."|"당신처럼 사랑스러운 숙녀분이 오시면, 당연히 제 @서비스(services) 를 제공해 드려야죠."
 139|"Of course, you'd probably be more interested in my sister @Wanda, right?"|"물론, 제 누이인 @완다(Wanda) 에게 더 관심이 있으시겠죠, 맞나요?"
-139|"Oho, so that's what you're after, you naughty|"오호, 당신이 노리는 게 바로 그거였군요, 이 장난꾸러기|
+139|"Oho, so that's what you're after, you naughty|"오호, 당신이 노리는 게 바로 그거였군요, 이 장난꾸러기
 139|"She practices the world's oldest @profession. I, of course, have perfected it, and thus need no practice."|"그녀는 세상에서 가장 오래된 @직업(profession) 을 가지고 있죠. 저는 물론 그걸 완벽히 마스터했기에 연습 따위는 필요 없지만요."
 139|"Suit yourself."|"마음대로 하세요."
 139|"That way, you'll have something to remember when you're old and gray..."|"그래야 나중에 늙고 머리가 희끗해졌을 때 기억할 만한 추억이 생길 테니까요..."
@@ -5606,8 +5606,8 @@
 139|The gypsy leads you into a nearby wagon...|집시가 당신을 근처 마차 안으로 안내한다...
 139|You try to ignore the nagging voice in the back of your head that says you shouldn't have wasted time like that.|당신은 그렇게 시간을 낭비해서는 안 된다는 머릿속의 잔소리를 무시하려 애쓴다.
 139|You're not sure, but you think perhaps you felt a slight tug at the pouch you keep your coins in.|확실하진 않지만, 동전 지갑이 아주 살짝 당겨지는 것을 느낀 것 같다.
-139|boy|소년|
-139|girl|소녀|
+139|boy|소년
+139|girl|소녀
 
 140|"'Tis tiring work, you know."|"이거 꽤 피곤한 일이라고요, 아시죠?"
 140|"'Twas a business doing pleasure with you... I hope you come again soon!"|"당신과 즐거운 시간을 보내는 건 사업 그 이상이었어요... 조만간 또 오세요!"
@@ -5638,7 +5638,7 @@
 140|"Well this is the place!"|"음, 여기가 바로 그곳이에요!"
 140|"Well, hello handsome! Looking for a little... relaxation?"|"어머, 안녕 미남! 조금... 휴식이 필요한가요?"
 140|"When our quest is complete, then there will be time enough for wenching!"|"우리의 모험이 끝나면, 그때는 계집질할 시간도 충분할 것이다!"
-140|"Why|"왜|
+140|"Why|"왜
 140|"Why concern yourself with that, $0?"\n*\n"Surely you can think of something more pleasant..."|"왜 그런 걸로 고민하고 그래요, $0?"\n*\n"분명 더 즐거운 일을 생각할 수 있을 텐데..."
 140|$Y speaks. "I don't think we have time for this..."|$Y가 말한다. "이러고 있을 시간이 없는 것 같은데..."
 140|, are you trying to insinuate something?"|, 지금 뭔가 암시하려는 건가요?"
@@ -5648,11 +5648,11 @@
 140|She breaks into a fit of giggles.|그녀가 낄낄거리며 웃음을 터뜨린다.
 140|Taking you by the hand, the gyspy wench leads you off to her wagon.|집시 아가씨가 당신의 손을 잡고 자신의 마차로 이끈다.
 140|You try to ignore the nagging voice in the back of your mind that keeps saying, "You shouldn't have wasted time like that."|당신은 "그런 식으로 시간을 낭비해서는 안 돼"라고 계속 말하는 머릿속의 잔소리를 무시하려 애쓴다.
-140|cheapskate|구두쇠|
-140|honey|자기야|
-140|madam|부인|
-140|sexy|섹시한 분|
-140|sirrah|선생님|
+140|cheapskate|구두쇠
+140|honey|자기야
+140|madam|부인
+140|sexy|섹시한 분
+140|sirrah|선생님
 
 141|"A human could learn much by traveling there."|"그곳을 여행한다면 인간은 많은 것을 배울 수 있을 것이다."
 141|"Among my @people, those who can fly rule."|"우리 @백성(people) 들 사이에서는 날 수 있는 자들이 통치한다."
@@ -5727,7 +5727,7 @@
 143|"@Tiny one say me 'Papa.'"|"@작은 놈(Tiny one) 이 나 보고 '파파'라고 한다."
 143|"Bring more?"|"더 가져올 거냐?"
 143|"Cellar no go. @Locked."|"지하실 안 된다. @잠겨(Locked) 있다."
-143|"Come back, bring|"다시 와라, 가져와라|
+143|"Come back, bring|"다시 와라, 가져와라
 143|"Female want little one, so keep tiny one."|"여자가 작은 놈 원해서, 작은 놈 데리고 있다."
 143|"Find him on shore."|"그를 해안에서 찾았다."
 143|"Fish good."|"물고기 좋다."
@@ -5799,7 +5799,7 @@
 145|"Wow! Two-eyed people like me! You gotta go see my folks!"|"와! 저처럼 눈이 두 개인 사람들이네요! 저희 가족들을 꼭 만나보세요!"
 
 146|"Don't concern yourself with that. Life is too hectic as it is."|"그런 것에는 신경 쓰지 마십시오. 인생은 지금 이대로도 충분히 소란스러우니까요."
-146|"Excellent!" He takes the body, and recites a brief incantation.\n*\nAn eerie green flame engulfs the corpse, consuming it in seconds.\n*\nNothing but ashes remain. The mortician sweeps them up, puts them in an urn, and hands it to|"훌륭하군!" 그가 시신을 받아 짧은 주문을 읊조린다.\n*\n섬뜩한 초록빛 불꽃이 시신을 감싸며 수초 만에 태워버린다.\n*\n오직 재만이 남았다. 장의사는 재를 쓸어 담아 유골함에 넣고 이를 건네준다|
+146|"Excellent!" He takes the body, and recites a brief incantation.\n*\nAn eerie green flame engulfs the corpse, consuming it in seconds.\n*\nNothing but ashes remain. The mortician sweeps them up, puts them in an urn, and hands it to|"훌륭하군!" 그가 시신을 받아 짧은 주문을 읊조린다.\n*\n섬뜩한 초록빛 불꽃이 시신을 감싸며 수초 만에 태워버린다.\n*\n오직 재만이 남았다. 장의사는 재를 쓸어 담아 유골함에 넣고 이를 건네준다
 146|"For most clients, I prefer to use Frigid @Solvol."\n*\n"It's the finest enbalming fluid on the market."|"대부분의 고객님께는 냉동 @솔볼(Solvol) 을 사용하는 것을 선호합니다."\n*\n"시중에 나와 있는 최고의 방부제지요."
 146|"Good evening." he says, in a voice that sends shivers down your spine.\n*\n"It is evening, I hope. That's my favorite time."|"좋은 저녁입니다." 그가 등골이 서늘해지는 목소리로 말한다.\n*\n"저녁이었으면 좋겠군요. 제가 가장 좋아하는 시간대니까요."
 146|"Goodbye for now - I'm sure I'll see you again. Every body ends up here sooner or later..."|"그럼 이만 - 분명 우린 다시 보게 될 겁니다. 조만간 모든 육체는 결국 이곳으로 오게 되어 있으니까요..."
@@ -5825,6 +5825,7 @@
 146|.\n*|.\n*
 146|His eyes gleam fiendishly when he notices the body you're carrying.\n*\n"Ah, you've brought me a client. Tell the truth, doesn't your friend look more peaceful this way?"\n*\n"For such a heroic client, I have something special to offer."\n*\n"It's a new process I've invented called 'cremation.'"\n*\n"For a mere fifteen gold, the remains of the dearly departed are purified with flame."\n*\n"Would you like me to do this for you?"|그는 당신이 메고 있는 시신을 보자 눈을 번뜩인다.\n*\n"아, 고객 한 분을 모셔오셨군요. 솔직히 말해서, 당신 친구분은 지금 이 모습이 훨씬 평온해 보이지 않습니까?"\n*\n"이렇게 영웅적인 고객님을 위해 특별히 제안할 게 있습니다."\n*\n"제가 발명한 '화장'이라는 새로운 공정입니다."\n*\n"단돈 15금화면, 떠나간 이의 유해를 불꽃으로 정화해드리지요."\n*\n"제가 해드려도 괜찮겠습니까?"
 146|You pass along Mole's message. "Needs a shovel, does he? Tell him to use the one I gave him when I hired him!"\n*\n"No doubt he's forgotten he has it by now, or lost it somewhere..."|당신이 몰의 메시지를 전달한다. "삽이 필요하다고요? 내가 그를 고용할 때 줬던 걸 쓰라고 전하십시오!"\n*\n"분명 가지고 있다는 걸 잊어버렸거나, 어디선가 잃어버렸겠지요..."
+146|a quiet, pale, almost motionless gentleman.\n*|과묵하고 창백하며, 거의 미동조차 없는 신사다.\n*
 146|you|당신에게
 
 147|"But one time a group of gypsies @stole my prized @locket!"|"그런데 한번은 집시 무리가 제 소중한 @로켓(locket) 을 @훔쳐(stole) 갔어요!"
@@ -5862,7 +5863,7 @@
 148|"Come to my shop when I'm open!"|"문 열었을 때 제 가게로 오세요!"
 148|"Come, put your hand on my heart."|"이리 와서 제 심장 위에 손을 얹어보세요."
 148|"Doman..."|"도만..."
-148|"Good $T, my friend|"좋은 $T이에요, 친구여|
+148|"Good $T, my friend|"좋은 $T이에요, 친구여
 148|"Hello? Is someone there?"|"계세요? 거기 누구 있나요?"
 148|"I also sense your cause is a just one."|"또한 당신의 대의가 정당하다는 것도 느껴져요."
 148|"I cannot heal you if you won't tithe."|"십일조를 내지 않으시면 고쳐드릴 수 없어요."
@@ -5873,7 +5874,7 @@
 148|"I sense that you are poisoned, $Y."|"당신이 중독되었다는 게 느껴져요, $Y."
 148|"I sense your hesitation is based on your empty pockets."|"당신의 망설임이 텅 빈 주머니 때문이라는 게 느껴지네요."
 148|"I sense your injury, $Y."|"당신의 부상이 느껴져요, $Y."
-148|"I should have known you would not ask unless|"정말 절실한 상황이 아니면 부탁하지 않으셨을 거라는 걸 알아야 했는데|
+148|"I should have known you would not ask unless|"정말 절실한 상황이 아니면 부탁하지 않으셨을 거라는 걸 알아야 했는데
 148|"I'm sorry, all I can do is grieve with you."|"죄송해요, 그저 함께 슬퍼해 드릴 수밖에 없네요."
 148|"I'm sorry. Without an offering I cannot cure you."|"죄송해요. 헌금 없이는 해독해 드릴 수 없어요."
 148|"I'm sorry. Without an offering I cannot heal you."|"죄송해요. 헌금 없이는 고쳐드릴 수 없어요."
@@ -5987,16 +5988,16 @@
 151|"And these over here are for eating."|"그리고 여기 있는 것들은 먹기 위한 것들이고요."
 151|"Ask @Faren of that."|"그건 @파렌(Faren) 에게 물어보세요."
 151|"Beg pardon, $G?"|"뭐라고 하셨나요, $G?"
-151|"Eckhart the vinekeeper, at your service,|"포도밭지기 에크하르트(Eckhart)입니다, 잘 부탁합니다,|
+151|"Eckhart the vinekeeper, at your service,|"포도밭지기 에크하르트(Eckhart)입니다, 잘 부탁합니다,"
 151|"Eventually, we became the Brotherhood of the Rose."|"결국, 우리는 장미 형제단이 되었죠."
-151|"Here at the abbey we grow|"여기 수도원에서 우리는 재배한답니다|
+151|"Here at the abbey we grow|"여기 수도원에서 우리는 재배한답니다"
 151|"His hut be due north of Britain, or so they tell me."|"그의 오두막은 브리튼 정북쪽에 있다고들 하더군요."
 151|"Hullo, $G." He touches his cap respectfully.|"안녕하세요, $G." 그가 정중하게 모자를 만지며 인사한다.
 151|"I care for the @garden and tend the @vines."|"전 @정원(garden) 을 관리하고 @포도덩굴(vines) 을 가꾼답니다."
 151|"Now I grow new vines by grafting seedless @grapevines onto regular rootstocks."|"이제 전 씨 없는 @포도덩굴(grapevines) 을 일반 대목에 접붙여서 새로운 덩굴을 키우고 있어요."
 151|"Now those grapes there are for making @wine."|"저기 있는 포도들은 @와인(wine) 을 만들기 위한 것들이죠."
 151|"Some of our rosebushes were planted by druids hundreds of years ago."|"우리 장미 덤불 중 몇몇은 수백 년 전 드루이드들이 심은 거랍니다."
-151|"These rows," he gestures, "are|"이 줄들은," 그가 손짓하며 말한다, "전부|
+151|"These rows," he gestures, "are|"이 줄들은," 그가 손짓하며 말한다, "전부"
 151|"Visit me in the fields some time and I'll give you some!"|"나중에 밭으로 저를 찾아오시면 좀 드릴게요!"
 151|"Yes, $G. He lives east of here, between two rivers."|"네, $G. 그는 여기서 동쪽, 두 강 사이에 살고 있어요."
 151|"Yes, Faren--the local winemaker."|"네, 파렌--이곳의 와인 제조사죠."
@@ -6147,10 +6148,10 @@
 155|"Farewell, $G."|"평안히 가시오, $G."
 155|"Good $T, $G. How art thou?"|"좋은 $T이오, $G. 기분은 좀 어떠시오?"
 155|"I am a knight. Currently, though, I am recovering from a @battle."|"나는 기사라오. 하지만 현재는 @전투(battle) 에서 입은 상처를 회복하고 있는 중이지."
-155|"I am pleased to hear that. I wish I were healthy again.|"그 말을 들으니 기쁘구료. 나도 어서 건강을 되찾았으면 좋겠소만.|
+155|"I am pleased to hear that. I wish I were healthy again.|"그 말을 들으니 기쁘구료. 나도 어서 건강을 되찾았으면 좋겠소만.
 155|"I cannot help thee with that."|"그 부분은 도와줄 수가 없소."
 155|"I saw them drink from little vials right before they charged us."|"그놈들이 우리에게 돌격하기 직전에 작은 유리병에 든 것을 마시는 걸 보았소."
-155|"I see. I would that I were healthy again, too.|"그렇구료. 나도 어서 건강을 되찾았으면 좋겠소.|
+155|"I see. I would that I were healthy again, too.|"그렇구료. 나도 어서 건강을 되찾았으면 좋겠소.
 155|"I've just come home from fighting in Yew. I fought gargoyles near the @shrine."|"나는 방금 유(Yew)에서 싸우다 돌아오는 길이오. @성소(shrine) 근처에서 가고일들과 싸웠지."
 155|"If they had not burned his body, my captain might have been resurrected."|"만약 놈들이 시신을 태우지만 않았어도, 우리 대장님은 부활하실 수 있었을 텐데."
 155|"Just as I was returning with some guards, I saw the monsters throwing my friends' dead bodies onto a fire."|"경비병들과 함께 돌아왔을 때, 괴물들이 내 친구들의 시신을 불속으로 던져 넣는 것을 보았소."
@@ -6170,7 +6171,7 @@
 156|"He offered to marry me but of course I refused. Didn't want to be tied down."|"그 양반이 나한테 청혼을 했지만 난 당연히 거절했지. 얽매여 살긴 싫었거든."
 156|"He walks with a limp, ye know. 'Fraid of mice, too, he is."|"그 양반 절뚝거리면서 걷잖아. 쥐도 엄청 무서워하고 말이야."
 156|"He's a fine, brave lad, he is."|"그는 착하고 용감한 청년이지."
-156|"I be a retired @sailor, that I am.|"나는 은퇴한 @선원(sailor)이라오.|
+156|"I be a retired @sailor, that I am.|"나는 은퇴한 @선원(sailor)이라오.
 156|"I know nothing about that!" She walks off in a huff.|"난 그런 거 전혀 몰라!" 그녀가 씩씩거리며 가버린다.
 156|"I might even ask 'im to marry me." She winks slyly at you.|"내가 그에게 청혼할지도 모르지." 그녀가 당신에게 능글맞게 윙크한다.
 156|"I was going to give this magic shield to Caradon, but methinks I'll keep it for meself instead!"|"이 마법 방패를 카라돈에게 주려고 했지만, 그냥 내가 가지는 게 낫겠어!"
@@ -6181,7 +6182,7 @@
 156|"So long, matey."|"또 보세, 친구."
 156|"Tell ye what, matey:"|"이렇게 하세, 친구:"
 156|"That be quite a prize there, matey. Will ye trade it to me for a bit o' map?"|"그거 참 대단한 물건이구먼, 친구. 그걸 지도 조각이랑 바꾸지 않겠나?"
-156|"That's right, me bucko. Why, I've sailed with Lord @British and Captain @John.|"맞아, 이 친구야. 내가 로드 @브리티시(British) 랑 @존(John) 선장하고도 항해를 해봤거든.|
+156|"That's right, me bucko. Why, I've sailed with Lord @British and Captain @John.|"맞아, 이 친구야. 내가 로드 @브리티시(British) 랑 @존(John) 선장하고도 항해를 해봤거든.
 156|"Then leave me be!" She turns her back angrily on you and walks off.|"그럼 나 좀 내버려 둬!" 그녀가 화를 내며 당신에게 등을 돌리고 가버린다.
 156|"Thou wert a @pirate!"|"당신은 @해적(pirate) 이었군요!"
 156|"Well! How rude!" She turns up her nose and leaves.|"뭐야! 무례하기도 해라!" 그녀가 콧방귀를 뀌며 떠난다.
@@ -6214,23 +6215,23 @@
 157|"Well, actually, neither have I!"|"음, 사실 나도 본 적은 없네!"
 157|"Who wants to know?"|"누가 알고 싶어 하는 거지?"
 157|Art thou a warrior?"|자네는 전사인가?"
-157|He stands and bows to you. "`$G.|그가 일어서서 당신에게 고개를 숙인다. "`$G.|
+157|He stands and bows to you. "`$G.|그가 일어서서 당신에게 고개를 숙인다. "`$G.
 157|a commanding presence: a tall warrior in black armor.\n*|위엄 있는 존재감의 검은 갑옷을 입은 키 큰 전사다.\n*
 
-158|!"|!
+158|!"|!"
 158|"|"
 158|"'Ave you come to moi for @instruction?"|"저에게 @교육(instruction) 을 받으러 오셨나요?"
 158|"@Touche!" He wields his foil casually, lunging at an imaginary target.|"@투셰(Touche)!" 그가 가볍게 펜싱 검을 휘두르며 가상의 목표물을 향해 찌르기를 한다.
 158|"Au revoir!"|"오 르부아르(Au revoir)!" (안녕히 가세요!)
 158|"But no! You are too skilled, I 'ave nothing more to teach you!"|"아뇨, 그럴 리가요! 당신은 너무 숙련되어 있어서 제가 더 가르쳐 드릴 게 없네요!"
 158|"But you, you look much better than that, my friend."|"하지만 당신은, 당신은 그들보다 훨씬 나아 보이는군요, 친구여."
-158|"I am M'sieur Loubet.|"저는 무슈 루베(M'sieur Loubet)입니다.|
+158|"I am M'sieur Loubet.|"저는 무슈 루베(M'sieur Loubet)입니다.
 158|"I am ze @fencing @instructor."|"저는 @펜싱(fencing) @강사(instructor) 랍니다."
 158|"I cannot 'elp you with zat."|"그 점에 대해선 도움을 드릴 수 없네요."
 158|"Is very difficult sometimes. Most fighters, zey have no subtlety, no finesse."|"가끔은 정말 힘들답니다. 대부분의 전사는 섬세함도 기술도 전혀 없거든요."
 158|"No, come to ma salle sometime, zen we will spar, yes?"|"아뇨, 언제 제 훈련장으로 오세요, 그럼 대련 한 판 할까요, 네?"
 158|"Now ze off hand, $G... Mon dieu, you are (how you say it?) ambidextrous! Very good, mah friend."|"이제 반대쪽 손으로 해보세요, $G... 맙소사, 당신은 (뭐라고 하죠?) 양손잡이군요! 아주 훌륭해요, 친구여."
-158|"Oui, I teach ze fencing|"위(Oui), 저는 펜싱을 가르칩니다|
+158|"Oui, I teach ze fencing|"위(Oui), 저는 펜싱을 가르칩니다
 158|"Practice? Here? Surely you jest!"|"연습을요? 여기서요? 분명 농담이시겠죠!"
 158|"She sings very sweet!" He strikes metal and the foil makes a pleasant @ringing noise.|"검이 아주 달콤하게 노래하죠!" 그가 금속을 두드리자 펜싱 검이 기분 좋은 @울림(ringing) 소리를 낸다.
 158|"Too loose and she flies away. Too tight and she smothers. Just right, and..."|"너무 헐거우면 날아가 버리고, 너무 꽉 쥐면 질식하죠. 딱 적당히 쥐면..."
@@ -6245,13 +6246,13 @@
 158|."|"
 158|But you already know who I am, silly person!"|하지만 당신은 이미 제가 누군지 아시잖아요, 바보같이!"
 158|Come to ma salle sometime|언제든 제 훈련장으로 오세요
-158|He greets you with an elaborate bow and flourish. "Good $T, mon ami|그가 화려한 몸짓과 함께 정중하게 인사한다. "좋은 $T입니다, 나의 친구여(mon ami)|
+158|He greets you with an elaborate bow and flourish. "Good $T, mon ami|그가 화려한 몸짓과 함께 정중하게 인사한다. "좋은 $T입니다, 나의 친구여(mon ami)
 158|He shows you the correct stance, then you spar for a bit.|그가 올바른 자세를 가르쳐주고, 당신과 잠시 대련을 한다.
 158|He turns up his nose and sniffs aristocratically.|그가 코를 치켜세우며 귀족적으로 킁킁거린다.
 158|Just ask|말씀만 하시면
 158|Loubet hands you a foil and a mask of golden mesh.|루베가 당신에게 펜싱 검과 금빛 망사 마스크를 건네준다.
 158|M'sieur Loubet is a skilled teacher, and you feel like you've really learned something.|무슈 루베는 숙련된 교사이며, 당신은 정말로 무언가를 배웠다는 느낌을 받는다.
-158|Much pleased to meet you,|만나서 정말 반갑습니다,|
+158|Much pleased to meet you,|만나서 정말 반갑습니다,
 158|SHINGGG!|챙그랑!
 158|a tall and dashing gentleman.|키가 크고 멋진 신사다.
 158|and I'll give you a @lesson!"|@강습(lesson) 을 해드리죠!"
@@ -6273,10 +6274,10 @@
 159|"Fare thee well."|"평안히 가시오."
 159|"Go and speak to de Hugh. Observe what he believes to be courage."|"가서 드 휴(de Hugh)와 대화해 보시오. 그가 무엇을 용기라고 믿는지 관찰해 보시오."
 159|"He lives humbly in New Magincia now."|"그는 지금 뉴 마진시아에서 소박하게 살고 있소."
-159|"Hello, adventurer|"안녕하시오, 모험가여|
+159|"Hello, adventurer|"안녕하시오, 모험가여
 159|"However, thou must still create thine own shield."|"하지만, 그대만의 방패는 여전히 스스로 만들어야 하오."
 159|"I am Koranada, son of Kulebra."|"나는 쿨레브라의 아들, 코라나다(Koranada)요."
-159|"I have responsibilities here|"나는 이곳에 책임이 있소|
+159|"I have responsibilities here|"나는 이곳에 책임이 있소
 159|"I shall waive the usual requirements since thy adventures are more than sufficient proof of thy courage."|"그대의 모험은 그대의 용기를 증명하기에 이미 충분하므로, 일반적인 요건은 면제해주겠소."
 159|"I traveled to Serpent's Hold to join the @Order instead."|"나는 대신 기사단(@Order) 에 가입하기 위해 서펀트 홀드로 여행했소."
 159|"In order to be @virtuous, one must act virtuously."|"@미덕(virtuous) 을 갖추기 위해선 미덕에 따라 행동해야 하오."
@@ -6388,7 +6389,7 @@
 163|"Broke, are you? Well, come by after I'm done with this disguise,*\nand I'll give you a loan from the royal @treasury."|"빈털터리라고? 뭐, 내가 이 변장을 끝내고 나면 들르게나. 내가 왕실 @보물고(treasury) 에서 돈을 좀 빌려줌세."
 163|"He was a big one - but he hadn't reckoned with the likes of me. I was a @tough kid."|"그놈은 덩치가 컸지만 나 같은 놈을 상대하게 될 줄은 몰랐을 거야. 난 아주 @질긴(tough) 꼬맹이였거든."
 163|"He's in disguise too, you know. He's really @Blackthorn."|"그 양반도 변장 중이라네, 아시겠지만. 사실 그가 진짜 @블랙손(Blackthorn) 이야."
-163|"Hello my good|"안녕하신가, 나의 선량한|
+163|"Hello my good|"안녕하신가, 나의 선량한
 163|"I decided banishment was too harsh for him, so I brought him back and made him my jester."\n*\n"The real Chuckles is tied up in my @dungeons. I got tired of him making fun of my nose."|"추방은 그에게 너무 가혹한 것 같아 다시 데려와서 내 광대로 만들었지."\n*\n"진짜 처클스(Chuckles)는 내 @던전(dungeons) 에 묶여 있다네. 내 코를 가지고 놀려대는 것에 아주 진저리가 났거든."
 163|"I killed a @dragon when I was eight, you know. With my bare hands, too!"|"내가 여덟 살 때 @용(dragon) 을 죽였다네. 그것도 맨손으로 말이야!"
 163|"I told you not to mention that!"|"그 이야기는 꺼내지 말라고 했을 텐데!"
@@ -6412,20 +6413,20 @@
 163|You don't have that much.|그만큼 돈이 없군요.
 163|You see Shamino smiling - an unusual sight.\n*\nNoticing your attention, he says "Perhaps there's a little of Lord British in us all."|샤미노가 미소 짓는 것이 보인다 - 보기 드문 광경이다.\n*\n당신의 시선을 느끼자 그가 말한다. "어쩌면 우리 모두의 마음속엔 로드 브리티시가 조금씩 들어 있는지도 모르겠군."
 163|a sly looking fellow, dressed in rags.|누더기를 걸친 교활해 보이는 사내다.
-163|man!"|친구!"|
-163|wo|아|
+163|man!"|친구!"
+163|wo|아
 
 164|"|"
 164|"@Captain John teach I human speak," the gargoyle says haltingly.|"@존(John) 선장이 나에게 인간 말을 가르쳐 주었다," 가고일이 듬성듬성 말한다.
 164|"As you wish, $G."|"당신의 뜻대로 하겠다, $G."
 164|"But to take care! To avoid the @lava pits and the @Hall of Knowledge!"|"하지만 주의하기! @용암(lava) 구덩이와 @지식의 전당(Hall of Knowledge) 을 피하기!"
 164|"Captain John friend. He come here. I wait here."|"존 선장은 친구다. 그가 여기 온다. 나는 여기서 기다린다."
-164|"Good $T, my friend|"좋은 $T이다, 친구|
+164|"Good $T, my friend|"좋은 $T이다, 친구
 164|"Good! To know that he very much wanted to speak with you."|"좋다! 그가 당신과 아주 대화하고 싶어 했다는 사실을 아는 것."
 164|"Good!"|"좋다!"
 164|"Hello. I little human @speak."|"안녕. 나는 인간의 @말(speak) 을 조금 한다."
 164|"I wait here. @Captain John come."|"나는 여기서 기다린다. @존(John) 선장이 올 것이다."
-164|"May|"그대의|
+164|"May|"그대의
 164|"No name. I Beh Lem."|"이름 없다. 나는 벨렘(Beh Lem)이다."
 164|"Oh." The little gargoyle seems saddened.|"오." 작은 가고일이 슬퍼 보인다.
 164|"Then to not understand you."|"그렇다면 당신을 이해하지 못하는 것."
@@ -6540,7 +6541,7 @@
 166|"To suppose that you are making a joke."|"당신이 농담을 하고 있다고 생각하는 것."
 166|"To suspect it to be someplace in the human-filled Underworld."|"그것이 인간들이 가득한 지하 세계 어딘가에 있을 거라 짐작하는 것."
 166|"Yes, the Underworld. To believe you know it as 'Britannia.'"|"그렇다, 지하 세계. 당신이 '브리타니아'라고 알고 있다고 믿는 것."
-166|"Yes? To inquire about the reason for|"그런가? 이유를 묻기 위한|
+166|"Yes? To inquire about the reason for|"그런가? 이유를 묻기 위한
 166|The gargoyle ignores you and continues writing.|가고일은 당신을 무시하고 계속해서 글을 쓴다.
 166|Without another word, the gargoyle returns to his work.|아무 말 없이, 가고일은 다시 자신의 일로 돌아간다.
 166|an old, winged gargoyle. An odd device crafted of glass and metal rests upon his face.|유리와 금속으로 만든 기묘한 장치를 얼굴에 걸친 늙은 날개 달린 가고일이다.
@@ -6762,7 +6763,7 @@
 171|"To express sorrow that the drug is fatal, but to express awe and respect for the warriors' sacrifice."|"약물이 치명적이라는 것에 슬픔을 표하나, 전사들의 희생에 경외와 존경을 표하는 것."
 171|"To feel honored by your visit, False Prophet."|"거짓 예언자여, 당신의 방문을 영광으로 느끼기."
 171|"To find the horn just north of my house."|"내 집 바로 북쪽에서 뿔나팔을 찾는 것."
-171|"To lack a name, of course.|"물론, 이름이 결여된 것.|
+171|"To lack a name, of course.|"물론, 이름이 결여된 것.
 171|"To make the drug for our bravest warriors, who take it and turn into fighting daemons!"|"가장 용감한 전사들을 위해 약물을 만드는 것. 그것을 먹으면 전투 데몬으로 변하기!"
 171|"To summon the silver @snake, and to direct the young warriors in defeating it."|"은빛 @뱀(snake) 을 소환하고, 젊은 전사들이 그것을 물리치도록 지시하기."
 171|"To use the great @horn to summon the silver snake."|"거대한 @뿔나팔(horn) 을 사용하여 은빛 뱀을 소환하기."
@@ -6798,7 +6799,7 @@
 172|The gargoyle silently awaits his fate.|가고일은 묵묵히 자신의 운명을 기다린다.
 
 173|a somber and calm gargoyle.|침울하고 차분한 가고일이다.
-173|"An in mani u|"안 인 마니 우|
+173|"An in mani u|"안 인 마니 우
 173|"But not to force anyone to act against their will."|"하지만 누구에게도 의지에 반하는 행동을 강요하지 않는 것."
 173|"But to be certain that all of you are well!"|"하지만 당신들 모두가 건강함을 확신하는 것!"
 173|"But to be certain that you are well!"|"하지만 당신이 건강함을 확신하는 것!"
@@ -6831,7 +6832,7 @@
 173|"Yes, during the cataclysms."|"그렇다, 대재앙 동안에."
 173|#2) $Y|#2) $Y
 173|#2) $Y\n"Which of you?"|#2) $Y\n"어느 분이시죠?"
-173|$Y drinks the potion and feels|$Y(이)가 물약을 마시고 느낀다|
+173|$Y drinks the potion and feels|$Y(이)가 물약을 마시고 느낀다
 173|$Y drinks the potion and feels restored!|$Y(이)가 물약을 마시고 회복됨을 느낀다!
 173|, An-bal-sil-fer."|, 안-발-실-퍼."
 173|Do|하시겠습니까
@@ -6839,7 +6840,7 @@
 173|The gargoyle mixes strange powders into a foul-smelling brew.|가고일이 고약한 냄새가 나는 액체에 이상한 가루들을 섞는다.
 173|The gargoyle says nothing else.|가고일은 더 이상 아무 말도 하지 않는다.
 173|The gargoyle shrugs.\n\n"To assure you that it is safe and invigorating."|가고일이 어깨를 으쓱한다.\n\n"이것이 안전하고 기운을 북돋워 줄 것임을 확신시키기."
-173|You drink the potion and feel|당신은 물약을 마시고 느낀다|
+173|You drink the potion and feel|당신은 물약을 마시고 느낀다
 173|You drink the potion and feel restored!|당신은 물약을 마시고 회복됨을 느낀다!
 173|deathly ill!|죽을 듯이 괴로움을!
 173|drink it?|그것을 마시겠습니까?
@@ -6891,7 +6892,7 @@
 174|"To greatly respect your nobility and courage."|"당신의 고귀함과 용기를 매우 존경하기."
 174|"To have but a few items available."|"이용 가능한 물품이 몇 개 없는 것."
 174|"To have lost my @master, like a father to me."|"아버지와 같았던 나의 @스승(master) 을 잃은 것."
-174|"To have only a few left in stock|"재고가 몇 개 남지 않은 것|
+174|"To have only a few left in stock|"재고가 몇 개 남지 않은 것
 174|"To have only barely survived the earthquakes after the Codex disappeared."|"코덱스가 사라진 뒤의 지진에서 가까스로 살아남은 것."
 174|"To invite you to look around at my @wares as well."|"나의 @제품(wares) 들을 둘러보도록 당신을 권하기."
 174|"To knock out even a large animal with just a single pouch of this powder!"|"이 가루 한 주머니만으로 거대한 동물조차 잠재우는 것!"
@@ -6926,7 +6927,7 @@
 174|The gargoyle speaks. "To ask if anything else interests you?"|가고일이 말한다. "다른 흥미로운 것이 있는지 묻기?"
 
 175|a large and boisterous gargoyle.*\n\nHe carries a 'knife' large enough to be a sword!|덩치가 크고 활기 넘치는 가고일이다.*\n\n그는 검만큼이나 커다란 '칼'을 들고 있다!
-175|"After all, we don't know what kind of meat that is!|"결국, 우리는 그게 무슨 고기인지 모르잖나!|
+175|"After all, we don't know what kind of meat that is!|"결국, 우리는 그게 무슨 고기인지 모르잖나!
 175|"Also to guide and instruct the @wingless ones in cooking chores."|"또한 @날개 없는 자(wingless) 들에게 요리 허드렛일을 지도하고 교육하기."
 175|"An-bal-sil-fer!" the gargoyle shouts. "Gres por! Gres por!"|"안-발-실-퍼!" 가고일이 소리친다. "그레스 포르! 그레스 포르!"
 175|"But to acknowledge that they are vital to our society."|"하지만 그들이 우리 사회에 필수적임을 인정하는 것."
@@ -6963,11 +6964,11 @@
 175|Do you take the meat?|고기를 받으시겠습니까?
 175|Half-jokingly, Iolo says, "We'd better do as he says."|반농담조로 이올로가 말한다. "그가 하라는 대로 하는 게 좋겠군."
 175|Iolo speaks. "I wonder what sort of @meat this is, $P."|이올로가 말한다. "$P, 이게 대체 무슨 @고기(meat) 인지 궁금하군."
-175|The chef gives|요리사가 주었다|
+175|The chef gives|요리사가 주었다
 175|The flavor is unlike anything you've had before.|맛은 당신이 예전에 먹어본 그 무엇과도 달랐다.
 175|The gargoyle beams with pride. "To ask you: Is it not the best @meat you have ever eaten?"|가고일이 자부심으로 미소 짓는다. "당신에게 묻기: 이것이 당신이 먹어본 최고의 @고기(meat) 가 아닌가?"
 175|With a few strokes of his huge knife, the gargoyle cuts you a slice of @meat.|커다란 칼을 몇 번 휘두르더니, 가고일이 당신에게 @고기(meat) 한 점을 썰어준다.
-175|You|당신은|
+175|You|당신은
 175|eat the profferred food.|제공된 음식을 먹는다.
 175|r party eats the profferred food.|당신의 일행은 제공된 음식을 먹는다.
 175|you|당신은
@@ -6989,7 +6990,7 @@
 176|"To greatly admire your nobility, False Prophet."|"거짓 예언자여, 당신의 고귀함을 매우 칭송하기."
 176|"To have been greatly honored by this conversation, noble $P."|"고귀한 $P여, 이 대화를 매우 영광스럽게 생각하기."
 176|"To honor my people with your sacrifice!"|"당신의 희생으로 내 백성을 영광스럽게 하기!"
-176|"To try to give the @wingless ones free reign,|"@날개 없는 자(wingless) 들에게 자유를 주려 노력하기,|
+176|"To try to give the @wingless ones free reign,|"@날개 없는 자(wingless) 들에게 자유를 주려 노력하기,
 176|"To wish my fields were as productive as those of Farmer @Krill, my neighbor to the west."|"나의 밭이 서쪽 이웃인 농부 @크릴(Krill) 의 밭만큼 생산적이기를 바라는 것."
 176|The gargoyle screams, "An-bal-sil-fer! Des-lem, klep lem!"|가고일이 비명을 지른다. "안-발-실-퍼! 데스-렘, 클렙 렘!"
 176|The gargoyle screams, "The False Prophet! Workers, attack!"|가고일이 비명을 지른다. "거짓 예언자다! 일꾼들이여, 공격하라!"
@@ -7010,7 +7011,7 @@
 177|"To be ashamed that Nash lacks common sense."|"내쉬가 상식이 부족하다는 것이 부끄러운 것."
 177|"To be forced by necessity to give the @wingless ones no room for choice or @freedom."|"필요에 의해 @날개 없는 자(wingless) 들에게 선택권이나 @자유(freedom) 를 줄 여지가 없는 것."
 177|"To be named Krill Us-arb-vas-lem, Krill the @Leader of Farmers."|"농부들의 @지도자(Leader) 인 크릴(Krill)이라 불리는 것."
-177|"To consider them valuable members of society|"그들을 사회의 소중한 구성원으로 여기기|
+177|"To consider them valuable members of society|"그들을 사회의 소중한 구성원으로 여기기
 177|"To consider you a great credit to your race!"|"당신을 당신 종족의 큰 자랑으로 여기기!"
 177|"To explain that they are far less intelligent than you or I."|"그들이 당신이나 나보다 훨씬 지능이 낮음을 설명하기."
 177|"To feed my workers far better than misguided Farmer @Nash to the east does."|"동쪽의 잘못된 농부 @내쉬(Nash) 보다 내 일꾼들을 훨씬 더 잘 먹이기."
@@ -7020,7 +7021,7 @@
 177|"To mean no offense to you, $P."|"$P, 당신에게 악의가 있는 것은 아니라는 것."
 177|"To not understand what you mean."|"당신이 무슨 뜻인지 이해하지 못하는 것."
 177|"To note that you wear the Amulet of Submission."|"당신이 굴복의 아뮬렛을 착용하고 있음을 주목하기."
-177|"To point out his unproductive fields as an example of why|"왜 그의 밭이 비생산적인지 예시를 들어 지적하기|
+177|"To point out his unproductive fields as an example of why|"왜 그의 밭이 비생산적인지 예시를 들어 지적하기
 177|"To receive bountiful harvests thanks to the efforts of my well-directed workers."|"잘 지도된 일꾼들의 노력 덕분에 풍성한 수확을 거두는 것."
 177|"To receive good @harvests only through firm control and clear direction."|"확고한 통제와 명확한 지시를 통해서만 좋은 @수확(harvests) 을 거두는 것."
 177|#|#
@@ -7054,23 +7055,23 @@
 178|"That's what you look for after you've got a good @shovel."|"그건 좋은 @삽(shovel) 을 얻은 다음에나 찾는 거라오."
 178|"Too bad. I really need one."|"아쉽구먼. 정말로 하나 필요한데."
 178|"What 'ave you got I could want? All I needs in me life is a good @shovel."|"당신이 가진 것 중에 내가 탐낼 게 뭐가 있겠소? 내 평생 필요한 건 좋은 @삽(shovel) 뿐이라오."
-178|, digging in the dirt with his bare hands|, 맨손으로 흙을 파며|
+178|, digging in the dirt with his bare hands|, 맨손으로 흙을 파며
 178|.\n*|.\n*
 178|Mole listens, a bit impatiently.\n\n*"He gave me a shovel, all right - cheapest shovel I ever saw in all my years in the business!"*\n\n"Tell 'im it broke the third day I tried usin' it."|몰은 약간 참을성 없는 태도로 듣는다.\n\n*"그가 삽을 주긴 했소 - 내가 이 일을 하며 본 것 중에 제일 싸구려 삽이었지!"*\n\n"쓰기 시작한 지 사흘 만에 부러졌다고 그 양반한테 전해주쇼."
 178|You tell him what Glen said.\n\n*"Wants 'is graves dug, does he? Well, you can tell old zombie-face I'd do a lot better if I had a shovel!"|당신은 글렌이 한 말을 그에게 전한다.\n\n*"무덤을 다 파길 원한다고? 그럼 그 좀비 같은 양반한테 전해주쇼, 삽만 있으면 훨씬 잘할 수 있다고!"
 
 179|a troubadour with a drum. His tailored suit is travel-worn but bright.|북을 든 음유시인이다. 그의 맞춤복은 여행의 흔적이 묻어 있지만 색감은 선명하다.
 179|"'Twas long ago... Back when men forced sorcerous secrets from demons..."|"아주 먼 옛날이었죠... 인간들이 데몬으로부터 마법의 비밀을 강탈하던 때 말입니다..."
-179|"A southerner from Serpent's Hold|"서펀트 홀드에서 온 남부 사람|
-179|"Ah, the old Bitter Kate, she's mended her ways,|"아아, 낡은 비터 케이트 호는 개과천선하여,|
+179|"A southerner from Serpent's Hold|"서펀트 홀드에서 온 남부 사람
+179|"Ah, the old Bitter Kate, she's mended her ways,|"아아, 낡은 비터 케이트 호는 개과천선하여,
 179|"As you wish, $G."|"원하시는 대로 하죠, $G."
 179|"Back when women wove moonbeams into cloth of indescribably fine texture..."|"여인들이 달빛을 자아내어 형용할 수 없이 고운 천을 짜던 그 시절 말입니다..."
-179|"Captain Keegan, he sleeps the endless sleep|"키건 선장, 그는 끝없는 잠에 들었네|
+179|"Captain Keegan, he sleeps the endless sleep|"키건 선장, 그는 끝없는 잠에 들었네
 179|"Each drum was made of the entire skin of a bull, stretched taut by a dozen cords."|"각 북은 황소 한 마리의 가죽 전체를 사용해 만들었고, 열두 개의 끈으로 팽팽하게 당겨져 있었죠."
 179|"Excuse me, ma'am. We are, um, indisposed." He returns his attentions to Sylaina.|"실례합니다, 부인. 저희는 지금, 음, 용무가 있어서요." 그는 다시 실라이나에게 집중한다.
-179|"Greetings,|"반갑습니다,|
+179|"Greetings,|"반갑습니다,
 179|"Have you heard of the @Virtuous?"|"@버추어스(Virtuous) 호에 대해 들어보셨나요?"
-179|"He broke a bottle 'cross her bow|"그는 뱃머리에 술병을 깨뜨려 축복했네|
+179|"He broke a bottle 'cross her bow|"그는 뱃머리에 술병을 깨뜨려 축복했네
 179|"I also read a number of maritime histories."|"저는 또한 여러 권의 해양사를 읽었답니다."
 179|"I don't know where she rests. Ask other bards."|"그 배가 어디에 잠들어 있는지는 모릅니다. 다른 음유시인들에게 물어보세요."
 179|"I'm a @drummer and a @singer."|"저는 @북 연주자(drummer) 이자 @가수(singer) 입니다."
@@ -7084,7 +7085,7 @@
 179|"Take care!"|"조심하세요!"
 179|"That I cannot help you with."|"그 부분은 도와드릴 수가 없군요."
 179|"That's a @battle summons."|"그건 @전투 소집(battle summons) 신호입니다."
-179|"The Barston Bay came north to fight,|"바스턴 베이 호가 싸우러 북으로 왔네,|
+179|"The Barston Bay came north to fight,|"바스턴 베이 호가 싸우러 북으로 왔네,
 179|"The sea is not always a gentle, generous friend."|"바다가 항상 온순하고 너그러운 친구인 것만은 아니랍니다."
 179|"There's probably great treasure on her, and on the @Virtuous, too."|"그 배에는 분명 거대한 보물이 실려 있을 겁니다, @버추어스(Virtuous) 호도 마찬가지고요."
 179|"They record the facts behind the many songs of different @ships."|"그 기록들은 여러 @배(ships) 에 얽힌 수많은 노래 뒤에 숨겨진 사실들을 담고 있죠."
@@ -7095,7 +7096,7 @@
 179|And 'Virtuous' became her name.|그리하여 '버추어스'가 그녀의 이름이 되었네.
 179|And as the Virtuous, ended her days."|그리고 버추어스로서, 그 생애를 마쳤다네."
 179|And thus he claimed the 'Bitter Kate.'"|그렇게 그는 '비터 케이트' 호를 차지했네."
-179|For many years she served him well;|오랜 세월 그녀는 그를 잘 보필했네;|
+179|For many years she served him well;|오랜 세월 그녀는 그를 잘 보필했네;
 179|Good Captain Keegan rose to fame."|선량한 키건 선장의 명성이 드높아졌네."
 179|It sounds thus: 'RUM-TE-TUM, RUM-TE-TUM, TUMBLETY-TUM-TE-TUM!' The beat is invigorating and exciting.|그것은 이렇게 들립니다: '쿵-더-덕, 쿵-더-덕, 쿵더러러-쿵-더-덕!' 박자가 매우 활기차고 신납니다.
 179|Once slew a pirate crew of eight.|일찍이 여덟 명의 해적단을 소탕한 적이 있네.
@@ -7106,7 +7107,7 @@
 179|To cold Loch Lake she sailed that night.|그날 밤 그녀는 차가운 로흐 호수로 향했네.
 179|To sink Keegan's ship with cannon blast."|대포를 쏘아 키건의 배를 가라앉히기 위해."
 179|While on Loch Lake's shore the Virtuous lays."|이제 로흐 호숫가에 버추어스 호가 누워있네."
-179|Young Keegan was this warrior bold,|젊은 키건은 이 용맹한 전사였네,|
+179|Young Keegan was this warrior bold,|젊은 키건은 이 용맹한 전사였네,
 179|folks."|여러분."
 
 180|a charming fellow with a peacock feather in his cap.|모자에 공작 깃털을 꽂은 매력적인 사내다.
@@ -7114,7 +7115,7 @@
 180|"'Tis in @Moonglow."|"그곳은 @문글로우(Moonglow) 에 있소."
 180|"'Tis in Buccaneer's @Den - no place for the timid."|"그곳은 버커니어즈 @덴(Den) 에 있소 - 겁쟁이들이 갈 만한 곳은 아니지."
 180|"@Derydlus often drinks there - the man can put away more ale than any other I've met."|"@데리들러스(Derydlus) 가 거기서 자주 술을 마신다오 - 그는 내가 만나본 그 누구보다 에일을 많이 들이켤 수 있는 사람이거든."
-180|"A gypsy girl and a butterfly|"집시 소녀와 나비 한 마리가|
+180|"A gypsy girl and a butterfly|"집시 소녀와 나비 한 마리가
 180|"A pleasure, to be sure, $G. I hope I'll be seeing a lot more of you." He gives you a sly wink.|"만나서 정말 즐겁구료, $G. 앞으로 자주 뵙기를 바라겠소." 그가 당신에게 능글맞게 윙크한다.
 180|"A wonderful place! Dr. Cat gives me free drinks just for singing."|"멋진 곳이지! 닥터 캣은 내가 노래만 불러줘도 공짜 술을 준다오."
 180|"As you wish."|"원하시는 대로 하쇼."
@@ -7142,7 +7143,7 @@
 180|"Lots of warriors there."|"거긴 전사들이 아주 많지."
 180|"Mandrake, my friend, Mandrake. Like the @root, but taller, handsomer, and @louder."|"@맨드레이크(Mandrake) 라오, 친구. 그 @뿌리(root) 처럼 생겼지만 더 키가 크고, 잘생겼으며, 훨씬 더 @시끄럽지(louder)."
 180|"Many's the time he's drunk me under the table."|"그가 나를 취하게 해서 테이블 밑으로 보낸 게 한두 번이 아니오."
-180|"Mister Porcupine's naught but spines,|"고슴도치 씨는 온통 가시뿐이라네,|
+180|"Mister Porcupine's naught but spines,|"고슴도치 씨는 온통 가시뿐이라네,
 180|"My name is Mandrake. And what may I call thee?"|"내 이름은 맨드레이크요. 그대를 무엇이라 부르면 좋겠소?"
 180|"My travels were interrupted recently in a most fearsome manner."|"최근에 내 여행이 아주 무시무시한 방식으로 중단되고 말았소."
 180|"Now there would be the foundation for a fine world to live in!"|"그것이야말로 살기 좋은 세상을 만드는 토대가 아니겠소!"
@@ -7157,8 +7158,8 @@
 180|"That's what you get for choosing such @stuffy principles as a basis."|"그렇게 @답답한(stuffy) 원칙들을 기초로 삼았으니 당연한 결과 아니겠소."
 180|"The Blue @Bottle serves Frasier's @Folly - the finest ale in all Britannia."|"푸른 @병(Bottle) 주점에서는 브리타니아 최고의 에일인 '프레이저의 @실수(Folly)'를 낸다오."
 180|"The Fallen @Virgin and the Sword and @Keg are rowdy and rough."|"타락한 @처녀(Virgin) 와 검과 @통(Keg) 주점은 아주 시끌벅적하고 거친 곳이지."
-180|"The dragon is a scaly sort|"용은 비늘이 돋아 있는 부류라네|
-180|"The principles of wine, women and song would lead to the eight virtues of|"와인과 여자, 노래의 원칙은 다음과 같은 여덟 가지 미덕으로 이어질 거요:|
+180|"The dragon is a scaly sort|"용은 비늘이 돋아 있는 부류라네
+180|"The principles of wine, women and song would lead to the eight virtues of|"와인과 여자, 노래의 원칙은 다음과 같은 여덟 가지 미덕으로 이어질 거요:
 180|"They fight just about every night, but they don't mean anything by it. 'Tis all in fun."|"그들은 거의 매일 밤 싸우지만, 딱히 악의가 있는 건 아니오. 다 재미로 그러는 거지."
 180|"Think of the virtues those would @lead to!"|"그것들이 어떤 미덕으로 @이끌지(lead) 한번 생각해보쇼!"
 180|"Too honest a town to be much fun, but some fine people live there."|"너무 정직해서 재미는 없는 마을이지만, 훌륭한 사람들이 살고 있소."
@@ -7173,19 +7174,19 @@
 180|"You should have @Penumbra tell your fortune sometime."|"언젠가 @페넘브라(Penumbra) 에게 운세를 한번 봐달라고 하쇼."
 180|"You should try some! 'Twill do thee a world of good."|"그대도 한번 먹어보시오! 몸에 아주 좋을 거요."
 180|"You're too kind."\nMandrake tells you tales for quite a while, yet listening to them you lose track of time.|"참으로 친절하시구료."\n맨드레이크는 한참 동안 이야기를 들려주었고, 당신은 그 이야기에 빠져 시간 가는 줄을 모른다.
-180|And when I saw them I said 'Oh my!|그리고 그들을 보았을 때 나는 외쳤네 '오 이런!|
-180|But finally|하지만 마침내|
+180|And when I saw them I said 'Oh my!|그리고 그들을 보았을 때 나는 외쳤네 '오 이런!
+180|But finally|하지만 마침내
 180|For he goes where e'er he pleases."|그는 가고 싶은 곳이면 어디든 가니까."
-180|For that for which he truly pines|그가 진정으로 그리워하는 것은|
+180|For that for which he truly pines|그가 진정으로 그리워하는 것은
 180|He speaks of spells that halt the flow of time, a man who found a way to fly, and the strange secret of the wisps.|그는 시간을 멈추는 주문, 비행법을 찾아낸 남자, 그리고 위스프의 기묘한 비밀에 대해 이야기한다.
 180|He speaks of the pirate ship Empire, which was much dreaded in its day, and of the giant ants that can be found in the Dry Land.|그는 그 시절 모두가 두려워했던 해적선 엠파이어 호와 건조 지대에서 볼 수 있는 거대 개미들에 대해 이야기한다.
 180|He tells you of ships sailing off the edge of the world, of earthquakes, and mad wizards, and fierce battles.|그는 세상의 끝으로 항해하는 배들, 지진, 미친 마법사들, 그리고 격렬한 전투에 대해 이야기한다.
 180|He tells you that there are two bands of gypsies who travel the King's Way, who are often mistaken for each other.|그는 국왕의 길을 여행하는 두 집시 무리가 있으며, 사람들이 종종 그들을 혼동한다고 말해준다.
 180|How much do you give him?|그에게 얼마를 주겠습니까?
 180|Is one of her sweet kisses."|그녀의 달콤한 키스 한 번이라네."
-180|Many a bold knight has he fought,|그는 수많은 용맹한 기사들과 싸웠고,|
+180|Many a bold knight has he fought,|그는 수많은 용맹한 기사들과 싸웠고,
 180|To the dismay of him and his missus.|그와 그의 부인에겐 안된 일이지만 말이야.
-180|Were out in the woods at play|숲속에서 놀고 있었다네|
+180|Were out in the woods at play|숲속에서 놀고 있었다네
 180|What a perfect sunny day!'"|이 얼마나 완벽하게 화창한 날인가!'"
 180|Who spouts flame when he sneezes.|재채기할 때마다 불꽃을 뿜어낸다네.
 180|You don't have that much.|당신은 그만큼 돈이 없다.
@@ -7224,7 +7225,7 @@
 182|"The rumors of @pirates there are just idle @chatter."\n*\nShe smiles. "I haven't been there in a while. It's a lovely little town..."|"거기에 @해적(pirates) 이 있다는 소문은 그냥 쓸데없는 @잡담(chatter) 일 뿐이에요."\n*\n그녀가 미소 짓는다. "거기 안 간 지 꽤 됐네요. 정말 사랑스럽고 작은 마을이었는데..."
 182|"The world is flat, you know." She eyes you appraisingly.\n*\n"Surely any well educated person would be aware of that."|"세상은 평평해요, 아시죠?" 그녀가 당신을 평가하듯 쳐다본다.\n*\n"교육을 제대로 받은 사람이라면 분명 그 사실을 알고 있겠죠."
 182|"We were at port one day when the anchor chain snapped, and the Thechu drifted off the @edge of the world."\n*\n"I'd join her if I could, and sail through space..."|"어느 날 항구에 있었는데 닻줄이 끊어지는 바람에, 세추 호는 세상의 @가장자리(edge) 너머로 떠내려가 버렸어요."\n*\n"할 수만 있다면 그 배에 올라타서 우주를 항해하고 싶네요..."
-182|"You want my belt? I'm sorry,|"제 벨트를 원하신다고요? 죄송하지만,|
+182|"You want my belt? I'm sorry,|"제 벨트를 원하신다고요? 죄송하지만,
 182|, but I'm not ready to @retire just yet."|, 전 아직 @은퇴(retire) 할 준비가 안 됐답니다."
 182|She eyes you suspiciously. "What do you want?"|그녀가 의심스러운 눈초리로 당신을 쳐다본다. "원하는 게 뭐죠?"
 182|laddy|도련님
@@ -7284,7 +7285,7 @@
 183|"Use this scroll; it contains a basic vocabulary of the Gargoyle language."|"이 두루마리를 사용하시오. 여기엔 가고일 언어의 기본적인 어휘가 담겨 있소."
 183|"Wait!"|"기다리시오!"
 183|"When both worlds have been saved, then we can discuss such matters."|"두 세계가 모두 구원받았을 때, 그때 그런 문제들을 논의합시다."
-183|"Where we have the three principles of Truth, Love and Courage,|"우리에게 진실, 사랑, 용기라는 세 가지 원칙이 있는 곳에,|
+183|"Where we have the three principles of Truth, Love and Courage,|"우리에게 진실, 사랑, 용기라는 세 가지 원칙이 있는 곳에,
 183|"Why, I'm Captain John, $G!"|"아니, 나는 존(John) 선장이라오, $G!"
 183|"With his help, thou canst travel the gargoyle lands and learn how to save them."|"그의 도움을 받으면 가고일 영토를 여행하며 그들을 구하는 법을 배울 수 있을 것이오."
 183|"With the help of a gargoyle child, @Beh @Lem, I have learned how to speak their language."|"가고일 아이인 @벨렘(Beh Lem) 의 도움으로, 나는 그들의 언어를 하는 법을 배웠소."
@@ -7296,11 +7297,11 @@
 
 184|a skinny, awkward looking man, wearing boots that come up past his knees.\n*|무릎 위로 올라오는 장화를 신은 비쩍 마르고 어색해 보이는 사내다.\n*
 184|"|"
-184|"\n*\n"You look like you need a nickname, so I'll call you 'ducks.'|" \n*\n"당신은 별명이 하나 필요해 보이는군요. 그러니 당신을 '오리 친구(ducks)'라고 부르겠어요.|
+184|"\n*\n"You look like you need a nickname, so I'll call you 'ducks.'|" \n*\n"당신은 별명이 하나 필요해 보이는군요. 그러니 당신을 '오리 친구(ducks)'라고 부르겠어요.
 184|"@Britain is the biggest city in the world, and all those people use a lot of @water."\n*\n"All the runoff drains down here. It's not a bad place to work, really, except for the @rats."|"@브리튼(Britain) 은 세계에서 가장 큰 도시죠. 그리고 그 수많은 사람이 엄청난 양의 @물(water) 을 쓴답니다."\n*\n"모든 하수가 여기로 흘러 들어오죠. @쥐(rats) 들만 빼면 일하기에 그렇게 나쁜 곳은 아니에요, 정말로."
 184|"Even though we don't know each other that well, I'd like to think of you as my friend already."|"비록 우린 서로 잘 모르지만, 난 이미 당신을 내 친구라고 생각하고 싶군요."
 184|"Go back up and have a look! I'm sure it's still there."\n*\nHe grins, obviously delighted with his own sense of humor.|"다시 올라가서 확인해 봐요! 분명 아직 거기 있을 테니까."\n*\n그는 자신의 유머 감각에 명백히 만족한 듯 싱긋 웃는다.
-184|"Hey hey hey! Welcome to the finest sewers in Britannia.|"헤이 헤이 헤이! 브리타니아 최고의 하수도에 오신 걸 환영해요.|
+184|"Hey hey hey! Welcome to the finest sewers in Britannia.|"헤이 헤이 헤이! 브리타니아 최고의 하수도에 오신 걸 환영해요.
 184|"I don't have a set myself. I usually just @run away."|"저한테는 그런 거 없어요. 전 보통 그냥 @도망(run) 치거든요."
 184|"I wouldn't go swimming around here, ducks."|"여기서 수영하는 건 추천하지 않아요, 오리 친구."
 184|"It's real good exercise!"|"정말 좋은 운동이죠!"
@@ -7341,14 +7342,14 @@
 185|"Yes, @food! The last thing I ate was my @belt."|"그래, @음식(food) ! 내가 마지막으로 먹은 건 내 @벨트(belt) 였어."
 185|"You already got it from me."|"이미 나한테 받아갔잖아."
 185|"You must! I'll die! Just a little bit of @food for the map?"|"제발! 난 죽을 거야! 지도를 줄 테니 @음식(food) 을 조금만이라도 줄 수 없나?"
-185|$Y shares|$Y(이)가 나눈다|
+185|$Y shares|$Y(이)가 나눈다
 185|After finishing the offered meal, however, Ybarra still seemes starved.|제공된 식사를 마친 후에도, 이바라는 여전히 굶주린 것처럼 보인다.
 185|He hands you the map piece and rubs his hands, eagerly awaiting his food.|그는 당신에게 지도 조각을 건네주고는 음식을 간절히 기다리며 손을 비빈다.
 185|His last shred of hope torn away from him, the withered man leaps at you, screaming "@Food! @Food!"|마지막 희망 한 자락마저 찢겨 나간 듯, 수척한 남자가 "@음식(food)! @음식(food)!"이라고 비명을 지르며 당신에게 달려든다.
 185|It takes a few moments for the man to notice you.|사내가 당신을 알아차리는 데 몇 분의 시간이 걸린다.
 185|Suddenly, you realize that you have no food to give him!|갑자기, 당신은 그에게 줄 음식이 전혀 없다는 것을 깨닫는다!
 185|The man collapses, the last of his energy gone.|사내는 마지막 기력마저 다한 듯 쓰러진다.
-185|You share|당신은 나눈다|
+185|You share|당신은 나눈다
 185|s|을
 185|some food with the pathetic man.|이 불쌍한 사내와 음식을 조금.
 185|t|를
@@ -7422,11 +7423,11 @@
 189|"Thy understanding is flawed. But I can teach thee no more."|"그대의 이해는 결함이 있구나. 하지만 더 이상 가르쳐줄 것은 없노라."
 189|"We meet again, Avatar."|"다시 만났구나, 아바타여."
 189|#|#
-189|I admire thy deeds and thy|나는 그대의 행적과 그대의|
+189|I admire thy deeds and thy|나는 그대의 행적과 그대의
 189|The statue speaks!|석상이 말을 한다!
-189|Thy deeds show a lack of|그대의 행적은 부족함을 보여주는구나,|
-189|Thy deeds show a need for more|그대의 행적은 더 많은 필요성을 보여주는구나,|
-189|Thy deeds show understanding of|그대의 행적은 이해를 보여주는구나,|
+189|Thy deeds show a lack of|그대의 행적은 부족함을 보여주는구나,
+189|Thy deeds show a need for more|그대의 행적은 더 많은 필요성을 보여주는구나,
+189|Thy deeds show understanding of|그대의 행적은 이해를 보여주는구나,
 189|Un....|언....
 189|Un.... $0|언.... $0
 189|Using the four stones, you went back in time to smash his power-gem.|네 개의 돌을 사용하여, 당신은 과거로 돌아가 그의 마력 보석을 산산조각 냈다.
@@ -7458,13 +7459,13 @@
 190|"Unbridled passion, desire for all things, leads only to chaos."|"굴레를 벗어난 열정, 모든 것에 대한 갈망은 오직 혼돈만을 불러올 뿐이니라."
 190|"We meet again, Avatar."|"다시 만났구나, 아바타여."
 190|#|#
-190|I admire thy deeds and thy|나는 그대의 행적과 그대의|
+190|I admire thy deeds and thy|나는 그대의 행적과 그대의
 190|Or....|오르....
 190|Or.... $0|오르.... $0
 190|The statue speaks!|석상이 말을 한다!
-190|Thy deeds show misguided but strong|그대의 행적은 잘못되었으나 강렬함을 보여주는구나,|
-190|Thy deeds show nought but unlimited|그대의 행적은 무한함 외에는 아무것도 보여주지 않는구나,|
-190|Thy deeds show the merits of thy|그대의 행적은 장점을 보여주는구나,|
+190|Thy deeds show misguided but strong|그대의 행적은 잘못되었으나 강렬함을 보여주는구나,
+190|Thy deeds show nought but unlimited|그대의 행적은 무한함 외에는 아무것도 보여주지 않는구나,
+190|Thy deeds show the merits of thy|그대의 행적은 장점을 보여주는구나,
 190|With a mighty sword blow, you slew the witch and destroyed her evil works.|강력한 일격으로, 당신은 마녀를 베어 넘기고 그녀의 사악한 업적들을 파괴했다.
 190|You remember quite clearly how you defeated Minax in your second visit to Brittania.|당신은 브리타니아에 두 번째 방문했을 때 미낙스를 어떻게 물리쳤는지 아주 또렷하게 기억한다.
 
@@ -7493,11 +7494,11 @@
 191|"Thy understanding is flawed. But I can teach thee no more."|"그대의 이해는 결함이 있구나. 하지만 더 이상 가르쳐줄 것은 없노라."
 191|"We meet again, Avatar."|"다시 만났구나, 아바타여."
 191|#|#
-191|I admire thy deeds and thy|나는 그대의 행적과 그대의|
+191|I admire thy deeds and thy|나는 그대의 행적과 그대의
 191|The statue speaks!|석상이 말을 한다!
-191|Thy deeds show a lack of|그대의 행적은 부족함을 보여주는구나,|
-191|Thy deeds show misguided|그대의 행적은 잘못 인도되었음을 보여주는구나,|
-191|Thy deeds show the value of thy|그대의 행적은 가치를 보여주는구나,|
+191|Thy deeds show a lack of|그대의 행적은 부족함을 보여주는구나,
+191|Thy deeds show misguided|그대의 행적은 잘못 인도되었음을 보여주는구나,
+191|Thy deeds show the value of thy|그대의 행적은 가치를 보여주는구나,
 191|Us....|어스....
 191|Us.... $0|어스.... $0
 191|Using the four cards, you tricked the accursed machine into destroying itself.|네 장의 카드를 사용하여, 당신은 그 저주받은 기계가 스스로 파괴되도록 속였다.
@@ -7590,7 +7591,7 @@
 196|"$Z... $Z..."|"$Z... $Z..."
 196|"Return when thy journey has progressed further."|"그대의 여정이 더 진행되었을 때 돌아오라."
 196|"Speak the Mantra of Sacrifice."|"희생의 만트라를 말하라."
-196|"The universe is so vast and so ageless|"우주는 너무나 광대하고 영겁의 세월을 간직하고 있으니|
+196|"The universe is so vast and so ageless|"우주는 너무나 광대하고 영겁의 세월을 간직하고 있으니
 196|"There is naught else for you to learn here and now."|"지금 여기에서 그대가 배울 것은 더 이상 없노라."
 196|"Thou hast much to learn about sacrifice."|"그대는 희생에 대해 배울 것이 많구나."
 196|"Thy deeds have shown admirable sacrifice."|"그대의 행적은 찬양받을 만한 희생을 보여주었노라."
@@ -7606,7 +7607,7 @@
 196|by the measure of his sacrifice."|그가 행한 희생의 척도로만 정당화될 수 있느니라."
 196|d|개
 196|strength...|힘...
-196|that the life of one man can only be justified|한 사람의 생애는 오직|
+196|that the life of one man can only be justified|한 사람의 생애는 오직
 196|the altar of Sacrifice.|희생의 제단.
 
 197|the altar of Honor.|명예의 제단이다.
@@ -7658,7 +7659,7 @@
 199|"$Z... $Z..."|"$Z... $Z..."
 199|"Return when thy journey has progressed further."|"그대의 여정이 더 진행되었을 때 돌아오라."
 199|"Speak the Mantra of Humility."|"겸손의 만트라를 말하라."
-199|"The humblest citizen of all the land,|"이 땅의 가장 낮은 시민이,|
+199|"The humblest citizen of all the land,|"이 땅의 가장 낮은 시민이,
 199|"There is naught else for you to learn here and now."|"지금 여기에서 그대가 배울 것은 더 이상 없노라."
 199|"Thou hast much to learn about humility."|"그대는 겸손에 대해 배울 것이 많구나."
 199|"Thy deeds have shown admirable humility."|"그대의 행적은 찬양받을 만한 겸손함을 보여주었노라."
@@ -7673,7 +7674,7 @@
 199|d|개
 199|is stronger than all the hosts of error."|모든 죄악의 무리보다 강하리라."
 199|the altar of Humility.|겸손의 제단.
-199|when clad in the armor of a righteous cause,|정당한 명분이라는 갑옷을 입었을 때,|
+199|when clad in the armor of a righteous cause,|정당한 명분이라는 갑옷을 입었을 때,
 
 200|a finely-carved stone pyramid.|정교하게 조각된 돌 피라미드다.
 200|"$0 is one of the guiding principles of the gargoyle race."|"$0(은)는 가고일 종족의 지도 원칙 중 하나이니라."
