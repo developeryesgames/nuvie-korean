@@ -31,6 +31,8 @@
 #include "InventoryView.h"
 #include "Party.h"
 #include "Font.h"
+#include "FontManager.h"
+#include "KoreanFont.h"
 #include "Actor.h"
 #include "Event.h"
 #include "MapWindow.h"
@@ -133,13 +135,19 @@ bool InventoryView::init(Screen *tmp_screen, void *view_manager, uint16 x, uint1
  else
 	View::init(x,y-2,f,p,tm,om);
 
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ int scale = use_4x ? 4 : 1;
+
  doll_widget = new DollWidget(config, this);
- doll_widget->init(party->get_actor(cur_party_member), 0, 8, tile_manager, obj_manager, true);
+ doll_widget->init(party->get_actor(cur_party_member), 0, 8 * scale, tile_manager, obj_manager, true);
 
  AddWidget(doll_widget);
 
  inventory_widget = new InventoryWidget(config, this);
- inventory_widget->init(party->get_actor(cur_party_member), 64, 8, tile_manager, obj_manager, font);
+ inventory_widget->init(party->get_actor(cur_party_member), 64 * scale, 8 * scale, tile_manager, obj_manager, font);
 
  AddWidget(inventory_widget);
 
@@ -208,7 +216,17 @@ void InventoryView::display_name()
  if(name == NULL)
   return;
 
- font->drawString(screen, name, area.x + ((136) - strlen(name) * 8) / 2, area.y + y_off);
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
+ bool use_4x = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+
+ if(use_4x) {
+   uint16 name_width = korean_font->getStringWidthUTF8(name, 1);
+   korean_font->drawStringUTF8(screen, name, area.x + (area.w - name_width) / 2, area.y + y_off * 4, 0x48, 0, 1);
+ } else {
+   font->drawString(screen, name, area.x + ((136) - strlen(name) * 8) / 2, area.y + y_off);
+ }
 
  return;
 }
@@ -223,6 +241,49 @@ void InventoryView::add_command_icons(Screen *tmp_screen, void *view_manager)
 	y = 80;
  SDL_Surface *button_image;
  SDL_Surface *button_image2;
+
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+
+ if(use_4x) {
+   y = 80 * 4; // 320px from top
+   int spacing = 64; // 16 * 4
+
+   tile = tile_manager->get_tile(387); //left arrow icon
+   button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   left_button = new GUI_Button(this, 0, y, button_image, button_image2, this);
+   this->AddWidget(left_button);
+
+   tile = tile_manager->get_tile(384); //party view icon
+   button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   party_button = new GUI_Button(view_manager, spacing, y, button_image, button_image2, this);
+   this->AddWidget(party_button);
+
+   tile = tile_manager->get_tile(385); //actor view icon
+   button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   actor_button = new GUI_Button(view_manager, 2*spacing, y, button_image, button_image2, this);
+   this->AddWidget(actor_button);
+
+   tile = tile_manager->get_tile(388); //right arrow icon
+   button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   right_button = new GUI_Button(this, 3*spacing, y, button_image, button_image2, this);
+   this->AddWidget(right_button);
+
+   tile = tile_manager->get_tile(391); //combat icon
+   button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   combat_button = new GUI_Button(this, 4*spacing, y, button_image, button_image2, this);
+   this->AddWidget(combat_button);
+
+   return;
+ }
+
  //FIX need to handle clicked button image, check image free on destruct.
 
  tile = tile_manager->get_tile(MD?282:387); //left arrow icon
@@ -282,19 +343,38 @@ void InventoryView::display_inventory_weights()
  inv_weight = vm->get_display_weight(actor->get_inventory_weight());
  equip_weight = vm->get_display_weight(actor->get_inventory_equip_weight());
 
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
+ bool use_4x = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+
  snprintf(string,9,"E:%u/%us", equip_weight,strength);
- font->drawString(screen, string, area.x, area.y+72);
+ if(use_4x) {
+   korean_font->drawStringUTF8(screen, string, area.x, area.y + 72 * 4, 0x48, 0, 1);
+ } else {
+   font->drawString(screen, string, area.x, area.y+72);
+ }
 
  snprintf(string,9,"I:%u/%us", inv_weight,strength*2);
- if(Game::get_game()->get_game_type() == NUVIE_GAME_U6)
-	font->drawString(screen, string, area.x+4*16+8, area.y+72);
- else
-	font->drawString(screen, string, area.x, area.y+80);
+ if(Game::get_game()->get_game_type() == NUVIE_GAME_U6) {
+   if(use_4x) {
+     korean_font->drawStringUTF8(screen, string, area.x + (4*16+8) * 4, area.y + 72 * 4, 0x48, 0, 1);
+   } else {
+     font->drawString(screen, string, area.x+4*16+8, area.y+72);
+   }
+ } else {
+   font->drawString(screen, string, area.x, area.y+80);
+ }
 }
 
 void InventoryView::display_combat_mode()
 {
  Actor *actor = party->get_actor(cur_party_member);
+
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
+ bool use_4x = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
 
  uint8 index = get_combat_mode_index(actor);
  if(Game::get_game()->get_game_type() != NUVIE_GAME_U6)
@@ -328,11 +408,17 @@ void InventoryView::display_combat_mode()
 
 	if(MD)
 		font->drawString(screen, combat_mode_tbl_md[index], area.x+5*16, area.y+101);
-	else 
+	else
 		font->drawString(screen, combat_mode_tbl_se[index], area.x+5*16, area.y+98);
  }
- else
-	font->drawString(screen, combat_mode_tbl[index], area.x+5*16, area.y+88);
+ else {
+   if(use_4x) {
+     // 4x mode: draw combat mode text with Korean font
+     korean_font->drawStringUTF8(screen, combat_mode_tbl[index], area.x + 5*16*4, area.y + 88*4, 0x48, 0, 1);
+   } else {
+     font->drawString(screen, combat_mode_tbl[index], area.x+5*16, area.y+88);
+   }
+ }
 }
 
 /* Move the cursor around, ready or unready objects, select objects, switch

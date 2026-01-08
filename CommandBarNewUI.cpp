@@ -43,7 +43,8 @@
 #include "NuvieIO.h"
 #include "Background.h"
 #include "Keys.h"
-
+#include "KoreanTranslation.h"
+#include "KoreanFont.h"
 
 using std::string;
 
@@ -56,6 +57,8 @@ using std::string;
 static const char *U6_mode_name_tbl[table_size_U6] = {"Attack", "Cast", "Talk", "Look", "Get", "Drop", "Move", "Use", "Rest", "Combat mode", "Load/Save", "Quick save", "Quick load"};
 static const char *SE_mode_name_tbl[table_size_SE] = {"Move", "Get", "Drop", "Use", "Talk", "Look", "Attack", "Rest", "Combat mode", "Load/Save", "Quick save", "Quick load"};
 static const char *MD_mode_name_tbl[table_size_MD] = {"Attack", "Talk", "Look", "Get", "Drop", "Move", "Use", "Combat mode", "Load/Save", "Quick save", "Quick load"};
+// Korean translations for U6 mode names
+static const char *U6_mode_name_tbl_ko[table_size_U6] = {"공격", "주문", "대화", "살펴보기", "집기", "버리기", "이동", "사용", "휴식", "전투 모드", "불러오기/저장", "빠른 저장", "빠른 불러오기"};
 static const char *mode_name_tbl[table_size_U6];
 
 CommandBarNewUI::CommandBarNewUI(Game *g) : CommandBar()
@@ -74,11 +77,17 @@ CommandBarNewUI::CommandBarNewUI(Game *g) : CommandBar()
 
 	offset = OBJLIST_OFFSET_U6_COMMAND_BAR;
 
+	// Check if Korean mode is enabled
+	bool use_korean = false;
+	FontManager *font_manager = game->get_font_manager();
+	if(font_manager && font_manager->is_korean_enabled() && font_manager->get_korean_font())
+		use_korean = true;
+
 	if(game->get_game_type() == NUVIE_GAME_U6)
 	{
 		num_icons = table_size_U6;
 		for (uint8 i = 0; i < table_size_U6; i++)
-			mode_name_tbl[i] = U6_mode_name_tbl[i];
+			mode_name_tbl[i] = use_korean ? U6_mode_name_tbl_ko[i] : U6_mode_name_tbl[i];
 	}
 	else if(game->get_game_type() == NUVIE_GAME_SE)
 	{

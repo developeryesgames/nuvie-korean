@@ -41,6 +41,8 @@
 #include "Screen.h"
 #include "MapWindow.h"
 #include "Background.h"
+#include "Game.h"
+#include "FontManager.h"
 
 #define sqr(a) ((a)*(a))
 
@@ -620,6 +622,415 @@ bool Screen::blit(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16 s
  return blit32(dest_x, dest_y, src_buf, src_bpp, src_w, src_h, src_pitch, trans);
 }
 
+// 2x scaled blit - each source pixel becomes a 2x2 block
+bool Screen::blit2x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16 src_bpp, uint16 src_w, uint16 src_h, uint16 src_pitch, bool trans, SDL_Rect *clip_rect)
+{
+ uint16 src_x = 0;
+ uint16 src_y = 0;
+
+ // Destination dimensions are 2x source
+ uint16 dest_w = src_w * 2;
+ uint16 dest_h = src_h * 2;
+
+
+ // clip to screen.
+ if(dest_x >= width || dest_y >= height)
+   return false;
+
+ if(dest_x < 0)
+   {
+    if(dest_x + dest_w <= 0)
+      return false;
+    else
+      {
+       // Skip source pixels for negative dest_x
+       sint32 skip = (-dest_x + 1) / 2;
+       src_buf += skip;
+       src_w -= skip;
+       dest_w = src_w * 2;
+       dest_x = dest_x + skip * 2;
+      }
+   }
+
+ if(dest_y < 0)
+   {
+    if(dest_y + dest_h <= 0)
+      return false;
+    else
+      {
+       sint32 skip = (-dest_y + 1) / 2;
+       src_buf += src_pitch * skip;
+       src_h -= skip;
+       dest_h = src_h * 2;
+       dest_y = dest_y + skip * 2;
+      }
+   }
+
+ if(dest_x + dest_w > width)
+   {
+    src_w = (width - dest_x) / 2;
+    dest_w = src_w * 2;
+   }
+
+ if(dest_y + dest_h > height)
+   {
+    src_h = (height - dest_y) / 2;
+    dest_h = src_h * 2;
+   }
+
+ //clip to rect if required.
+ if(clip_rect)
+  {
+   if(dest_x + dest_w < clip_rect->x || dest_y + dest_h < clip_rect->y)
+     return false;
+
+   if(clip_rect->x > dest_x)
+      {
+       sint32 skip = (clip_rect->x - dest_x + 1) / 2;
+       src_x = skip;
+       src_w -= skip;
+       dest_x = clip_rect->x;
+       dest_w = src_w * 2;
+      }
+
+   if(clip_rect->y > dest_y)
+     {
+      sint32 skip = (clip_rect->y - dest_y + 1) / 2;
+      src_y = skip;
+      src_h -= skip;
+      dest_y = clip_rect->y;
+      dest_h = src_h * 2;
+     }
+
+   if(dest_x + dest_w > clip_rect->x + clip_rect->w)
+     {
+      if(clip_rect->x + clip_rect->w - dest_x <= 0)
+        return false;
+      src_w = (clip_rect->x + clip_rect->w - dest_x) / 2;
+      dest_w = src_w * 2;
+     }
+
+   if(dest_y + dest_h > clip_rect->y + clip_rect->h)
+     {
+      if(clip_rect->y + clip_rect->h - dest_y <= 0)
+        return false;
+      src_h = (clip_rect->y + clip_rect->h - dest_y) / 2;
+      dest_h = src_h * 2;
+     }
+
+   src_buf += src_y * src_pitch + src_x;
+  }
+
+ // Perform 2x scaled blit
+ if(surface->bits_per_pixel == 16)
+ {
+   uint16 *pixels = (uint16 *)surface->pixels;
+   pixels += dest_y * surface->w + dest_x;
+
+   if(trans)
+   {
+     for(uint16 i = 0; i < src_h; i++)
+     {
+       for(uint16 j = 0; j < src_w; j++)
+       {
+         if(src_buf[j] != 0xff)
+         {
+           uint16 color = (uint16)surface->colour32[src_buf[j]];
+           // Write 2x2 block
+           pixels[j*2] = color;
+           pixels[j*2 + 1] = color;
+           pixels[surface->w + j*2] = color;
+           pixels[surface->w + j*2 + 1] = color;
+         }
+       }
+       src_buf += src_pitch;
+       pixels += surface->w * 2; // Skip 2 rows
+     }
+   }
+   else
+   {
+     for(uint16 i = 0; i < src_h; i++)
+     {
+       for(uint16 j = 0; j < src_w; j++)
+       {
+         uint16 color = (uint16)surface->colour32[src_buf[j]];
+         pixels[j*2] = color;
+         pixels[j*2 + 1] = color;
+         pixels[surface->w + j*2] = color;
+         pixels[surface->w + j*2 + 1] = color;
+       }
+       src_buf += src_pitch;
+       pixels += surface->w * 2;
+     }
+   }
+ }
+ else // 32-bit
+ {
+   uint32 *pixels = (uint32 *)surface->pixels;
+   pixels += dest_y * surface->w + dest_x;
+
+   if(trans)
+   {
+     for(uint16 i = 0; i < src_h; i++)
+     {
+       for(uint16 j = 0; j < src_w; j++)
+       {
+         if(src_buf[j] != 0xff)
+         {
+           uint32 color = surface->colour32[src_buf[j]];
+           // Write 2x2 block
+           pixels[j*2] = color;
+           pixels[j*2 + 1] = color;
+           pixels[surface->w + j*2] = color;
+           pixels[surface->w + j*2 + 1] = color;
+         }
+       }
+       src_buf += src_pitch;
+       pixels += surface->w * 2;
+     }
+   }
+   else
+   {
+     for(uint16 i = 0; i < src_h; i++)
+     {
+       for(uint16 j = 0; j < src_w; j++)
+       {
+         uint32 color = surface->colour32[src_buf[j]];
+         pixels[j*2] = color;
+         pixels[j*2 + 1] = color;
+         pixels[surface->w + j*2] = color;
+         pixels[surface->w + j*2 + 1] = color;
+       }
+       src_buf += src_pitch;
+       pixels += surface->w * 2;
+     }
+   }
+ }
+
+ return true;
+}
+
+// 4x scaled blit - each source pixel becomes a 4x4 block
+bool Screen::blit4x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16 src_bpp, uint16 src_w, uint16 src_h, uint16 src_pitch, bool trans, SDL_Rect *clip_rect)
+{
+ uint16 src_x = 0;
+ uint16 src_y = 0;
+
+ // Destination dimensions are 4x source
+ uint32 dest_w = (uint32)src_w * 4;  // Use uint32 to avoid any overflow
+ uint32 dest_h = (uint32)src_h * 4;
+
+ static int blit4x_debug_count = 0;
+ if(blit4x_debug_count < 5 && src_h > 100) {
+   DEBUG(0, LEVEL_INFORMATIONAL, "blit4x: dest(%d,%d) src_w=%d src_h=%d dest_w=%u dest_h=%u screen(%d,%d)\n",
+         dest_x, dest_y, src_w, src_h, dest_w, dest_h, width, height);
+   blit4x_debug_count++;
+ }
+
+ // clip to screen.
+ if(dest_x >= width || dest_y >= height)
+   return false;
+
+ if(dest_x < 0)
+   {
+    if(dest_x + dest_w <= 0)
+      return false;
+    else
+      {
+       sint32 skip = (-dest_x + 3) / 4;
+       src_buf += skip;
+       src_w -= skip;
+       dest_w = src_w * 4;
+       dest_x = dest_x + skip * 4;
+      }
+   }
+
+ if(dest_y < 0)
+   {
+    if(dest_y + dest_h <= 0)
+      return false;
+    else
+      {
+       sint32 skip = (-dest_y + 3) / 4;
+       src_buf += src_pitch * skip;
+       src_h -= skip;
+       dest_h = src_h * 4;
+       dest_y = dest_y + skip * 4;
+      }
+   }
+
+ if(dest_x + dest_w > width)
+   {
+    src_w = (width - dest_x) / 4;
+    dest_w = src_w * 4;
+   }
+
+ if(dest_y + dest_h > height)
+   {
+    src_h = (height - dest_y) / 4;
+    dest_h = src_h * 4;
+   }
+
+ static int blit4x_clip_debug = 0;
+ if(blit4x_clip_debug < 3 && src_h > 100) {
+   DEBUG(0, LEVEL_INFORMATIONAL, "blit4x after clip: src_w=%d src_h=%d dest_w=%u dest_h=%u bits_per_pixel=%d surface_w=%u\n",
+         src_w, src_h, dest_w, dest_h, surface->bits_per_pixel, surface->w);
+   blit4x_clip_debug++;
+ }
+
+ //clip to rect if required.
+ if(clip_rect)
+  {
+   if(dest_x + dest_w < clip_rect->x || dest_y + dest_h < clip_rect->y)
+     return false;
+
+   if(clip_rect->x > dest_x)
+      {
+       sint32 skip = (clip_rect->x - dest_x + 3) / 4;
+       src_x = skip;
+       src_w -= skip;
+       dest_x = clip_rect->x;
+       dest_w = src_w * 4;
+      }
+
+   if(clip_rect->y > dest_y)
+     {
+      sint32 skip = (clip_rect->y - dest_y + 3) / 4;
+      src_y = skip;
+      src_h -= skip;
+      dest_y = clip_rect->y;
+      dest_h = src_h * 4;
+     }
+
+   if(dest_x + dest_w > clip_rect->x + clip_rect->w)
+     {
+      if(clip_rect->x + clip_rect->w - dest_x <= 0)
+        return false;
+      src_w = (clip_rect->x + clip_rect->w - dest_x) / 4;
+      dest_w = src_w * 4;
+     }
+
+   if(dest_y + dest_h > clip_rect->y + clip_rect->h)
+     {
+      if(clip_rect->y + clip_rect->h - dest_y <= 0)
+        return false;
+      src_h = (clip_rect->y + clip_rect->h - dest_y) / 4;
+      dest_h = src_h * 4;
+     }
+
+   src_buf += src_y * src_pitch + src_x;
+  }
+
+ // Perform 4x scaled blit
+ if(surface->bits_per_pixel == 16)
+ {
+   uint16 *pixels = (uint16 *)surface->pixels;
+   pixels += dest_y * surface->w + dest_x;
+   uint32 row_stride = surface->w;
+
+   if(trans)
+   {
+     for(uint16 i = 0; i < src_h; i++)
+     {
+       for(uint16 j = 0; j < src_w; j++)
+       {
+         if(src_buf[j] != 0xff)
+         {
+           uint16 color = (uint16)surface->colour32[src_buf[j]];
+           uint32 base = j * 4;
+           // Write 4x4 block
+           for(int row = 0; row < 4; row++)
+           {
+             uint16 *row_ptr = pixels + row * row_stride + base;
+             row_ptr[0] = color;
+             row_ptr[1] = color;
+             row_ptr[2] = color;
+             row_ptr[3] = color;
+           }
+         }
+       }
+       src_buf += src_pitch;
+       pixels += row_stride * 4; // Skip 4 rows
+     }
+   }
+   else
+   {
+     for(uint16 i = 0; i < src_h; i++)
+     {
+       for(uint16 j = 0; j < src_w; j++)
+       {
+         uint16 color = (uint16)surface->colour32[src_buf[j]];
+         uint32 base = j * 4;
+         for(int row = 0; row < 4; row++)
+         {
+           uint16 *row_ptr = pixels + row * row_stride + base;
+           row_ptr[0] = color;
+           row_ptr[1] = color;
+           row_ptr[2] = color;
+           row_ptr[3] = color;
+         }
+       }
+       src_buf += src_pitch;
+       pixels += row_stride * 4;
+     }
+   }
+ }
+ else // 32-bit
+ {
+   uint32 *pixels = (uint32 *)surface->pixels;
+   pixels += dest_y * surface->w + dest_x;
+   uint32 row_stride = surface->w;
+
+   if(trans)
+   {
+     for(uint16 i = 0; i < src_h; i++)
+     {
+       for(uint16 j = 0; j < src_w; j++)
+       {
+         if(src_buf[j] != 0xff)
+         {
+           uint32 color = surface->colour32[src_buf[j]];
+           uint32 base = j * 4;
+           // Write 4x4 block
+           for(int row = 0; row < 4; row++)
+           {
+             uint32 *row_ptr = pixels + row * row_stride + base;
+             row_ptr[0] = color;
+             row_ptr[1] = color;
+             row_ptr[2] = color;
+             row_ptr[3] = color;
+           }
+         }
+       }
+       src_buf += src_pitch;
+       pixels += row_stride * 4;
+     }
+   }
+   else
+   {
+     for(uint16 i = 0; i < src_h; i++)
+     {
+       for(uint16 j = 0; j < src_w; j++)
+       {
+         uint32 color = surface->colour32[src_buf[j]];
+         uint32 base = j * 4;
+         for(int row = 0; row < 4; row++)
+         {
+           uint32 *row_ptr = pixels + row * row_stride + base;
+           row_ptr[0] = color;
+           row_ptr[1] = color;
+           row_ptr[2] = color;
+           row_ptr[3] = color;
+         }
+       }
+       src_buf += src_pitch;
+       pixels += row_stride * 4;
+     }
+   }
+ }
+
+ return true;
+}
 
 inline uint16 Screen::blendpixel16(uint16 p, uint16 p1, uint8 opacity)
 {
@@ -845,6 +1256,64 @@ void Screen::blitbitmap32(uint16 dest_x, uint16 dest_y, const unsigned char *src
    src_buf += src_w;
    pixels += surface->w; //surface->pitch;
   }
+
+ return;
+}
+
+void Screen::blitbitmap4x(uint16 dest_x, uint16 dest_y, const unsigned char *src_buf, uint16 src_w, uint16 src_h, uint8 fg_color, uint8 bg_color)
+{
+ uint16 i, j, di, dj;
+
+ // Each source pixel becomes 4x4 destination pixels
+ // Only draw foreground pixels (transparent background)
+ if(surface->bits_per_pixel == 16)
+ {
+   uint16 *pixels = (uint16 *)surface->pixels;
+   uint16 color = (uint16)surface->colour32[fg_color];
+
+   for(i=0; i<src_h; i++)
+   {
+     for(j=0; j<src_w; j++)
+     {
+       if(src_buf[j]) { // Only draw foreground, skip background (transparent)
+         // Fill 4x4 block
+         for(di=0; di<4; di++)
+         {
+           for(dj=0; dj<4; dj++)
+           {
+             uint16 *dest = pixels + (dest_y + i*4 + di) * surface->w + (dest_x + j*4 + dj);
+             *dest = color;
+           }
+         }
+       }
+     }
+     src_buf += src_w;
+   }
+ }
+ else // 32-bit
+ {
+   uint32 *pixels = (uint32 *)surface->pixels;
+   uint32 color = surface->colour32[fg_color];
+
+   for(i=0; i<src_h; i++)
+   {
+     for(j=0; j<src_w; j++)
+     {
+       if(src_buf[j]) { // Only draw foreground, skip background (transparent)
+         // Fill 4x4 block
+         for(di=0; di<4; di++)
+         {
+           for(dj=0; dj<4; dj++)
+           {
+             uint32 *dest = pixels + (dest_y + i*4 + di) * surface->w + (dest_x + j*4 + dj);
+             *dest = color;
+           }
+         }
+       }
+     }
+     src_buf += src_w;
+   }
+ }
 
  return;
 }
@@ -1131,6 +1600,14 @@ void Screen::blitalphamap8(sint16 x, sint16 y, SDL_Rect *clip_rect)
     uint16 i,j;
     Game *game = Game::get_game();
 
+    // Check for Korean 4x mode (safe check)
+    bool use_4x = false;
+    FontManager *font_manager = game ? game->get_font_manager() : NULL;
+    if(font_manager && font_manager->is_korean_enabled() && 
+       font_manager->get_korean_font() && game->is_original_plus()) {
+        use_4x = true;
+    }
+
     if( lighting_style == LIGHTING_STYLE_ORIGINAL )
     {
 
@@ -1139,7 +1616,12 @@ void Screen::blitalphamap8(sint16 x, sint16 y, SDL_Rect *clip_rect)
             for( i = SHADING_BORDER; i < shading_rect.w-SHADING_BORDER; i++ )
             {
                 if( shading_data[j*shading_rect.w+i] < 4 )
-                    blit(x+(i-SHADING_BORDER)*16,y+(j-SHADING_BORDER)*16,shading_tile[shading_data[j*shading_rect.w+i]],8,16,16,16,true,game->get_map_window()->get_clip_rect());
+                {
+                    if(use_4x)
+                        blit4x(x+(i-SHADING_BORDER)*64,y+(j-SHADING_BORDER)*64,shading_tile[shading_data[j*shading_rect.w+i]],8,16,16,16,true,game->get_map_window()->get_clip_rect());
+                    else
+                        blit(x+(i-SHADING_BORDER)*16,y+(j-SHADING_BORDER)*16,shading_tile[shading_data[j*shading_rect.w+i]],8,16,16,16,true,game->get_map_window()->get_clip_rect());
+                }
             }
         }
         return;
@@ -1348,6 +1830,63 @@ SDL_Surface *Screen::create_sdl_surface_from(unsigned char *src_buf, uint16 src_
 
  return new_surface;
 
+}
+
+// Create a 4x scaled SDL surface from 8bpp source
+SDL_Surface *Screen::create_sdl_surface_from_4x(unsigned char *src_buf, uint16 src_bpp, uint16 src_w, uint16 src_h, uint16 src_pitch)
+{
+ SDL_Surface *new_surface;
+ uint16 i, j, di, dj;
+ uint16 dest_w = src_w * 4;
+ uint16 dest_h = src_h * 4;
+
+ new_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, dest_w, dest_h, surface->bits_per_pixel,
+                                    surface->Rmask, surface->Gmask, surface->Bmask, 0);
+
+ if(surface->bits_per_pixel == 16)
+   {
+    uint16 *pixels = (uint16 *)new_surface->pixels;
+
+    for(i=0;i<src_h;i++)
+      {
+       for(j=0;j<src_w;j++)
+         {
+          uint16 color = (uint16)surface->colour32[src_buf[j]];
+          // Write 4x4 block
+          for(di=0;di<4;di++)
+            {
+             for(dj=0;dj<4;dj++)
+               {
+                pixels[(i*4+di)*dest_w + (j*4+dj)] = color;
+               }
+            }
+         }
+       src_buf += src_pitch;
+      }
+   }
+ else
+   {
+    uint32 *pixels = (uint32 *)new_surface->pixels;
+
+    for(i=0;i<src_h;i++)
+      {
+       for(j=0;j<src_w;j++)
+         {
+          uint32 color = surface->colour32[src_buf[j]];
+          // Write 4x4 block
+          for(di=0;di<4;di++)
+            {
+             for(dj=0;dj<4;dj++)
+               {
+                pixels[(i*4+di)*dest_w + (j*4+dj)] = color;
+               }
+            }
+         }
+       src_buf += src_pitch;
+      }
+   }
+
+ return new_surface;
 }
 
 uint16 Screen::get_pitch()

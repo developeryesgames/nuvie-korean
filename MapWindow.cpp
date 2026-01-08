@@ -48,7 +48,10 @@
 #include "ActorView.h"
 #include "InventoryView.h"
 #include "Background.h"
+#include "U6Shape.h"
 #include "Keys.h"
+#include "FontManager.h"
+#include "KoreanFont.h"
 
 #define USE_BUTTON 1 /* FIXME: put this in a common location */
 #define WALK_BUTTON 3
@@ -179,6 +182,19 @@ MapWindow::MapWindow(Configuration *cfg, Map *m): GUI_Widget(NULL, 0, 0, 0, 0)
 
  lighting_update_required = true;
 
+ paper_clip_active = false;
+ paper_clip_rect.x = 0;
+ paper_clip_rect.y = 0;
+ paper_clip_rect.w = 0;
+ paper_clip_rect.h = 0;
+
+ // Map tile scale (1-4x), default to 1
+ int scale_val = 1;
+ config->value("config/video/map_tile_scale", scale_val, 1);
+ if(scale_val < 1) scale_val = 1;
+ if(scale_val > 4) scale_val = 4;
+ map_tile_scale = (uint8)scale_val;
+
  set_interface();
 }
 
@@ -204,37 +220,124 @@ bool MapWindow::init(TileManager *tm, ObjManager *om, ActorManager *am)
  actor_manager = am;
  uint16 map_w = 11, map_h = 11;
  border_width = game->get_background()->get_border_width();
+
+ // Calculate tile size based on scale
+ uint16 scaled_tile_size = 16 * map_tile_scale;
+
  if(!game->is_orig_style())
  {
 	 uint16 game_width = game->get_game_width();
 	 uint16 game_height = game->get_game_height();
+	 bool used_paper_layout = false;
 
 	 if(game->is_original_plus_cutoff_map()) {
-		 map_center_xoff = 0;
-		 game_width -= border_width; // don't go over border
-	 } else if(game->is_original_plus_full_map()) {
-		 map_center_xoff = (border_width/16)%16;
-	 } else { // new style
-		 map_center_xoff = 0;
+		 uint16 ui_scale = game_width / 320;
+		 if(ui_scale > 1) {
+			 Background *bg = game->get_background();
+			 if(bg) {
+				 U6Shape *shape = bg->get_bg_shape();
+				 if(shape) {
+					 uint16 bg_w = 0, bg_h = 0;
+					 shape->get_size(&bg_w, &bg_h);
+					 if(bg_w > 0 && bg_h > 0) {
+						 uint16 bg_scale = bg_w / 320;
+						 if(bg_scale == 0) bg_scale = 1;
+						 uint16 draw_scale = (bg_scale == 1 && ui_scale > 1) ? ui_scale : 1;
+						 uint16 panel_width = (uint16)(158 * bg_scale);
+						 uint16 edge = (uint16)(6 * bg_scale);
+						 uint16 bottom_edge = (uint16)(29 * bg_scale); // matches CommandBar layout
+						 if(panel_width + edge * 2 < bg_w && edge + bottom_edge < bg_h) {
+							 uint32 hole_w_px = (uint32)(bg_w - panel_width - edge * 2) * draw_scale;
+
+								 uint32 hole_h_px = (uint32)(bg_h - edge - bottom_edge) * draw_scale;
+
+								 if(hole_w_px > 0 && hole_h_px > 0) {
+
+									 map_w = (uint16)((hole_w_px + scaled_tile_size - 1) / scaled_tile_size);
+
+									 map_h = (uint16)((hole_h_px + scaled_tile_size - 1) / scaled_tile_size);
+
+									 if(map_w == 0) map_w = 1;
+
+									 if(map_h == 0) map_h = 1;
+
+									 game_width = map_w * scaled_tile_size;
+
+									 game_height = map_h * scaled_tile_size;
+
+									 map_center_xoff = 0;
+
+									 paper_clip_active = true;
+									 paper_clip_rect.x = game->get_game_x_offset() + (edge * draw_scale);
+									 paper_clip_rect.y = game->get_game_y_offset() + (edge * draw_scale);
+									 paper_clip_rect.w = (uint16)hole_w_px;
+									 paper_clip_rect.h = (uint16)hole_h_px;
+
+									 offset_x = paper_clip_rect.x + (sint32)(hole_w_px - game_width) / 2;
+
+							offset_y = paper_clip_rect.y + (sint32)(hole_h_px - game_height) / 2;
+
+							// Align the map origin to tile boundaries relative to the clip to avoid seams.
+							if(scaled_tile_size > 0) {
+								sint32 adj_x = (paper_clip_rect.x - offset_x) % scaled_tile_size;
+								if(adj_x < 0) adj_x += scaled_tile_size;
+								sint32 adj_y = (paper_clip_rect.y - offset_y) % scaled_tile_size;
+								if(adj_y < 0) adj_y += scaled_tile_size;
+								offset_x += adj_x;
+								offset_y += adj_y;
+							}
+
+							used_paper_layout = true;
+
+									 static int map_dbg = 0;
+									 if(map_dbg < 3) {
+										 DEBUG(0, LEVEL_INFORMATIONAL, "MapLayout FIXED: hole_px=%ux%u clip=%ux%u+%u,%u map=%ux%u area=%ux%u off=%d,%d tile=%u\n", hole_w_px, hole_h_px, paper_clip_rect.w, paper_clip_rect.h, paper_clip_rect.x, paper_clip_rect.y, map_w, map_h, game_width, game_height, offset_x, offset_y, scaled_tile_size);
+										 map_dbg++;
+									 }
+
+							 }
+						 }
+					 }
+				 }
+			 }
+		 }
 	 }
-	 map_w = game_width/16;
-	 map_h = game_height/16;
-	 if(game_width%16 != 0 || map_w%2 == 0) { // not just the right size
-		 map_w += 1;
-		 if(map_w%2 == 0) // need odd number of tiles to center properly
+
+	 if(!used_paper_layout) {
+		 paper_clip_active = false;
+		 paper_clip_rect.x = 0;
+		 paper_clip_rect.y = 0;
+		 paper_clip_rect.w = 0;
+		 paper_clip_rect.h = 0;
+		 if(game->is_original_plus_cutoff_map()) {
+			 map_center_xoff = 0;
+			 game_width -= border_width; // don't go over border
+		 } else if(game->is_original_plus_full_map()) {
+			 map_center_xoff = (border_width/scaled_tile_size)%scaled_tile_size;
+		 } else { // new style
+			 map_center_xoff = 0;
+		 }
+		 // Use scaled tile size for calculating number of tiles
+		 map_w = game_width/scaled_tile_size;
+		 map_h = game_height/scaled_tile_size;
+		 if(game_width%scaled_tile_size != 0 || map_w%2 == 0) { // not just the right size
 			 map_w += 1;
-	 }
-	 if(game_height%16 != 0 || map_h%2 == 0) { // not just the right size
-		 map_h += 1;
-		 if(map_h%2 == 0) // need odd number of tiles to center properly
+			 if(map_w%2 == 0) // need odd number of tiles to center properly
+				 map_w += 1;
+		 }
+		 if(game_height%scaled_tile_size != 0 || map_h%2 == 0) { // not just the right size
 			 map_h += 1;
+			 if(map_h%2 == 0) // need odd number of tiles to center properly
+				 map_h += 1;
+		 }
+		 offset_x -= (map_w*scaled_tile_size - game_width)/2;
+		 offset_y -= (map_h*scaled_tile_size - game_height)/2;
 	 }
-	 offset_x -= (map_w*16 - game_width)/2;
-	 offset_y -= (map_h*16 - game_height)/2;
  }
  else
 	 map_center_xoff = 0;
- anim_manager = new AnimManager(offset_x, offset_y);
+ 
+anim_manager = new AnimManager(offset_x, offset_y);
 
  cursor_tile = tile_manager->get_cursor_tile();
  use_tile = tile_manager->get_use_tile();
@@ -271,8 +374,9 @@ bool MapWindow::set_windowSize(uint16 width, uint16 height)
 {
  win_width = width;
  win_height = height;
- area.w = win_width * 16;
- area.h = win_height * 16;
+ uint16 scaled_tile_size = 16 * map_tile_scale;
+ area.w = win_width * scaled_tile_size;
+ area.h = win_height * scaled_tile_size;
 
  // We make the temp map +1 bigger on the top and left edges
  // and +2 bigger on the bottom and right edges
@@ -311,13 +415,20 @@ if(game->is_orig_style())
 }
 else
 {
-	 clip_rect.x = game->get_game_x_offset();
-	 clip_rect.y = game->get_game_y_offset();
-	if(game->is_original_plus_cutoff_map())
-		 clip_rect.w = game->get_game_width() - border_width - 1;
-	else
-		 clip_rect.w = game->get_game_width();
-	 clip_rect.h = game->get_game_height();
+	 if(paper_clip_active && game->is_original_plus_cutoff_map())
+	 {
+		 clip_rect = paper_clip_rect;
+	 }
+	 else
+	 {
+		 clip_rect.x = game->get_game_x_offset();
+		 clip_rect.y = game->get_game_y_offset();
+		 if(game->is_original_plus_cutoff_map())
+			 clip_rect.w = game->get_game_width() - border_width - 1;
+		 else
+			 clip_rect.w = game->get_game_width();
+		 clip_rect.h = game->get_game_height();
+	 }
 }
  anim_manager->set_area(clip_rect);
 
@@ -950,6 +1061,55 @@ void MapWindow::Display(bool full_redraw)
    createLightOverlay();
  }
 
+ if(paper_clip_active)
+ {
+   // Force the paper hole clip based on U6 layout (320x200 base) so borders remain visible.
+   uint16 ui_scale = game->get_game_width() / 320;
+   if(ui_scale == 0) ui_scale = 1;
+   uint16 edge_px = (uint16)(6 * ui_scale);
+   uint16 hole_w_px = (uint16)((320 - 158 - 12) * ui_scale);
+   uint16 hole_h_px = (uint16)((200 - 6 - 29) * ui_scale);
+   if(hole_w_px > 0 && hole_h_px > 0) {
+     clip_rect.x = game->get_game_x_offset() + edge_px;
+     clip_rect.y = game->get_game_y_offset() + edge_px;
+     clip_rect.w = hole_w_px;
+     clip_rect.h = hole_h_px;
+   } else {
+     clip_rect = paper_clip_rect;
+   }
+   anim_manager->set_area(clip_rect);
+   static int clip_dbg = 0;
+   if(clip_dbg < 3) {
+     DEBUG(0, LEVEL_INFORMATIONAL, "PaperClip FIXED: clip=%dx%d+%d,%d area=%dx%d+%d,%d win=%ux%u tile=%u ui=%u\n", clip_rect.w, clip_rect.h, clip_rect.x, clip_rect.y, area.w, area.h, area.x, area.y, win_width, win_height, (uint16)(16 * map_tile_scale), ui_scale);
+     clip_dbg++;
+   }
+ }
+
+
+ // In 4x UI scaling, avoid drawing the map under the command bar area.
+ if(!paper_clip_active && game->is_original_plus()) {
+   uint16 ui_scale = game->get_game_width() / 320;
+   if(ui_scale > 1) {
+     uint16 y_off = game->get_game_y_offset();
+     uint16 new_h = game->get_game_height();
+     CommandBar *cb = game->get_command_bar();
+     if(cb) {
+       uint16 cb_top = cb->Y();
+       if(cb_top > y_off && cb_top < y_off + game->get_game_height()) {
+         new_h = cb_top - y_off;
+       }
+     }
+     if(new_h < clip_rect.h) {
+       clip_rect.h = new_h;
+       anim_manager->set_area(clip_rect);
+     }
+   }
+ }
+
+ if(paper_clip_active)
+  drawPaperBackground();
+
+
  //map_ptr = map->get_map_data(cur_level);
 // map_width = map->get_width(cur_level);
 
@@ -957,27 +1117,37 @@ void MapWindow::Display(bool full_redraw)
   map_ptr = tmp_map_buf;
   map_ptr += (TMP_MAP_BORDER * tmp_map_width + TMP_MAP_BORDER);// * sizeof(uint16); //remember our tmp map is TMP_MAP_BORDER bigger all around.
 
+  uint8 tile_size = 16 * map_tile_scale;  // Scaled tile size for positioning
+
   for(i=0;i<win_height;i++)
   {
    for(j=0;j<win_width;j++)
      {
-      sint16 draw_x = area.x + (j*16), draw_y = area.y + (i*16);
-      //draw_x -= (cur_x_add <= draw_x) ? cur_x_add : draw_x;
-      //draw_y -= (cur_y_add <= draw_y) ? cur_y_add : draw_y;
-      draw_x -= cur_x_add;
-      draw_y -= cur_y_add;
+      sint16 draw_x = area.x + (j*tile_size), draw_y = area.y + (i*tile_size);
+      draw_x -= cur_x_add * map_tile_scale;
+      draw_y -= cur_y_add * map_tile_scale;
       if(map_ptr[j] == 0)
-        screen->clear(draw_x,draw_y,16,16,&clip_rect); //blackout tile.
+        screen->clear(draw_x,draw_y,tile_size,tile_size,&clip_rect); //blackout tile.
       else
         {
          if(map_ptr[j] >= 16 && map_ptr[j] < 48) //lay down the base tile for shoreline tiles
            {
             tile = tile_manager->get_anim_base_tile(map_ptr[j]);
-            screen->blit(draw_x,draw_y,(unsigned char *)tile->data,8,16,16,16,tile->transparent,&clip_rect);
+            if(map_tile_scale == 4)
+              screen->blit4x(draw_x,draw_y,(unsigned char *)tile->data,8,16,16,16,tile->transparent,&clip_rect);
+            else if(map_tile_scale == 2)
+              screen->blit2x(draw_x,draw_y,(unsigned char *)tile->data,8,16,16,16,tile->transparent,&clip_rect);
+            else
+              screen->blit(draw_x,draw_y,(unsigned char *)tile->data,8,16,16,16,tile->transparent,&clip_rect);
            }
 
          tile = tile_manager->get_tile(map_ptr[j]);
-         screen->blit(draw_x,draw_y,(unsigned char *)tile->data,8,16,16,16,tile->transparent,&clip_rect);
+         if(map_tile_scale == 4)
+           screen->blit4x(draw_x,draw_y,(unsigned char *)tile->data,8,16,16,16,tile->transparent,&clip_rect);
+         else if(map_tile_scale == 2)
+           screen->blit2x(draw_x,draw_y,(unsigned char *)tile->data,8,16,16,16,tile->transparent,&clip_rect);
+         else
+           screen->blit(draw_x,draw_y,(unsigned char *)tile->data,8,16,16,16,tile->transparent,&clip_rect);
 
         }
 
@@ -1005,12 +1175,26 @@ void MapWindow::Display(bool full_redraw)
 
  if(show_cursor)
   {
-   screen->blit(area.x+cursor_x*16,area.y+cursor_y*16,(unsigned char *)cursor_tile->data,8,16,16,16,true,&clip_rect);
+   sint16 cx = area.x + cursor_x * tile_size;
+   sint16 cy = area.y + cursor_y * tile_size;
+   if(map_tile_scale == 4)
+     screen->blit4x(cx,cy,(unsigned char *)cursor_tile->data,8,16,16,16,true,&clip_rect);
+   else if(map_tile_scale == 2)
+     screen->blit2x(cx,cy,(unsigned char *)cursor_tile->data,8,16,16,16,true,&clip_rect);
+   else
+     screen->blit(cx,cy,(unsigned char *)cursor_tile->data,8,16,16,16,true,&clip_rect);
   }
 
  if(show_use_cursor)
   {
-   screen->blit(area.x+cursor_x*16,area.y+cursor_y*16,(unsigned char *)use_tile->data,8,16,16,16,true,&clip_rect);
+   sint16 cx = area.x + cursor_x * tile_size;
+   sint16 cy = area.y + cursor_y * tile_size;
+   if(map_tile_scale == 4)
+     screen->blit4x(cx,cy,(unsigned char *)use_tile->data,8,16,16,16,true,&clip_rect);
+   else if(map_tile_scale == 2)
+     screen->blit2x(cx,cy,(unsigned char *)use_tile->data,8,16,16,16,true,&clip_rect);
+   else
+     screen->blit(cx,cy,(unsigned char *)use_tile->data,8,16,16,16,true,&clip_rect);
   }
 
 // screen->fill(0,8,8,win_height*16-16,win_height*16-16);
@@ -1035,6 +1219,8 @@ void MapWindow::Display(bool full_redraw)
 	screen->blit(we_x,mousecenter_y*16+area.y,(unsigned char *)wizard_eye_info.eye_tile->data,8,16,16,16,true,&clip_rect);
  }
 
+ if(game->is_original_plus())
+	 drawPaperFrame();
  if(game->is_orig_style())
 	 drawBorder();
 
@@ -1350,8 +1536,9 @@ inline void MapWindow::drawNewTile(Tile *tile, uint16 x, uint16 y, bool toptile)
 
 inline void MapWindow::drawTopTile(Tile *tile, uint16 x, uint16 y, bool toptile)
 {
-
-
+ uint16 tile_size = 16 * map_tile_scale;
+ sint16 draw_x = area.x + (x * tile_size) - (cur_x_add * map_tile_scale);
+ sint16 draw_y = area.y + (y * tile_size) - (cur_y_add * map_tile_scale);
 
 // if(tile->boundary)
 //  {
@@ -1361,16 +1548,183 @@ inline void MapWindow::drawTopTile(Tile *tile, uint16 x, uint16 y, bool toptile)
  if(toptile)
     {
      if(tile->toptile)
-//        screen->blit(x*16,y*16,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-        screen->blit(area.x+(x*16)-cur_x_add,area.y+(y*16)-cur_y_add,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+       {
+        if(map_tile_scale == 4)
+          screen->blit4x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+        else if(map_tile_scale == 2)
+          screen->blit2x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+        else
+          screen->blit(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+       }
     }
  else
     {
      if(!tile->toptile)
-//        screen->blit(x*16,y*16,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-        screen->blit(area.x+(x*16)-cur_x_add,area.y+(y*16)-cur_y_add,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+       {
+        if(map_tile_scale == 4)
+          screen->blit4x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+        else if(map_tile_scale == 2)
+          screen->blit2x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+        else
+          screen->blit(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+       }
     }
 }
+
+void MapWindow::drawPaperBackground()
+{
+ if(game_type != NUVIE_GAME_U6)
+   return;
+ if(!game->is_original_plus())
+   return;
+ if(!paper_clip_active)
+   return;
+
+ uint16 ui_scale = game->get_game_width() / 320;
+ if(ui_scale <= 1)
+   return;
+
+ Background *bg = game->get_background();
+ if(bg == NULL)
+   return;
+ U6Shape *shape = bg->get_bg_shape();
+ if(shape == NULL)
+   return;
+
+ uint16 bg_w = 0, bg_h = 0;
+ shape->get_size(&bg_w, &bg_h);
+ if(bg_w == 0 || bg_h == 0)
+   return;
+
+ uint16 bg_scale = bg_w / 320;
+ if(bg_scale == 0)
+   bg_scale = 1;
+ uint16 draw_scale = (bg_scale == 1 && ui_scale > 1) ? ui_scale : 1;
+ if(draw_scale == 1)
+   return;
+
+ uint16 x_off = game->get_game_x_offset();
+ uint16 y_off = game->get_game_y_offset();
+ unsigned char *ptr = shape->get_data();
+
+ static int dbg = 0;
+ if(dbg < 3) {
+   DEBUG(0, LEVEL_INFORMATIONAL, "PaperBG: bg=%ux%u draw=%u off=%u,%u clip=%u\n", bg_w, bg_h, draw_scale, x_off, y_off, paper_clip_active ? 1 : 0);
+   dbg++;
+ }
+
+ if(draw_scale == 4)
+   screen->blit4x(x_off, y_off, ptr, 8, bg_w, bg_h, bg_w, false);
+ else if(draw_scale == 2)
+   screen->blit2x(x_off, y_off, ptr, 8, bg_w, bg_h, bg_w, false);
+ else
+   screen->blit(x_off, y_off, ptr, 8, bg_w, bg_h, bg_w, true);
+}
+
+void MapWindow::drawPaperFrame()
+{
+ if(game_type != NUVIE_GAME_U6)
+   return;
+ if(!game->is_original_plus())
+   return;
+
+ uint16 ui_scale = game->get_game_width() / 320;
+ if(ui_scale <= 1)
+   return;
+
+ Background *bg = game->get_background();
+ if(bg == NULL)
+   return;
+ U6Shape *shape = bg->get_bg_shape();
+ if(shape == NULL)
+   return;
+
+ uint16 bg_w = 0, bg_h = 0;
+ shape->get_size(&bg_w, &bg_h);
+ if(bg_w == 0 || bg_h == 0)
+   return;
+
+ uint16 bg_scale = bg_w / 320;
+ if(bg_scale == 0)
+   bg_scale = 1;
+ uint16 draw_scale = (bg_scale == 1 && ui_scale > 1) ? ui_scale : 1;
+ if(draw_scale == 1)
+   return;
+
+ uint16 panel_width = (uint16)(158 * bg_scale);
+ uint16 map_area_w = (bg_w > panel_width) ? (bg_w - panel_width) : 0;
+ if(map_area_w == 0)
+   return;
+
+ uint16 edge = (uint16)(6 * bg_scale);
+ if(edge == 0)
+   edge = 1;
+ uint16 bottom_edge = edge;
+ CommandBar *cb = game->get_command_bar();
+ if(cb) {
+   uint16 cb_top = cb->Y();
+   uint16 paper_bottom = game->get_game_y_offset() + (uint16)(bg_h * draw_scale);
+   if(cb_top > game->get_game_y_offset() && cb_top < paper_bottom) {
+     uint16 bottom_px = paper_bottom - cb_top;
+     bottom_edge = (uint16)(bottom_px / draw_scale);
+   }
+ }
+ if(bottom_edge < edge)
+   bottom_edge = edge;
+ if(edge * 2 > map_area_w || edge + bottom_edge > bg_h)
+   return;
+
+ sint32 hole_x = (sint32)edge;
+ sint32 hole_y = (sint32)edge;
+ sint32 hole_w = (sint32)map_area_w - (sint32)edge * 2;
+ sint32 hole_h = (sint32)bg_h - (sint32)edge - (sint32)bottom_edge;
+ if(hole_w <= 0 || hole_h <= 0)
+   return;
+
+ static std::vector<uint8> frame_buf;
+ static uint16 cached_w = 0;
+ static uint16 cached_h = 0;
+ static sint32 cached_x = -1;
+ static sint32 cached_y = -1;
+ static sint32 cached_w_hole = -1;
+ static sint32 cached_h_hole = -1;
+
+ if(cached_w != bg_w || cached_h != bg_h || cached_x != hole_x || cached_y != hole_y ||
+    cached_w_hole != hole_w || cached_h_hole != hole_h) {
+   frame_buf.assign(bg_w * bg_h, 0);
+   unsigned char *data = shape->get_data();
+   for(uint32 i = 0; i < (uint32)bg_w * bg_h; i++)
+     frame_buf[i] = data[i];
+   for(sint32 y = hole_y; y < hole_y + hole_h; y++) {
+     uint32 row = (uint32)y * bg_w + (uint32)hole_x;
+     for(sint32 x = 0; x < hole_w; x++)
+       frame_buf[row + (uint32)x] = 0xff; // transparent key for scaled blits
+   }
+   cached_w = bg_w;
+   cached_h = bg_h;
+   cached_x = hole_x;
+   cached_y = hole_y;
+   cached_w_hole = hole_w;
+   cached_h_hole = hole_h;
+
+   static int dbg = 0;
+   if(dbg < 3) {
+     DEBUG(0, LEVEL_INFORMATIONAL, "PaperFrame: bg=%ux%u scale=%u draw=%u area=%dx%d+%d,%d hole=%dx%d+%d,%d edge=%u bottom=%u\n", bg_w, bg_h, bg_scale, draw_scale, area.w, area.h, area.x, area.y, hole_w, hole_h, hole_x, hole_y, edge, bottom_edge);
+     dbg++;
+   }
+ }
+
+ uint16 x_off = game->get_game_x_offset();
+ uint16 y_off = game->get_game_y_offset();
+ unsigned char *buf = frame_buf.data();
+ if(draw_scale == 4)
+   screen->blit4x(x_off, y_off, buf, 8, bg_w, bg_h, bg_w, true);
+ else if(draw_scale == 2)
+   screen->blit2x(x_off, y_off, buf, 8, bg_w, bg_h, bg_w, true);
+ else
+   screen->blit(x_off, y_off, buf, 8, bg_w, bg_h, bg_w, true);
+}
+
 
 void MapWindow::drawBorder()
 {
@@ -2346,7 +2700,11 @@ GUI_status MapWindow::MouseDelayed(int x, int y, int button)
         look_obj = NULL; look_actor = NULL;
         return(GUI_PASS);
     }
-    game->get_scroll()->display_string("Look-");
+    FontManager *fm_look = game->get_font_manager();
+    if(fm_look && fm_look->is_korean_enabled() && fm_look->get_korean_font())
+      game->get_scroll()->display_string("살펴보기-");
+    else
+      game->get_scroll()->display_string("Look-");
     event->set_mode(LOOK_MODE);
     event->lookAtCursor(true, original_obj_loc.x, original_obj_loc.y, original_obj_loc.z, look_obj, look_actor);
     look_obj = NULL; look_actor = NULL;
@@ -2639,10 +2997,16 @@ void MapWindow::mouseToWorldCoords (int mx, int my, int &wx, int &wy)
 	int x = mx - area.x;
 	int y = my - area.y;
 
+    // Check for Korean 4x mode
+    FontManager *font_manager = Game::get_game()->get_font_manager();
+    bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+                  font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+    int tile_size = use_4x ? 64 : 16;
+
     int	map_width = map->get_width(cur_level);
 
-    wx = (cur_x + x / 16) % map_width;
-    wy = (cur_y + y / 16) % map_width;
+    wx = (cur_x + x / tile_size) % map_width;
+    wy = (cur_y + y / tile_size) % map_width;
 }
 
 void MapWindow::drag_draw(int x, int y, int message, void* data)

@@ -40,6 +40,8 @@
 #include "SaveManager.h"
 #include "TileManager.h"
 #include "GUI.h"
+#include "FontManager.h"
+#include "KoreanTranslation.h"
 
 #define NUM_ORIGINAL_TILES 2048
 
@@ -359,11 +361,24 @@ const char *TileManager::lookAtTile(uint16 tile_num, uint16 qty, bool show_prefi
  if(show_prefix == false)
    return desc;
 
- if(qty > 0 &&
-	(plural || Game::get_game()->get_game_type() == NUVIE_GAME_SE))
-   sprintf(desc_buf,"%u %s",qty, desc);
- else
-   sprintf(desc_buf,"%s%s",article_tbl[tile->article_n], desc);
+ // Check for Korean mode - don't add English articles
+ FontManager *fm = Game::get_game()->get_font_manager();
+ KoreanTranslation *korean = Game::get_game()->get_korean_translation();
+ bool korean_mode = fm && fm->is_korean_enabled() && fm->get_korean_font() && korean && korean->isEnabled();
+
+ if(korean_mode) {
+   // Korean: just return description without article, add quantity if needed
+   if(qty > 1)
+     sprintf(desc_buf,"%s %u개", desc, qty);
+   else
+     strcpy(desc_buf, desc);
+ } else {
+   if(qty > 0 &&
+      (plural || Game::get_game()->get_game_type() == NUVIE_GAME_SE))
+     sprintf(desc_buf,"%u %s",qty, desc);
+   else
+     sprintf(desc_buf,"%s%s",article_tbl[tile->article_n], desc);
+ }
 
  DEBUG(0,LEVEL_DEBUGGING,"%s (%x): flags1:",desc_buf,tile_num);
  print_b(LEVEL_INFORMATIONAL,tile->flags1);
@@ -372,7 +387,7 @@ const char *TileManager::lookAtTile(uint16 tile_num, uint16 qty, bool show_prefi
  DEBUG(1,LEVEL_DEBUGGING," f3:");
  print_b(LEVEL_INFORMATIONAL,tile->flags3);
  DEBUG(1,LEVEL_DEBUGGING,"\n");
- 
+
  return desc_buf;
 }
 

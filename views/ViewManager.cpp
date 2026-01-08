@@ -48,6 +48,7 @@
 #include "MsgScroll.h"
 #include "Party.h"
 #include "Event.h"
+#include "FontManager.h"
 #include "Portrait.h"
 #include "UseCode.h"
 #include "NuvieBmpFile.h"
@@ -88,31 +89,58 @@ bool ViewManager::init(GUI *g, Font *f, Party *p, Player *player, TileManager *t
 
  uint16 x_off = Game::get_game()->get_game_x_offset();
  uint16 y_off = Game::get_game()->get_game_y_offset();
- if(Game::get_game()->is_original_plus())
-	 x_off += Game::get_game()->get_game_width() - 320;
+
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_korean_4x = font_manager && font_manager->is_korean_enabled() &&
+                      font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+
+ // Calculate view positions
+ uint16 view_x, view_y, party_x, party_y;
+ if(use_korean_4x)
+ {
+   // 4x scaled positions
+   // Original: view at 176,8 within 320x200, party at 168,6
+   // Panel starts at screen_width - 152*4 = screen_width - 608
+   uint16 screen_width = Game::get_game()->get_screen()->get_width();
+   uint16 panel_start = screen_width - 152 * 4;
+   view_x = panel_start + (176 - 168) * 4; // 8 pixels from panel edge * 4
+   view_y = 8 * 4; // 8 pixels from top * 4
+   party_x = panel_start; // party view starts at panel edge
+   party_y = 6 * 4; // 6 pixels from top * 4
+ }
+ else
+ {
+   if(Game::get_game()->is_original_plus())
+     x_off += Game::get_game()->get_game_width() - 320;
+   view_x = 176 + x_off;
+   view_y = 8 + y_off;
+   party_x = 168 + x_off;
+   party_y = 6 + y_off;
+ }
 
  inventory_view = new InventoryView(config);
- inventory_view->init(gui->get_screen(), this, 176+x_off,8+y_off, font, party, tile_manager, obj_manager);
+ inventory_view->init(gui->get_screen(), this, view_x, view_y, font, party, tile_manager, obj_manager);
 
  portrait_view = new PortraitView(config);
- portrait_view->init(176+x_off,8+y_off, font, party, player, tile_manager, obj_manager, portrait);
+ portrait_view->init(view_x, view_y, font, party, player, tile_manager, obj_manager, portrait);
 
  if(!Game::get_game()->is_new_style())
  {
 	 //inventory_view = new InventoryView(config);
 	 //inventory_view->init(gui->get_screen(), this, 176+x_off,8+y_off, font, party, tile_manager, obj_manager);
 	 actor_view = new ActorView(config);
-	 actor_view->init(gui->get_screen(), this, 176+x_off,8+y_off, font, party, tile_manager, obj_manager, portrait);
+	 actor_view->init(gui->get_screen(), this, view_x, view_y, font, party, tile_manager, obj_manager, portrait);
 
 	 party_view = new PartyView(config);
 	 if(game_type==NUVIE_GAME_U6)
 	 {
-	   party_view->init(this,168+x_off,6+y_off, font, party, player, tile_manager, obj_manager);
+	   party_view->init(this, party_x, party_y, font, party, player, tile_manager, obj_manager);
 	   spell_view = new SpellView(config);
 	 }
 	 else
 	 {
-	   party_view->init(this,176+x_off,6+y_off, font, party, player, tile_manager, obj_manager);
+	   party_view->init(this, view_x, party_y, font, party, player, tile_manager, obj_manager);
 	 }
 	 if(game_type == NUVIE_GAME_MD)
 	 {

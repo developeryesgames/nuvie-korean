@@ -62,6 +62,9 @@
 #include "SpellView.h"
 
 #include "FpsCounter.h"
+#include "KoreanTranslation.h"
+#include "KoreanFont.h"
+#include "FontManager.h"
 
 using std::string;
 
@@ -694,7 +697,11 @@ bool Event::talk_start() {
   if (game->user_paused())
     return (false);
   close_gumps();
-  get_target("Talk-");
+  FontManager *fm_talk = game->get_font_manager();
+  if(fm_talk && fm_talk->is_korean_enabled() && fm_talk->get_korean_font())
+    get_target("대화-");
+  else
+    get_target("Talk-");
   return true;
 }
 
@@ -796,10 +803,12 @@ bool Event::attack() {
 bool Event::get_start() {
   if (game->user_paused())
     return false;
+  FontManager *fm_get = game->get_font_manager();
+  bool use_korean = fm_get && fm_get->is_korean_enabled() && fm_get->get_korean_font();
   if (game->get_script()->call_is_ranged_select(GET))
-    get_target("Get-");
+    get_target(use_korean ? "집기-" : "Get-");
   else
-    get_direction("Get-");
+    get_direction(use_korean ? "집기-" : "Get-");
   return true;
 }
 
@@ -899,10 +908,12 @@ bool Event::get(MapCoord coord) {
 bool Event::use_start() {
   if (game->user_paused())
     return false;
+  FontManager *fm_use = game->get_font_manager();
+  bool use_korean = fm_use && fm_use->is_korean_enabled() && fm_use->get_korean_font();
   if (game->get_script()->call_is_ranged_select(USE))
-    get_target("Use-");
+    get_target(use_korean ? "사용-" : "Use-");
   else
-    get_direction("Use-");
+    get_direction(use_korean ? "사용-" : "Use-");
 
   return true;
 }
@@ -1031,7 +1042,11 @@ bool Event::use(MapCoord coord) {
 bool Event::look_start() {
   if (game->user_paused())
     return (false);
-  get_target("Look-");
+  FontManager *fm_look = game->get_font_manager();
+  if(fm_look && fm_look->is_korean_enabled() && fm_look->get_korean_font())
+    get_target("살펴보기-");
+  else
+    get_target("Look-");
   return true;
 }
 
@@ -1090,13 +1105,33 @@ bool Event::look(Actor *actor) {
   }
 
   actor_manager->print_actor(actor); // DEBUG
-  scroll->display_string("Thou dost see ");
-  // show real actor name and portrait if in avatar's party
+
+  // Get actor name
+  std::string actor_name;
   if ((p_id = player->get_party()->get_member_num(actor)) >= 0)
-    scroll->display_string(player->get_party()->get_actor_name(p_id));
+    actor_name = player->get_party()->get_actor_name(p_id);
   else
-    scroll->display_string(actor_manager->look_actor(actor, true));
-  scroll->display_string("\n");
+    actor_name = actor_manager->look_actor(actor, true);
+
+  // Korean translation for "Thou dost see X"
+  FontManager *fm_see = game->get_font_manager();
+  KoreanTranslation *korean = game->get_korean_translation();
+  if(fm_see && fm_see->is_korean_enabled() && fm_see->get_korean_font() && korean && korean->isEnabled())
+  {
+    // Translate actor name if available
+    std::string korean_name = korean->translate(actor_name);
+    // Format: "그대는 X를 본다." with proper particle
+    scroll->display_string("그대는 ");
+    scroll->display_string(korean_name.c_str());
+    scroll->display_string(KoreanTranslation::getParticle_eulreul(korean_name).c_str());
+    scroll->display_string(" 본다.\n");
+  }
+  else
+  {
+    scroll->display_string("Thou dost see ");
+    scroll->display_string(actor_name.c_str());
+    scroll->display_string("\n");
+  }
   return (had_portrait);
 }
 
@@ -1108,11 +1143,27 @@ bool Event::search(Obj *obj) {
     return (false);
 
   if (obj->get_engine_loc() == OBJ_LOC_MAP && player_loc.distance(target_loc) <= 1) {
-    scroll->display_string("\nSearching here, you find ");
-    if (!usecode->search_obj(obj, player->get_actor()))
-      scroll->display_string("nothing.\n");
-    else {
-      scroll->display_string(".\n");
+    FontManager *fm_search = game->get_font_manager();
+    bool korean_mode = fm_search && fm_search->is_korean_enabled() && fm_search->get_korean_font();
+
+    if (korean_mode) {
+      scroll->display_string("\n이곳을 수색하니, ");
+    } else {
+      scroll->display_string("\nSearching here, you find ");
+    }
+
+    if (!usecode->search_obj(obj, player->get_actor())) {
+      if (korean_mode) {
+        scroll->display_string("아무것도 없다.\n");
+      } else {
+        scroll->display_string("nothing.\n");
+      }
+    } else {
+      if (korean_mode) {
+        scroll->display_string("발견했다.\n");
+      } else {
+        scroll->display_string(".\n");
+      }
       map_window->updateBlacking(); // secret doors
     }
     return (true);
@@ -1143,9 +1194,15 @@ bool Event::lookAtCursor(bool delayed, uint16 x, uint16 y, uint8 z, Obj *obj, Ac
   if (game->user_paused())
     return false;
 
-  if (map_window->tile_is_black(x, y))
-    scroll->display_string("Thou dost see darkness.\n");
-  else if (actor && actor->is_visible())
+  FontManager *fm_look2 = game->get_font_manager();
+  bool korean_mode = fm_look2 && fm_look2->is_korean_enabled() && fm_look2->get_korean_font();
+
+  if (map_window->tile_is_black(x, y)) {
+    if(korean_mode)
+      scroll->display_string("그대는 어둠을 본다.\n");
+    else
+      scroll->display_string("Thou dost see darkness.\n");
+  } else if (actor && actor->is_visible())
     display_prompt = !look(actor);
   else if (obj) {
     if (look(obj))
@@ -1154,11 +1211,24 @@ bool Event::lookAtCursor(bool delayed, uint16 x, uint16 y, uint8 z, Obj *obj, Ac
       display_prompt = false;
   } else // ground
   {
-    scroll->display_string("Thou dost see ");
+    const char *ground_name = game->get_game_map()->look(x, y, z);
+    if(korean_mode)
+    {
+      KoreanTranslation *korean = game->get_korean_translation();
+      std::string korean_name = (korean && korean->isEnabled()) ? korean->translate(ground_name) : ground_name;
+      scroll->display_string("그대는 ");
+      scroll->display_string(korean_name.c_str());
+      scroll->display_string(KoreanTranslation::getParticle_eulreul(korean_name).c_str());
+      scroll->display_string(" 본다.\n");
+    }
+    else
+    {
+      scroll->display_string("Thou dost see ");
 /*   if(game->is_new_style())
      new TextEffect(game->get_game_map()->look(x, y, z), MapCoord((x - map_window->get_cur_x())*16,(y-map_window->get_cur_y())*16,z));*/
-    scroll->display_string(game->get_game_map()->look(x, y, z));
-    scroll->display_string("\n");
+      scroll->display_string(ground_name);
+      scroll->display_string("\n");
+    }
   }
 
   endAction(display_prompt);
@@ -2656,7 +2726,11 @@ bool Event::drop_start() {
 
 //    get_obj_from_inventory(some actor, "Drop-");
 //    get_obj_from_inventory("Drop-");
-  get_target("Drop-");
+  FontManager *fm_drop = game->get_font_manager();
+  if(fm_drop && fm_drop->is_korean_enabled() && fm_drop->get_korean_font())
+    get_target("버리기-");
+  else
+    get_target("Drop-");
 //    moveCursorToInventory(); done in newAction()
   return true;
 }
@@ -2803,7 +2877,12 @@ bool Event::rest() {
     player->get_party()->rest_sleep(rest_time, rest_guard - 1);
     return true;
   }
-  scroll->display_string("Rest");
+  // Korean translation for "Rest"
+  FontManager *fm = game->get_font_manager();
+  if(fm && fm->is_korean_enabled() && fm->get_korean_font())
+    scroll->display_string("휴식");
+  else
+    scroll->display_string("Rest");
 
   string err_str;
   if (!player->get_party()->can_rest(err_str)) {
@@ -2951,7 +3030,11 @@ void Event::multiuse(uint16 wx, uint16 wy) {
     else
       can_use = usecode->has_usecode(actor);
     if (can_use) {
-      scroll->display_string("Use-", MSGSCROLL_NO_MAP_DISPLAY);
+      FontManager *fm_use = game->get_font_manager();
+      if(fm_use && fm_use->is_korean_enabled() && fm_use->get_korean_font())
+        scroll->display_string("사용-", MSGSCROLL_NO_MAP_DISPLAY);
+      else
+        scroll->display_string("Use-", MSGSCROLL_NO_MAP_DISPLAY);
       set_mode(USE_MODE);
       use(actor, wx, wy);
     } else {
@@ -2971,7 +3054,11 @@ void Event::multiuse(uint16 wx, uint16 wy) {
   if (!obj)
     return;
   else if (usecode->is_readable(obj)) {
-    scroll->display_string("Look-", MSGSCROLL_NO_MAP_DISPLAY);
+    FontManager *fm_look = game->get_font_manager();
+    if(fm_look && fm_look->is_korean_enabled() && fm_look->get_korean_font())
+      scroll->display_string("살펴보기-", MSGSCROLL_NO_MAP_DISPLAY);
+    else
+      scroll->display_string("Look-", MSGSCROLL_NO_MAP_DISPLAY);
     set_mode(LOOK_MODE);
     look(obj);
     endAction(false); // FIXME: should be in look()
@@ -2980,7 +3067,11 @@ void Event::multiuse(uint16 wx, uint16 wy) {
           || obj->obj_n == OBJ_U6_STATUE_OF_MONDAIN
           || obj->obj_n == OBJ_U6_STATUE_OF_MINAX
           || obj->obj_n == OBJ_U6_STATUE_OF_EXODUS)) {
-    scroll->display_string("Talk-", MSGSCROLL_NO_MAP_DISPLAY);
+    FontManager *fm_talk = game->get_font_manager();
+    if(fm_talk && fm_talk->is_korean_enabled() && fm_talk->get_korean_font())
+      scroll->display_string("대화-", MSGSCROLL_NO_MAP_DISPLAY);
+    else
+      scroll->display_string("Talk-", MSGSCROLL_NO_MAP_DISPLAY);
     set_mode(TALK_MODE);
     talk(obj);
   } else // use a real object
@@ -3440,15 +3531,20 @@ bool Event::newAction(EventMode new_mode) {
   if (new_mode != COMBAT_MODE)
     game->set_mouse_pointer(1);
   switch (new_mode) {
-    case CAST_MODE:
+    case CAST_MODE: {
       /* TODO check if spellbook ready before changing mode */
-      scroll->display_string("Cast-");
+      FontManager *fm_cast = game->get_font_manager();
+      if(fm_cast && fm_cast->is_korean_enabled() && fm_cast->get_korean_font())
+        scroll->display_string("주문-");
+      else
+        scroll->display_string("Cast-");
       if (!magic->start_new_spell()) {
         mode = MOVE_MODE;
         scroll->display_prompt();
       } else
         key_redirect((CallBack *) magic, NULL);
       break;
+    }
     case SPELL_MODE: break;
     case LOOK_MODE: look_start();
       break;
@@ -3466,7 +3562,11 @@ bool Event::newAction(EventMode new_mode) {
       if (game->get_game_type() == NUVIE_GAME_U6
           && player->is_in_vehicle()
           && player->get_actor()->get_obj_n() != OBJ_U6_SHIP) {
-        scroll->display_string("Attack-");
+        FontManager *fm_atk = game->get_font_manager();
+        if(fm_atk && fm_atk->is_korean_enabled() && fm_atk->get_korean_font())
+          scroll->display_string("공격-");
+        else
+          scroll->display_string("Attack-");
         display_not_aboard_vehicle(false);
         endAction(true);
         return false;

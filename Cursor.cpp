@@ -11,6 +11,7 @@
 #include "U6Shape.h"
 #include "U6Lib_n.h"
 #include "Cursor.h"
+#include "Game.h"
 
 using std::string;
 using std::vector;
@@ -169,13 +170,30 @@ bool Cursor::display(sint32 px, sint32 py)
     }
     MousePointer *ptr = cursors[cursor_id];
 
-    fix_position(ptr, px, py); // modifies px, py
-    save_backing((uint32)px, (uint32)py, (uint32)ptr->w, (uint32)ptr->h);
+    // Check for Korean 4x mode
+    uint8 cursor_scale = 1;
+    Game *game = Game::get_game();
+    if(game) {
+        uint16 ui_scale = game->get_game_width() / 320;
+        if(ui_scale >= 4) {
+            cursor_scale = 4;
+        }
+    }
 
-    screen->blit((uint16)px, (uint16)py, ptr->shapedat, 8, ptr->w, ptr->h, ptr->w, true);
+    fix_position(ptr, px, py, cursor_scale); // modifies px, py
+
+    uint16 scaled_w = ptr->w * cursor_scale;
+    uint16 scaled_h = ptr->h * cursor_scale;
+    save_backing((uint32)px, (uint32)py, (uint32)scaled_w, (uint32)scaled_h);
+
+    if(cursor_scale >= 4) {
+        screen->blit4x((uint16)px, (uint16)py, ptr->shapedat, 8, ptr->w, ptr->h, ptr->w, true, NULL);
+    } else {
+        screen->blit((uint16)px, (uint16)py, ptr->shapedat, 8, ptr->w, ptr->h, ptr->w, true);
+    }
 
 //    screen->update(px, py, ptr->w, ptr->h);
-    add_update(px, py, ptr->w, ptr->h);
+    add_update(px, py, scaled_w, scaled_h);
     update();
     return(true);
 }
@@ -198,20 +216,25 @@ void Cursor::clear()
 
 /* Offset requested position px,py by pointer hotspot, and screen boundary.
  */
-inline void Cursor::fix_position(MousePointer *ptr, sint32 &px, sint32 &py)
+inline void Cursor::fix_position(MousePointer *ptr, sint32 &px, sint32 &py, uint8 scale)
 {
-    if((px - ptr->point_x) < 0) // offset by hotspot
+    sint32 hotspot_x = ptr->point_x * scale;
+    sint32 hotspot_y = ptr->point_y * scale;
+    sint32 scaled_w = ptr->w * scale;
+    sint32 scaled_h = ptr->h * scale;
+
+    if((px - hotspot_x) < 0) // offset by hotspot
         px = 0;
     else
-        px -= ptr->point_x;
-    if((py - ptr->point_y) < 0)
+        px -= hotspot_x;
+    if((py - hotspot_y) < 0)
         py = 0;
     else
-        py -= ptr->point_y;
-    if((px + ptr->w) >= screen_w) // don't draw offscreen
-        px = screen_w - ptr->w - 1;
-    if((py + ptr->h) >= screen_h)
-        py = screen_h - ptr->h - 1;
+        py -= hotspot_y;
+    if((px + scaled_w) >= screen_w) // don't draw offscreen
+        px = screen_w - scaled_w - 1;
+    if((py + scaled_h) >= screen_h)
+        py = screen_h - scaled_h - 1;
 }
 
 

@@ -32,6 +32,8 @@
 #include "U6Lzw.h"
 
 #include "Look.h"
+#include "Game.h"
+#include "KoreanTranslation.h"
 
 Look::Look(Configuration *cfg)
 :look_data(NULL),desc_buf(NULL)
@@ -127,6 +129,27 @@ const char *Look::get_description(uint16 tile_num, bool *plural)
 
  if(tile_num >= 2048)
    return NULL;
+
+ // Check for Korean translation first
+ Game *game = Game::get_game();
+ if(game)
+ {
+   KoreanTranslation *korean = game->get_korean_translation();
+   DEBUG(0, LEVEL_DEBUGGING, "Look: tile_num=%d, korean=%p, enabled=%d\n",
+         tile_num, korean, korean ? korean->isEnabled() : 0);
+   if(korean && korean->isEnabled())
+   {
+     std::string korean_text = korean->getLookText(tile_num);
+     DEBUG(0, LEVEL_DEBUGGING, "Look: korean_text for tile %d = '%s'\n",
+           tile_num, korean_text.c_str());
+     if(!korean_text.empty())
+     {
+       korean_desc_buf = korean_text;
+       *plural = false;  // Korean doesn't have plural forms like English
+       return korean_desc_buf.c_str();
+     }
+   }
+ }
 
  desc = look_tbl[tile_num];
 

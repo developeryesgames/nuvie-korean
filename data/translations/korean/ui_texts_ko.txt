@@ -1,0 +1,182 @@
+# UI Text Translations - Korean
+# Format: ENGLISH|KOREAN
+
+# Command Bar Actions
+Attack|공격
+Cast|주문
+Talk|대화
+Look|살펴보기
+Get|집기
+Drop|버리기
+Move|이동
+Use|사용
+Rest|휴식
+Combat mode|전투 모드
+Load/Save|불러오기/저장
+Quick save|빠른 저장
+Quick load|빠른 불러오기
+
+# Common UI
+Yes|예
+No|아니오
+Cancel|취소
+OK|확인
+Done|완료
+Exit|나가기
+
+# Inventory
+Inventory|소지품
+Weight|무게
+Gold|금화
+Food|식량
+Armor|방어력
+
+# Stats
+Strength|힘
+Dexterity|민첩
+Intelligence|지능
+Level|레벨
+Experience|경험치
+Health|체력
+Magic|마력
+
+# Directions
+North|북
+South|남
+East|동
+West|서
+Up|위
+Down|아래
+
+# Time
+Dawn|새벽
+Morning|아침
+Noon|정오
+Afternoon|오후
+Evening|저녁
+Night|밤
+Midnight|자정
+
+# Combat
+Hit|명중
+Miss|빗나감
+Dead|사망
+Flee|도주
+
+# Messages
+You see|당신은 본다
+You get|당신은 집었다
+You drop|당신은 버렸다
+You use|당신은 사용했다
+Nothing|아무것도 없다
+Locked|잠겨있다
+Unlocked|열렸다
+
+# Character Names (Party Members)
+Avatar|아바타
+Efood|구명식량
+Shamino|샤미노
+Iolo|아이올로
+Dupre|듀프레
+Jaana|자나
+Mariah|마리아
+Geoffrey|제프리
+Julia|줄리아
+Katrina|카트리나
+Sentri|센트리
+Gwenno|그웨노
+Blaine|블레인
+Seggallion|세갈리온
+Leodon|레오돈
+Beh Lem|베렘
+
+# NPCs
+Lord British|로드 브리티시
+Nystul|니스툴
+Chuckles|처클스
+Sherry|셰리
+
+# Monsters
+rat|쥐
+snake|뱀
+troll|트롤
+skeleton|해골
+ghost|유령
+daemon|데몬
+dragon|드래곤
+gargoyle|가고일
+wisp|위습
+slime|슬라임
+reaper|리퍼
+headless|머리없는 자
+mongbat|몽뱃
+corpser|콥서
+gazer|게이저
+hydra|히드라
+cyclops|사이클롭스
+
+# Common Items (for look_obj fallback)
+carpet|양탄자
+chair|의자
+table|탁자
+bed|침대
+door|문
+chest|상자
+barrel|통
+crate|상자
+torch|횃불
+candle|초
+book|책
+scroll|두루마리
+key|열쇠
+gold|금화
+food|음식
+bread|빵
+meat|고기
+fish|물고기
+ale|맥주
+wine|와인
+water|물
+potion|물약
+sword|검
+dagger|단검
+mace|철퇴
+axe|도끼
+bow|활
+crossbow|석궁
+arrow|화살
+bolt|볼트
+shield|방패
+helm|투구
+armor|갑옷
+boots|부츠
+gloves|장갑
+ring|반지
+amulet|부적
+staff|지팡이
+wand|마법봉
+orb|오브
+gem|보석
+mirror|거울
+clock|시계
+bag|가방
+backpack|배낭
+spellbook|마법서
+reagent|마법재료
+stone|돌
+rock|바위
+tree|나무
+grass|잔디
+wall|벽
+floor|바닥
+stairs|계단
+ladder|사다리
+fountain|분수
+statue|조각상
+throne|왕좌
+altar|제단
+grave|무덤
+bones|뼈
+skull|해골
+corpse|시체
+blood|피

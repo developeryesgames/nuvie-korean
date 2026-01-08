@@ -91,6 +91,7 @@ class Screen
    const unsigned char *get_surface_pixels() { return(surface->get_pixels()); }
    uint16 get_pitch();
    SDL_Surface *create_sdl_surface_from(unsigned char *src_buf, uint16 src_bpp, uint16 src_w, uint16 src_h, uint16 src_pitch);
+   SDL_Surface *create_sdl_surface_from_4x(unsigned char *src_buf, uint16 src_bpp, uint16 src_w, uint16 src_h, uint16 src_pitch);
    SDL_Surface *create_sdl_surface_8(unsigned char *src_buf, uint16 src_w, uint16 src_h);
    uint16 get_bpp();
    int get_scale_factor() { return scale_factor; }
@@ -107,7 +108,10 @@ class Screen
    void put_pixel(uint8 colour_num, uint16 x, uint16 y);
 
    bool blit(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16 src_bpp, uint16 src_w, uint16 src_h, uint16 src_pitch, bool trans=false, SDL_Rect *clip_rect=NULL, uint8 opacity=255);
+   bool blit2x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16 src_bpp, uint16 src_w, uint16 src_h, uint16 src_pitch, bool trans=false, SDL_Rect *clip_rect=NULL);
+   bool blit4x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16 src_bpp, uint16 src_w, uint16 src_h, uint16 src_pitch, bool trans=false, SDL_Rect *clip_rect=NULL);
    void blitbitmap(uint16 dest_x, uint16 dest_y, const unsigned char *src_buf, uint16 src_w, uint16 src_h, uint8 fg_color, uint8 bg_color);
+   void blitbitmap4x(uint16 dest_x, uint16 dest_y, const unsigned char *src_buf, uint16 src_w, uint16 src_h, uint8 fg_color, uint8 bg_color);
 
    void buildalphamap8();
    void clearalphamap8( uint16 x, uint16 y, uint16 w, uint16 h, uint8 opacity, bool party_light_source);

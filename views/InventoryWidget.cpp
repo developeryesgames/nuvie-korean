@@ -41,6 +41,7 @@
 
 #include "InventoryFont.h"
 #include "ViewManager.h"
+#include "FontManager.h"
 
 #define USE_BUTTON 1 /* FIXME: put this in a common location */
 #define ACTION_BUTTON 3
@@ -76,23 +77,33 @@ bool InventoryWidget::init(Actor *a, uint16 x, uint16 y, TileManager *tm, ObjMan
  bg_color = Game::get_game()->get_palette()->get_bg_color();
  obj_font_color = 0;
 
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ int scale = use_4x ? 4 : 1;
+
  if(Game::get_game()->get_game_type()==NUVIE_GAME_U6)
  {
-	icon_x = 32;
+	icon_x = 32 * scale;
 	obj_font_color = 0x48;
-	objlist_offset_x = 8;
+	objlist_offset_x = 8 * scale;
  }
  else
  {
-	icon_x = 23;
+	icon_x = 23 * scale;
 	objlist_offset_x = 0;
  }
- objlist_offset_y = 16;
+ objlist_offset_y = 16 * scale;
 
  if(Game::get_game()->get_game_type() == NUVIE_GAME_U6)
  {
 	empty_tile = tile_manager->get_tile(410);
-	GUI_Widget::Init(NULL, x, y, 72, 64); //72 =  4 * 16 + 8
+	if(use_4x) {
+	  GUI_Widget::Init(NULL, x, y, 72 * 4, 64 * 4); //72 =  4 * 16 + 8
+	} else {
+	  GUI_Widget::Init(NULL, x, y, 72, 64); //72 =  4 * 16 + 8
+	}
  }
  else if(Game::get_game()->get_game_type() == NUVIE_GAME_MD) // FIXME: different depending on npc
  {
@@ -161,7 +172,7 @@ void InventoryWidget::Display(bool full_redraw)
   }
  else
   {
-   screen->update(area.x+objlist_offset_x,area.y+16,area.w-objlist_offset_x,area.h-16); // update only the inventory list
+   screen->update(area.x+objlist_offset_x,area.y+objlist_offset_y,area.w-objlist_offset_x,area.h-objlist_offset_y); // update only the inventory list
   }
 
 }
@@ -175,7 +186,16 @@ void InventoryWidget::display_inventory_container()
  else // display container object
    tile = tile_manager->get_tile(obj_manager->get_obj_tile_num(container_obj)+container_obj->frame_n);
 
- screen->blit(area.x+icon_x,area.y,tile->data,8,16,16,16,true);
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+
+ if(use_4x) {
+   screen->blit4x(area.x+icon_x, area.y, tile->data, 8, 16, 16, 16, true);
+ } else {
+   screen->blit(area.x+icon_x, area.y, tile->data, 8, 16, 16, 16, true);
+ }
 
  return;
 }
@@ -191,6 +211,12 @@ void InventoryWidget::display_inventory_list()
  int max_rows = 4;
  if(Game::get_game()->get_game_type() == NUVIE_GAME_U6)
    max_rows = 3;
+
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ int tile_size = use_4x ? 64 : 16;
 
  if(container_obj)
    inventory = container_obj->container;
@@ -240,20 +266,32 @@ void InventoryWidget::display_inventory_list()
           tile = empty_tile;
 
        //tile = tile_manager->get_tile(actor->indentory_tile());
-       if(tile == empty_tile)
-         screen->blit((area.x+objlist_offset_x)+j*16,area.y+objlist_offset_y+i*16,(unsigned char *)empty_tile->data,8,16,16,16,true);
+       if(tile == empty_tile) {
+         if(use_4x) {
+           screen->blit4x((area.x+objlist_offset_x)+j*tile_size,area.y+objlist_offset_y+i*tile_size,(unsigned char *)empty_tile->data,8,16,16,16,true);
+         } else {
+           screen->blit((area.x+objlist_offset_x)+j*tile_size,area.y+objlist_offset_y+i*tile_size,(unsigned char *)empty_tile->data,8,16,16,16,true);
+         }
+       }
+
+       // Draw tile first
+       if(use_4x) {
+         screen->blit4x((area.x+objlist_offset_x)+j*tile_size,area.y+objlist_offset_y+i*tile_size,(unsigned char *)tile->data,8,16,16,16,true);
+       } else {
+         screen->blit((area.x+objlist_offset_x)+j*tile_size,area.y+objlist_offset_y+i*tile_size,(unsigned char *)tile->data,8,16,16,16,true);
+       }
+
+       // Draw qty/special char AFTER tile so they appear on top
        if(tile != empty_tile)
         {
          //draw qty string for stackable items
-         if(obj_manager->is_stackable(obj))       
-           display_qty_string((area.x+objlist_offset_x)+j*16,area.y+objlist_offset_y+i*16,obj->qty);
-       
+         if(obj_manager->is_stackable(obj))
+           display_qty_string((area.x+objlist_offset_x)+j*tile_size,area.y+objlist_offset_y+i*tile_size,obj->qty);
+
          //draw special char for Keys.
          if(game_type == NUVIE_GAME_U6 && obj->obj_n == 64)
-           display_special_char((area.x+objlist_offset_x)+j*16,area.y+objlist_offset_y+i*16,obj->quality);
+           display_special_char((area.x+objlist_offset_x)+j*tile_size,area.y+objlist_offset_y+i*tile_size,obj->quality);
         }
-
-       screen->blit((area.x+objlist_offset_x)+j*16,area.y+objlist_offset_y+i*16,(unsigned char *)tile->data,8,16,16,16,true);
       }
    }
 }
@@ -263,13 +301,25 @@ void InventoryWidget::display_qty_string(uint16 x, uint16 y, uint16 qty)
  uint8 len, i, offset;
  char buf[6];
 
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ int scale = use_4x ? 4 : 1;
+
  sprintf(buf,"%d",qty);
  len = strlen(buf);
 
- offset = (16 - len*4) / 2;
+ offset = ((16 - len*4) / 2) * scale;
 
- for(i=0;i<len;i++)
-  screen->blitbitmap(x+offset+4*i,y+11,inventory_font[buf[i]-48],3,5,obj_font_color,bg_color);
+ if(use_4x) {
+   // 4x scaled: each 3x5 bitmap becomes 12x20
+   for(i=0;i<len;i++)
+    screen->blitbitmap4x(x+offset+4*4*i,y+11*4,inventory_font[buf[i]-48],3,5,obj_font_color,bg_color);
+ } else {
+   for(i=0;i<len;i++)
+    screen->blitbitmap(x+offset+4*i,y+11,inventory_font[buf[i]-48],3,5,obj_font_color,bg_color);
+ }
 
  return;
 }
@@ -279,12 +329,45 @@ void InventoryWidget::display_special_char(uint16 x, uint16 y, uint8 quality)
  if(quality + 9 >= NUVIE_MICRO_FONT_COUNT)
    return;
 
- screen->blitbitmap(x+6,y+11,inventory_font[quality + 9],3,5,obj_font_color,bg_color);
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+
+ if(use_4x) {
+   screen->blitbitmap4x(x+6*4,y+11*4,inventory_font[quality + 9],3,5,obj_font_color,bg_color);
+ } else {
+   screen->blitbitmap(x+6,y+11,inventory_font[quality + 9],3,5,obj_font_color,bg_color);
+ }
 }
+
+// Up arrow bitmap (5x5)
+static const unsigned char up_arrow_bitmap[25] = {
+  0,0,1,0,0,
+  0,1,1,1,0,
+  1,1,1,1,1,
+  0,0,1,0,0,
+  0,0,1,0,0
+};
+
+// Down arrow bitmap (5x5)
+static const unsigned char down_arrow_bitmap[25] = {
+  0,0,1,0,0,
+  0,0,1,0,0,
+  1,1,1,1,1,
+  0,1,1,1,0,
+  0,0,1,0,0
+};
 
 void InventoryWidget::display_arrows()
 {
  uint32 num_objects;
+
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ int scale = use_4x ? 4 : 1;
 
  if(is_showing_container())
  {
@@ -299,11 +382,20 @@ void InventoryWidget::display_arrows()
  if(num_objects <= 12) //reset row_offset if we only have one page of objects
    row_offset = 0;
 
- if(row_offset > 0) //display top arrow
-    font->drawChar(screen, 24, area.x, area.y + 16);
+ if(use_4x) {
+   // 4x mode: use scaled bitmap arrows
+   if(row_offset > 0) //display top arrow
+      screen->blitbitmap4x(area.x, area.y + 16 * 4 + 4, up_arrow_bitmap, 5, 5, obj_font_color, bg_color);
 
- if(num_objects - row_offset * 4 > 12) //display bottom arrow
-    font->drawChar(screen, 25, area.x, area.y + 3 * 16 + 8);
+   if(num_objects - row_offset * 4 > 12) //display bottom arrow
+      screen->blitbitmap4x(area.x, area.y + (3 * 16 + 8) * 4 + 4, down_arrow_bitmap, 5, 5, obj_font_color, bg_color);
+ } else {
+   if(row_offset > 0) //display top arrow
+      font->drawChar(screen, 24, area.x, area.y + 16);
+
+   if(num_objects - row_offset * 4 > 12) //display bottom arrow
+      font->drawChar(screen, 25, area.x, area.y + 3 * 16 + 8);
+ }
 }
 
 GUI_status InventoryWidget::MouseDown(int x, int y, int button)
@@ -357,7 +449,13 @@ inline uint16 InventoryWidget::get_list_position(int x, int y)
 {
  uint16 list_pos;
 
- list_pos = ((y - objlist_offset_y) / 16) * 4 + (x - objlist_offset_x) / 16;
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ int tile_size = use_4x ? 64 : 16;
+
+ list_pos = ((y - objlist_offset_y) / tile_size) * 4 + (x - objlist_offset_x) / tile_size;
  list_pos += row_offset * 4;
 
  return list_pos;

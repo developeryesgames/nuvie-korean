@@ -40,6 +40,7 @@
 #include "Player.h"
 #include "ViewManager.h"
 #include "NuvieBmpFile.h"
+#include "FontManager.h"
 
 #define USE_BUTTON 1 /* FIXME: put this in a common location */
 #define ACTION_BUTTON 3
@@ -152,7 +153,16 @@ bool DollWidget::init(Actor *a, uint16 x, uint16 y, TileManager *tm, ObjManager 
 	 need_to_free_tiles = true;
  }
 
- GUI_Widget::Init(NULL, x, y, 64, 64);
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+
+ if(use_4x) {
+   GUI_Widget::Init(NULL, x, y, 64 * 4, 64 * 4);
+ } else {
+   GUI_Widget::Init(NULL, x, y, 64, 64);
+ }
 
  set_actor(a);
  set_accept_mouseclick(true, USE_BUTTON); // accept [double]clicks from button1 (even if double-click disabled we need clicks)
@@ -264,8 +274,21 @@ void DollWidget::load_md_doll_shp()
 
 SDL_Rect *DollWidget::get_item_hit_rect(uint8 location)
 {
-    if(location < 8)
+    static SDL_Rect scaled_rect;
+    if(location < 8) {
+        // Check for Korean 4x mode
+        FontManager *font_manager = Game::get_game()->get_font_manager();
+        bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+                      font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+        if(use_4x) {
+            scaled_rect.x = item_hit_rects[location].x * 4;
+            scaled_rect.y = item_hit_rects[location].y * 4;
+            scaled_rect.w = item_hit_rects[location].w * 4;
+            scaled_rect.h = item_hit_rects[location].h * 4;
+            return &scaled_rect;
+        }
         return(&item_hit_rects[location]);
+    }
     return(NULL);
 }
 
@@ -313,13 +336,24 @@ inline void DollWidget::display_old_doll()
 		else
 			tilenum = 400;
 	}
+
+	// Check for Korean 4x mode
+	FontManager *font_manager = Game::get_game()->get_font_manager();
+	bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+	              font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+	int scale = use_4x ? 4 : 1;
+
 //	 screen->fill(bg_color, area.x, area.y, area.w, area.h); // should be taken care of by the main view
 	 for(i=0;i<2;i++)
 	 {
 		 for(j=0;j<2;j++) // draw doll
 		 {
 			 tile = tile_manager->get_tile(tilenum+i*2+j);
-			 screen->blit(area.x+16+j*16,area.y+16+i*16,tile->data,8,16,16,16,true);
+			 if(use_4x) {
+			   screen->blit4x(area.x+16*scale+j*16*scale,area.y+16*scale+i*16*scale,tile->data,8,16,16,16,true);
+			 } else {
+			   screen->blit(area.x+16+j*16,area.y+16+i*16,tile->data,8,16,16,16,true);
+			 }
 		 }
 	 }
 	 if(md_doll_shp)
@@ -332,23 +366,45 @@ inline void DollWidget::display_old_doll()
 
 inline void DollWidget::display_doll()
 {
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ int scale = use_4x ? 4 : 1;
+
  if(!Game::get_game()->is_new_style() || is_in_portrait_view) {
 	if(use_new_dolls)
 		display_new_doll();
 	else
 		display_old_doll();
  }
- display_readied_object(ACTOR_NECK, area.x, (area.y+8) + 0 * 16, actor, empty_tile);
- display_readied_object(ACTOR_BODY, area.x+3*16, (area.y+8) + 0 * 16, actor, empty_tile);
 
- display_readied_object(ACTOR_ARM, area.x, (area.y+8) + 1 * 16, actor, empty_tile);
- display_readied_object(ACTOR_ARM_2, area.x+3*16, (area.y+8) + 1 * 16, actor, actor->is_double_handed_obj_readied() ? blocked_tile : empty_tile);
+ if(use_4x) {
+   // 4x scaled positions
+   display_readied_object(ACTOR_NECK, area.x, (area.y+8*scale) + 0 * 16*scale, actor, empty_tile);
+   display_readied_object(ACTOR_BODY, area.x+3*16*scale, (area.y+8*scale) + 0 * 16*scale, actor, empty_tile);
 
- display_readied_object(ACTOR_HAND, area.x, (area.y+8) + 2 * 16, actor, empty_tile);
- display_readied_object(ACTOR_HAND_2, area.x+3*16, (area.y+8) + 2 * 16, actor, empty_tile);
+   display_readied_object(ACTOR_ARM, area.x, (area.y+8*scale) + 1 * 16*scale, actor, empty_tile);
+   display_readied_object(ACTOR_ARM_2, area.x+3*16*scale, (area.y+8*scale) + 1 * 16*scale, actor, actor->is_double_handed_obj_readied() ? blocked_tile : empty_tile);
 
- display_readied_object(ACTOR_HEAD, area.x+16+8, area.y, actor, empty_tile);
- display_readied_object(ACTOR_FOOT, area.x+16+8, area.y+3*16, actor, empty_tile);
+   display_readied_object(ACTOR_HAND, area.x, (area.y+8*scale) + 2 * 16*scale, actor, empty_tile);
+   display_readied_object(ACTOR_HAND_2, area.x+3*16*scale, (area.y+8*scale) + 2 * 16*scale, actor, empty_tile);
+
+   display_readied_object(ACTOR_HEAD, area.x+(16+8)*scale, area.y, actor, empty_tile);
+   display_readied_object(ACTOR_FOOT, area.x+(16+8)*scale, area.y+3*16*scale, actor, empty_tile);
+ } else {
+   display_readied_object(ACTOR_NECK, area.x, (area.y+8) + 0 * 16, actor, empty_tile);
+   display_readied_object(ACTOR_BODY, area.x+3*16, (area.y+8) + 0 * 16, actor, empty_tile);
+
+   display_readied_object(ACTOR_ARM, area.x, (area.y+8) + 1 * 16, actor, empty_tile);
+   display_readied_object(ACTOR_ARM_2, area.x+3*16, (area.y+8) + 1 * 16, actor, actor->is_double_handed_obj_readied() ? blocked_tile : empty_tile);
+
+   display_readied_object(ACTOR_HAND, area.x, (area.y+8) + 2 * 16, actor, empty_tile);
+   display_readied_object(ACTOR_HAND_2, area.x+3*16, (area.y+8) + 2 * 16, actor, empty_tile);
+
+   display_readied_object(ACTOR_HEAD, area.x+16+8, area.y, actor, empty_tile);
+   display_readied_object(ACTOR_FOOT, area.x+16+8, area.y+3*16, actor, empty_tile);
+ }
 
  return;
 }
@@ -365,7 +421,16 @@ inline void DollWidget::display_readied_object(uint8 location, uint16 x, uint16 
  else
    tile = empty_tile;
 
- screen->blit(x,y,tile->data,8,16,16,16,true);
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+
+ if(use_4x) {
+   screen->blit4x(x, y, tile->data, 8, 16, 16, 16, true);
+ } else {
+   screen->blit(x, y, tile->data, 8, 16, 16, 16, true);
+ }
 
  return;
 }

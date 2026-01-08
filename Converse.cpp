@@ -38,6 +38,8 @@
 #include "Converse.h"
 #include "GUI.h"
 #include "Background.h"
+#include "FontManager.h"
+#include "KoreanTranslation.h"
 
 //#define CONVERSE_DEBUG
 
@@ -448,9 +450,15 @@ void Converse::stop()
     }
     if(!Game::get_game()->is_new_style())
     {
+        // Check for Korean 4x mode
+        FontManager *font_manager = Game::get_game()->get_font_manager();
+        bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+                      font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+
         if(last_view->set_party_member(last_view->get_party_member_num()) == false) // set party member left party
             last_view->prev_party_member(); // seems only needed with new converse gump but will leave here just in case
-        views->set_current_view(last_view);
+        if(!use_4x) // In Korean 4x mode, don't switch away from portrait view
+            views->set_current_view(last_view);
     }
 
     Game::get_game()->unpause_user();
@@ -630,7 +638,17 @@ bool Converse::override_input()
         in_str = "bye";
     else if(in_str == "look")
     {
-        print("You see ");
+        KoreanTranslation *korean = Game::get_game()->get_korean_translation();
+        if(korean && korean->isEnabled())
+        {
+            std::string korean_text = korean->getUIText("You see");
+            if(!korean_text.empty())
+                print(korean_text.c_str());
+            else
+                print("You see ");
+        }
+        else
+            print("You see ");
         print(desc);
         script->seek(script->pos() - 1); // back to ASK command
     }

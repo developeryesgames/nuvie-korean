@@ -19,13 +19,13 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -69,6 +69,7 @@
       <AdditionalIncludeDirectories>.;..;../actors;../conf;../files;../gui;../menus;../misc;../pathfinder;../portraits;../screen;../views;../usecode;../lua;../sound;../sound/adplug;../sound/mixer;../save;../fonts;../script;../weather;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Midl>
       <TypeLibraryName>.\Release\nuvie.tlb</TypeLibraryName>
@@ -158,6 +159,8 @@
     <ClCompile Include="..\files\U6Shape.cpp" />
     <ClCompile Include="..\fonts\BMPFont.cpp" />
     <ClCompile Include="..\fonts\ConvFont.cpp" />
+    <ClCompile Include="..\fonts\KoreanFont.cpp" />
+    <ClCompile Include="..\KoreanTranslation.cpp" />
     <ClCompile Include="..\fonts\Font.cpp" />
     <ClCompile Include="..\fonts\FontManager.cpp" />
     <ClCompile Include="..\fonts\U6Font.cpp" />
@@ -369,6 +372,8 @@
     <ClInclude Include="..\files\U6Shape.h" />
     <ClInclude Include="..\fonts\BMPFont.h" />
     <ClInclude Include="..\fonts\ConvFont.h" />
+    <ClInclude Include="..\fonts\KoreanFont.h" />
+    <ClInclude Include="..\KoreanTranslation.h" />
     <ClInclude Include="..\fonts\Font.h" />
     <ClInclude Include="..\fonts\FontManager.h" />
     <ClInclude Include="..\fonts\U6Font.h" />

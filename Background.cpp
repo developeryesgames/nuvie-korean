@@ -33,6 +33,8 @@
 #include "Background.h"
 #include "MapWindow.h"
 #include "GUI.h"
+#include "FontManager.h"
+#include "Console.h"
 
 Background::Background(Configuration *cfg) : GUI_Widget(NULL)
 {
@@ -63,15 +65,11 @@ bool Background::init()
 	 switch(game_type)
 	   {
 		case NUVIE_GAME_U6 : config_get_path(config,"paper.bmp",filename);
-							 background = (U6Shape *) new U6Bmp();
-							 if(background->load(filename) == false)
-							   return false;
-							 if(Game::get_game()->is_original_plus()) {
-								 border_width = 158;
-								 right_bg_x_off = x_off + Game::get_game()->get_game_width() - 152;
-								 left_bg_x_off = x_off + Game::get_game()->get_game_width() - border_width;
-							 }
-							 break;
+					 background = (U6Shape *) new U6Bmp();
+					 if(background->load(filename) == false)
+					   return false;
+					 break;
+
 
 		case NUVIE_GAME_MD :
 							 background = new U6Shape();
@@ -93,6 +91,20 @@ bool Background::init()
 	   }
 
 	 background->get_size(&bg_w,&bg_h);
+	 DEBUG(0, LEVEL_INFORMATIONAL, "Background: paper size %ux%u\n", bg_w, bg_h);
+
+	 if(game_type == NUVIE_GAME_U6 && Game::get_game()->is_original_plus()) {
+		 uint16 bg_scale = bg_w > 0 ? (uint16)(bg_w / 320) : 1;
+		 if(bg_scale == 0) bg_scale = 1;
+		 uint16 ui_scale = Game::get_game()->get_game_width() / 320;
+		 if(ui_scale == 0) ui_scale = 1;
+		 uint16 draw_scale = (bg_scale == 1 && ui_scale > 1) ? ui_scale : 1;
+		 uint16 panel_width = (uint16)(158 * bg_scale * draw_scale);
+		 uint16 main_width = (uint16)(152 * bg_scale * draw_scale);
+		 border_width = panel_width;
+		 right_bg_x_off = x_off + Game::get_game()->get_game_width() - main_width;
+		 left_bg_x_off = x_off + Game::get_game()->get_game_width() - border_width;
+	 }
 
 	 Game::get_game()->get_dither()->dither_bitmap(background->get_data(), bg_w, bg_h, DITHER_NO_TRANSPARENCY);
  }
@@ -103,16 +115,24 @@ void Background::Display(bool full_redraw)
 {
  if(full_redraw || update_display || Game::get_game()->is_original_plus_full_map())
    {
+    uint16 ui_scale = Game::get_game()->get_game_width() / 320;
+    if(ui_scale == 0) ui_scale = 1;
+    bool use_ui_scale = (ui_scale > 1);
+
     if(Game::get_game()->is_original_plus()) {
         if(Game::get_game()->is_original_plus_cutoff_map())
             screen->clear(area.x,area.y,area.w,area.h,NULL);
         else if(full_redraw || update_display) { // need to clear null background when we have a game size smaller than the screen
             uint16 game_width = Game::get_game()->get_game_width();
             uint16 game_height = Game::get_game()->get_game_height();
+            // In Korean 4x mode, background covers the entire right side (632px),
+            // so we should not clear the right side area
             if(x_off > 0) { // centered
                 screen->clear(area.x, area.y, x_off, area.h, NULL); // left side
-                screen->clear(x_off + game_width, area.y, x_off, area.h, NULL); // right side
-            } else if(area.w > game_width) { // upper_left position
+                if(!use_ui_scale) {
+                    screen->clear(x_off + game_width, area.y, x_off, area.h, NULL); // right side (skip in Korean 4x mode)
+                }
+            } else if(area.w > game_width && !use_ui_scale) { // upper_left position (skip in Korean 4x mode)
                 screen->clear(game_width, area.y, area.w - game_width, area.h, NULL); // right side
             }
             if(y_off > 0) {  // centered
@@ -124,9 +144,39 @@ void Background::Display(bool full_redraw)
         }
         unsigned char *ptr = background->get_data();
         if(game_type == NUVIE_GAME_U6) {
-            ptr += (bg_w - 152);
-            screen->blit(right_bg_x_off, y_off, ptr, 8, 152, bg_h, bg_w, true);
-            screen->blit(left_bg_x_off, y_off, background->get_data(), 8, 6, bg_h, bg_w, true);
+            uint16 scale = bg_w > 0 ? (uint16)(bg_w / 320) : 1;
+            if(scale == 0) scale = 1;
+            uint16 main_width = (uint16)(152 * scale);
+            uint16 panel_width = (uint16)(158 * scale);
+            uint16 draw_scale = (scale == 1 && use_ui_scale) ? ui_scale : 1;
+            uint16 panel_x = x_off + Game::get_game()->get_game_width() - (uint16)(panel_width * draw_scale);
+
+            static int bg_debug_count = 0;
+            if(bg_debug_count < 3) {
+                ConsoleAddInfo("Background U6: bg=%ux%u game=%ux%u screen=%ux%u x_off=%u y_off=%u scale=%u draw_scale=%u panel_width=%u panel_x=%u",
+                      bg_w, bg_h, Game::get_game()->get_game_width(), Game::get_game()->get_game_height(),
+                      screen->get_width(), screen->get_height(), x_off, y_off, scale, draw_scale, panel_width, panel_x);
+                bg_debug_count++;
+            }
+
+
+            if(scale > 1) {
+                // Background is already scaled; blit the full panel at native size.
+                unsigned char *panel_ptr = background->get_data() + (bg_w - panel_width);
+                screen->blit(panel_x, y_off, panel_ptr, 8, panel_width, bg_h, bg_w, true);
+            } else if(use_ui_scale) {
+                // Scale the full paper background so the map can use a proper frame.
+                if(ui_scale == 4)
+                    screen->blit4x(x_off, y_off, background->get_data(), 8, bg_w, bg_h, bg_w, false);
+                else if(ui_scale == 2)
+                    screen->blit2x(x_off, y_off, background->get_data(), 8, bg_w, bg_h, bg_w, false);
+                else
+                    screen->blit(x_off, y_off, background->get_data(), 8, bg_w, bg_h, bg_w, true);
+            } else {
+                ptr += (bg_w - main_width);
+                screen->blit(right_bg_x_off, y_off, ptr, 8, main_width, bg_h, bg_w, true);
+                screen->blit(left_bg_x_off, y_off, background->get_data(), 8, (uint16)(6 * scale), bg_h, bg_w, true);
+            }
         } else {
             if(game_type == NUVIE_GAME_MD)
                 screen->fill(0, left_bg_x_off, y_off, border_width, bg_h); // background has transparent parts that should be black

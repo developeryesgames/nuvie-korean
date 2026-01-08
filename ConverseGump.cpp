@@ -29,6 +29,7 @@
 #include "U6misc.h"
 #include "FontManager.h"
 #include "Font.h"
+#include "KoreanFont.h"
 #include "GamePalette.h"
 #include "GUI.h"
 #include "MsgScroll.h"

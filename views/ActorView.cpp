@@ -35,6 +35,9 @@
 #include "Player.h"
 #include "Event.h"
 #include "Keys.h"
+#include "FontManager.h"
+#include "KoreanFont.h"
+#include "KoreanTranslation.h"
 
 extern GUI_status inventoryViewButtonCallback(void *data);
 extern GUI_status partyViewButtonCallback(void *data);
@@ -115,8 +118,13 @@ bool ActorView::set_party_member(uint8 party_member)
 
 void ActorView::Display(bool full_redraw)
 {
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ uint8 scale = use_4x ? 4 : 1;
 
- if(portrait_data != NULL && (full_redraw || update_display || Game::get_game()->is_original_plus_full_map()))
+ if(portrait_data != NULL && (full_redraw || update_display || Game::get_game()->is_original_plus_full_map() || use_4x))
   {
    update_display = false;
    if(MD)
@@ -127,7 +135,14 @@ void ActorView::Display(bool full_redraw)
    else
    {
      screen->fill(bg_color, area.x, area.y, area.w, area.h);
-     screen->blit(area.x,area.y+8,portrait_data,8,portrait->get_portrait_width(),portrait->get_portrait_height(),portrait->get_portrait_width(), false);
+     if(use_4x) {
+       // 4x scaled portrait
+       screen->blit4x(area.x, area.y + 8 * scale, portrait_data, 8,
+                      portrait->get_portrait_width(), portrait->get_portrait_height(),
+                      portrait->get_portrait_width(), false, NULL);
+     } else {
+       screen->blit(area.x,area.y+8,portrait_data,8,portrait->get_portrait_width(),portrait->get_portrait_height(),portrait->get_portrait_width(), false);
+     }
    }
    display_name();
    display_actor_stats();
@@ -137,9 +152,15 @@ void ActorView::Display(bool full_redraw)
 
  if(show_cursor && cursor_tile != NULL)
   {
-   screen->blit(cursor_pos.px, cursor_pos.py, (unsigned char *)cursor_tile->data,
-                8, 16, 16, 16, true, NULL);
-   screen->update(cursor_pos.px, cursor_pos.py, 16, 16);
+   if(use_4x) {
+     screen->blit4x(cursor_pos.px, cursor_pos.py, (unsigned char *)cursor_tile->data,
+                    8, 16, 16, 16, true, NULL);
+     screen->update(cursor_pos.px, cursor_pos.py, 64, 64);
+   } else {
+     screen->blit(cursor_pos.px, cursor_pos.py, (unsigned char *)cursor_tile->data,
+                  8, 16, 16, 16, true, NULL);
+     screen->update(cursor_pos.px, cursor_pos.py, 16, 16);
+   }
   }
 
 }
@@ -152,12 +173,49 @@ void ActorView::add_command_icons(Screen *tmp_screen, void *view_manager)
  SDL_Surface *button_image;
  SDL_Surface *button_image2;
 
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+
  if(Game::get_game()->get_game_type()==NUVIE_GAME_SE)
  {
 	x_off = 1; y = 96;
  }
  else if(MD)
 	y = 100;
+
+ if(use_4x) {
+   // 4x scaled button positions
+   y = 80 * 4; // 320px from top
+   int button_spacing = 64; // 16 * 4
+
+   tile = tile_manager->get_tile(387); //left arrow icon
+   button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   left_button = new GUI_Button(this, x_off, y, button_image, button_image2, this);
+   this->AddWidget(left_button);
+
+   tile = tile_manager->get_tile(384); //party view icon
+   button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   party_button = new GUI_Button(view_manager, button_spacing + x_off, y, button_image, button_image2,this);
+   this->AddWidget(party_button);
+
+   tile = tile_manager->get_tile(386); //inventory view icon
+   button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   inventory_button = new GUI_Button(view_manager, 2*button_spacing + x_off, y, button_image, button_image2, this);
+   this->AddWidget(inventory_button);
+
+   tile = tile_manager->get_tile(388); //right arrow icon
+   button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   right_button = new GUI_Button(this, 3*button_spacing + x_off, y, button_image, button_image2, this);
+   this->AddWidget(right_button);
+
+   return;
+ }
 
  //FIX need to handle clicked button image, check image free on destruct.
 
@@ -205,7 +263,22 @@ void ActorView::display_name()
  if(name == NULL)
   return;
 
- font->drawString(screen, name, area.x + ((136) - strlen(name) * 8) / 2, area.y + y_off);
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
+ bool use_4x = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ if(use_4x) {
+
+   // Translate name to Korean if available
+   KoreanTranslation *korean = Game::get_game()->get_korean_translation();
+   std::string display_name = (korean && korean->isEnabled()) ? korean->translate(name) : name;
+
+   // 4x scaled: use 32px Korean font, center in 136*4 = 544px width
+   uint16 name_width = korean_font->getStringWidthUTF8(display_name.c_str(), 1);
+   korean_font->drawStringUTF8(screen, display_name.c_str(), area.x + (area.w - name_width) / 2, area.y + y_off * 4, 0x48, 0, 1);
+ } else {
+   font->drawString(screen, name, area.x + ((136) - strlen(name) * 8) / 2, area.y + y_off);
+ }
 
  return;
 }
@@ -233,6 +306,44 @@ void ActorView::display_actor_stats()
  }
 
  hp_text_color = actor->get_hp_text_color();
+
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
+ bool use_4x = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+
+ if(use_4x) {
+   // 4x scaled stats display
+   // Portrait is 56x64 * 4 = 224x256, stats start at portrait_width (224px)
+   uint16 stats_x = area.x + 224 + 8; // After portrait with some padding
+   uint16 stats_y = area.y + 32; // Below name
+   uint16 line_height = 32; // 32px per line
+   uint8 text_color = 0x48; // Brown color for Korean text
+
+   sprintf(buf,"%d", Game::get_game()->get_script()->call_actor_str_adj(actor));
+   uint16 str_len = korean_font->drawStringUTF8(screen, "STR:", stats_x, stats_y, text_color, 0, 1);
+   korean_font->drawStringUTF8(screen, buf, stats_x + str_len, stats_y, actor->get_str_text_color(), 0, 1);
+
+   sprintf(buf,"%d",Game::get_game()->get_script()->call_actor_dex_adj(actor));
+   str_len = korean_font->drawStringUTF8(screen, "DEX:", stats_x, stats_y + line_height, text_color, 0, 1);
+   korean_font->drawStringUTF8(screen, buf, stats_x + str_len, stats_y + line_height, actor->get_dex_text_color(), 0, 1);
+
+   sprintf(buf,"INT:%d",Game::get_game()->get_script()->call_actor_int_adj(actor));
+   korean_font->drawStringUTF8(screen, buf, stats_x, stats_y + line_height * 2, text_color, 0, 1);
+
+   korean_font->drawStringUTF8(screen, "Magic", stats_x, stats_y + line_height * 3, text_color, 0, 1);
+   sprintf(buf,"%d/%d",actor->get_magic(),actor->get_maxmagic());
+   korean_font->drawStringUTF8(screen, buf, stats_x, stats_y + line_height * 4, text_color, 0, 1);
+
+   korean_font->drawStringUTF8(screen, "Health", stats_x, stats_y + line_height * 5, text_color, 0, 1);
+   sprintf(buf,"%d/%d",actor->get_hp(),actor->get_maxhp());
+   korean_font->drawStringUTF8(screen, buf, stats_x, stats_y + line_height * 6, hp_text_color, 0, 1);
+
+   korean_font->drawStringUTF8(screen, "Lev/Exp", stats_x, stats_y + line_height * 7, text_color, 0, 1);
+   sprintf(buf,"%d/%d",actor->get_level(),actor->get_exp());
+   korean_font->drawStringUTF8(screen, buf, stats_x, stats_y + line_height * 8, text_color, 0, 1);
+   return;
+ }
 
  sprintf(buf,"%d", Game::get_game()->get_script()->call_actor_str_adj(actor));//actor->get_strength());
  uint8 str_len = font->drawString(screen, "STR:", area.x + 5 * 16 + x_off, area.y + y_off + 16);

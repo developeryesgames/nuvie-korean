@@ -28,6 +28,7 @@
 #include "ViewManager.h"
 #include "View.h"
 #include "Actor.h"
+#include "FontManager.h"
 
 #include "GUI_widget.h"
 #include "GUI_button.h"
@@ -48,8 +49,22 @@ View::~View()
 
 bool View::init(uint16 x, uint16 y, Font *f, Party *p, TileManager *tm, ObjManager *om)
 {
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_korean_4x = font_manager && font_manager->is_korean_enabled() && font_manager->get_korean_font();
+
  if(Game::get_game()->get_game_type()==NUVIE_GAME_U6)
-   GUI_Widget::Init(NULL, x, y, 136, 96);
+ {
+   if(use_korean_4x && Game::get_game()->is_original_plus())
+   {
+     // 4x scaled dimensions - x,y are already scaled by ViewManager
+     GUI_Widget::Init(NULL, x, y, 136 * 4, 96 * 4);
+   }
+   else
+   {
+     GUI_Widget::Init(NULL, x, y, 136, 96);
+   }
+ }
  else if(Game::get_game()->get_game_type()==NUVIE_GAME_SE)
    GUI_Widget::Init(NULL, x+7, y-2, 132, 113);
  else
@@ -59,7 +74,7 @@ bool View::init(uint16 x, uint16 y, Font *f, Party *p, TileManager *tm, ObjManag
  party = p;
  tile_manager = tm;
  obj_manager = om;
- 
+
  set_party_member(0);
 
  bg_color = Game::get_game()->get_palette()->get_bg_color();

@@ -70,6 +70,7 @@
 #include "Book.h"
 #include "Keys.h"
 #include "Utils.h"
+#include "KoreanTranslation.h"
 
 #include "Game.h"
 
@@ -111,6 +112,7 @@ Game::Game(Configuration *cfg, Screen *scr, GUI *g, nuvie_game_t type, SoundMana
  egg_manager = NULL;
  usecode = NULL;
  effect_manager = NULL;
+ korean_translation = NULL;
  weather = NULL;
  magic = NULL;
  book = NULL;
@@ -180,6 +182,7 @@ Game::~Game()
     if(obj_manager) delete obj_manager;
     if(palette) delete palette;
     if(font_manager) delete font_manager;
+    if(korean_translation) delete korean_translation;
     //delete scroll;
     if(game_map) delete game_map;
     if(actor_manager) delete actor_manager;
@@ -230,6 +233,12 @@ bool Game::loadGame(Script *s)
 
    font_manager = new FontManager(config);
    font_manager->init(game_type);
+
+   // Initialize Korean translation system
+   ConsoleAddInfo("About to initialize Korean translation...");
+   korean_translation = new KoreanTranslation(config);
+   bool korean_result = korean_translation->init();
+   ConsoleAddInfo("Korean translation init result: %d", korean_result);
 
    if(!is_new_style())
    {

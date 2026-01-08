@@ -29,9 +29,11 @@
 
 class Configuration;
 class Font;
+class KoreanFont;
 
 #define NUVIE_FONT_NORMAL 0
 #define NUVIE_FONT_GARG   1
+#define NUVIE_FONT_KOREAN 2
 
 class FontManager
 {
@@ -43,6 +45,11 @@ class FontManager
  Font *conv_garg_font;
  unsigned char *conv_font_data;
  uint8 *conv_font_widths;
+
+ // Korean localization support
+ KoreanFont *korean_font;
+ bool korean_enabled;
+
  public:
 
  FontManager(Configuration *cfg);
@@ -50,10 +57,14 @@ class FontManager
 
  bool init(nuvie_game_t game_type);
 
-
  Font *get_font(uint16 font_number);
  Font *get_conv_font() { return conv_font; }
  Font *get_conv_garg_font() { return conv_garg_font; }
+
+ // Korean font support
+ KoreanFont *get_korean_font() { return korean_font; }
+ bool is_korean_enabled() { return korean_enabled; }
+ void set_korean_enabled(bool enabled) { korean_enabled = enabled; }
 
  protected:
 
@@ -61,6 +72,7 @@ class FontManager
  bool initWOU(std::string filename);
  bool initWOUSystemFont();
  bool initConvFonts(nuvie_game_t game_type);
+ bool initKoreanFont();
 };
 
 #endif /* __FontManager_h__ */

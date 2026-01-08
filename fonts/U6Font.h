@@ -48,6 +48,9 @@ private:
    uint16 getCharHeight() { return 8; }
    uint16 drawChar(Screen *screen, uint8 char_num, uint16 x, uint16 y,
                  uint8 color);
+   // Draw character with scaling (1=8x8, 2=16x16, 4=32x32)
+   uint16 drawCharScaled(Screen *screen, uint8 char_num, uint16 x, uint16 y,
+                 uint8 color, uint8 scale);
   protected:
 
 };

@@ -1,5 +1,7 @@
 #ifndef __Look_h__
 #define __Look_h__
+
+#include <string>
 /*
  *  Look.h
  *  Nuvie
@@ -32,6 +34,7 @@ class Look
  uint16 max_len;
  unsigned char *look_data;
  char *desc_buf;
+ std::string korean_desc_buf;  // Buffer for Korean translation
 
  public:
 

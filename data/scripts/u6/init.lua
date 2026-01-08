@@ -181,16 +181,41 @@ function run_script(script)
 end
 
 function look_obj(obj)
-   print("Thou dost see " .. obj.look_string);
-   local weight = obj.weight; --FIXME this could be a problem if we want to change Lua_number type to int. 
-   if weight ~= 0 then
-      if obj.qty > 1 and obj.stackable then
-         print(". They weigh");
-      else
-         print(". It weighs");
+   local korean_mode = is_korean_enabled()
+   local item_name = obj.look_string
+   local weight = obj.weight; --FIXME this could be a problem if we want to change Lua_number type to int.
+
+   if korean_mode then
+      -- Korean: "그대는 X를 본다." with proper particle
+      -- Try to get Korean translation by tile_num first
+      local korean_name = korean_get_look_text(obj.tile_num)
+      if korean_name == "" then
+         -- Fallback: strip English article and try translate
+         local stripped_name = item_name:gsub("^a ", ""):gsub("^an ", ""):gsub("^the ", "")
+         korean_name = korean_translate(stripped_name)
+         if korean_name == stripped_name then
+            -- No translation found, use original
+            korean_name = item_name
+         end
       end
-      
-      print(string.format(" %.1f", weight).." stones");
+      local particle = korean_get_particle(korean_name, "eulreul")
+      print("그대는 " .. korean_name .. particle .. " 본다");
+   else
+      print("Thou dost see " .. item_name);
+   end
+
+   if weight ~= 0 then
+      if korean_mode then
+         -- Korean: "무게: X.X 스톤"
+         print(". 무게: " .. string.format("%.1f", weight) .. " 스톤");
+      else
+         if obj.qty > 1 and obj.stackable then
+            print(". They weigh");
+         else
+            print(". It weighs");
+         end
+         print(string.format(" %.1f", weight).." stones");
+      end
    end
 
    --FIXME usecode look description should be lua code.
@@ -198,44 +223,67 @@ function look_obj(obj)
       print("\n")
       return false
    end
-   
+
    local dmg = weapon_dmg_tbl[obj.obj_n];
    if dmg ~= nil then
-      if weight ~= 0 then
-         print(" and")
+      if korean_mode then
+         if weight ~= 0 then
+            print(", ")
+         else
+            print(". ")
+         end
+         print("공격력: " .. dmg .. "점")
       else
-         print(". It")
+         if weight ~= 0 then
+            print(" and")
+         else
+            print(". It")
+         end
+         print(" can do "..dmg.." point")
+         if dmg > 1 then print("s") end
+         print(" of damage")
       end
-      
-      print(" can do "..dmg.." point")
-      if dmg > 1 then print("s") end
-      print(" of damage")
-
    end
-   
+
    local ac = armour_tbl[obj.obj_n]
    if ac ~= nil then
-      if weight ~= 0 or dmg ~= 0 then
-         print(" and")
+      if korean_mode then
+         if weight ~= 0 or dmg ~= 0 then
+            print(", ")
+         else
+            print(". ")
+         end
+         print("방어력: " .. ac .. "점")
       else
-         print(". It")
+         if weight ~= 0 or dmg ~= 0 then
+            print(" and")
+         else
+            print(". It")
+         end
+         print(" can absorb "..ac.." point")
+         if ac > 1 then print("s") end
+         print(" of damage")
       end
-      
-      print(" can absorb "..ac.." point")
-      if ac > 1 then print("s") end
-      print(" of damage")
    end
-   
+
    print(".\n");
    local player_loc = player_get_location();
    if g_show_stealing == true and obj.getable == true and player_loc.z == 0 and obj.ok_to_take == false then
       if math.abs(player_loc.x - obj.x) > 1 or math.abs(player_loc.y - obj.y) > 1 then
-        print("PRIVATE PROPERTY\n")
+        if korean_mode then
+           print("사유재산\n")
+        else
+           print("PRIVATE PROPERTY\n")
+        end
       else
-        print("PRIVATE PROPERTY")
+        if korean_mode then
+           print("사유재산")
+        else
+           print("PRIVATE PROPERTY")
+        end
       end
    end
-   
+
    return true
 end
 

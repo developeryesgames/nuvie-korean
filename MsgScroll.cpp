@@ -30,6 +30,8 @@
 #include "U6misc.h"
 #include "FontManager.h"
 #include "Font.h"
+#include "U6Font.h"
+#include "KoreanFont.h"
 #include "GamePalette.h"
 #include "GUI.h"
 #include "MsgScroll.h"
@@ -162,15 +164,29 @@ MsgText *MsgLine::get_text_at_pos(uint16 pos)
 
 uint16 MsgLine::get_display_width()
 {
-  uint16 total_length = 0;
+  uint16 total_width = 0;
   std::list<MsgText *>::iterator iter;
+
+  // Check if Korean font is enabled
+  FontManager *font_manager = Game::get_game()->get_font_manager();
+  KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
+  bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+
   for(iter=text.begin();iter != text.end() ; iter++)
   {
     MsgText *token = *iter;
 
-    total_length += token->font->getStringWidth(token->s.c_str());
+    if(use_korean)
+    {
+      // Korean font: 16x16 native (scale 1)
+      total_width += korean_font->getStringWidthUTF8(token->s.c_str(), 1);
+    }
+    else
+    {
+      total_width += token->font->getStringWidth(token->s.c_str());
+    }
   }
-  return total_length;
+  return total_width;
 }
 
 // MsgScroll Class
@@ -238,13 +254,48 @@ MsgScroll::MsgScroll(Configuration *cfg, Font *f) : GUI_Widget(NULL, 0, 0, 0, 0)
                          break;
    }
 
- if(Game::get_game()->is_original_plus())
+ // Check if Korean mode - need 4x scaled UI positioning
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_korean = font_manager && font_manager->is_korean_enabled() && font_manager->get_korean_font();
+
+ if(use_korean && Game::get_game()->is_original_plus())
+ {
+   // In Korean 4x mode, the UI panel (152px) becomes 608px at 4x scale
+   // panel_start = screen_width - 152*4 = screen_width - 608
+   // MsgScroll x = panel_start + 8*4 (8 pixels margin, scaled 4x)
+   uint16 screen_width = Game::get_game()->get_screen()->get_width();
+   uint16 panel_start = screen_width - 152 * 4;
+   x = panel_start + 8 * 4; // 8 pixels margin, scaled 4x
+
+   // y position: original y=112 within 200px height
+   // At 4x scale: y = 112 * 4 = 448
+   y = 112 * 4;
+ }
+ else if(Game::get_game()->is_original_plus())
+ {
    x += Game::get_game()->get_game_width() - 320;
+ }
 
  uint16 x_off = Game::get_game()->get_game_x_offset();
  uint16 y_off = Game::get_game()->get_game_y_offset();
 
- GUI_Widget::Init(NULL, x+x_off, y+y_off, scroll_width * 8, scroll_height * 8);
+ // For Korean mode with original_plus, use scaled dimensions for 16px font
+ uint16 area_width, area_height;
+ if(use_korean && Game::get_game()->is_original_plus())
+ {
+   // Korean font: 16px native, UI scaled 4x
+   // Original area: scroll_width * 8 and scroll_height * 8
+   // At 4x scale: multiply by 4
+   area_width = scroll_width * 8 * 4;  // 18 * 8 * 4 = 576px
+   area_height = scroll_height * 8 * 4; // 10 * 8 * 4 = 320px
+ }
+ else
+ {
+   area_width = scroll_width * 8;
+   area_height = scroll_height * 8;
+ }
+
+ GUI_Widget::Init(NULL, x+x_off, y+y_off, area_width, area_height);
 
  cursor_char = 0;
  cursor_x = 0;
@@ -483,9 +534,29 @@ void MsgScroll::display_string(std::string s, Font *f, uint8 color, bool include
 
 bool MsgScroll::can_fit_token_on_msgline(MsgLine *msg_line, MsgText *token)
 {
-  if(msg_line->total_length + token->length() > scroll_width)
+  // Check if Korean font is enabled - use pixel-based width
+  FontManager *font_manager = Game::get_game()->get_font_manager();
+  KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
+  bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+
+  if(use_korean)
   {
-    return false; //token doesn't fit on the current line.
+    // Use pixel-based width calculation for Korean (16x16 * 2 = 32)
+    uint16 line_width_px = msg_line->get_display_width();
+    uint16 token_width_px = korean_font->getStringWidthUTF8(token->s.c_str(), 1);
+    // area.w is the actual scroll area width (4x scaled in Korean mode)
+    if(line_width_px + token_width_px > area.w)
+    {
+      return false;
+    }
+  }
+  else
+  {
+    // Original byte-based calculation for ASCII
+    if(msg_line->total_length + token->length() > scroll_width)
+    {
+      return false; //token doesn't fit on the current line.
+    }
   }
 
   return true;
@@ -494,6 +565,20 @@ bool MsgScroll::can_fit_token_on_msgline(MsgLine *msg_line, MsgText *token)
 bool MsgScroll::parse_token(MsgText *token)
 {
  MsgLine *msg_line = NULL;
+
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
+ bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ uint16 visible_lines = scroll_height;
+ if(use_korean)
+ {
+   // Korean font: 16x16 native
+   uint16 font_height = korean_font->getCharHeight();
+   if(font_height > 0)
+     visible_lines = area.h / font_height;
+   if(visible_lines == 0)
+     visible_lines = 1;
+ }
 
  if (!msg_buf.empty())
    msg_line = msg_buf.back(); // retrieve the last line from the scroll buffer.
@@ -551,18 +636,31 @@ bool MsgScroll::parse_token(MsgText *token)
       }
 
       add_token(token);
-      if(msg_line->total_length == scroll_width // add another line for cursor.
-          && (talking || Game::get_game()->get_event()->get_mode() == INPUT_MODE
-              || Game::get_game()->get_event()->get_mode() == KEYINPUT_MODE))
+      if(talking || Game::get_game()->get_event()->get_mode() == INPUT_MODE
+          || Game::get_game()->get_event()->get_mode() == KEYINPUT_MODE)
       {
-        msg_line = add_new_line();
+        bool line_full = false;
+        if(use_korean)
+        {
+          // Korean font: 16px wide per character
+          uint16 line_width_px = msg_line->get_display_width();
+          line_full = (line_width_px >= area.w);
+        }
+        else
+        {
+          line_full = (msg_line->total_length == scroll_width);
+        }
+        if(line_full)
+        {
+          msg_line = add_new_line();
+        }
       }
     }
     break;
    }
 
-if(msg_buf.size() > scroll_height)
-   display_pos = msg_buf.size() - scroll_height;
+if(msg_buf.size() > visible_lines)
+   display_pos = (uint16)(msg_buf.size() - visible_lines);
  just_finished_page_break = false;
  just_displayed_prompt = false;
  return true;
@@ -634,7 +732,21 @@ MsgLine *MsgScroll::add_new_line()
    delete_front_line();
  }
 
- if(autobreak && line_count > scroll_height - 1)
+ uint16 visible_lines = scroll_height;
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
+ bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ if(use_korean)
+ {
+   // Korean font: 16x16 native
+   uint16 font_height = korean_font->getCharHeight();
+   if(font_height > 0)
+     visible_lines = area.h / font_height;
+   if(visible_lines == 0)
+     visible_lines = 1;
+ }
+
+ if(autobreak && line_count > visible_lines - 1)
      set_page_break();
 
  return msg_line;
@@ -738,7 +850,21 @@ void MsgScroll::set_input_mode(bool state, const char *allowed, bool can_escape,
 
 void MsgScroll::move_scroll_down()
 {
- if(msg_buf.size() > scroll_height && display_pos < msg_buf.size() - scroll_height)
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
+ bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ uint16 visible_lines = scroll_height;
+ if(use_korean)
+ {
+   // Korean font: 16x16 native
+   uint16 font_height = korean_font->getCharHeight();
+   if(font_height > 0)
+     visible_lines = area.h / font_height;
+   if(visible_lines == 0)
+     visible_lines = 1;
+ }
+
+ if(msg_buf.size() > visible_lines && display_pos < msg_buf.size() - visible_lines)
  {
    display_pos++;
    scroll_updated = true;
@@ -757,7 +883,21 @@ void MsgScroll::move_scroll_up()
 void MsgScroll::page_up()
 {
  uint8 i=0;
- for(; display_pos > 0 && i < scroll_height; i++)
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
+ bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ uint16 visible_lines = scroll_height;
+ if(use_korean)
+ {
+   // Korean font: 16x16 native
+   uint16 font_height = korean_font->getCharHeight();
+   if(font_height > 0)
+     visible_lines = area.h / font_height;
+   if(visible_lines == 0)
+     visible_lines = 1;
+ }
+
+ for(; display_pos > 0 && i < visible_lines; i++)
    display_pos--;
  if(i > 0)
    scroll_updated = true;
@@ -766,8 +906,22 @@ void MsgScroll::page_up()
 void MsgScroll::page_down()
 {
  uint8 i=0;
- for(; msg_buf.size() > scroll_height && i < scroll_height
-     && display_pos < msg_buf.size() - scroll_height ; i++)
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
+ bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ uint16 visible_lines = scroll_height;
+ if(use_korean)
+ {
+   // Korean font: 16x16 native
+   uint16 font_height = korean_font->getCharHeight();
+   if(font_height > 0)
+     visible_lines = area.h / font_height;
+   if(visible_lines == 0)
+     visible_lines = 1;
+ }
+
+ for(; msg_buf.size() > visible_lines && i < visible_lines
+     && display_pos < msg_buf.size() - visible_lines ; i++)
    display_pos++;
  if(i > 0)
    scroll_updated = true;
@@ -997,14 +1151,40 @@ std::string MsgScroll::get_token_string_at_pos(uint16 x, uint16 y)
  MsgText *token = NULL;
  std::list<MsgLine *>::iterator iter;
 
- buf_x = (x - area.x) / 8;
- buf_y = (y - area.y) / 8;
+ // Check if Korean font is enabled
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
+ bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ // Korean font: 16x16 native * scale 2 = 32x32 rendered
+ uint16 font_height = use_korean ? korean_font->getCharHeight() : 8;
+ uint16 visible_lines = scroll_height;
+ if(use_korean)
+ {
+   if(font_height > 0)
+     visible_lines = area.h / font_height;
+   if(visible_lines == 0)
+     visible_lines = 1;
+ }
 
- if(buf_x < 0 || buf_x >= scroll_width || // click not in MsgScroll area.
-    buf_y < 0 || buf_y >= scroll_height)
-     return "";
+ buf_y = (y - area.y) / font_height;
 
- if(msg_buf.size() <= scroll_height)
+ if(use_korean)
+ {
+   // For Korean, we need pixel-based x position
+   buf_x = x - area.x;
+   if(buf_x < 0 || buf_x >= (sint32)(scroll_width * 8) ||
+      buf_y < 0 || buf_y >= visible_lines)
+       return "";
+ }
+ else
+ {
+   buf_x = (x - area.x) / 8;
+   if(buf_x < 0 || buf_x >= scroll_width || // click not in MsgScroll area.
+      buf_y < 0 || buf_y >= scroll_height)
+       return "";
+ }
+
+ if(msg_buf.size() <= visible_lines)
    {
     if((sint32)msg_buf.size() < buf_y + 1)
       return "";
@@ -1022,11 +1202,32 @@ std::string MsgScroll::get_token_string_at_pos(uint16 x, uint16 y)
 
  if(iter != msg_buf.end())
    {
-    token = (*iter)->get_text_at_pos(buf_x);
-    if(token)
+    if(use_korean)
     {
-       DEBUG(0,LEVEL_DEBUGGING,"Token at (%d,%d) = %s\n",buf_x, buf_y, token->s.c_str());
-       return token->s;
+      // For Korean, find token by pixel position (16x16 * 2 = 32)
+      MsgLine *line = *iter;
+      uint16 pos_x = 0;
+      std::list<MsgText *>::iterator text_iter;
+      for(text_iter = line->text.begin(); text_iter != line->text.end(); text_iter++)
+      {
+        MsgText *t = *text_iter;
+        uint16 token_width = korean_font->getStringWidthUTF8(t->s.c_str(), 2);
+        if(buf_x >= pos_x && buf_x < pos_x + token_width)
+        {
+          DEBUG(0,LEVEL_DEBUGGING,"Token at pixel (%d,%d) = %s\n",buf_x, buf_y, t->s.c_str());
+          return t->s;
+        }
+        pos_x += token_width;
+      }
+    }
+    else
+    {
+      token = (*iter)->get_text_at_pos(buf_x);
+      if(token)
+      {
+         DEBUG(0,LEVEL_DEBUGGING,"Token at (%d,%d) = %s\n",buf_x, buf_y, token->s.c_str());
+         return token->s;
+      }
     }
    }
 
@@ -1039,9 +1240,19 @@ void MsgScroll::Display(bool full_redraw)
  std::list<MsgLine *>::iterator iter;
  MsgLine *msg_line = NULL;
 
+ // Check if Korean font is enabled for pixel-based positioning
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
+ bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ // Korean font: 16x16 native * scale 2 = 32x32 rendered
+ uint16 font_height = use_korean ? korean_font->getCharHeight() : 8;
 
+ // Calculate visible lines based on actual font height
+ // area.h is total height in pixels, divide by font_height to get lines
+ uint16 visible_lines = use_korean ? (area.h / font_height) : scroll_height;
 
- if(scroll_updated || full_redraw || Game::get_game()->is_original_plus_full_map())
+ // In Korean 4x mode, always redraw since other UI elements may overlap
+ if(scroll_updated || full_redraw || Game::get_game()->is_original_plus_full_map() || use_korean)
   {
    screen->fill(bg_color,area.x, area.y, area.w, area.h); //clear whole scroll
 
@@ -1049,7 +1260,7 @@ void MsgScroll::Display(bool full_redraw)
    for(i=0;i < display_pos; i++)
 	  iter++;
 
-   for(i=0;i< scroll_height && iter != msg_buf.end();i++,iter++)
+   for(i=0;i< visible_lines && iter != msg_buf.end();i++,iter++)
      {
 	  msg_line = *iter;
 	  drawLine(screen, msg_line, i);
@@ -1061,25 +1272,46 @@ void MsgScroll::Display(bool full_redraw)
    cursor_y = i-1;
    if(msg_line)
     {
-     cursor_x = msg_line->total_length;
-     if(cursor_x == scroll_width) // don't draw the cursor outside the scroll (SB-X)
+     if(use_korean)
+     {
+       // For Korean, cursor_x is stored as pixel offset
+       cursor_x = msg_line->get_display_width();
+       uint16 scroll_width_px = area.w - left_margin;
+       if(cursor_x >= scroll_width_px)
        {
-        if(cursor_y+1 < scroll_height)
-         cursor_y++;
-        cursor_x = 0;
+         if(cursor_y+1 < visible_lines)
+           cursor_y++;
+         cursor_x = 0;
        }
+     }
+     else
+     {
+       cursor_x = msg_line->total_length;
+       if(cursor_x == scroll_width) // don't draw the cursor outside the scroll (SB-X)
+       {
+         if(cursor_y+1 < scroll_height)
+           cursor_y++;
+         cursor_x = 0;
+       }
+     }
     }
    else
      cursor_x = area.x;
   }
  else
   {
-   clearCursor(area.x + 8 * cursor_x, area.y + cursor_y * 8);
+   if(use_korean)
+     clearCursor(area.x + cursor_x, area.y + cursor_y * font_height);
+   else
+     clearCursor(area.x + 8 * cursor_x, area.y + cursor_y * 8);
   }
 
- if(show_cursor && (msg_buf.size() <= scroll_height || display_pos == msg_buf.size() - scroll_height))
+ if(show_cursor && (msg_buf.size() <= visible_lines || display_pos == msg_buf.size() - visible_lines))
  {
-   drawCursor(area.x + left_margin + 8 * cursor_x, area.y + cursor_y * 8);
+   if(use_korean)
+     drawCursor(area.x + left_margin + cursor_x + 8, area.y + cursor_y * font_height + 8);
+   else
+     drawCursor(area.x + left_margin + 8 * cursor_x, area.y + cursor_y * 8);
  }
 
 }
@@ -1088,39 +1320,95 @@ inline void MsgScroll::drawLine(Screen *screen, MsgLine *msg_line, uint16 line_y
 {
  MsgText *token;
  std::list<MsgText *>::iterator iter;
- uint16 total_length = 0;
+ uint16 total_x = 0;
+
+ // Check if Korean font is available
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
+ bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ // Korean font: 16x16 native (scale 1)
+ uint8 korean_scale = 1;
+ uint16 font_height = use_korean ? korean_font->getCharHeight() : 8;
 
  for(iter=msg_line->text.begin();iter != msg_line->text.end() ; iter++)
    {
     token = *iter;
-	token->font->drawString(screen, token->s.c_str(), area.x + left_margin + total_length * 8, area.y+line_y*8, token->color, font_highlight_color); //FIX for hardcoded font height
-	total_length += token->s.length();
+    if(use_korean)
+    {
+      // Use Korean font for UTF-8 string rendering (32x32 native)
+      uint16 width = korean_font->drawStringUTF8(screen, token->s.c_str(),
+                       area.x + left_margin + total_x, area.y + line_y * font_height,
+                       token->color, font_highlight_color, korean_scale);
+      total_x += width;
+    }
+    else
+    {
+      // Original ASCII rendering
+      token->font->drawString(screen, token->s.c_str(), area.x + left_margin + total_x, area.y+line_y*8, token->color, font_highlight_color);
+      total_x += token->s.length() * 8;
+    }
    }
 }
 
 void MsgScroll::clearCursor(uint16 x, uint16 y)
 {
- screen->fill(bg_color, x, y, 8,8);
+ // Use appropriate size based on font
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
+ bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ // Korean font: 16x16 native (scale 1), Original: 8x8
+ uint16 clear_size = use_korean ? 16 : 8;
+ screen->fill(bg_color, x, y, clear_size, clear_size);
 }
 
 void MsgScroll::drawCursor(uint16 x, uint16 y)
 {
  uint8 cursor_color = input_mode ? get_input_font_color() : font_color;
 
+ // Get font size for update region
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
+ bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ // Korean mode: MsgScroll area is 4x scaled, so use 4x for control chars too
+ // Korean font: 16x16 native, Original U6 font: 8x8 scaled to 32x32 (4x) in Korean mode
+ uint16 cursor_size = use_korean ? 16 : 8;
+ uint8 korean_scale = use_korean ? 2 : 1; // 2x scale for 8x8 U6 font (16x16 cursor in Korean mode)
+
  if(input_char != 0) { // show letter selected by arrow keys
-    font->drawChar(screen, get_char_from_input_char(), x, y, cursor_color);
-    screen->update(x, y, 8, 8);
+    if(use_korean)
+      korean_font->drawCharUnicode(screen, get_char_from_input_char(), x, y, cursor_color, 1);
+    else
+      font->drawChar(screen, get_char_from_input_char(), x, y, cursor_color);
+    screen->update(x, y, cursor_size, cursor_size);
     return;
  }
+ // Special characters (arrows, spinning ankh) are not in Korean font charmap
+ // Use original U6 font with scaling in Korean mode
  if(page_break)
     {
      if(cursor_wait <= 2) // flash arrow
-	   font->drawChar(screen, 1, x, y, cursor_color); // down arrow
+     {
+       if(use_korean)
+       {
+         U6Font *u6font = static_cast<U6Font*>(font);
+         u6font->drawCharScaled(screen, 1, x, y, cursor_color, korean_scale); // down arrow scaled
+       }
+       else
+         font->drawChar(screen, 1, x, y, cursor_color); // down arrow (control char)
+     }
 	}
  else
-    font->drawChar(screen, cursor_char + 5, x, y, cursor_color); //spinning ankh
+ {
+    if(use_korean)
+    {
+      U6Font *u6font = static_cast<U6Font*>(font);
+      u6font->drawCharScaled(screen, cursor_char + 5, x, y, cursor_color, korean_scale); //spinning ankh scaled
+    }
+    else
+      font->drawChar(screen, cursor_char + 5, x, y, cursor_color); //spinning ankh (control char)
+ }
 
-  screen->update(x, y, 8, 8);
+  screen->update(x, y, cursor_size, cursor_size);
   if(cursor_wait == MSGSCROLL_CURSOR_DELAY)
     {
      cursor_char = (cursor_char + 1) % 4;

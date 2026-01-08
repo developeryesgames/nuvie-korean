@@ -34,12 +34,15 @@
 #include "Actor.h"
 #include "Portrait.h"
 #include "Font.h"
+#include "FontManager.h"
+#include "KoreanFont.h"
 #include "ViewManager.h"
 #include "MsgScroll.h"
 #include "GUI.h"
 #include "DollWidget.h"
 #include "PortraitView.h"
 #include "SunMoonStripWidget.h"
+#include "KoreanTranslation.h"
 
 
 PortraitView::PortraitView(Configuration *cfg) : View(cfg)
@@ -77,16 +80,27 @@ bool PortraitView::init(uint16 x, uint16 y, Font *f, Party *p, Player *player, T
 
  portrait = port;
 
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+
  doll_widget = new DollWidget(config, this);
- doll_widget->init(NULL, 0, 16, tile_manager, obj_manager, true);
+ // Original: (0, 16), 4x mode: (0, 16*4=64)
+ int doll_y = use_4x ? 16 * 4 : 16;
+ doll_widget->init(NULL, 0, doll_y, tile_manager, obj_manager, true);
 
  AddWidget(doll_widget);
  doll_widget->Hide();
- 
+
  if(gametype == NUVIE_GAME_U6)
  {
    SunMoonStripWidget *sun_moon_widget = new SunMoonStripWidget(player, tile_manager);
-   sun_moon_widget->init(-8, -2);
+   // In 4x mode, scale the SunMoon position
+   if(use_4x)
+     sun_moon_widget->init(-8 * 4, -2 * 4);
+   else
+     sun_moon_widget->init(-8, -2);
    AddWidget(sun_moon_widget);
  }
  else if(gametype == NUVIE_GAME_MD)
@@ -116,8 +130,14 @@ void PortraitView::load_background(const char *f, uint8 lib_offset)
 
 void PortraitView::Display(bool full_redraw)
 {
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
+ bool use_4x = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ int scale = use_4x ? 4 : 1;
 
- if(Game::get_game()->is_new_style() || Game::get_game()->is_original_plus_full_map())
+ // In Korean 4x mode or new_style/full_map, always fill background
+ if(Game::get_game()->is_new_style() || Game::get_game()->is_original_plus_full_map() || use_4x)
    screen->fill(bg_color, area.x, area.y, area.w, area.h);
  if(portrait_data != NULL/* && (full_redraw || update_display)*/)
   {
@@ -125,9 +145,24 @@ void PortraitView::Display(bool full_redraw)
    if(gametype == NUVIE_GAME_U6)
    {
      if(display_doll)
-       screen->blit(area.x+72,area.y+16,portrait_data,8,portrait_width,portrait_height,portrait_width,false);
+     {
+       if(use_4x) {
+         // 4x mode: portrait at 72*4, 16*4 from area origin
+         screen->blit4x(area.x+72*scale, area.y+16*scale, portrait_data, 8, portrait_width, portrait_height, portrait_width, false);
+       } else {
+         screen->blit(area.x+72,area.y+16,portrait_data,8,portrait_width,portrait_height,portrait_width,false);
+       }
+     }
      else
-       screen->blit(area.x+(area.w-portrait_width)/2,area.y+(area.h-portrait_height)/2,portrait_data,8,portrait_width,portrait_height,portrait_width,true);
+     {
+       if(use_4x) {
+         // 4x mode: centered portrait
+         screen->blit4x(area.x+(area.w-portrait_width*scale)/2, area.y+(area.h-portrait_height*scale)/2,
+                        portrait_data, 8, portrait_width, portrait_height, portrait_width, true);
+       } else {
+         screen->blit(area.x+(area.w-portrait_width)/2,area.y+(area.h-portrait_height)/2,portrait_data,8,portrait_width,portrait_height,portrait_width,true);
+       }
+     }
      display_name(80);
    }
    else if(gametype == NUVIE_GAME_MD)
@@ -151,9 +186,9 @@ void PortraitView::Display(bool full_redraw)
   }
   if(show_cursor && gametype == NUVIE_GAME_U6) // FIXME: should we be using scroll's drawCursor?
    {
-    screen->fill(bg_color, area.x, area.y + area.h - 8, 8, 8);
-    Game::get_game()->get_scroll()->drawCursor(area.x, area.y + area.h - 8);
-   } 
+    screen->fill(bg_color, area.x, area.y + area.h - 8 * scale, 8 * scale, 8 * scale);
+    Game::get_game()->get_scroll()->drawCursor(area.x, area.y + area.h - 8 * scale);
+   }
    DisplayChildren(full_redraw);
    screen->update(area.x, area.y, area.w, area.h);
 }
@@ -165,6 +200,12 @@ bool PortraitView::set_portrait(Actor *actor, const char *name)
  cur_actor_num = actor->get_actor_num();
  int doll_x_offset = 0;
 
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ int scale = use_4x ? 4 : 1;
+
  if(portrait_data != NULL)
    free(portrait_data);
 
@@ -173,9 +214,11 @@ bool PortraitView::set_portrait(Actor *actor, const char *name)
  if(gametype == NUVIE_GAME_U6 && actor->has_readied_objects())
    {
     if(portrait_data == NULL)
-      doll_x_offset = 34;
-      
-    doll_widget->MoveRelativeToParent(doll_x_offset, 16);
+      doll_x_offset = 34 * scale;
+
+    // Original: (0, 16), 4x mode: (0, 16*4=64)
+    int doll_y = 16 * scale;
+    doll_widget->MoveRelativeToParent(doll_x_offset, doll_y);
 
     display_doll = true;
     doll_widget->Show();
@@ -211,7 +254,22 @@ void PortraitView::display_name(uint16 y_offset)
 
  name = name_string->c_str();
 
- font->drawString(screen, name, area.x + (area.w - strlen(name) * 8) / 2, area.y+y_offset);
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
+ bool use_4x = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+
+ if(use_4x) {
+   // Translate name to Korean if available
+   KoreanTranslation *korean = Game::get_game()->get_korean_translation();
+   std::string display_name = (korean && korean->isEnabled()) ? korean->translate(name) : name;
+
+   // 4x mode: use Korean font, scale y_offset
+   uint16 name_width = korean_font->getStringWidthUTF8(display_name.c_str(), 1);
+   korean_font->drawStringUTF8(screen, display_name.c_str(), area.x + (area.w - name_width) / 2, area.y + y_offset * 4, 0x48, 0, 1);
+ } else {
+   font->drawString(screen, name, area.x + (area.w - strlen(name) * 8) / 2, area.y+y_offset);
+ }
 
  return;
 }
@@ -225,9 +283,14 @@ GUI_status PortraitView::HandleEvent(const SDL_Event *event)
     if(waiting
        && (event->type == SDL_MOUSEBUTTONDOWN || event->type == SDL_KEYDOWN))
     {
+        // Check for Korean 4x mode
+        FontManager *font_manager = Game::get_game()->get_font_manager();
+        bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+                      font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+
         if(Game::get_game()->is_new_style())
             this->Hide();
-        else // FIXME revert to previous status view
+        else if(!use_4x) // In Korean 4x mode, don't switch away from portrait view
             Game::get_game()->get_view_manager()->set_inventory_mode();
         // Game::get_game()->get_scroll()->set_input_mode(false);
         Game::get_game()->get_scroll()->message("\n");

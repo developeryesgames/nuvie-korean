@@ -35,7 +35,9 @@
 #include "ConvFont.h"
 #include "U6Font.h"
 #include "WOUFont.h"
+#include "KoreanFont.h"
 #include "U6misc.h"
+#include "Console.h"
 
 FontManager::FontManager(Configuration *cfg)
 {
@@ -46,6 +48,10 @@ FontManager::FontManager(Configuration *cfg)
  conv_garg_font = NULL;
  conv_font_data = NULL;
  conv_font_widths = NULL;
+
+ // Korean support
+ korean_font = NULL;
+ korean_enabled = false;
 }
 
 FontManager::~FontManager()
@@ -73,16 +79,23 @@ FontManager::~FontManager()
  {
    free(conv_font_widths);
  }
+ if(korean_font)
+ {
+   delete korean_font;
+ }
 }
 
 bool FontManager::init(nuvie_game_t game_type)
 {
   initConvFonts(game_type);
 
-	if(game_type == NUVIE_GAME_U6)
-		return initU6();
+  // Try to initialize Korean font
+  initKoreanFont();
 
-	return initWOUSystemFont();
+  if(game_type == NUVIE_GAME_U6)
+    return initU6();
+
+  return initWOUSystemFont();
 }
 
 bool FontManager::initU6()
@@ -119,26 +132,21 @@ bool FontManager::initU6()
 
 bool FontManager::initWOU(std::string filename)
 {
-	 WOUFont *font;
-	 std::string path;
-	 U6Lib_n lib_file;
+   WOUFont *font;
+   std::string path;
+   U6Lib_n lib_file;
 
-	 config_get_path(config, filename, path);
+   config_get_path(config, filename, path);
 
-	 lib_file.open(path,4,NUVIE_GAME_MD); //can be either SE or MD just as long as it isn't set to U6 type.
+   lib_file.open(path,4,NUVIE_GAME_MD); //can be either SE or MD just as long as it isn't set to U6 type.
 
-	 font = new WOUFont();
-	 unsigned char *buf = lib_file.get_item(0);
-	 font->initWithBuffer(buf, lib_file.get_item_size(0)); //buf will be freed by ~Font()
-	 fonts.push_back(font);
-	 num_fonts++;
-/*
-	 font = new Font();
-	 font->init(path.c_str());
-	 fonts.push_back(font);
-	 num_fonts++;
-*/
-	 return true;
+   font = new WOUFont();
+   unsigned char *buf = lib_file.get_item(0);
+   font->initWithBuffer(buf, lib_file.get_item_size(0)); //buf will be freed by ~Font()
+   fonts.push_back(font);
+   num_fonts++;
+
+   return true;
 }
 
 bool FontManager::initWOUSystemFont()
@@ -207,6 +215,54 @@ bool FontManager::initConvFonts(nuvie_game_t game_type)
     ((ConvFont *)conv_garg_font)->init(conv_font_data, conv_font_widths, 256, 128);
   }
 
+  return true;
+}
+
+bool FontManager::initKoreanFont()
+{
+  std::string datadir = GUI::get_gui()->get_data_dir();
+  std::string path;
+
+  ConsoleAddInfo("FontManager: initKoreanFont() called, datadir='%s'", datadir.c_str());
+
+  // Look for Korean font in data/fonts/korean/
+  build_path(datadir, "fonts", path);
+  datadir = path;
+  build_path(datadir, "korean", path);
+  datadir = path;
+
+  std::string bmp_path, charmap_path;
+  // Use 32x32 font for better quality (native size, no scaling needed)
+  build_path(datadir, "korean_font_32x32.bmp", bmp_path);
+  build_path(datadir, "korean_font_32x32_charmap.txt", charmap_path);
+
+  ConsoleAddInfo("FontManager: Looking for Korean font at: %s", bmp_path.c_str());
+
+  // Check if Korean font files exist
+  NuvieIOFileRead test_file;
+  if(!test_file.open(bmp_path))
+  {
+    ConsoleAddInfo("FontManager: Korean font NOT found at: %s", bmp_path.c_str());
+    DEBUG(0, LEVEL_INFORMATIONAL, "Korean font not found at %s\n", bmp_path.c_str());
+    return false;
+  }
+  test_file.close();
+
+  ConsoleAddInfo("FontManager: Korean font file exists, initializing...");
+
+  korean_font = new KoreanFont();
+  if(!korean_font->init(bmp_path, charmap_path))
+  {
+    delete korean_font;
+    korean_font = NULL;
+    ConsoleAddInfo("FontManager: Failed to initialize Korean font!");
+    DEBUG(0, LEVEL_WARNING, "Failed to initialize Korean font\n");
+    return false;
+  }
+
+  korean_enabled = true;
+  ConsoleAddInfo("FontManager: Korean font loaded successfully! korean_enabled=true");
+  DEBUG(0, LEVEL_INFORMATIONAL, "Korean font loaded successfully\n");
   return true;
 }
 

@@ -40,6 +40,8 @@
 #include "MapWindow.h"
 #include "Map.h"
 #include "Script.h"
+#include "FontManager.h"
+#include "KoreanFont.h"
 
 //the longest we will go before having a change in wind direction
 #define WEATHER_MAX_WIND 30 
@@ -204,12 +206,32 @@ bool Weather::is_moon_visible()
 string Weather::get_wind_dir_str()
 {
 	string s;
+
+	// Check if Korean mode is enabled
+	Game *game = Game::get_game();
+	bool use_korean = false;
+	if(game) {
+		FontManager *fm = game->get_font_manager();
+		if(fm && fm->is_korean_enabled() && fm->get_korean_font())
+			use_korean = true;
+	}
+
 	if(display_from_wind_dir) {
-		const char from_names[9][3] = {"N","E","S","W","NE","SE","SW","NW","C"};
-		s = from_names[wind_dir];
+		if(use_korean) {
+			const char *from_names_ko[9] = {"북","동","남","서","북동","남동","남서","북서","무"};
+			s = from_names_ko[wind_dir];
+		} else {
+			const char from_names[9][3] = {"N","E","S","W","NE","SE","SW","NW","C"};
+			s = from_names[wind_dir];
+		}
 	} else {
-		const char to_names[9][3] = {"S","W","N","E","SW","NW","NE","SE","C"};
-		s = to_names[wind_dir];
+		if(use_korean) {
+			const char *to_names_ko[9] = {"남","서","북","동","남서","북서","북동","남동","무"};
+			s = to_names_ko[wind_dir];
+		} else {
+			const char to_names[9][3] = {"S","W","N","E","SW","NW","NE","SE","C"};
+			s = to_names[wind_dir];
+		}
 	}
 
 	return s;

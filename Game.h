@@ -59,6 +59,7 @@ class CommandBar;
 class Weather;
 class Book;
 class KeyBinder;
+class KoreanTranslation;
 
 typedef enum
 {
@@ -115,6 +116,7 @@ class Game
 
  Book *book;
  KeyBinder *keybinder;
+ KoreanTranslation *korean_translation;
 
  GamePauseState pause_flags;
  uint16 game_width;
@@ -251,6 +253,7 @@ class Game
  GUI *get_gui()                    { return(gui); }
  SoundManager *get_sound_manager() { return(sound_manager); }
  SaveManager *get_save_manager()   { return(save_manager); }
+ KoreanTranslation *get_korean_translation() { return(korean_translation); }
 
  Cursor *get_cursor()              { return(cursor); }
  EffectManager *get_effect_manager()

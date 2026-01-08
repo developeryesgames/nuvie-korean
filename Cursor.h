@@ -38,7 +38,7 @@ class Cursor
     uint16 screen_w, screen_h;
 
     void add_update(uint16 x, uint16 y, uint16 w, uint16 h);
-    inline void fix_position(MousePointer *ptr, sint32 &px, sint32 &py);
+    inline void fix_position(MousePointer *ptr, sint32 &px, sint32 &py, uint8 scale = 1);
     void save_backing(uint32 px, uint32 py, uint32 w, uint32 h);
 
 public:

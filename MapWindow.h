@@ -119,6 +119,8 @@ class MapWindow: public GUI_Widget
  sint32 vel_x, vel_y; // velocity of automatic map movement (pixels per second)
 
  SDL_Rect clip_rect;
+bool paper_clip_active;
+SDL_Rect paper_clip_rect;
 
  Obj* selected_obj;
  Actor *look_actor;
@@ -145,6 +147,11 @@ class MapWindow: public GUI_Widget
  std::vector<TileInfo> m_ViewableMapTiles;
 
  bool lighting_update_required;
+
+ uint8 map_tile_scale; // 1, 2, or 4 for map tile rendering scale
+
+ void drawPaperBackground();
+ void drawPaperFrame();
 
  public:
 
@@ -176,6 +183,8 @@ class MapWindow: public GUI_Widget
  void set_looking(bool state) { looking = state; }
  int get_min_brightness() { return min_brightness; }
  void set_min_brightness(int brightness) { min_brightness = brightness; }
+ uint8 get_map_tile_scale() { return map_tile_scale; }
+ void set_map_tile_scale(uint8 scale) { if(scale >= 1 && scale <= 4) map_tile_scale = scale; }
 
  void moveLevel(uint8 new_level);
  void moveMap(sint16 new_x, sint16 new_y, sint8 new_level, uint8 new_x_add = 0, uint8 new_y_add = 0);

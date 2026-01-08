@@ -282,7 +282,7 @@ bool SaveGame::load_objlist()
 
  map_window->centerMapOnActor(player->get_actor());
 
- scroll->display_string("\nGame Loaded\n\n");
+ scroll->display_string("게임 로드됨\n");
 
  scroll->init((char *)player->get_name());
 

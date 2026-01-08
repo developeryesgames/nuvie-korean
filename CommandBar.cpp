@@ -45,6 +45,7 @@
 #include "U6Shape.h"
 #include "MapWindow.h"
 #include "GUI.h"
+#include "KoreanFont.h"
 
 using std::string;
 
@@ -113,21 +114,40 @@ CommandBar::CommandBar(Game *g) : GUI_Widget(NULL)
     {
         offset = OBJLIST_OFFSET_U6_COMMAND_BAR;
         if(!game->is_orig_style()) {
-            
+
             int value;
             cfg->value(config_get_game_key(cfg) + "/cb_text_color", value, 115); // light blue so that it stands out most of the time and isn't too bold
             font_color = value;
-            y_off += game->get_game_height() - 29;
-            if(right_pos_cb && (game->get_game_height() > 228 || game->is_new_style())) // bottom right
-                Init(NULL, x_off + 159 + game->get_game_width() - 320, y_off, 0, 0);
-            else // bottom left
-                Init(NULL, x_off, y_off, 0, 0);
+
+            // Check for Korean 4x mode
+            uint16 ui_scale = game->get_game_width() / 320;
+            if(ui_scale >= 4) {
+                // Korean 4x mode: bottom left, 4x scaled
+                // Original position is x=8, so use 8*4=32 for 4x mode
+                y_off += game->get_game_height() - (29 * 4); // 116px from bottom
+                Init(NULL, x_off + 32, y_off, 0, 0); // 32px padding from left (8*4)
+                font_color = FONT_COLOR_U6_NORMAL; // Brown color like original
+            } else {
+                y_off += game->get_game_height() - 29;
+                if(right_pos_cb && (game->get_game_height() > 228 || game->is_new_style())) // bottom right
+                    Init(NULL, x_off + 159 + game->get_game_width() - 320, y_off, 0, 0);
+                else // bottom left
+                    Init(NULL, x_off, y_off, 0, 0);
+            }
         } else {
             font_color = FONT_COLOR_U6_NORMAL;
             Init(NULL, 8+x_off, 168+y_off, 0, 0);
         }
-        area.w = 16 * 10; // space for 10 icons
-        area.h = 24 + 1; // extra space for the underlined default action
+
+        // Check for Korean 4x mode for sizing
+        uint16 ui_scale = game->get_game_width() / 320;
+        if(ui_scale >= 4) {
+            area.w = 16 * 10 * 4; // space for 10 icons at 4x (640px)
+            area.h = (24 + 1) * 4; // extra space for the underlined default action at 4x (100px)
+        } else {
+            area.w = 16 * 10; // space for 10 icons
+            area.h = 24 + 1; // extra space for the underlined default action
+        }
     }
     else if(game->get_game_type() == NUVIE_GAME_MD)
     {
@@ -275,10 +295,19 @@ GUI_status CommandBar::MouseDown(int x, int y, int button)
     x -= area.x;
     y -= area.y;
 
+    // Check for Korean 4x mode
+    uint16 ui_scale = game->get_game_width() / 320;
+    bool use_4x = (ui_scale >= 4);
+
     if(game->get_game_type() != NUVIE_GAME_U6 ||
-      (y >= 8 && y <= 24))
+      (use_4x ? (y >= 32 && y <= 96) : (y >= 8 && y <= 24)))
     {
-        uint8 activate = x / 16; // icon selected
+        uint8 activate;
+        if(use_4x) {
+            activate = x / 64; // icon selected at 4x scale
+        } else {
+            activate = x / 16; // icon selected
+        }
         if(game->get_game_type() == NUVIE_GAME_SE)
               activate = x/18;
         else if(game->get_game_type() == NUVIE_GAME_MD) {
@@ -286,6 +315,8 @@ GUI_status CommandBar::MouseDown(int x, int y, int button)
               if(activate > 7)
                   activate = 7;
         }
+        if(activate > 9)
+            activate = 9;
         if(button == COMMANDBAR_USE_BUTTON)
             return(hit(activate));
         else if(button == COMMANDBAR_ACTION_BUTTON)
@@ -421,17 +452,35 @@ void CommandBar::Display(bool full_redraw)
         update_display = false;
       if(game->get_game_type() == NUVIE_GAME_U6)
       {
+        // Check for Korean 4x mode
+        uint16 ui_scale = game->get_game_width() / 320;
+        bool use_4x = (ui_scale >= 4);
+
         if(game->is_orig_style())
             screen->fill(bg_color, area.x, area.y, area.w, area.h);
         else if(game->is_original_plus_cutoff_map() && area.x != game->get_game_x_offset()) // over null background so clear area where text is displayed
-            screen->clear(area.x + 2, area.y, area.w -2, area.h -16, NULL);
+        {
+            if(!use_4x) // 4x mode uses full paper background; don't clear it
+                screen->clear(area.x + 2, area.y, area.w -2, area.h - 16, NULL);
+        }
 
         display_information();
-        for(uint32 i = 0; i < 10; i++)
-            screen->blit(area.x+i*16, area.y+8, icon[i]->data, 8, 16, 16, 16);
 
-        if(selected_action >= 0 && selected_action <= 9)
-            screen->fill(9, area.x + selected_action*16, area.y + 24, 16, 1);
+        if(use_4x) {
+            // 4x scaled icons
+            for(uint32 i = 0; i < 10; i++)
+                screen->blit4x(area.x + i*64, area.y + 32, icon[i]->data, 8, 16, 16, 16, true, NULL);
+
+            if(selected_action >= 0 && selected_action <= 9)
+                screen->fill(9, area.x + selected_action*64, area.y + 96, 64, 4);
+        } else {
+            // Normal 1x icons
+            for(uint32 i = 0; i < 10; i++)
+                screen->blit(area.x+i*16, area.y+8, icon[i]->data, 8, 16, 16, 16);
+
+            if(selected_action >= 0 && selected_action <= 9)
+                screen->fill(9, area.x + selected_action*16, area.y + 24, 16, 1);
+        }
       }
         else if(game->get_game_type() == NUVIE_GAME_SE) {
             if(!game->is_orig_style()) {
@@ -460,9 +509,31 @@ void CommandBar::Display(bool full_redraw)
 void CommandBar::display_information()
 {
     string infostring(game->get_clock()->get_date_string());
-    infostring += " Wind:";
+    // Korean translation for "Wind:"
+    FontManager *fm = game->get_font_manager();
+    bool korean_mode = fm && fm->is_korean_enabled() && fm->get_korean_font();
+    if(korean_mode)
+        infostring += " 풍향: ";
+    else
+        infostring += " Wind: ";
     infostring += wind;
-    font->drawString(screen, infostring.c_str(), area.x + 8, area.y, font_color, font_color);
+
+    // Check for Korean 4x mode
+    uint16 ui_scale = game->get_game_width() / 320;
+    if(ui_scale >= 4 && korean_mode) {
+        // Use Korean font with proper scaling and center alignment
+        // Offset left (-32px) for better visual balance
+        KoreanFont *korean_font = fm->get_korean_font();
+        if(korean_font) {
+            uint16 text_width = korean_font->getStringWidthUTF8(infostring.c_str(), 1);
+            uint16 x_pos = area.x + (area.w - text_width) / 2 - 32;
+            korean_font->drawStringUTF8(screen, infostring.c_str(), x_pos, area.y, font_color, font_color, 1);
+        } else {
+            font->drawString(screen, infostring.c_str(), area.x + 32, area.y, font_color, font_color);
+        }
+    } else {
+        font->drawString(screen, infostring.c_str(), area.x + 8, area.y, font_color, font_color);
+    }
 }
 
 uint16 CommandBar::callback(uint16 msg, CallBack *caller, void * data)
@@ -484,7 +555,10 @@ bool CommandBar::drag_accept_drop(int x, int y, int message, void *data)
 	DEBUG(0,LEVEL_DEBUGGING,"CommandBar::drag_accept_drop()\n");
 	if(game->get_game_type() == NUVIE_GAME_U6 && !Game::get_game()->is_orig_style()
 	   && message == GUI_DRAG_OBJ) {
-		if(y < area.y + 8) // over text
+		// Check for Korean 4x mode
+		uint16 ui_scale = game->get_game_width() / 320;
+		int text_height = (ui_scale >= 4) ? 32 : 8;
+		if(y < area.y + text_height) // over text
 			return Game::get_game()->get_map_window()->drag_accept_drop(x, y, message, data);
 	}
 	return false;

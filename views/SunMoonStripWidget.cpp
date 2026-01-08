@@ -28,6 +28,7 @@
 #include "Player.h"
 #include "Weather.h"
 #include "GameClock.h"
+#include "FontManager.h"
 #include "SunMoonStripWidget.h"
 
 
@@ -45,7 +46,20 @@ SunMoonStripWidget::~SunMoonStripWidget()
 
 void SunMoonStripWidget::init(sint16 x, sint16 y)
 {
-  GUI_Widget::Init(NULL,x,y,100,20);
+  // Check for Korean 4x mode
+  FontManager *font_manager = Game::get_game()->get_font_manager();
+  bool use_korean_4x = font_manager && font_manager->is_korean_enabled() &&
+                       font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+
+  if(use_korean_4x)
+  {
+    // 4x scaled: 100x20 -> 400x80
+    GUI_Widget::Init(NULL, x, y, 100*4, 20*4);
+  }
+  else
+  {
+    GUI_Widget::Init(NULL,x,y,100,20);
+  }
 }
 
 void SunMoonStripWidget::Display(bool full_redraw)
@@ -74,6 +88,12 @@ void SunMoonStripWidget::display_surface_strip()
  Weather *weather = Game::get_game()->get_weather();
  bool eclipse = weather->is_eclipse();
 
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_korean_4x = font_manager && font_manager->is_korean_enabled() &&
+                      font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ int scale = use_korean_4x ? 4 : 1;
+
  display_sun(clock->get_hour(), 0/*minutes*/, eclipse);
 
  if(!eclipse)
@@ -82,7 +102,10 @@ void SunMoonStripWidget::display_surface_strip()
  for(i=0;i<9;i++)
    {
     tile = tile_manager->get_tile(352+i);
-    screen->blit(area.x+8 +i*16,area.y,tile->data,8,16,16,16,true);
+    if(use_korean_4x)
+      screen->blit4x(area.x + 8*scale + i*16*scale, area.y, tile->data, 8, 16, 16, 16, true);
+    else
+      screen->blit(area.x+8 +i*16,area.y,tile->data,8,16,16,16,true);
    }
 
  return;
@@ -93,24 +116,45 @@ void SunMoonStripWidget::display_dungeon_strip()
  uint8 i;
  Tile *tile;
 
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_korean_4x = font_manager && font_manager->is_korean_enabled() &&
+                      font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ int scale = use_korean_4x ? 4 : 1;
+
  tile = tile_manager->get_tile(372);
- screen->blit(area.x+8,area.y,tile->data,8,16,16,16,true);
+ if(use_korean_4x)
+   screen->blit4x(area.x + 8*scale, area.y, tile->data, 8, 16, 16, 16, true);
+ else
+   screen->blit(area.x+8,area.y,tile->data,8,16,16,16,true);
 
  tile = tile_manager->get_tile(373);
 
  for(i=1;i<8;i++)
    {
-    screen->blit(area.x+8 +i*16,area.y,tile->data,8,16,16,16,true);
+    if(use_korean_4x)
+      screen->blit4x(area.x + 8*scale + i*16*scale, area.y, tile->data, 8, 16, 16, 16, true);
+    else
+      screen->blit(area.x+8 +i*16,area.y,tile->data,8,16,16,16,true);
    }
 
  tile = tile_manager->get_tile(374);
- screen->blit(area.x+8 +7*16+8,area.y,tile->data,8,16,16,16,true);
+ if(use_korean_4x)
+   screen->blit4x(area.x + 8*scale + 7*16*scale + 8*scale, area.y, tile->data, 8, 16, 16, 16, true);
+ else
+   screen->blit(area.x+8 +7*16+8,area.y,tile->data,8,16,16,16,true);
 
  return;
 }
 // <SB-X>
 void SunMoonStripWidget::display_sun_moon(Tile *tile, uint8 pos)
 {
+    // Check for Korean 4x mode
+    FontManager *font_manager = Game::get_game()->get_font_manager();
+    bool use_korean_4x = font_manager && font_manager->is_korean_enabled() &&
+                         font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+    int scale = use_korean_4x ? 4 : 1;
+
     struct { sint16 x, y; } skypos[15] = // sky positions relative to area
     {
         { 8 + 7*16 - 0*8, 6 }, // 7*16 is the first position on the right side
@@ -131,10 +175,15 @@ void SunMoonStripWidget::display_sun_moon(Tile *tile, uint8 pos)
     };
 
     int height = 16;
-    uint16 x = area.x + skypos[pos].x, y = area.y + skypos[pos].y;
+    uint16 x = area.x + skypos[pos].x * scale;
+    uint16 y = area.y + skypos[pos].y * scale;
     if (skypos[pos].y == 6) // goes through the bottom if not reduced
       height = 10;
-    screen->blit(x,y, tile->data,8 ,16, height,16,true);
+
+    if(use_korean_4x)
+      screen->blit4x(x, y, tile->data, 8, 16, height, 16, true);
+    else
+      screen->blit(x, y, tile->data, 8, 16, height, 16, true);
 }
 
 void SunMoonStripWidget::display_sun(uint8 hour, uint8 minute, bool eclipse)

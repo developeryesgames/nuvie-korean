@@ -52,6 +52,8 @@
 #include "ScriptCutscene.h"
 #include "Magic.h"
 #include "TMXMap.h"
+#include "KoreanTranslation.h"
+#include "FontManager.h"
 
 #include <math.h>
 #include "U6Lib_n.h"
@@ -207,6 +209,10 @@ static int nscript_load(lua_State *L);
 static int nscript_config_get_boolean_value(lua_State *L);
 static int nscript_config_get_game_type(lua_State *L);
 static int nscript_config_get_language(lua_State *L);
+static int nscript_is_korean_enabled(lua_State *L);
+static int nscript_korean_translate(lua_State *L);
+static int nscript_korean_get_look_text(lua_State *L);
+static int nscript_korean_get_particle(lua_State *L);
 
 static int nscript_objlist_seek(lua_State *L);
 static int nscript_objlist_read1(lua_State *L);
@@ -601,6 +607,18 @@ Script::Script(Configuration *cfg, GUI *gui, SoundManager *sm, nuvie_game_t type
 
    lua_pushcfunction(L, nscript_config_get_language);
    lua_setglobal(L, "config_get_language");
+
+   lua_pushcfunction(L, nscript_is_korean_enabled);
+   lua_setglobal(L, "is_korean_enabled");
+
+   lua_pushcfunction(L, nscript_korean_translate);
+   lua_setglobal(L, "korean_translate");
+
+   lua_pushcfunction(L, nscript_korean_get_look_text);
+   lua_setglobal(L, "korean_get_look_text");
+
+   lua_pushcfunction(L, nscript_korean_get_particle);
+   lua_setglobal(L, "korean_get_particle");
 
    nscript_init_actor(L);
    nscript_init_cutscene(L, cfg, gui, sm);
@@ -2598,6 +2616,96 @@ static int nscript_config_get_language(lua_State *L)
   std::string value;
   Script::get_script()->get_config()->value(config_get_game_key(Script::get_script()->get_config()) + "/language", value, "en");
   lua_pushstring(L, value.c_str());
+  return 1;
+}
+
+/***
+   Check if Korean mode is enabled
+   @function is_korean_enabled
+   @return true if Korean font and translation is enabled
+ */
+static int nscript_is_korean_enabled(lua_State *L)
+{
+  FontManager *fm = Game::get_game()->get_font_manager();
+  KoreanTranslation *korean = Game::get_game()->get_korean_translation();
+  bool enabled = fm && fm->is_korean_enabled() && fm->get_korean_font() && korean && korean->isEnabled();
+  lua_pushboolean(L, enabled);
+  return 1;
+}
+
+/***
+   Translate text to Korean if Korean mode is enabled
+   @function korean_translate
+   @param text The English text to translate
+   @return The Korean translation if available, otherwise the original text
+ */
+static int nscript_korean_translate(lua_State *L)
+{
+  const char *text = lua_tostring(L, 1);
+  if (!text) {
+    lua_pushstring(L, "");
+    return 1;
+  }
+
+  KoreanTranslation *korean = Game::get_game()->get_korean_translation();
+  if (korean && korean->isEnabled()) {
+    std::string translated = korean->translate(text);
+    lua_pushstring(L, translated.c_str());
+  } else {
+    lua_pushstring(L, text);
+  }
+  return 1;
+}
+
+/***
+   Get Korean translation for an item by tile number
+   @function korean_get_look_text
+   @param tile_num The tile number of the object
+   @return The Korean translation if available, empty string otherwise
+ */
+static int nscript_korean_get_look_text(lua_State *L)
+{
+  uint16 tile_num = (uint16)lua_tointeger(L, 1);
+
+  KoreanTranslation *korean = Game::get_game()->get_korean_translation();
+  if (korean && korean->isEnabled()) {
+    std::string text = korean->getLookText(tile_num);
+    lua_pushstring(L, text.c_str());
+  } else {
+    lua_pushstring(L, "");
+  }
+  return 1;
+}
+
+/***
+   Get Korean particle based on the last character of a word
+   @function korean_get_particle
+   @param word The Korean word to analyze
+   @param particle_type "eulreul" for 을/를, "iga" for 이/가, "eunneun" for 은/는, "wagwa" for 와/과
+   @return The appropriate Korean particle
+ */
+static int nscript_korean_get_particle(lua_State *L)
+{
+  const char *word = lua_tostring(L, 1);
+  const char *particle_type = lua_tostring(L, 2);
+
+  if (!word || !particle_type) {
+    lua_pushstring(L, "");
+    return 1;
+  }
+
+  std::string result;
+  if (strcmp(particle_type, "eulreul") == 0) {
+    result = KoreanTranslation::getParticle_eulreul(word);
+  } else if (strcmp(particle_type, "iga") == 0) {
+    result = KoreanTranslation::getParticle_iga(word);
+  } else if (strcmp(particle_type, "eunneun") == 0) {
+    result = KoreanTranslation::getParticle_eunneun(word);
+  } else if (strcmp(particle_type, "wagwa") == 0) {
+    result = KoreanTranslation::getParticle_wagwa(word);
+  }
+
+  lua_pushstring(L, result.c_str());
   return 1;
 }
 

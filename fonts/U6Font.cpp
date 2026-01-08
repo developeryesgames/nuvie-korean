@@ -91,3 +91,40 @@ uint16 U6Font::drawChar(Screen *screen, uint8 char_num, uint16 x, uint16 y,
  screen->blit(x,y,buf,8,8,8,8,true,NULL);
  return 8;
 }
+
+uint16 U6Font::drawCharScaled(Screen *screen, uint8 char_num, uint16 x, uint16 y,
+                    uint8 color, uint8 scale)
+{
+ unsigned char buf[64];
+ unsigned char *pixels;
+ uint16 i,j;
+ unsigned char *font;
+ uint16 pitch;
+
+ memset(buf,0xff,64);
+
+ pixels = buf;
+ pitch = 8;
+
+ font = &font_data[char_num * 8];
+
+ for(i=0;i<8;i++)
+   {
+    for(j=8;j>0;j--)
+      {
+       if(font[i] & (1<<(j-1)))
+         pixels[8-j] = color;
+      }
+
+    pixels += pitch;
+   }
+
+ if(scale >= 4)
+   screen->blit4x(x,y,buf,8,8,8,8,true,NULL);
+ else if(scale >= 2)
+   screen->blit2x(x,y,buf,8,8,8,8,true,NULL);
+ else
+   screen->blit(x,y,buf,8,8,8,8,true,NULL);
+
+ return 8 * scale;
+}
