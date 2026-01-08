@@ -427,7 +427,11 @@ void TimedPartyMove::change_location()
             party->move(target->x, target->y, target->z);
         party->show(); // unhide everyone
 
-        Game::get_game()->get_view_manager()->update(); // we do this to update party view sun moon display if visible.
+        DEBUG(0, LEVEL_INFORMATIONAL, "TimedPartyMove::change_location - about to update views\n");
+        ViewManager *vm = Game::get_game()->get_view_manager();
+        if(vm)
+            vm->update(); // we do this to update party view sun moon display if visible.
+        DEBUG(0, LEVEL_INFORMATIONAL, "TimedPartyMove::change_location - view update done\n");
 
         if(mapwindow_capture) // could check this or moongate again
         {

@@ -505,7 +505,7 @@ Not everyone is here.\n|모두 여기 있지 않습니다.\n
 Begin combat!\n\n|전투 시작!\n\n
 Break off combat!\n\n|전투 종료!\n\n
 \nToo heavy!\n|\n너무 무겁습니다!\n
-\nCan't be readied!\n|\n준비할 수 없습니다!\n
+\nCan't be readied!\n|\n장착할 수 없습니다!\n
 \nNo place to put!\n|\n놓을 곳이 없습니다!\n
 How many? |몇 개?
 \nHow many hours? |\n몇 시간?

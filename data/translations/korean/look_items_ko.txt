@@ -329,12 +329,15 @@
 563|wizard eye|마법사의 눈
 564|web|거미줄
 565|magic bow|마법 활
+566|arrow|화살
+567|bolt|볼트
 568|spellbook|마법서
 569|spell|주문
 570|Codex|코덱스
 571|Book of Prophecies|예언서
 572|Book of Circles|원의 서
 573|Vortex Cube|볼텍스 큐브
+574|lock pick|자물쇠 따개
 575|key|열쇠
 576|black pearl|검은 진주
 576|black pearls|검은 진주
@@ -363,17 +366,22 @@
 592|ankh amulet|앙크 부적
 593|snake amulet|뱀 부적
 594|Amulet of Submission|복종의 부적
+595|gem|보석
 596|staff|지팡이
 597|lightning wand|번개 지팡이
 598|fire wand|불 지팡이
 599|storm cloak|폭풍 망토
 600|ring|반지
+601|flask of oil|기름 병
 602|red gate|붉은 문
 603|moongate|문게이트
 604|moongate|문게이트
 605|moongate|문게이트
 606|gavel|망치
 607|Orb of the Moons|달의 오브
+608|gold coin|금화
+609|gold nugget|금 덩어리
+610|torch|횃불
 611|lit torch|켜진 횃불
 612|Zu Ylem|주 일렘
 613|silver snake venom|은뱀 독
@@ -419,6 +427,8 @@
 653|hanger|옷걸이
 654|dress|드레스
 655|skillet|프라이팬
+656|loaf of bread|빵
+657|portion of meat|고기
 658|rolls|롤빵
 659|cake|케이크
 660|cheese|치즈
