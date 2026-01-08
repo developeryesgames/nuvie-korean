@@ -33,6 +33,7 @@
 #include "Font.h"
 #include "FontManager.h"
 #include "KoreanFont.h"
+#include "KoreanTranslation.h"
 #include "Actor.h"
 #include "Event.h"
 #include "MapWindow.h"
@@ -41,6 +42,7 @@
 #include "Keys.h"
 
 static const char combat_mode_tbl[][8] = {"COMMAND", " FRONT", "  REAR", " FLANK", "BERSERK", "RETREAT", "ASSAULT"};
+static const char *combat_mode_tbl_ko[] = {"명령", "전방", "후방", "측면", "광폭", "후퇴", "돌격"};
 static const char combat_mode_tbl_se[][6] = {"CMND", "RANGE", "FLEE", "CLOSE"};
 static const char combat_mode_tbl_md[][6] = {"CMND", "RANGE", "FLEE", "ATTK"};
 #define MD Game::get_game()->get_game_type()==NUVIE_GAME_MD
@@ -193,9 +195,20 @@ void InventoryView::Display(bool full_redraw)
 
  if(show_cursor && cursor_tile != NULL)
    {
-    screen->blit(cursor_pos.px, cursor_pos.py, (unsigned char *)cursor_tile->data,
-                 8, 16, 16, 16, true, NULL);
-    screen->update(cursor_pos.px, cursor_pos.py, 16, 16);
+    // Check for Korean 4x mode
+    FontManager *fm = Game::get_game()->get_font_manager();
+    bool use_4x_cursor = fm && fm->is_korean_enabled() &&
+                         fm->get_korean_font() && Game::get_game()->is_original_plus();
+
+    if(use_4x_cursor) {
+      screen->blit4x(cursor_pos.px, cursor_pos.py, (unsigned char *)cursor_tile->data,
+                     8, 16, 16, 16, true, NULL);
+      screen->update(cursor_pos.px, cursor_pos.py, 64, 64);
+    } else {
+      screen->blit(cursor_pos.px, cursor_pos.py, (unsigned char *)cursor_tile->data,
+                   8, 16, 16, 16, true, NULL);
+      screen->update(cursor_pos.px, cursor_pos.py, 16, 16);
+    }
    }
 
  return;
@@ -222,8 +235,12 @@ void InventoryView::display_name()
  bool use_4x = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
 
  if(use_4x) {
-   uint16 name_width = korean_font->getStringWidthUTF8(name, 1);
-   korean_font->drawStringUTF8(screen, name, area.x + (area.w - name_width) / 2, area.y + y_off * 4, 0x48, 0, 1);
+   // Translate name to Korean
+   KoreanTranslation *korean = Game::get_game()->get_korean_translation();
+   std::string display_name = (korean && korean->isEnabled()) ? korean->translate(name) : name;
+
+   uint16 name_width = korean_font->getStringWidthUTF8(display_name.c_str(), 1);
+   korean_font->drawStringUTF8(screen, display_name.c_str(), area.x + (area.w - name_width) / 2, area.y + y_off * 4, 0x48, 0, 1);
  } else {
    font->drawString(screen, name, area.x + ((136) - strlen(name) * 8) / 2, area.y + y_off);
  }
@@ -414,7 +431,7 @@ void InventoryView::display_combat_mode()
  else {
    if(use_4x) {
      // 4x mode: draw combat mode text with Korean font
-     korean_font->drawStringUTF8(screen, combat_mode_tbl[index], area.x + 5*16*4, area.y + 88*4, 0x48, 0, 1);
+     korean_font->drawStringUTF8(screen, combat_mode_tbl_ko[index], area.x + 5*16*4, area.y + 88*4, 0x48, 0, 1);
    } else {
      font->drawString(screen, combat_mode_tbl[index], area.x+5*16, area.y+88);
    }
@@ -622,21 +639,28 @@ void InventoryView::update_cursor()
 {
     SDL_Rect *ready_loc;
     nuvie_game_t gametype = Game::get_game()->get_game_type();
+
+    // Check for Korean 4x mode
+    FontManager *fm = Game::get_game()->get_font_manager();
+    bool use_4x = fm && fm->is_korean_enabled() &&
+                  fm->get_korean_font() && Game::get_game()->is_original_plus();
+    int tile_size = use_4x ? 64 : 16;
+
     switch(cursor_pos.area)
     {
         case INVAREA_LIST:
           if(gametype == NUVIE_GAME_U6)
           {
-            cursor_pos.px = area.x + (4 * 16 + 8) + cursor_pos.x * 16;
+            cursor_pos.px = area.x + (4 * tile_size + (use_4x ? 32 : 8)) + cursor_pos.x * tile_size;
           }
           else
           {
-            cursor_pos.px = inventory_widget->area.x + cursor_pos.x * 16;
+            cursor_pos.px = inventory_widget->area.x + cursor_pos.x * tile_size;
           }
-            cursor_pos.py = area.y + 16 + 8 + cursor_pos.y * 16;
+            cursor_pos.py = area.y + tile_size + (use_4x ? 32 : 8) + cursor_pos.y * tile_size;
             break;
         case INVAREA_TOP:
-            cursor_pos.px = inventory_widget->area.x + (gametype == NUVIE_GAME_U6 ? 32 : (inventory_widget->area.w-16)/2);
+            cursor_pos.px = inventory_widget->area.x + (gametype == NUVIE_GAME_U6 ? (use_4x ? 128 : 32) : (inventory_widget->area.w-tile_size)/2);
             cursor_pos.py = inventory_widget->area.y;
             break;
         case INVAREA_DOLL:
@@ -645,7 +669,7 @@ void InventoryView::update_cursor()
             cursor_pos.py = ready_loc->y + doll_widget->area.y;
             break;
         case INVAREA_COMMAND:
-            cursor_pos.px = ((cursor_pos.x + 1) * 16) - 16;
+            cursor_pos.px = ((cursor_pos.x + 1) * tile_size) - tile_size;
             cursor_pos.py = left_button->area.y; //80;
             cursor_pos.px += area.x;
             //cursor_pos.py += area.y;

@@ -173,6 +173,8 @@ public:
 	virtual GUI_status MouseDelayed(int x, int y, int button);
 	virtual GUI_status MouseHeld(int x, int y, int button);
 	// </SB-X>
+	virtual GUI_status TextInput(const char *text);
+	virtual GUI_status TextEditing(const char *text, int start, int length);
 
 	bool drag_accept_drop(int x, int y, int message, void *data);
 	void drag_perform_drop(int x, int y, int message, void *data);

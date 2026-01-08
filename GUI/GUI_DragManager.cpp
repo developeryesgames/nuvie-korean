@@ -31,6 +31,7 @@
 #include "Game.h"  // -+- Included so we can set WAIT_MODE while dragging.
 #include "Event.h" // /
 #include "MsgScroll.h"
+#include "KoreanTranslation.h"
 
  GUI_DragManager::GUI_DragManager(Screen *s)
  {
@@ -64,7 +65,8 @@ void GUI_DragManager::drop(GUI_DragArea *drag_target, int x, int y)
  if(is_out_of_range)
  {
    MsgScroll *scroll = Game::get_game()->get_scroll();
-   scroll->display_string("Move-");
+   { KoreanTranslation *k = Game::get_game()->get_korean_translation();
+   scroll->display_string((k && k->isEnabled()) ? "이동-" : "Move-"); }
    scroll->display_string(Game::get_game()->get_obj_manager()->look_obj((Obj*)data)); // getting obj name
    scroll->message(".\n\nOut of range!\n\n");
    drag_source->drag_drop_failed(x,y,message,data);

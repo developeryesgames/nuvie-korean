@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  U6UseCode.cpp
  *  Nuvie
  *
@@ -29,6 +29,7 @@
 #include "MapEntity.h"
 
 #include "Game.h"
+#include "KoreanTranslation.h"
 #include "View.h"
 #include "ViewManager.h"
 #include "ActorManager.h"
@@ -517,7 +518,10 @@ bool U6UseCode::use_door(Obj *obj, UseCodeEvent ev)
    {
 	process_effects(obj, items.actor_ref); //process traps.
     obj->frame_n -= 4;
-    if(print) scroll->display_string("\nopened!\n");
+    if(print) {
+        KoreanTranslation *kt = game->get_korean_translation();
+        scroll->display_string((kt && kt->isEnabled()) ? kt->getUIText("\nopened!\n").c_str() : "\nopened!\n");
+    }
    }
 
  return true;
@@ -628,6 +632,8 @@ bool U6UseCode::use_switch(Obj *obj, UseCodeEvent ev)
  const char *fail_message = NULL;
  bool success = false;
  bool print = (items.actor_ref == player->get_actor());
+ KoreanTranslation *kt = game->get_korean_translation();
+ bool use_ko = kt && kt->isEnabled();
 
  if(obj->obj_n == OBJ_U6_LEVER)
  {
@@ -786,9 +792,9 @@ bool U6UseCode::use_container(Obj *obj, UseCodeEvent ev)
             }
             else
             {
-            	scroll->display_string("\nSearching here, you find ");
+            	{ KoreanTranslation *kt = game->get_korean_translation(); scroll->display_string((kt && kt->isEnabled()) ? "\n수색하니 " : "\nSearching here, you find "); }
             	bool found_objects = search_obj(obj, items.actor_ref);
-            	scroll->display_string(found_objects ? ".\n" : "nothing.\n");
+            	{ KoreanTranslation *kt = game->get_korean_translation(); scroll->display_string(found_objects ? ".\n" : ((kt && kt->isEnabled()) ? "아무것도 없음.\n" : "nothing.\n")); }
             }
         }
         return(true);
@@ -1698,7 +1704,10 @@ bool U6UseCode::use_crystal_ball(Obj *obj, UseCodeEvent ev)
     	}
 
     	mode = GET_LAT;
-    	scroll->display_string("Enter degrees followed by N, S, E or W.\n\nAt latitude=");
+    	{
+    	    KoreanTranslation *kt = game->get_korean_translation();
+    	    scroll->display_string((kt && kt->isEnabled()) ? kt->getUIText("Enter degrees followed by N, S, E or W.\n\nAt latitude=").c_str() : "Enter degrees followed by N, S, E or W.\n\nAt latitude=");
+    	}
     	scroll->set_input_mode(true);
     	scroll->request_input(this, obj);
 
@@ -1718,7 +1727,10 @@ bool U6UseCode::use_crystal_ball(Obj *obj, UseCodeEvent ev)
 
 			loc.y = lat * 8 + 360;
 			scroll->display_string("\n");
-			scroll->display_string("  longitude=");
+			{
+			    KoreanTranslation *kt = game->get_korean_translation();
+			    scroll->display_string((kt && kt->isEnabled()) ? kt->getUIText("  longitude=").c_str() : "  longitude=");
+			}
     		scroll->set_input_mode(true);
     		scroll->request_input(this, obj);
     		mode = GET_LON;
@@ -1833,6 +1845,8 @@ bool U6UseCode::use_food(Obj *obj, UseCodeEvent ev)
 bool U6UseCode::use_potion(Obj *obj, UseCodeEvent ev)
 {
     ActorManager *am = actor_manager;
+    KoreanTranslation *kt = game->get_korean_translation();
+    bool use_ko = kt && kt->isEnabled();
 
     if(ev == USE_EVENT_USE)
     {
@@ -1843,18 +1857,22 @@ bool U6UseCode::use_potion(Obj *obj, UseCodeEvent ev)
         }
         else if(!items.actor2_ref) // no selection
         {
-            scroll->display_string("nobody\n");
+            scroll->display_string(use_ko ? "아무도 없음\n" : "nobody\n");
             return(true);
         }
         else // use potion
         {
             sint8 party_num = party->get_member_num(items.actor2_ref);
-            scroll->display_string(party_num >= 0 ? party->get_actor_name(party_num)
-                                   : am->look_actor(items.actor2_ref));
+            std::string target_name = party_num >= 0 ? party->get_actor_name(party_num)
+                                   : am->look_actor(items.actor2_ref);
+            if (use_ko) {
+                target_name = kt->translate(target_name);
+            }
+            scroll->display_string(target_name.c_str());
             scroll->display_string("\n");
 
             if(party_num < 0) // can't force potions on non-party members
-                scroll->display_string("No effect\n");
+                scroll->display_string(use_ko ? "효과 없음\n" : "No effect\n");
             else
             {
                 switch(obj->frame_n)
@@ -1941,7 +1959,7 @@ bool U6UseCode::use_key(Obj *obj, UseCodeEvent ev)
         USECODE_SELECT_OBJ(door_obj, "On "); // door_obj <- items.obj_ref or from user
         if(!door_obj)
         {
-            scroll->display_string("nothing\n");
+            scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "아무것도 없음\n" : "nothing\n");
             return true;
         }
         else
@@ -2004,7 +2022,7 @@ bool U6UseCode::use_key(Obj *obj, UseCodeEvent ev)
     }
     else if(ev == USE_EVENT_INPUT_CANCEL)
     {
-    	scroll->display_string("nothing\n");
+    	scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "아무것도 없음\n" : "nothing\n");
     	return true;
     }
     else if(ev == USE_EVENT_GET && obj->obj_n == OBJ_U6_LOCK_PICK)  //need to remove rolling pin if there is one
@@ -2759,18 +2777,19 @@ bool U6UseCode::look_sign(Obj *obj, UseCodeEvent ev)
                 book_num = 126;
             if((data = book->get_book_data(book_num)))
             {
-/*
-             // FIX Any alternate-font text is in < >, Runic is capitalized,
-             // Gargish is lower-case. Translations follow untranslated text and
-             // are wrapped in & &.
-             if(data[0] == '<' && data[strlen(data)-1] == '>') //Britannian text is wrapped in '<' '>' chars
-                {
-                 scroll->display_string(&data[1],strlen(data)-2, 1); // 1 for britannian font.
-                 scroll->display_string("\n",1);
-                }
-             else
-                {
-*/
+             // Check for Korean translation
+             KoreanTranslation *korean = game->get_korean_translation();
+             std::string korean_text;
+             const char *display_data = data;
+             DEBUG(0, LEVEL_INFORMATIONAL, "Book/Sign: book_num=%d, quality=%d\n", book_num, obj->quality);
+             if (korean && korean->isEnabled())
+             {
+                 korean_text = korean->getBookText(book_num);
+                 DEBUG(0, LEVEL_INFORMATIONAL, "Book/Sign: korean_text='%s'\n", korean_text.c_str());
+                 if (!korean_text.empty())
+                     display_data = korean_text.c_str();
+             }
+
              bool using_gump = game->is_using_text_gumps();
              if(using_gump)
              {
@@ -2784,15 +2803,15 @@ bool U6UseCode::look_sign(Obj *obj, UseCodeEvent ev)
                      case OBJ_U6_BALLOON_PLANS:
                      case OBJ_U6_BOOK_OF_CIRCLES:
                      case OBJ_U6_CODEX:
-                         game->get_view_manager()->open_scroll_gump(data,strlen(data));
+                         game->get_view_manager()->open_scroll_gump(display_data,strlen(display_data));
                          break;
                      case OBJ_U6_SIGN:
-                         if(strlen(data) > 20) // FIXME sign text needs to fit on multiple lines
+                         if(strlen(display_data) > 20) // FIXME sign text needs to fit on multiple lines
                          {
                              using_gump = false;
                              break;
                          }
-                         game->get_view_manager()->open_sign_gump(data,strlen(data)); break;
+                         game->get_view_manager()->open_sign_gump(display_data,strlen(display_data)); break;
                      case OBJ_U6_SIGN_ARROW:
 
                      default:
@@ -2802,11 +2821,9 @@ bool U6UseCode::look_sign(Obj *obj, UseCodeEvent ev)
              if(!using_gump)
              {
             	 scroll->set_autobreak(true);
-            	 scroll->display_string(data,strlen(data)); //normal font
+            	 scroll->display_string(display_data,strlen(display_data)); //normal font
             	 scroll->display_string("\n\t"); // '\t' = auto break off.
              }
-             //scroll->set_autobreak(false);
-//                }
              free(data);
             }
 
@@ -2827,7 +2844,7 @@ bool U6UseCode::look_clock(Obj *obj, UseCodeEvent ev)
         return(true); // don't get time from sundial at night
     if(ev == USE_EVENT_LOOK && items.actor_ref == player->get_actor())
     {
-        scroll->display_string("\nThe time is ");
+        scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "\n현재 시간은 " : "\nThe time is ");
         scroll->display_string(clock->get_time_string());
         scroll->display_string("\n");
     }
@@ -3043,7 +3060,7 @@ bool U6UseCode::use_cannon(Obj *obj, UseCodeEvent ev)
 
     if(ev == USE_EVENT_USE)
     {
-        scroll->display_string("\nFire!\n");
+        scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "\n발사!\n" : "\nFire!\n");
 // FIXME: new UseCodeEffect(obj, cannonballtile, dir) // sets WAIT mode
         new CannonballEffect(obj); // sets WAIT mode
         // Note: waits for effect to complete and sends MESG_EFFECT_COMPLETE
@@ -3437,3 +3454,7 @@ bool U6UseCode::use_harpsichord(Obj *obj, UseCodeEvent ev) {
   }
   return play_instrument(obj, ev);
 }
+
+
+
+

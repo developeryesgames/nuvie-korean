@@ -643,7 +643,10 @@ bool Converse::override_input()
         {
             std::string korean_text = korean->getUIText("You see");
             if(!korean_text.empty())
+            {
                 print(korean_text.c_str());
+                print(" ");
+            }
             else
                 print("You see ");
         }

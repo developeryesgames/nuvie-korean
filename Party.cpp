@@ -25,6 +25,7 @@
 #include "U6misc.h"
 #include "NuvieIO.h"
 #include "Game.h"
+#include "FontManager.h"
 #include "Converse.h"
 #include "TimedEvent.h"
 #include "Configuration.h"
@@ -965,13 +966,17 @@ bool Party::can_rest(std::string &err_str)
 	Player *player = game->get_player();
 	Actor *pActor = player->get_actor();
 	MapCoord loc = pActor->get_location();
+	FontManager *fm = game->get_font_manager();
+	bool korean = (fm && fm->is_korean_enabled() && fm->get_korean_font());
 
 	ActorList *enemies = 0;
 	ActorList *all_actors = 0;
 
 	if(is_in_combat_mode())
 	{
-		if(Game::get_game()->get_game_type() == NUVIE_GAME_SE)
+		if(korean)
+			err_str = "-전투 중에는 불가!";
+		else if(Game::get_game()->get_game_type() == NUVIE_GAME_SE)
 			err_str = "\nNot while in Combat mode!";
 		else if(Game::get_game()->get_game_type() == NUVIE_GAME_MD)
 			err_str = "- Not while in Combat!";
@@ -980,15 +985,17 @@ bool Party::can_rest(std::string &err_str)
 	}
 	else if(is_in_vehicle()
 			&& pActor->get_obj_n() != OBJ_U6_SHIP) // player is a vehicle
-		err_str = "-Can not be repaired!";
+		err_str = korean ? "-수리 불가!" : "-Can not be repaired!";
 	else if(Game::get_game()->get_game_type() == NUVIE_GAME_U6
 	        && game->get_map_window()->in_town())
-		err_str = "-Only in the wilderness!";
+		err_str = korean ? "-야외에서만 가능!" : "-Only in the wilderness!";
 	else if((enemies = pActor->find_enemies()))
 	{
-		if(Game::get_game()->get_game_type() == NUVIE_GAME_MD)
+		if(korean)
+			err_str = "-적이 근처에 있음!";
+		else if(Game::get_game()->get_game_type() == NUVIE_GAME_MD)
 			err_str = "\nNot while foes are near!";
-		if(Game::get_game()->get_game_type() == NUVIE_GAME_SE)
+		else if(Game::get_game()->get_game_type() == NUVIE_GAME_SE)
 			err_str = "- Not while foes are near!";
 		else
 			err_str = "-Not while foes are near!";
@@ -997,19 +1004,21 @@ bool Party::can_rest(std::string &err_str)
 			loc.x,loc.y,loc.z, 5)))
 			&& !all_actors->empty() && !is_in_vehicle())
 	{
-		if(Game::get_game()->get_game_type() == NUVIE_GAME_U6)
+		if(korean)
+			err_str = "-다른 사람이 근처에 있음!";
+		else if(Game::get_game()->get_game_type() == NUVIE_GAME_U6)
 			err_str = "-Not while others are near!";
 		else
 			err_str = "\nIt's too noisy to sleep here!";
 		delete all_actors;
 	}
 	else if(!player->in_party_mode())
-		err_str = "-Not in solo mode!";
+		err_str = korean ? "-단독 모드에서는 불가!" : "-Not in solo mode!";
 	else if(!is_in_vehicle() && !map->is_passable(loc.x-1,loc.y-1,loc.x+1,loc.y+1,loc.z)
 	        && Game::get_game()->get_game_type() != NUVIE_GAME_SE)
-		err_str = "-Not enough room!"; // FIXME: for ships the original checks all squares around the ship. Do we really need this?
+		err_str = korean ? "-공간이 부족함!" : "-Not enough room!"; // FIXME: for ships the original checks all squares around the ship. Do we really need this?
 	else if(is_horsed())
-		err_str = "-Dismount first!";
+		err_str = korean ? "-먼저 하마해야 함!" : "-Dismount first!";
 	else
 		return true;
 	delete enemies;

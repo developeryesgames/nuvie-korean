@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  UseCode.cpp
  *  Nuvie
  *
@@ -31,7 +31,7 @@
 #include "MapWindow.h"
 #include "Script.h"
 #include "Event.h"
-
+#include "FontManager.h"
 UseCode::UseCode(Game *g, Configuration *cfg)
 {
  game = g;
@@ -178,6 +178,8 @@ bool UseCode::search_container(Obj *obj, bool show_string)
 {
  Obj *temp_obj;
  U6Link *obj_link;
+ FontManager *fm_search = game ? game->get_font_manager() : NULL;
+ bool korean_mode = fm_search && fm_search->is_korean_enabled() && fm_search->get_korean_font();
 
  /* Test whether this object has items inside it. */
  if((obj->container != NULL) &&
@@ -201,7 +203,7 @@ bool UseCode::search_container(Obj *obj, bool show_string)
        {
          scroll->display_string(obj_manager->look_obj(temp_obj,true));
          if(obj_link) // more objects left
-           scroll->display_string(obj_link->prev ? ", " : ", and ");
+           scroll->display_string(obj_link->prev ? ", " : (korean_mode ? ", 그리고 " : ", and "));
        }
       }
      /* Remove objects from the container. */
@@ -353,3 +355,4 @@ const char *useCodeTypeToString(UseCodeType type)
     default : return "other";
   }
 }
+

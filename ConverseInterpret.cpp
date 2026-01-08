@@ -33,6 +33,8 @@
 #include "Script.h"
 #include "ConverseInterpret.h"
 #include "ConverseSpeech.h"
+#include "Game.h"
+#include "KoreanTranslation.h"
 
 //#define CONVERSE_DEBUG
 
@@ -280,11 +282,173 @@ void ConverseInterpret::exec()
 }
 
 
+// Map Korean keywords to English equivalents
+static const char* getEnglishKeyword(const std::string &keyword)
+{
+    // Common Korean keyword mappings
+    if (keyword == "도움" || keyword == "\xeb\x8f\x84\xec\x9b\x80") return "help";
+    if (keyword == "이야기" || keyword == "\xec\x9d\xb4\xec\x95\xbc\xea\xb8\xb0") return "stor";
+    if (keyword == "이름" || keyword == "\xec\x9d\xb4\xeb\xa6\x84") return "name";
+    if (keyword == "일" || keyword == "\xec\x9d\xbc") return "job";
+    if (keyword == "모험" || keyword == "\xeb\xaa\xa8\xed\x97\x98") return "ques";
+    if (keyword == "합류" || keyword == "\xed\x95\xa9\xeb\xa5\x98") return "join";
+    if (keyword == "떠나" || keyword == "\xeb\x96\xa0\xeb\x82\x98") return "leav";
+    if (keyword == "안녕" || keyword == "\xec\x95\x88\xeb\x85\x95") return "bye";
+    if (keyword == "가고일" || keyword == "\xea\xb0\x80\xea\xb3\xa0\xec\x9d\xbc") return "garg";
+    if (keyword == "오두막" || keyword == "\xec\x98\xa4\xeb\x91\x90\xeb\xa7\x89") return "hut";
+    if (keyword == "음유시인" || keyword == "\xec\x9d\x8c\xec\x9c\xa0\xec\x8b\x9c\xec\x9d\xb8") return "bard";
+    if (keyword == "아내" || keyword == "\xec\x95\x84\xeb\x82\xb4") return "wife";
+    if (keyword == "미녹" || keyword == "\xeb\xaf\xb8\xeb\x85\xb9") return "mino";
+    if (keyword == "브리튼" || keyword == "\xeb\xb8\x8c\xeb\xa6\xac\xed\x8a\xbc") return "brit";
+    if (keyword == "성지" || keyword == "\xec\x84\xb1\xec\xa7\x80") return "shri";
+    if (keyword == "덕목" || keyword == "\xeb\x8d\x95\xeb\xaa\xa9") return "virt";
+    if (keyword == "모아" || keyword == "\xeb\xaa\xa8\xec\x95\x84" || keyword == "모으") return "gath";
+    if (keyword == "나눠" || keyword == "\xeb\x82\x98\xeb\x88\xa0" || keyword == "나누") return "spli";
+    if (keyword == "차" || keyword == "\xec\xb0\xa8") return "tea";
+    if (keyword == "폴리" || keyword == "\xed\x8f\xb4\xeb\xa6\xac") return "foll";
+    if (keyword == "견습생" || keyword == "\xea\xb2\xac\xec\x8a\xb5\xec\x83\x9d") return "appr";
+    if (keyword == "코빼기" || keyword == "\xec\xbd\x94\xeb\xb9\xa0\xea\xb8\xb0") return "nose";
+    return NULL;
+}
+
+// Check if text looks like a greeting (first dialogue after description)
+static bool isGreetingText(const std::string &text)
+{
+    // Common greeting patterns in Ultima 6 dialogue
+    if (text.find("\"Well,") != std::string::npos) return true;
+    if (text.find("\"Ah,") != std::string::npos) return true;
+    if (text.find("\"Hello") != std::string::npos) return true;
+    if (text.find("\"Greetings") != std::string::npos) return true;
+    if (text.find("\"Welcome") != std::string::npos) return true;
+    if (text.find("\"Good ") != std::string::npos) return true;
+    if (text.find("do you need") != std::string::npos) return true;
+    if (text.find("can I help") != std::string::npos) return true;
+    if (text.find("What can") != std::string::npos) return true;
+    if (text.find("How can") != std::string::npos) return true;
+    if (text.find("$P!") != std::string::npos) return true;
+    if (text.find("$P,") != std::string::npos) return true;
+    if (text.find("$P?") != std::string::npos) return true;
+    if (text.find("$P.") != std::string::npos) return true;
+    // Common greeting phrases
+    if (text.find("glad to see") != std::string::npos) return true;
+    if (text.find("see thee") != std::string::npos) return true;
+    if (text.find("'Tis good") != std::string::npos) return true;
+    if (text.find("'tis good") != std::string::npos) return true;
+    // Party member greetings (when NPC is in party)
+    if (text.find("I fear I know") != std::string::npos) return true;
+    if (text.find("I know little") != std::string::npos) return true;
+    if (text.find("Hast thou need") != std::string::npos) return true;
+    if (text.find("need of my") != std::string::npos) return true;
+    if (text.find("my services") != std::string::npos) return true;
+    if (text.find("help thee") != std::string::npos) return true;
+    if (text.find("aid thee") != std::string::npos) return true;
+    if (text.find("at thy service") != std::string::npos) return true;
+    if (text.find("thy command") != std::string::npos) return true;
+    // Check if starts with quote and contains question or exclamation
+    if (!text.empty() && text[0] == '"' &&
+        (text.find('?') != std::string::npos || text.find('!') != std::string::npos))
+        return true;
+    return false;
+}
+
 /* Print script text, resolving special symbols as they are encountered.
  */
 void ConverseInterpret::do_text()
 {
-  string output = get_formatted_text(converse->get_output().c_str());
+  Game *game = Game::get_game();
+  KoreanTranslation *korean = game ? game->get_korean_translation() : NULL;
+
+  // Get raw English text before variable substitution (for translation lookup)
+  std::string raw_english = converse->get_output();
+
+  // Get formatted English text (with variables substituted)
+  string output = get_formatted_text(raw_english.c_str());
+
+  // Try Korean translation if enabled
+  if (korean && korean->isEnabled())
+  {
+    // Look up translation by NPC number + English text
+    uint8 npc_num = converse->script_num;
+    DEBUG(0, LEVEL_INFORMATIONAL, "KoreanTranslation: NPC %d, raw_english='%s'\n", npc_num, raw_english.c_str());
+    std::string korean_text = korean->getDialogueTranslation(npc_num, raw_english);
+
+    if (!korean_text.empty())
+    {
+      // Replace variables in Korean text: $P=player, $N=NPC, $G=gender title, $Z=input, $T=time
+      size_t pos;
+
+      // Handle $P with particle processing (여/이여)
+      while ((pos = korean_text.find("$P")) != std::string::npos)
+      {
+        std::string player_name = converse->player->get_name();
+        // Check if followed by 여 (0xEC 0x97 0xAC) and player name has jongseong
+        if (pos + 2 + 3 <= korean_text.length() &&
+            (unsigned char)korean_text[pos+2] == 0xEC &&
+            (unsigned char)korean_text[pos+3] == 0x97 &&
+            (unsigned char)korean_text[pos+4] == 0xAC &&
+            KoreanTranslation::hasJongseong(player_name)) {
+          korean_text.replace(pos, 5, player_name + "이여");
+        } else {
+          korean_text.replace(pos, 2, player_name);
+        }
+      }
+
+      while ((pos = korean_text.find("$N")) != std::string::npos)
+        korean_text.replace(pos, 2, korean->getNPCName(converse->name));
+
+      while ((pos = korean_text.find("$G")) != std::string::npos)
+        korean_text.replace(pos, 2, converse->player->get_gender_title());
+
+      while ((pos = korean_text.find("$Z")) != std::string::npos)
+        korean_text.replace(pos, 2, converse->get_svar(U6TALK_VAR_INPUT));
+
+      while ((pos = korean_text.find("$T")) != std::string::npos)
+      {
+        uint8 hour = converse->clock->get_hour();
+        std::string korean_time;
+        bool has_jongseong;
+        if (hour < 12) {
+          korean_time = "아침";
+          has_jongseong = true;
+        } else if (hour <= 18) {
+          korean_time = "오후";
+          has_jongseong = false;
+        } else {
+          korean_time = "저녁";
+          has_jongseong = true;
+        }
+        // Check if followed by 이 particle (UTF-8: EC 9D B4) and adjust
+        // Pattern: $T이오 -> 오후요 (no jongseong) or 아침이오 (has jongseong)
+        size_t replace_len = 2; // default: just $T
+        if (pos + 4 < korean_text.length() &&
+            (unsigned char)korean_text[pos+2] == 0xEC &&
+            (unsigned char)korean_text[pos+3] == 0x9D &&
+            (unsigned char)korean_text[pos+4] == 0xB4) {
+          // Found 이 after $T
+          if (!has_jongseong) {
+            // No jongseong: remove 이, check if next is 오 (EC 98 A4) -> change to 요 (EC 9A 94)
+            if (pos + 7 < korean_text.length() &&
+                (unsigned char)korean_text[pos+5] == 0xEC &&
+                (unsigned char)korean_text[pos+6] == 0x98 &&
+                (unsigned char)korean_text[pos+7] == 0xA4) {
+              // $T이오 -> 오후요
+              korean_time += "요";
+              replace_len = 8; // $T + 이 + 오
+            } else {
+              // Just $T이 -> 오후
+              replace_len = 5; // $T + 이
+            }
+          }
+          // If has_jongseong, keep 이: replace only $T
+        }
+        korean_text.replace(pos, replace_len, korean_time);
+      }
+
+      converse->print(korean_text.c_str());
+      return;
+    }
+  }
+
   converse->print(output.c_str());
 }
 
@@ -311,7 +475,14 @@ string ConverseInterpret::get_formatted_text(const char *c_str)
                    if(!strcmp(symbol, "$G")) // gender title
                       output.append(converse->player->get_gender_title());
                    else if(!strcmp(symbol, "$N")) // npc name
-                      output.append(converse->name);
+                   {
+                      Game *game = Game::get_game();
+                      KoreanTranslation *korean = game ? game->get_korean_translation() : NULL;
+                      if (korean && korean->isEnabled())
+                         output.append(korean->getNPCName(converse->name));
+                      else
+                         output.append(converse->name);
+                   }
                    else if(!strcmp(symbol, "$P")) // player name
                       output.append(converse->player->get_name());
                    else if(!strcmp(symbol, "$T")) // time of day
@@ -850,10 +1021,47 @@ bool ConverseInterpret::op(stack<converse_typed_value> &i)
             converse->name = strdup(get_text().c_str()); // collected
             break;
         case U6OP_SLOOK: // 0xf1, description follows
+            {
             converse->desc = strdup(get_formatted_text(get_text().c_str()).c_str()); // collected
+            Game *game = Game::get_game();
+            KoreanTranslation *korean = game ? game->get_korean_translation() : NULL;
+            DEBUG(0, LEVEL_INFORMATIONAL, "U6OP_SLOOK: npc=%d, desc='%s'\n", converse->script_num, converse->desc);
+            if (korean && korean->isEnabled())
+            {
+                // Use English text-based translation for DESC
+                std::string korean_desc = korean->getDialogueTranslation(converse->script_num, converse->desc);
+                DEBUG(0, LEVEL_INFORMATIONAL, "U6OP_SLOOK: korean_desc='%s'\n", korean_desc.c_str());
+
+                if (!korean_desc.empty())
+                {
+                    // Replace $P, $N, $G, $T, $Z in Korean description
+                    size_t pos;
+                    while ((pos = korean_desc.find("$P")) != std::string::npos)
+                        korean_desc.replace(pos, 2, converse->player->get_name());
+                    while ((pos = korean_desc.find("$N")) != std::string::npos)
+                        korean_desc.replace(pos, 2, korean->getNPCName(converse->name));
+                    while ((pos = korean_desc.find("$G")) != std::string::npos)
+                        korean_desc.replace(pos, 2, converse->player->get_gender_title());
+                    while ((pos = korean_desc.find("$T")) != std::string::npos)
+                        korean_desc.replace(pos, 2, game->get_clock()->get_time_of_day_string());
+                    while ((pos = korean_desc.find("$Z")) != std::string::npos)
+                        korean_desc.replace(pos, 2, converse->get_svar(U6TALK_VAR_INPUT));
+                    std::string you_see = korean->getUIText("You see");
+                    converse->print("\n");
+                    if (!you_see.empty())
+                    {
+                        converse->print(you_see.c_str());
+                        converse->print(" ");
+                    }
+                    converse->print(korean_desc.c_str());
+                    converse->print("\n");
+                    break;
+                }
+            }
             converse->print("\nYou see ");
             converse->print(converse->desc);
             converse->print("\n");
+            }
             break;
         case U6OP_SCONVERSE: // 0xf2
             break;
@@ -1314,6 +1522,13 @@ bool ConverseInterpret::check_keywords(string keystr, string instr)
     char *tok_s = NULL, *cmp_s = NULL;
     if(keystr == "*")
         return(true);
+
+    // If Korean input, try to map to English keyword first
+    std::string mapped_input = instr;
+    const char* eng_kw = getEnglishKeyword(instr);
+    if (eng_kw)
+        mapped_input = eng_kw;
+
     // check each comma-separated keyword
     strt_s = keystr.c_str();
     for(uint32 c = 0; c < strlen(strt_s); c++)
@@ -1326,7 +1541,7 @@ bool ConverseInterpret::check_keywords(string keystr, string instr)
             tok_s = strdup(&strt_s[(c == 0) ? c : c + 1]);
             for(l = 0; l < strlen(tok_s) && tok_s[l] != ','; l++);
             tok_s[l] = '\0';
-            cmp_s = strdup(instr.c_str());
+            cmp_s = strdup(mapped_input.c_str());
             // trim input to keyword size
             if(l < strlen(cmp_s))
                 cmp_s[l] = '\0';

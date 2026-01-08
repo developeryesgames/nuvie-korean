@@ -33,6 +33,7 @@
 #include "GameClock.h"
 #include "Event.h"
 #include "MsgScroll.h"
+#include "KoreanTranslation.h"
 #include "TimedEvent.h"
 #include "UseCode.h"
 #include "MapWindow.h"
@@ -423,7 +424,7 @@ GUI_status InventoryWidget::MouseDown(int x, int y, int button)
        event->select_obj(obj); // the returned location
     else
     {
-       Game::get_game()->get_scroll()->display_string("nothing!\n");
+       { KoreanTranslation *kt = Game::get_game()->get_korean_translation(); Game::get_game()->get_scroll()->display_string((kt && kt->isEnabled()) ? "아무것도 없음!\n" : "nothing!\n"); }
        event->endAction(true);
        event->set_mode(MOVE_MODE);
     }

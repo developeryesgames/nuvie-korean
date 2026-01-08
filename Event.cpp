@@ -610,6 +610,13 @@ bool Event::perform_talk(Actor *actor) {
     return game->get_script()->call_talk_to_actor(actor);
   }
 
+  // Get Korean translation for actor name
+  KoreanTranslation *korean = game->get_korean_translation();
+  std::string actor_name = actor->get_name();
+  if (korean && korean->isEnabled()) {
+    actor_name = korean->translate(actor_name);
+  }
+
   if (actor->is_in_vehicle()) {
     scroll->display_string("Not in vehicle.\n");
     return false;
@@ -617,35 +624,35 @@ bool Event::perform_talk(Actor *actor) {
   if (id == pc->get_actor_num())    // actor is controlled by player
   {
     // Note: being the player, this should ALWAYS use the real name
-    scroll->display_string(actor->get_name());
+    scroll->display_string(actor_name.c_str());
     scroll->display_string("\n");
-    scroll->display_string("Talking to yourself?\n");
+    scroll->display_string((korean && korean->isEnabled()) ? "혼잣말을 하고 있나?\n" : "Talking to yourself?\n");
     return false;
   }
   if (actor->is_in_party() && !actor->is_onscreen()) {
-    scroll->display_string(actor->get_name());
+    scroll->display_string(actor_name.c_str());
     scroll->display_string("\n");
-    scroll->display_string("Not on screen.\n");
+    scroll->display_string((korean && korean->isEnabled()) ? "화면에 없음.\n" : "Not on screen.\n");
     return false;
   }
   // FIXME: this check and the "no response" messages should be in Converse
   if (!player->in_party_mode() && !pc->is_avatar()) //only the avatar can talk in solo mode
   {
     // always display look-string on failure
-    scroll->display_string(actor->get_name());
+    scroll->display_string(actor_name.c_str());
     scroll->display_string("\n");
-    scroll->display_string("Not in solo mode.\n");
+    scroll->display_string((korean && korean->isEnabled()) ? "솔로 모드가 아님.\n" : "Not in solo mode.\n");
   } else if (actor->is_sleeping() || actor->is_paralyzed() || actor->get_corpser_flag()
       || actor->get_alignment() == ACTOR_ALIGNMENT_EVIL
       || actor->get_alignment() == ACTOR_ALIGNMENT_CHAOTIC
       || (actor->get_alignment() == ACTOR_ALIGNMENT_NEUTRAL && actor->will_not_talk())) {
     // always display name or look-string on failure
-    scroll->display_string(actor->get_name());
-    scroll->display_string("\n\nNo response\n");
+    scroll->display_string(actor_name.c_str());
+    scroll->display_string((korean && korean->isEnabled()) ? "\n\n반응 없음\n" : "\n\nNo response\n");
   } else if (game->get_converse()->start(actor))    // load and begin npc script
   {
     // try to use real name
-    scroll->display_string(actor->get_name());
+    scroll->display_string(actor_name.c_str());
     scroll->display_string("\n");
     // turn towards eachother
     pc->face_actor(actor);
@@ -655,9 +662,13 @@ bool Event::perform_talk(Actor *actor) {
   } else    // some actor that has no script
   {
     // always display look-string on failure
-    scroll->display_string(actor_manager->look_actor(actor));
+    std::string look_str = actor_manager->look_actor(actor);
+    if (korean && korean->isEnabled()) {
+      look_str = korean->translate(look_str);
+    }
+    scroll->display_string(look_str.c_str());
     scroll->display_string("\n");
-    scroll->display_string("Funny, no response.\n");
+    scroll->display_string((korean && korean->isEnabled()) ? "이상하군, 반응이 없어.\n" : "Funny, no response.\n");
   }
   return (false);
 }
@@ -673,7 +684,7 @@ bool Event::talk(Actor *actor) {
   endAction();
 
   if (!actor) {
-    scroll->display_string("nothing!\n");
+    scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "아무것도 없음!\n" : "nothing!\n");
     talking = false;
   } else if (!perform_talk(actor))
     talking = false;
@@ -725,7 +736,7 @@ bool Event::talk(Obj *obj) {
       return status;
     }
   }
-  scroll->display_string("nothing!\n");
+  scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "아무것도 없음!\n" : "nothing!\n");
   endAction();
   scroll->display_string("\n");
   scroll->display_prompt();
@@ -761,7 +772,7 @@ bool Event::attack() {
     try_next_attack(); // SE and MD have weapons that need ammo and only take up 1 slot
     return true;
   } else if (tile_is_black)
-    scroll->display_string("nothing!\n");
+    scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "아무것도 없음!\n" : "nothing!\n");
   else if (actor) {
     if (actor->get_actor_num() == player->get_actor()->get_actor_num() //don't attack yourself.
         || (actor->is_in_party() && actor->get_alignment() == ACTOR_ALIGNMENT_GOOD)) {
@@ -818,9 +829,9 @@ bool Event::push_start() {
   push_obj = NULL;
   push_actor = NULL;
   if (game->get_script()->call_is_ranged_select(MOVE))
-    get_target("Move-");
+    { KoreanTranslation *k = game->get_korean_translation(); get_target(k && k->isEnabled() ? "이동-" : "Move-"); }
   else
-    get_direction("Move-");
+    { KoreanTranslation *k = game->get_korean_translation(); get_direction(k && k->isEnabled() ? "이동-" : "Move-"); }
   return true;
 }
 
@@ -837,7 +848,7 @@ bool Event::perform_get(Obj *obj, Obj *container_obj, Actor *actor) {
       actor = player->get_actor();
 
     if (obj->is_on_map() && map_window->tile_is_black(obj->x, obj->y, obj)) {
-      scroll->display_string("nothing");
+      { KoreanTranslation *kt = game->get_korean_translation(); scroll->display_string((kt && kt->isEnabled()) ? "아무것도 없음" : "nothing"); }
     } else {
       scroll->display_string(obj_manager->look_obj(obj));
 
@@ -861,7 +872,7 @@ bool Event::perform_get(Obj *obj, Obj *container_obj, Actor *actor) {
       }
     }
   } else
-    scroll->display_string("nothing");
+    { KoreanTranslation *kt = game->get_korean_translation(); scroll->display_string((kt && kt->isEnabled()) ? "아무것도 없음" : "nothing"); }
 
   if (can_perform_get) {
     // perform GET usecode (can't add to container)
@@ -930,7 +941,7 @@ bool Event::use(Obj *obj) {
       obj = NULL;
   }
   if (!obj) {
-    scroll->display_string("nothing\n");
+    scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "아무것도 없음\n" : "nothing\n");
     endAction(true);
     return true;
   }
@@ -991,7 +1002,7 @@ bool Event::use(Actor *actor, uint16 x, uint16 y) {
       player->subtract_movement_points(5);
     }
   } else {
-    scroll->display_string("nothing\n");
+    scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "아무것도 없음\n" : "nothing\n");
     DEBUG(0, LEVEL_DEBUGGING, "Object %d:%d\n", obj->obj_n, obj->frame_n);
   }
 // FIXME: usecode might request input, causing the obj to be accessed again,
@@ -1034,7 +1045,7 @@ bool Event::use(MapCoord coord) {
     }
   }
 
-  scroll->display_string("nothing\n");
+  scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "아무것도 없음\n" : "nothing\n");
   endAction(true);
   return true;
 }
@@ -1156,7 +1167,7 @@ bool Event::search(Obj *obj) {
       if (korean_mode) {
         scroll->display_string("아무것도 없다.\n");
       } else {
-        scroll->display_string("nothing.\n");
+        scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "아무것도 없음.\n" : "nothing.\n");
       }
     } else {
       if (korean_mode) {
@@ -1322,7 +1333,7 @@ bool Event::pushTo(sint16 rel_x, sint16 rel_y, bool push_from) {
     return (false);
 
   if (!push_actor && !push_obj) {
-    scroll->display_string("what?\n\n");
+    scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "뭐요?\n\n" : "what?\n\n");
     scroll->display_prompt();
     endAction();
     return (false);
@@ -1484,12 +1495,16 @@ bool Event::pushTo(sint16 rel_x, sint16 rel_y, bool push_from) {
 }
 
 bool Event::pushFrom(Obj *obj) {
-  scroll->display_string(obj_manager->look_obj(obj));
+  KoreanTranslation *korean = game->get_korean_translation();
+  bool use_korean = korean && korean->isEnabled();
+  std::string obj_name = obj_manager->look_obj(obj);
+  if(use_korean) obj_name = korean->translate(obj_name);
+  scroll->display_string(obj_name.c_str());
   push_obj = obj;
   if (game->get_game_type() == NUVIE_GAME_MD)
     get_target("\nWhere? ");
   else
-    get_target("\nTo ");
+    get_target(use_korean ? "\n어디로? " : "\nTo ");
   return true;
 }
 
@@ -1505,6 +1520,8 @@ bool Event::pushFrom(MapCoord target) {
   ActorManager *actor_manager = game->get_actor_manager();
   Script *script = game->get_script();
   MapCoord from = player->get_actor()->get_location();
+  KoreanTranslation *korean = game->get_korean_translation();
+  bool use_korean = korean && korean->isEnabled();
 
   if (game->user_paused())
     return (false);
@@ -1515,7 +1532,7 @@ bool Event::pushFrom(MapCoord target) {
   }
   push_actor = actor_manager->get_actor(target.x, target.y, from.z);
   if (map_window->tile_is_black(target.x, target.y, push_obj)) {
-    scroll->display_string("nothing.\n");
+    scroll->display_string(use_korean ? "아무것도 없음.\n" : "nothing.\n");
     endAction(true);
     return false;
   }
@@ -1524,28 +1541,32 @@ bool Event::pushFrom(MapCoord target) {
     push_obj = NULL;
 
   if (push_actor && push_actor->is_visible()) {
-    scroll->display_string(push_actor->get_name());
+    std::string actor_name = push_actor->get_name();
+    if(use_korean) actor_name = korean->translate(actor_name);
+    scroll->display_string(actor_name.c_str());
     push_obj = NULL;
   } else if (push_obj) {
-    scroll->display_string(obj_manager->look_obj(push_obj));
+    std::string obj_name = obj_manager->look_obj(push_obj);
+    if(use_korean) obj_name = korean->translate(obj_name);
+    scroll->display_string(obj_name.c_str());
     push_actor = NULL;
   } else {
-    scroll->display_string("nothing.\n");
+    scroll->display_string(use_korean ? "아무것도 없음.\n" : "nothing.\n");
     endAction(true);
     return false;
   }
 
   if (from.distance(target) > 1 && !script->call_is_ranged_select(MOVE)
       && map_window->get_interface() == INTERFACE_NORMAL) {
-    scroll->display_string("\n\nOut of range!\n");
+    scroll->display_string(use_korean ? "\n\n범위 밖!\n" : "\n\nOut of range!\n");
     endAction(true);
   } else if (map_window->get_interface() != INTERFACE_NORMAL
       && ((push_obj && !map_window->can_get_obj(player->get_actor(), push_obj))
           || (push_actor && !can_get_to_actor(push_actor, target.x, target.y)))) {
-    scroll->display_string("\n\nCan't reach it\n");
+    scroll->display_string(use_korean ? "\n\n손이 닿지 않음\n" : "\n\nCan't reach it\n");
     endAction(true);
   } else {
-    get_direction(MapCoord(target.x, target.y), "\nTo ");
+    get_direction(MapCoord(target.x, target.y), use_korean ? "\n어디로? " : "\nTo ");
   }
   return true;
 }
@@ -2565,10 +2586,13 @@ void Event::solo_mode(uint32 party_member) {
   if (!actor || player->is_in_vehicle())
     return;
 
+  KoreanTranslation *korean = game->get_korean_translation();
+  bool use_korean = korean && korean->isEnabled();
+
   if (player->get_party()->is_in_combat_mode())
-    scroll->display_string("Not in combat mode!\n\n");
+    scroll->display_string(use_korean ? "전투 모드에서는 불가!\n\n" : "Not in combat mode!\n\n");
   else if (player->set_solo_mode(actor)) {
-    scroll->display_string("Solo mode\n\n");
+    scroll->display_string(use_korean ? "혼자 모드\n\n" : "Solo mode\n\n");
     player->set_mapwindow_centered(true);
     actor->set_worktype(0x02); // Player
     if (in_control_cheat)
@@ -2607,16 +2631,19 @@ bool Event::party_mode() {
   bool success = false;
   leader_loc = actor->get_location();
 
+  KoreanTranslation *korean = game->get_korean_translation();
+  bool use_korean = korean && korean->isEnabled();
+
   if (player->get_party()->is_in_combat_mode())
-    scroll->display_string("Not in combat mode!\n");
+    scroll->display_string(use_korean ? "전투 모드에서는 불가!\n" : "Not in combat mode!\n");
   else if (player->get_party()->is_at(leader_loc, 6) || was_in_control_cheat) {
     if (player->set_party_mode(player->get_party()->get_actor(0))) {
       success = true;
-      scroll->display_string("Party mode\n");
+      scroll->display_string(use_korean ? "파티 모드\n" : "Party mode\n");
       player->set_mapwindow_centered(true);
     }
   } else
-    scroll->display_string("Not everyone is here.\n");
+    scroll->display_string(use_korean ? "모두 여기 있지 않음.\n" : "Not everyone is here.\n");
   scroll->display_string("\n");
   scroll->display_prompt();
   return success;
@@ -2626,23 +2653,25 @@ bool Event::party_mode() {
 bool Event::toggle_combat() {
   Party *party = player->get_party();
   bool combat_mode = !party->is_in_combat_mode();
+  KoreanTranslation *korean = game->get_korean_translation();
+  bool use_korean = korean && korean->isEnabled();
 
   if (!player->in_party_mode()) {
-    scroll->display_string("Not in solo mode.\n\n");
+    scroll->display_string(use_korean ? "솔로 모드가 아님.\n\n" : "Not in solo mode.\n\n");
     scroll->display_prompt();
   } else if (party->is_in_vehicle()) {
     display_not_aboard_vehicle();
   } else if (in_control_cheat) {
-    scroll->display_string("\nNot while using control cheat!\n\n");
+    scroll->display_string(use_korean ? "\n컨트롤 치트 사용 중에는 불가!\n\n" : "\nNot while using control cheat!\n\n");
     scroll->display_prompt();
   } else
     party->set_in_combat_mode(combat_mode);
 
   if (party->is_in_combat_mode() == combat_mode) {
     if (combat_mode)
-      scroll->display_string("Begin combat!\n\n");
+      scroll->display_string(use_korean ? "전투 시작!\n\n" : "Begin combat!\n\n");
     else {
-      scroll->display_string("Break off combat!\n\n");
+      scroll->display_string(use_korean ? "전투 종료!\n\n" : "Break off combat!\n\n");
       player->set_actor(party->get_leader_actor()); // return control to leader
       player->set_mapwindow_centered(true); // center mapwindow
     }
@@ -2743,7 +2772,7 @@ bool Event::drop_select(Obj *obj, uint16 qty) {
     return false;
 
   drop_obj = obj;
-  scroll->display_string(drop_obj ? obj_manager->look_obj(drop_obj) : "nothing");
+  scroll->display_string(drop_obj ? obj_manager->look_obj(drop_obj) : ((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "아무것도 없음" : "nothing"));
   scroll->display_string("\n");
   if (drop_from_key)
     close_gumps();
@@ -3087,7 +3116,7 @@ void Event::doAction() {
     return;
 
   if (mode == MOVE_MODE) {
-    scroll->display_string("what?\n", MSGSCROLL_NO_MAP_DISPLAY);
+    scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "뭐요?\n" : "what?\n", MSGSCROLL_NO_MAP_DISPLAY);
     endAction(true);
     return;
   }
@@ -3185,7 +3214,7 @@ void Event::doAction() {
         } else if (input.type == EVENTINPUT_MAPCOORD) {
           use(*input.loc);
         } else {
-          scroll->display_string("what?\n");
+          scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "뭐요?\n" : "what?\n");
           endAction(true);
         }
       }
@@ -3215,7 +3244,7 @@ void Event::doAction() {
     else if (input.type == EVENTINPUT_MAPCOORD)
       get(*input.loc);
     else {
-      scroll->display_string("what?\n");
+      scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "뭐요?\n" : "what?\n");
       endAction(true);
     }
     endAction();
@@ -3249,7 +3278,7 @@ void Event::doAction() {
         return endAction(true);
 
       if (input.type == EVENTINPUT_MAPCOORD) {
-        scroll->display_string("nothing\n");
+        scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "아무것도 없음\n" : "nothing\n");
         return endAction(true);
       }
 
@@ -3458,7 +3487,7 @@ void Event::cancelAction() {
       magic->resume();
     else {
 
-      scroll->display_string("nothing\n");
+      scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "아무것도 없음\n" : "nothing\n");
       view_manager->close_spell_mode();
     }
   } else if (mode == USE_MODE) {
@@ -3478,7 +3507,7 @@ void Event::cancelAction() {
     view_manager->get_spell_view()->close_look();
     return;
   } else {
-    scroll->display_string("what?\n");
+    scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "뭐요?\n" : "what?\n");
     if (mode == ATTACK_MODE) {
       player->subtract_movement_points(10);
       game->get_actor_manager()->startActors(); // end player turn
@@ -3822,14 +3851,25 @@ bool Event::can_move_obj_between_actors(Obj *obj,
 }
 
 void Event::display_move_text(Actor *target_actor, Obj *obj) {
-  scroll->display_string("Move-");
-  scroll->display_string(obj_manager->look_obj(obj, OBJ_SHOW_PREFIX));
-  if (game->get_game_type() == NUVIE_GAME_MD)
+  KoreanTranslation *korean = game->get_korean_translation();
+  bool use_korean = korean && korean->isEnabled();
+  if(use_korean) scroll->display_string("이동-"); else scroll->display_string("Move-");
+  std::string obj_name = obj_manager->look_obj(obj, OBJ_SHOW_PREFIX);
+  if(use_korean) obj_name = korean->translate(obj_name);
+  scroll->display_string(obj_name.c_str());
+  if (game->get_game_type() == NUVIE_GAME_MD) {
     scroll->display_string("\nWhere? ");
-  else
+  } else if(use_korean) {
+    // Korean: just show actor name with period, no "To"
+    std::string actor_name = korean->translate(target_actor->get_name());
+    scroll->display_string("\n");
+    scroll->display_string(actor_name.c_str());
+    scroll->display_string(".");
+  } else {
     scroll->display_string(" To ");
-  scroll->display_string(target_actor->get_name());
-  scroll->display_string(".");
+    scroll->display_string(target_actor->get_name());
+    scroll->display_string(".");
+  }
 }
 
 bool Event::can_get_to_actor(Actor *actor, uint16 x, uint16 y) // need the exact tile

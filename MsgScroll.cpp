@@ -32,6 +32,7 @@
 #include "Font.h"
 #include "U6Font.h"
 #include "KoreanFont.h"
+#include "KoreanTranslation.h"
 #include "GamePalette.h"
 #include "GUI.h"
 #include "MsgScroll.h"
@@ -124,15 +125,38 @@ void MsgLine::remove_char()
    return;
 
  msg_text = text.back();
- msg_text->s.erase(msg_text->s.length() - 1, 1);
+
+ // Remove last UTF-8 character (handles multi-byte chars like Korean)
+ size_t len = msg_text->s.length();
+ if(len > 0)
+ {
+   size_t char_start = len - 1;
+
+   // Find the start of the last UTF-8 character
+   // UTF-8 continuation bytes start with 10xxxxxx (0x80-0xBF)
+   while(char_start > 0 && (msg_text->s[char_start] & 0xC0) == 0x80)
+   {
+     char_start--;
+   }
+
+   // Calculate how many bytes this character takes
+   size_t char_bytes = len - char_start;
+
+   // Erase the UTF-8 character
+   msg_text->s.erase(char_start);
+
+   // Decrease total_length by the number of bytes removed
+   if(total_length >= char_bytes)
+     total_length -= char_bytes;
+   else
+     total_length = 0;
+ }
 
  if(msg_text->s.length() == 0)
    {
     text.pop_back();
     delete msg_text;
    }
-
- total_length--;
 
  return;
 }
@@ -420,10 +444,18 @@ int MsgScroll::printf(std::string format, ...)
 void MsgScroll::display_fmt_string(const char *format, ...)
 {
 	char buf[1024];
+	const char *use_format = format;
+	std::string translated;
+	KoreanTranslation *kt = Game::get_game() ? Game::get_game()->get_korean_translation() : NULL;
+	if (kt && kt->isEnabled())
+	{
+		translated = kt->translate(format);
+		use_format = translated.c_str();
+	}
 	memset(buf, 0, 1024);
 	va_list args;
 	va_start(args, format);
-	vsnprintf(buf, 1024, format, args);
+	vsnprintf(buf, 1024, use_format, args);
 	va_end(args);
 
 	display_string(buf);
@@ -455,6 +487,10 @@ void MsgScroll::display_string(std::string s, Font *f, uint8 color, bool include
 
  if(s.empty())
    return;
+
+ KoreanTranslation *kt = Game::get_game() ? Game::get_game()->get_korean_translation() : NULL;
+ if (kt && kt->isEnabled())
+   s = kt->translate(s);
 
  if(f == NULL)
    f = font;
@@ -776,7 +812,11 @@ void MsgScroll::display_prompt()
 
 void MsgScroll::display_converse_prompt()
 {
-  display_string("\nyou say:", MSGSCROLL_NO_MAP_DISPLAY);
+  FontManager *fm = Game::get_game()->get_font_manager();
+  if (fm && fm->is_korean_enabled() && fm->get_korean_font())
+    display_string("\n말하기:", MSGSCROLL_NO_MAP_DISPLAY);
+  else
+    display_string("\nyou say:", MSGSCROLL_NO_MAP_DISPLAY);
 }
 
 void MsgScroll::set_keyword_highlight(bool state)
@@ -826,6 +866,7 @@ void MsgScroll::set_input_mode(bool state, const char *allowed, bool can_escape,
       set_permitted_input(allowed);
    //FIXME SDL2 SDL_EnableUNICODE(1); // allow character translation
    input_buf.erase(0,input_buf.length());
+   composing_text.clear();  // Clear IME composition text
  }
  else
  {
@@ -1007,8 +1048,14 @@ GUI_status MsgScroll::KeyDown(SDL_Keysym key)
                           }
                           return(GUI_YUM);
         case SDLK_KP_ENTER:
-        case SDLK_RETURN: if(permit_inputescape || input_char != 0) // input_char should only be permit_input
+        case SDLK_RETURN: if(permit_inputescape || input_char != 0 || !composing_text.empty())
                           {
+                            // Add any composing text (Korean IME) to input buffer before finalizing
+                            if(!composing_text.empty())
+                            {
+                              input_buf_add_string(composing_text.c_str());
+                              composing_text.clear();
+                            }
                             if(input_char != 0)
                               input_buf_add_char(get_char_from_input_char());
                             if(input_mode)
@@ -1030,6 +1077,12 @@ GUI_status MsgScroll::KeyDown(SDL_Keysym key)
                             if(input_mode) {
                               if(input_char != 0)
                                   input_char = 0;
+                              else if(!composing_text.empty())
+                              {
+                                  // Clear IME composing text first
+                                  composing_text.clear();
+                                  scroll_updated = true;
+                              }
                               else
                                   input_buf_remove_char();
                             }
@@ -1039,6 +1092,15 @@ GUI_status MsgScroll::KeyDown(SDL_Keysym key)
         case SDLK_RSHIFT :
             return(GUI_YUM);
         default: // alphanumeric characters
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+                 // SDL2: printable characters are handled by TextInput() to support IME
+                 // Only handle non-printable special keys here
+                 if(input_mode && is_printable)
+                 {
+                   // Let TextInput handle printable characters
+                   return(GUI_YUM);
+                 }
+#else
                  if(input_mode && is_printable)
                   {
                    if(permit_input == NULL)
@@ -1056,12 +1118,77 @@ GUI_status MsgScroll::KeyDown(SDL_Keysym key)
                     set_input_mode(false);
                    }
                   }
+#endif
             break;
     }
 
  return(GUI_YUM);
 }
 
+GUI_status MsgScroll::TextInput(const char *text)
+{
+    if(!input_mode || text == NULL || text[0] == '\0')
+        return GUI_PASS;
+
+    // Clear composing text since we got a finalized character
+    composing_text.clear();
+
+    // In converse mode (permit_input == NULL), accept any text
+    // In limited input mode (permit_input != NULL), only accept single chars
+    if(permit_input == NULL)
+    {
+        if(!numbers_only)
+        {
+            input_buf_add_string(text);
+        }
+        else
+        {
+            // numbers_only mode - only accept if text is digits
+            for(const char *p = text; *p; ++p)
+            {
+                if(isdigit(*p))
+                    input_buf_add_char(*p);
+            }
+        }
+        return GUI_YUM;
+    }
+    else
+    {
+        // Limited input mode - check each character
+        for(const char *p = text; *p; ++p)
+        {
+            char c = *p;
+            if(strchr(permit_input, c) || strchr(permit_input, tolower(c)))
+            {
+                input_buf_add_char(toupper(c));
+                set_input_mode(false);
+                return GUI_YUM;
+            }
+        }
+    }
+
+    return GUI_PASS;
+}
+
+GUI_status MsgScroll::TextEditing(const char *text, int start, int length)
+{
+    if(!input_mode)
+        return GUI_PASS;
+
+    // Store the composing text for display
+    // This is the text being composed by the IME (e.g., Korean "ㄱ" before becoming "그")
+    std::string new_composing = (text != NULL) ? text : "";
+
+    if(composing_text != new_composing)
+    {
+        composing_text = new_composing;
+
+        // Force redraw to show/hide composing text
+        scroll_updated = true;
+    }
+
+    return GUI_YUM;
+}
 
 GUI_status MsgScroll::MouseWheel(sint32 x, sint32 y)
 {
@@ -1308,8 +1435,28 @@ void MsgScroll::Display(bool full_redraw)
 
  if(show_cursor && (msg_buf.size() <= visible_lines || display_pos == msg_buf.size() - visible_lines))
  {
+   uint16 composing_width = 0;
+
+   // Draw composing text (IME composition preview) before cursor
+   if(use_korean && !composing_text.empty() && input_mode)
+   {
+     // Use same coordinate system as drawLine (text): area.x + left_margin + cursor_x
+     uint16 draw_x = area.x + left_margin + cursor_x;
+     uint16 draw_y = area.y + cursor_y * font_height;
+
+     // Draw the composing text with underline to indicate it's being composed
+     composing_width = korean_font->drawStringUTF8(screen, composing_text.c_str(),
+                         draw_x, draw_y, get_input_font_color(), font_highlight_color, 1);
+
+     // Draw underline under composing text to show it's not finalized
+     uint16 underline_y = draw_y + korean_font->getCharHeight() - 2;
+     screen->fill(get_input_font_color(), draw_x, underline_y, composing_width, 1);
+
+     screen->update(draw_x, draw_y, composing_width, korean_font->getCharHeight());
+   }
+
    if(use_korean)
-     drawCursor(area.x + left_margin + cursor_x + 8, area.y + cursor_y * font_height + 8);
+     drawCursor(area.x + left_margin + cursor_x + composing_width + 8, area.y + cursor_y * font_height + 8);
    else
      drawCursor(area.x + left_margin + 8 * cursor_x, area.y + cursor_y * 8);
  }
@@ -1452,11 +1599,46 @@ bool MsgScroll::input_buf_add_char(char c)
  return true;
 }
 
+bool MsgScroll::input_buf_add_string(const char *str)
+{
+ if(str == NULL || str[0] == '\0')
+     return false;
+
+ MsgText token;
+ input_char = 0;
+ if(permit_input != NULL)
+     input_buf_remove_char();
+ input_buf.append(str);
+ scroll_updated = true;
+
+ // Add string to scroll buffer
+
+ token.s.assign(str);
+ token.font = font;
+ token.color = get_input_font_color();
+
+ parse_token(&token);
+
+ return true;
+}
+
 bool MsgScroll::input_buf_remove_char()
 {
  if(input_buf.length())
    {
-    input_buf.erase(input_buf.length() - 1, 1);
+    // Remove last UTF-8 character (handles multi-byte chars like Korean)
+    size_t len = input_buf.length();
+    size_t char_start = len - 1;
+
+    // Find the start of the last UTF-8 character
+    // UTF-8 continuation bytes start with 10xxxxxx (0x80-0xBF)
+    while(char_start > 0 && (input_buf[char_start] & 0xC0) == 0x80)
+    {
+      char_start--;
+    }
+
+    // Erase from char_start to end
+    input_buf.erase(char_start);
     scroll_updated = true;
     remove_char();
 

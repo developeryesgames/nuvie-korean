@@ -383,6 +383,16 @@ GUI_status GUI_Widget::MouseWheel(sint32 x,sint32 y)
 	return(GUI_PASS);
 }
 
+GUI_status GUI_Widget::TextInput(const char *text)
+{
+	return(GUI_PASS);
+}
+
+GUI_status GUI_Widget::TextEditing(const char *text, int start, int length)
+{
+	return(GUI_PASS);
+}
+
 /* Main event handler function.
    This function gets raw SDL events from the GUI.
  */
@@ -499,6 +509,12 @@ GUI_status GUI_Widget::HandleEvent(const SDL_Event *event)
 #if SDL_VERSION_ATLEAST(2, 0, 0)
         case SDL_MOUSEWHEEL: {
             return MouseWheel(event->wheel.x, event->wheel.y);
+        }
+        case SDL_TEXTINPUT: {
+            return TextInput(event->text.text);
+        }
+        case SDL_TEXTEDITING: {
+            return TextEditing(event->edit.text, event->edit.start, event->edit.length);
         }
 #endif
 		default: {

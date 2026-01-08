@@ -24,6 +24,7 @@
 #include "KeyActions.h"
 #include "nuvieDefs.h"
 #include "Game.h"
+#include "KoreanTranslation.h"
 #include "XMLTree.h"
 #include "Player.h"
 #include "Event.h"
@@ -478,7 +479,7 @@ void KeyBinder::handle_wrong_key_pressed()
 		Game::get_game()->get_event()->cancelAction();
 	else
 	{
-		Game::get_game()->get_scroll()->display_string("what?\n\n");
+		{ KoreanTranslation *kt = Game::get_game()->get_korean_translation(); Game::get_game()->get_scroll()->display_string((kt && kt->isEnabled()) ? "뭐요?\n\n" : "what?\n\n"); }
 		Game::get_game()->get_scroll()->display_prompt();
 	}
 }

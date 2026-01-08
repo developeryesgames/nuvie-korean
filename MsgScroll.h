@@ -115,6 +115,7 @@ protected:
  std::list<MsgLine *> msg_buf;
 
  std::string input_buf;
+ std::string composing_text;  // IME composition text (Korean input preview)
  bool permit_inputescape; // can RETURN or ESCAPE be used to escape input entry
 
  uint16 cursor_wait;
@@ -234,6 +235,8 @@ private:
  bool get_page_break() { return(page_break); }
 
  GUI_status KeyDown(SDL_Keysym key);
+ GUI_status TextInput(const char *text);
+ GUI_status TextEditing(const char *text, int start, int length);
  GUI_status MouseUp(int x, int y, int button);
  GUI_status MouseWheel(sint32 x, sint32 y);
  virtual std::string get_token_string_at_pos(uint16 x, uint16 y);
@@ -246,6 +249,7 @@ private:
  void set_page_break();
 
  virtual bool input_buf_add_char(char c);
+ virtual bool input_buf_add_string(const char *str);
  virtual bool input_buf_remove_char();
 
  /* Converse uses this to tell if the scroll has finished displaying the converse dialog */

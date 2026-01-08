@@ -36,6 +36,10 @@
 
 #include "main.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #ifdef MACOSX
 #include <CoreFoundation/CoreFoundation.h>
 #include <XCodeBuild/main.cpp>
@@ -44,6 +48,12 @@ int nuvieMain(int argc, char **argv)
 int main(int argc, char **argv)
 #endif
 {
+ // Set console code page to UTF-8 for Korean text output on Windows
+ #ifdef _WIN32
+ SetConsoleOutputCP(CP_UTF8);
+ SetConsoleCP(CP_UTF8);
+ #endif
+
  Nuvie *nuvie;
  DEBUG(0,LEVEL_INFORMATIONAL,"Debugging enabled\n");
  DEBUG(1,LEVEL_DEBUGGING,"To disable debugging altogether, recompile with \"WITHOUT_DEBUG\" defined.\n");

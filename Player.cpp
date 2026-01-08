@@ -27,6 +27,9 @@
 #include "U6misc.h"
 #include "NuvieIO.h"
 #include "ActorManager.h"
+#include "FontManager.h"
+#include "Game.h"
+#include "KoreanTranslation.h"
 #include "Actor.h"
 #include "ObjManager.h"
 #include "MapWindow.h"
@@ -234,6 +237,13 @@ void Player::set_actor(Actor *new_actor)
     actor_manager->set_player(actor);
     std::string prompt = get_name();
 
+    // Translate name for Korean mode
+    KoreanTranslation *korean = Game::get_game()->get_korean_translation();
+    if(korean && korean->isEnabled())
+    {
+      prompt = korean->translate(prompt);
+    }
+
     if(game_type==NUVIE_GAME_U6)
     {
       prompt += ":\n";
@@ -287,13 +297,16 @@ void Player::subtract_movement_points(uint8 points)
 
 const char *Player::get_gender_title()
 {
+  KoreanTranslation *korean = Game::get_game()->get_korean_translation();
+  bool use_korean = korean && korean->isEnabled();
+
   switch(game_type)
   {
   case NUVIE_GAME_U6 :
     if(gender == 0)
-      return "milord";
+      return use_korean ? "나리" : "milord";
     else
-      return "milady";
+      return use_korean ? "아가씨" : "milady";
   case NUVIE_GAME_MD :
     if(gender == 0)
       return "Sir";
@@ -759,7 +772,10 @@ bool Player::attack_select_weapon_at_location(sint8 location, bool add_newline, 
 {
  const CombatType *weapon;
  MsgScroll *scroll = Game::get_game()->get_scroll();
- 
+ FontManager *fm = Game::get_game()->get_font_manager();
+ bool korean = (fm && fm->is_korean_enabled() && fm->get_korean_font());
+ KoreanTranslation *kt = korean ? Game::get_game()->get_korean_translation() : NULL;
+
  if(location == ACTOR_NO_READIABLE_LOCATION)
    {
     current_weapon = location;
@@ -767,16 +783,24 @@ bool Player::attack_select_weapon_at_location(sint8 location, bool add_newline, 
         return true;
     if(add_newline)
         scroll->display_string("\n");
-    if(game_type == NUVIE_GAME_U6 && actor->obj_n == OBJ_U6_SHIP)
-    	scroll->display_string("Attack with ship cannons-");
-    else
-    	scroll->display_string("Attack with bare hands-");
+    if(game_type == NUVIE_GAME_U6 && actor->obj_n == OBJ_U6_SHIP) {
+      if(korean)
+        scroll->display_string("함포로 공격-");
+      else
+        scroll->display_string("Attack with ship cannons-");
+    }
+    else {
+      if(korean)
+        scroll->display_string("맨손으로 공격-");
+      else
+        scroll->display_string("Attack with bare hands-");
+    }
 
     return true;
    }
 
  weapon = actor->get_weapon(location);
-    
+
  if(weapon && weapon->attack > 0)
    {
     current_weapon = location;
@@ -784,7 +808,19 @@ bool Player::attack_select_weapon_at_location(sint8 location, bool add_newline, 
         return true;
     if(add_newline)
         scroll->display_string("\n");
-    scroll->display_fmt_string("Attack with %s-", obj_manager->get_obj_name(weapon->obj_n));
+    if(korean) {
+      // get_obj_name already returns Korean translation via lookAtTile -> get_description
+      uint16 tile_num = obj_manager->get_obj_tile_num(weapon->obj_n);
+      DEBUG(0, LEVEL_WARNING, "Player::attack - weapon obj_n=%d, tile_num=%d\n", weapon->obj_n, tile_num);
+      std::string weapon_name = obj_manager->get_obj_name(weapon->obj_n);
+      DEBUG(0, LEVEL_WARNING, "Player::attack - weapon_name='%s'\n", weapon_name.c_str());
+      std::string particle = KoreanTranslation::getParticle_euroro(weapon_name);
+      scroll->display_string(weapon_name.c_str());
+      scroll->display_string(particle.c_str());
+      scroll->display_string(" 공격-");
+    }
+    else
+      scroll->display_fmt_string("Attack with %s-", obj_manager->get_obj_name(weapon->obj_n));
     return true;
    }
 

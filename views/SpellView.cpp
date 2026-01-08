@@ -44,6 +44,10 @@
 #include "U6objects.h"
 #include "Magic.h"
 #include "Keys.h"
+#include "FontManager.h"
+#include "KoreanFont.h"
+#include "KoreanTranslation.h"
+#include "Game.h"
 
 static const char circle_num_tbl[][8] = {"1ST", "2ND", "3RD", "4TH", "5TH", "6TH", "7TH", "8TH"};
 static const int obj_n_reagent[8]={OBJ_U6_MANDRAKE_ROOT, OBJ_U6_NIGHTSHADE, OBJ_U6_BLACK_PEARL, OBJ_U6_BLOOD_MOSS, OBJ_U6_SPIDER_SILK, OBJ_U6_GARLIC, OBJ_U6_GINSENG, OBJ_U6_SULFUROUS_ASH};
@@ -71,7 +75,13 @@ bool SpellView::init(Screen *tmp_screen, void *view_manager, uint16 x, uint16 y,
 {
  View::init(x,y,f,p,tm,om);
 
- SetRect(area.x, area.y, NEWMAGIC_BMP_W, NEWMAGIC_BMP_H+16);
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ int scale = use_4x ? 4 : 1;
+
+ SetRect(area.x, area.y, NEWMAGIC_BMP_W * scale, (NEWMAGIC_BMP_H+16) * scale);
  string filename;
 
  config_get_path(config,"newmagic.bmp",filename);
@@ -117,11 +127,20 @@ void SpellView::set_spell_caster(Actor *actor, Obj *s_container, bool eventMode)
 
 void SpellView::Display(bool full_redraw)
 {
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ int scale = use_4x ? 4 : 1;
+
  if(full_redraw || update_display)
    {
-    screen->fill(bg_color, area.x, area.y + NEWMAGIC_BMP_H, area.w, area.h - NEWMAGIC_BMP_H);
+    screen->fill(bg_color, area.x, area.y + NEWMAGIC_BMP_H * scale, area.w, area.h - NEWMAGIC_BMP_H * scale);
 
-    screen->blit(area.x, area.y, background->get_data(), 8,  NEWMAGIC_BMP_W, NEWMAGIC_BMP_H, NEWMAGIC_BMP_W, true);
+    if(use_4x)
+      screen->blit4x(area.x, area.y, background->get_data(), 8, NEWMAGIC_BMP_W, NEWMAGIC_BMP_H, NEWMAGIC_BMP_W, true);
+    else
+      screen->blit(area.x, area.y, background->get_data(), 8, NEWMAGIC_BMP_W, NEWMAGIC_BMP_H, NEWMAGIC_BMP_W, true);
    }
 
  display_level_text();
@@ -303,8 +322,22 @@ GUI_status SpellView::move_down()
 
 void SpellView::display_level_text()
 {
- font->drawString(screen, circle_num_tbl[level-1], area.x + 96 + 8, area.y+NEWMAGIC_BMP_H);
- font->drawString(screen, "level", area.x + 96, area.y+NEWMAGIC_BMP_H+8);
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
+ bool use_4x = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ int scale = use_4x ? 4 : 1;
+
+ if(use_4x)
+ {
+   korean_font->drawStringUTF8(screen, circle_num_tbl[level-1], area.x + (96 + 8) * scale, area.y + NEWMAGIC_BMP_H * scale, 0x48, 0, 1);
+   korean_font->drawStringUTF8(screen, "level", area.x + 96 * scale, area.y + (NEWMAGIC_BMP_H + 8) * scale, 0x48, 0, 1);
+ }
+ else
+ {
+   font->drawString(screen, circle_num_tbl[level-1], area.x + 96 + 8, area.y+NEWMAGIC_BMP_H);
+   font->drawString(screen, "level", area.x + 96, area.y+NEWMAGIC_BMP_H+8);
+ }
  return;
 }
 
@@ -336,12 +369,41 @@ void SpellView::display_spell_text(Spell *spell, uint16 line_num, uint8 selected
 	char num_str[4];
 	line_num++;
 
-	font->drawString(screen, spell->name, area.x + 16, area.y+(line_num * 8));
-	snprintf(num_str, 3, "%d", get_available_spell_count(spell));
-	font->drawString(screen, num_str, area.x + NEWMAGIC_BMP_W-24, area.y+(line_num * 8));
+	// Check for Korean 4x mode
+	FontManager *font_manager = Game::get_game()->get_font_manager();
+	KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
+	bool use_4x = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+	int scale = use_4x ? 4 : 1;
 
-	if(spell->num == selected_spell)
-		font->drawChar(screen, 26, area.x + 8, area.y+(line_num * 8));
+	snprintf(num_str, 3, "%d", get_available_spell_count(spell));
+
+	// Get spell name (try Korean translation first)
+	const char *spell_name = spell->name;
+	std::string korean_spell_name;
+	KoreanTranslation *korean = Game::get_game()->get_korean_translation();
+	if (korean && korean->isEnabled())
+	{
+		korean_spell_name = korean->getSpellName(spell->num);
+		if (!korean_spell_name.empty())
+			spell_name = korean_spell_name.c_str();
+	}
+
+	if(use_4x)
+	{
+		korean_font->drawStringUTF8(screen, spell_name, area.x + 16 * scale, area.y + (line_num * 8) * scale, 0x48, 0, 1);
+		korean_font->drawStringUTF8(screen, num_str, area.x + (NEWMAGIC_BMP_W - 24) * scale, area.y + (line_num * 8) * scale, 0x48, 0, 1);
+
+		if(spell->num == selected_spell)
+			korean_font->drawChar(screen, '>', area.x + 8 * scale, area.y + (line_num * 8) * scale, 0x48);
+	}
+	else
+	{
+		font->drawString(screen, spell_name, area.x + 16, area.y+(line_num * 8));
+		font->drawString(screen, num_str, area.x + NEWMAGIC_BMP_W-24, area.y+(line_num * 8));
+
+		if(spell->num == selected_spell)
+			font->drawChar(screen, 26, area.x + 8, area.y+(line_num * 8));
+	}
 
  return;
 }
@@ -374,16 +436,39 @@ void SpellView::add_command_icons(Screen *tmp_screen, void *view_manager)
  SDL_Surface *button_image;
  SDL_Surface *button_image2;
 
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ int scale = use_4x ? 4 : 1;
+ int tile_size = 16 * scale;
+
  tile = tile_manager->get_tile(412); //left arrow icon
- button_image = tmp_screen->create_sdl_surface_from(tile->data, 8, 16, 16, 16);
- button_image2 = tmp_screen->create_sdl_surface_from(tile->data, 8, 16, 16, 16);
- left_button = new GUI_Button(this, 2*16, NEWMAGIC_BMP_H, button_image, button_image2, this);
+ if(use_4x)
+ {
+   button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+ }
+ else
+ {
+   button_image = tmp_screen->create_sdl_surface_from(tile->data, 8, 16, 16, 16);
+   button_image2 = tmp_screen->create_sdl_surface_from(tile->data, 8, 16, 16, 16);
+ }
+ left_button = new GUI_Button(this, 2*tile_size, NEWMAGIC_BMP_H * scale, button_image, button_image2, this);
  this->AddWidget(left_button);
 
  tile = tile_manager->get_tile(413); //right arrow icon
- button_image = tmp_screen->create_sdl_surface_from(tile->data, 8, 16, 16, 16);
- button_image2 = tmp_screen->create_sdl_surface_from(tile->data, 8, 16, 16, 16);
- right_button = new GUI_Button(this, 3*16, NEWMAGIC_BMP_H, button_image, button_image2, this);
+ if(use_4x)
+ {
+   button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+ }
+ else
+ {
+   button_image = tmp_screen->create_sdl_surface_from(tile->data, 8, 16, 16, 16);
+   button_image2 = tmp_screen->create_sdl_surface_from(tile->data, 8, 16, 16, 16);
+ }
+ right_button = new GUI_Button(this, 3*tile_size, NEWMAGIC_BMP_H * scale, button_image, button_image2, this);
  this->AddWidget(right_button);
 
 }
@@ -475,17 +560,23 @@ GUI_status SpellView::MouseWheel(sint32 x, sint32 y)
 
 GUI_status SpellView::MouseDown(int x, int y, int button)
 {
+	// Check for Korean 4x mode
+	FontManager *font_manager = Game::get_game()->get_font_manager();
+	bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+	              font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+	int scale = use_4x ? 4 : 1;
+
 	y -= area.y;
 	x -= area.x;
 	Event *event = Game::get_game()->get_event();
 	bool selecting_spell_target, canceling_spell, doing_nothing;
 	if(Game::get_game()->is_original_plus()) {
 		if(Game::get_game()->is_original_plus_full_map())
-			selecting_spell_target = (x < -7 || y > 194);
+			selecting_spell_target = (x < -7 * scale || y > 194 * scale);
 		else
-			selecting_spell_target = (x < -7);
-		canceling_spell = (x > 1 && (y > 101 || x > 137));
-		doing_nothing = ((x > -8 && x < 16) || (x > -8 && (y < 8 || (y > 71 && y < 195))));
+			selecting_spell_target = (x < -7 * scale);
+		canceling_spell = (x > 1 * scale && (y > 101 * scale || x > 137 * scale));
+		doing_nothing = ((x > -8 * scale && x < 16 * scale) || (x > -8 * scale && (y < 8 * scale || (y > 71 * scale && y < 195 * scale))));
 	} else {
 		selecting_spell_target = (x < 0 && y > 0 && y < 162);
 		canceling_spell = (x > 1 && (y > 101 || x > 137));
@@ -524,10 +615,12 @@ GUI_status SpellView::MouseDown(int x, int y, int button)
 		index = num_spells_per_page;
 	else
 		index = 0;
-	y = (y / num_spells_per_page) - 1;
+	// Calculate spell row based on scale
+	int row_height = 8 * scale; // Each spell row is 8 pixels * scale
+	y = (y / row_height) - 1;
 	//printf("x = %d, y = %d index=%d\n", x, y, index);
 
-	if(cur_spells[index+y] != -1)
+	if(y >= 0 && y < num_spells_per_page && cur_spells[index+y] != -1)
 	{
 		spell_container->quality = cur_spells[index+y];
 		update_display = true;

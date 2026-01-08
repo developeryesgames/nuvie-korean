@@ -169,14 +169,23 @@ bool ViewManager::init(GUI *g, Font *f, Party *p, Player *player, TileManager *t
  }
 
  uint16 spell_x_offset = 168+x_off;
+ uint16 spell_y_offset = 6+y_off;
  if(Game::get_game()->is_new_style())
  {
 	spell_x_offset = Game::get_game()->get_game_width() - SPELLVIEWGUMP_WIDTH + x_off;
  }
+ else if(use_korean_4x)
+ {
+   // 4x scaled position for SpellView
+   uint16 screen_width = Game::get_game()->get_screen()->get_width();
+   uint16 panel_start = screen_width - 152 * 4;
+   spell_x_offset = panel_start; // Spell view starts at panel edge
+   spell_y_offset = 6 * 4; // 6 pixels from top * 4
+ }
 
  if(spell_view)
  {
-   spell_view->init(gui->get_screen(), this, spell_x_offset, 6+y_off, font, party, tile_manager, obj_manager);
+   spell_view->init(gui->get_screen(), this, spell_x_offset, spell_y_offset, font, party, tile_manager, obj_manager);
  }
  //set_current_view((View *)party_view);
 

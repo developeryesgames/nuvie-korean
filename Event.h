@@ -250,6 +250,7 @@ friend class Magic; // FIXME
  bool talk(Actor *actor);
  bool talk(Obj *obj);
  bool perform_talk(Actor *actor);
+ std::string get_npc_name_korean(Actor *actor);
 
  bool attack();
 

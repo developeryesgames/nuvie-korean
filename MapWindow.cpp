@@ -52,6 +52,7 @@
 #include "Keys.h"
 #include "FontManager.h"
 #include "KoreanFont.h"
+#include "KoreanTranslation.h"
 
 #define USE_BUTTON 1 /* FIXME: put this in a common location */
 #define WALK_BUTTON 3
@@ -2542,7 +2543,8 @@ bool MapWindow::drag_accept_drop(int x, int y, int message, void *data)
 		else
 			return true; //throw on ground
     }
-	game->get_scroll()->display_string("Move-");
+	{ KoreanTranslation *k = game->get_korean_translation();
+	game->get_scroll()->display_string((k && k->isEnabled()) ? "이동-" : "Move-"); }
 	game->get_scroll()->display_string(obj_manager->look_obj(obj)); // getting obj name
 	game->get_scroll()->display_string("\nto ");
 	game->get_scroll()->display_string(get_direction_name(x - obj->x ,  y - obj->y));

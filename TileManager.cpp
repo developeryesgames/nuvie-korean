@@ -357,7 +357,9 @@ const char *TileManager::lookAtTile(uint16 tile_num, uint16 qty, bool show_prefi
  else
   plural = false;
 
- desc = look->get_description(tile->tile_num,&plural);
+ // Use input tile_num for description lookup, not tile->tile_num
+ // This ensures correct Korean translation lookup
+ desc = look->get_description(tile_num,&plural);
  if(show_prefix == false)
    return desc;
 

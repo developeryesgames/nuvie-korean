@@ -130,18 +130,50 @@ const char *Look::get_description(uint16 tile_num, bool *plural)
  if(tile_num >= 2048)
    return NULL;
 
- // Check for Korean translation first
+ desc = look_tbl[tile_num];
+
+ // Check for Korean translation
  Game *game = Game::get_game();
  if(game)
  {
    KoreanTranslation *korean = game->get_korean_translation();
-   DEBUG(0, LEVEL_DEBUGGING, "Look: tile_num=%d, korean=%p, enabled=%d\n",
-         tile_num, korean, korean ? korean->isEnabled() : 0);
    if(korean && korean->isEnabled())
    {
+     // First try tile_num lookup
      std::string korean_text = korean->getLookText(tile_num);
-     DEBUG(0, LEVEL_DEBUGGING, "Look: korean_text for tile %d = '%s'\n",
-           tile_num, korean_text.c_str());
+
+     // If not found, try translating the English name
+     if(korean_text.empty() && desc)
+     {
+       // Get the English name without plural markers for translation lookup
+       std::string english_name;
+       len = strlen(desc);
+       for(i=0; i < len; i++)
+       {
+         if(desc[i] == '\\' || desc[i] == '/')
+         {
+           // Skip plural suffix - take singular form (after /)
+           char marker = desc[i];
+           i++;
+           while(i < len && isalpha(desc[i]))
+           {
+             if(marker == '/')
+               english_name += desc[i];
+             i++;
+           }
+           i--; // Back up one since for loop will increment
+         }
+         else
+         {
+           english_name += desc[i];
+         }
+       }
+       korean_text = korean->translate(english_name);
+       // If translate returned the same string, it wasn't found
+       if(korean_text == english_name)
+         korean_text = "";
+     }
+
      if(!korean_text.empty())
      {
        korean_desc_buf = korean_text;
@@ -150,8 +182,6 @@ const char *Look::get_description(uint16 tile_num, bool *plural)
      }
    }
  }
-
- desc = look_tbl[tile_num];
 
  len = strlen(desc);
 

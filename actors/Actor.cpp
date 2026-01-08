@@ -42,6 +42,8 @@
 #include "Script.h"
 #include "Event.h"
 #include "U6Actor.h"
+#include "FontManager.h"
+#include "KoreanTranslation.h"
 
 uint8 walk_frame_tbl[4] = {0,1,2,1};
 
@@ -1807,22 +1809,34 @@ void Actor::resurrect(MapCoord new_position, Obj *body_obj)
 void Actor::display_condition()
 {
     MsgScroll *scroll = Game::get_game()->get_scroll();
+    KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+    bool use_korean = kt && kt->isEnabled();
 
     if(hp == get_maxhp())
         return;
     scroll->display_string(get_name());
     scroll->display_string(" ");
     if(hp < get_maxhp()/4) // 25%
-        scroll->display_string("critical!\n");
+        scroll->display_string(use_korean ? "위독!\n" : "critical!\n");
     else
     {
-        if(hp < get_maxhp()/2) // 50%
-            scroll->display_string("heavily");
-        else if(hp < get_maxhp()/1.33) // 75%
-            scroll->display_string("lightly");
-        else
-            scroll->display_string("barely");
-        scroll->display_string(" wounded.\n");
+        if(use_korean) {
+            if(hp < get_maxhp()/2) // 50%
+                scroll->display_string("중상");
+            else if(hp < get_maxhp()/1.33) // 75%
+                scroll->display_string("경상");
+            else
+                scroll->display_string("미미한 부상");
+            scroll->display_string("을 입음.\n");
+        } else {
+            if(hp < get_maxhp()/2) // 50%
+                scroll->display_string("heavily");
+            else if(hp < get_maxhp()/1.33) // 75%
+                scroll->display_string("lightly");
+            else
+                scroll->display_string("barely");
+            scroll->display_string(" wounded.\n");
+        }
     }
 }
 
@@ -1830,12 +1844,14 @@ void Actor::display_condition()
 void Actor::hit(uint8 dmg, bool force_hit)
 {
  MsgScroll *scroll = Game::get_game()->get_scroll();
+ KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+ bool use_korean = kt && kt->isEnabled();
  uint8 total_armor_class = body_armor_class; //+ readied_armor_class;
       
  if(dmg == 0)
    {
     scroll->display_string(get_name());
-    scroll->display_string(" grazed!\n");
+    scroll->display_string(use_korean ? " 스침!\n" : " grazed!\n");
    }
  else if(dmg > total_armor_class || force_hit)
    {
@@ -1847,7 +1863,7 @@ void Actor::hit(uint8 dmg, bool force_hit)
        if(hp == 0)
          {
           scroll->display_string(get_name());
-          scroll->display_string(" killed!\n");
+          scroll->display_string(use_korean ? " 사망!\n" : " killed!\n");
          }
        else
          {

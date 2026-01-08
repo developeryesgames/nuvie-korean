@@ -30,6 +30,7 @@
 
 #include "MsgScroll.h"
 #include "Event.h"
+#include "KoreanTranslation.h"
 
 #include "Actor.h"
 #include "ActorManager.h"
@@ -457,7 +458,8 @@ GUI_status DollWidget::MouseDown(int x, int y, int button)
    {
     for(location=0;location<8;location++)
       {
-       if(HitRect(x,y,item_hit_rects[location]))  // FIXME: duplicating code in InventoryWidget
+       SDL_Rect *hit_rect = get_item_hit_rect(location);
+       if(hit_rect && HitRect(x,y,*hit_rect))  // Use scaled hit rect for 4x mode
          {
           DEBUG(0,LEVEL_DEBUGGING,"Hit %d\n",location);
           obj = actor->inventory_get_readied_object(location);
@@ -472,7 +474,7 @@ GUI_status DollWidget::MouseDown(int x, int y, int button)
         	  else
         	  {
         		  // has not found a target yet
-        	       Game::get_game()->get_scroll()->display_string("nothing!\n");
+        	       { KoreanTranslation *kt = Game::get_game()->get_korean_translation(); Game::get_game()->get_scroll()->display_string((kt && kt->isEnabled()) ? "아무것도 없음!\n" : "nothing!\n"); }
         	       event->endAction(true);
         	       event->set_mode(MOVE_MODE);
         	  }
