@@ -35,6 +35,10 @@
 #include "WOUFont.h"
 #include "Cursor.h"
 #include "Keys.h"
+#include "Game.h"
+#include "FontManager.h"
+#include "KoreanFont.h"
+#include "KoreanTranslation.h"
 
 #include "ScriptCutscene.h"
 
@@ -119,6 +123,8 @@ static int nscript_get_mouse_y(lua_State *L);
 static int nscript_input_poll(lua_State *L);
 
 static int nscript_config_set(lua_State *L);
+static int nscript_canvas_print_korean(lua_State *L);
+static int nscript_load_translation(lua_State *L);
 
 void nscript_init_cutscene(lua_State *L, Configuration *cfg, GUI *gui, SoundManager *sm)
 {
@@ -237,6 +243,12 @@ void nscript_init_cutscene(lua_State *L, Configuration *cfg, GUI *gui, SoundMana
 
    lua_pushcfunction(L, nscript_config_set);
    lua_setglobal(L, "config_set");
+
+   lua_pushcfunction(L, nscript_canvas_print_korean);
+   lua_setglobal(L, "canvas_print_korean");
+
+   lua_pushcfunction(L, nscript_load_translation);
+   lua_setglobal(L, "load_translation");
 }
 
 bool nscript_new_image_var(lua_State *L, CSImage *image)
@@ -1748,19 +1760,26 @@ void ScriptCutscene::Display(bool full_redraw)
 
 				if(s->text.length() > 0)
 				{
+				  // Check for Korean mode
+				  Game *game = Game::get_game();
+				  FontManager *fm = game ? game->get_font_manager() : NULL;
+				  KoreanFont *korean_font = fm ? fm->get_korean_font() : NULL;
+				  bool use_korean = korean_font && fm->is_korean_enabled();
+
 				  if(s->text_align != 0)
 				  {
             display_wrapped_text(s);
 				  }
 				  else
 				  {
-				    if (s->text_color == 0xffff)
+				    uint8 color = (s->text_color == 0xffff) ? 0x48 : (uint8)s->text_color;
+				    if(use_korean)
 				    {
-				      font->drawString(screen, s->text.c_str(), s->x + x_off, s->y + y_off);
+				      korean_font->drawStringUTF8(screen, s->text.c_str(), s->x + x_off, s->y + y_off, color, 0, 1);
 				    }
 				    else
 				    {
-				      font->drawString(screen, s->text.c_str(), s->x + x_off, s->y + y_off, (uint8) s->text_color, (uint8) s->text_color);
+				      font->drawString(screen, s->text.c_str(), s->x + x_off, s->y + y_off, color, color);
 				    }
 				  }
 				}
@@ -1969,4 +1988,110 @@ void CSStarFieldImage::updateEffect()
 			}
 		}
 	}
+}
+// Korean localization functions for intro/ending
+
+// Global translation table for intro/ending
+static std::map<std::string, std::string> g_intro_translations;
+
+// Load translation file: load_translation(filename)
+// File format: KEY|KOREAN_TEXT (lines starting with # are comments)
+static int nscript_load_translation(lua_State *L)
+{
+    const char *filename = lua_tostring(L, 1);
+    if(!filename)
+    {
+        lua_pushboolean(L, false);
+        return 1;
+    }
+
+    g_intro_translations.clear();
+
+    // Build path relative to data/translations/korean/
+    std::string path;
+    Configuration *config = Game::get_game()->get_config();
+    config_get_path(config, std::string("translations/korean/") + filename, path);
+
+    FILE *f = fopen(path.c_str(), "r");
+    if(!f)
+    {
+        DEBUG(0, LEVEL_WARNING, "Could not load translation file: %s\n", path.c_str());
+        lua_pushboolean(L, false);
+        return 1;
+    }
+
+    char line[4096];
+    while(fgets(line, sizeof(line), f))
+    {
+        // Skip comments and empty lines
+        if(line[0] == '#' || line[0] == '\n' || line[0] == '\r')
+            continue;
+
+        // Remove trailing newline
+        size_t len = strlen(line);
+        while(len > 0 && (line[len-1] == '\n' || line[len-1] == '\r'))
+            line[--len] = 0;
+
+        // Find separator
+        char *sep = strchr(line, '|');
+        if(!sep)
+            continue;
+
+        *sep = 0;
+        std::string key = line;
+        std::string value = sep + 1;
+
+        g_intro_translations[key] = value;
+    }
+
+    fclose(f);
+    DEBUG(0, LEVEL_INFORMATIONAL, "Loaded %d translations from %s\n", (int)g_intro_translations.size(), path.c_str());
+    lua_pushboolean(L, true);
+    return 1;
+}
+
+// Get translation: get_intro_translation(key) - returns Korean text or key if not found
+static std::string get_intro_translation(const std::string &key)
+{
+    std::map<std::string, std::string>::iterator it = g_intro_translations.find(key);
+    if(it != g_intro_translations.end())
+        return it->second;
+    return key;
+}
+
+// Print Korean text to canvas: canvas_print_korean(text, x, y, color, wrap_width)
+// Uses KoreanFont to render UTF-8 text directly to screen
+static int nscript_canvas_print_korean(lua_State *L)
+{
+    const char *text = lua_tostring(L, 1);
+    sint16 x = lua_tointeger(L, 2);
+    sint16 y = lua_tointeger(L, 3);
+    uint8 color = lua_tointeger(L, 4);
+    uint16 wrap_width = lua_isnumber(L, 5) ? lua_tointeger(L, 5) : 0;
+
+    if(!text)
+        return 0;
+
+    Game *game = Game::get_game();
+    if(!game)
+        return 0;
+
+    FontManager *fm = game->get_font_manager();
+    KoreanFont *korean_font = fm ? fm->get_korean_font() : NULL;
+
+    if(!korean_font)
+    {
+        // Fallback - Korean font not available
+        return 0;
+    }
+
+    Screen *screen = game->get_screen();
+    if(!screen)
+        return 0;
+
+    // Simple rendering without wrapping for now
+    uint16 end_x = korean_font->drawStringUTF8(screen, text, x, y, color, 0, 1);
+    lua_pushinteger(L, end_x);
+    lua_pushinteger(L, y);
+    return 2;
 }

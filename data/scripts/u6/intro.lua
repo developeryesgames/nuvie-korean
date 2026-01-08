@@ -3,6 +3,20 @@ SDLK_DOWN         = 81 + 1073741824
 SDLK_RIGHT        = 79 + 1073741824
 SDLK_LEFT         = 80 + 1073741824
 
+-- Korean localization support
+local korean_mode = false
+local ko_texts = {}
+
+local function init_korean()
+    if is_korean_enabled and is_korean_enabled() then
+        korean_mode = true
+        -- Load translation file
+        if load_translation then
+            load_translation("intro_ko.txt")
+        end
+    end
+end
+
 g_img_tbl = {}
 
 local function poll_for_esc()
@@ -361,9 +375,17 @@ local function lounge_sequence()
 	--end
 	local scroll_img = image_load("blocks.shp", 1)
 	local scroll = sprite_new(scroll_img, 1, 0x9f, true)
-
-	local x, y = image_print(scroll_img, "Upon your world, five seasons have passed since your ", 8, 312, 8, 10, 0x3e)
-	image_print(scroll_img, "triumphant homecoming from Britannia.", 8, 312, x, y, 0x3e)
+	
+	-- Korean text sprite for intro
+	local ko_text_sprite = nil
+	if korean_mode then
+		ko_text_sprite = sprite_new(nil, 8, 0xa7, true)
+		ko_text_sprite.text = "그대가 브리타니아로부터 영광스럽게 귀환한 지도, 이 세계의 시간으로 다섯 계절이 흘렀다."
+		ko_text_sprite.text_color = 0x3e
+	else
+		local x, y = image_print(scroll_img, "Upon your world, five seasons have passed since your ", 8, 312, 8, 10, 0x3e)
+		image_print(scroll_img, "triumphant homecoming from Britannia.", 8, 312, x, y, 0x3e)
+	end
 
 	local input = input_poll()
 
@@ -378,10 +400,17 @@ local function lounge_sequence()
 	end
 	
 	scroll_img = image_load("blocks.shp", 2)
-	x, y = image_print(scroll_img, "You have traded the Avatar's life of peril and adventure ", 7, 310, 7, 8, 0x3e)
-	x, y = image_print(scroll_img, "for the lonely serenity of a world at peace. But ", 7, 310, x, y, 0x3e)
-	x, y = image_print(scroll_img, "television supermen cannot take the place of friends ", 7, 310, x, y, 0x3e)
-	image_print(scroll_img, "who died at your side!", 7, 310, x, y, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 7, 0x98, true)
+		ko_text_sprite.text = "그대는 아바타로서의 위험천만한 모험의 삶을 뒤로하고, 평화로운 세계의 고독한 평온함과 맞바꾸었다. 하지만 텔레비전 속의 초인들은 그대 곁에서 죽어간 친구들의 빈자리를 결코 대신할 수 없었다!"
+		ko_text_sprite.text_color = 0x3e
+	else
+		x, y = image_print(scroll_img, "You have traded the Avatar's life of peril and adventure ", 7, 310, 7, 8, 0x3e)
+		x, y = image_print(scroll_img, "for the lonely serenity of a world at peace. But ", 7, 310, x, y, 0x3e)
+		x, y = image_print(scroll_img, "television supermen cannot take the place of friends ", 7, 310, x, y, 0x3e)
+		image_print(scroll_img, "who died at your side!", 7, 310, x, y, 0x3e)
+	end
 
 	scroll.image = scroll_img
 	scroll.x = 1
@@ -400,7 +429,14 @@ local function lounge_sequence()
 	end
 
 	scroll_img = image_load("blocks.shp", 0)
-	image_print(scroll_img, "Outside, a chill wind rises...", 39, 200, 39, 8, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 0x21, 0x9d, true)
+		ko_text_sprite.text = "밖에서는 차가운 바람이 일기 시작하고..."
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "Outside, a chill wind rises...", 39, 200, 39, 8, 0x3e)
+	end
 
 	scroll.image = scroll_img
 	scroll.x = 0x21
@@ -642,25 +678,46 @@ local function window_sequence()
 	
 	local scroll_img = image_load("blocks.shp", 1)
 	local scroll = sprite_new(scroll_img, 1, 0x98, true)
-	
-	local x, y = image_print(scroll_img, "...and in moments, the storm is upon you.", 8, 312, 36, 14, 0x3e)
+	local ko_text_sprite = nil
+
+	if korean_mode then
+		ko_text_sprite = sprite_new(nil, 36, 0x98 + 14, true)
+		ko_text_sprite.text = "...순식간에 폭풍우가 그대를 덮친다."
+		ko_text_sprite.text_color = 0x3e
+	else
+		local x, y = image_print(scroll_img, "...and in moments, the storm is upon you.", 8, 312, 36, 14, 0x3e)
+	end
 
 	if window_update() == true then
 		return false
 	end
-	
+
 	scroll_img = image_load("blocks.shp", 1)
-	x, y = image_print(scroll_img, "Tongues of lightning lash the sky, conducting an unceasing ", 8, 310, 8, 10, 0x3e)
-	image_print(scroll_img, "crescendo of thunder....", 8, 310, x, y, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 8, 0x98 + 10, true)
+		ko_text_sprite.text = "하늘을 가르는 번갯불은 끊임없이 휘몰아치는 천둥소리의 서곡인 듯 번득이고...."
+		ko_text_sprite.text_color = 0x3e
+	else
+		x, y = image_print(scroll_img, "Tongues of lightning lash the sky, conducting an unceasing ", 8, 310, 8, 10, 0x3e)
+		image_print(scroll_img, "crescendo of thunder....", 8, 310, x, y, 0x3e)
+	end
 	scroll.image = scroll_img
-	
+
 	if window_update() == true then
 		return false
 	end
 
 	scroll_img = image_load("blocks.shp", 1)
-	x, y = image_print(scroll_img, "In a cataclysm of sound and light, a bolt of searing ", 8, 310, 8, 10, 0x3e)
-	image_print(scroll_img, "blue fire strikes the earth!", 8, 310, x, y, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 8, 0x98 + 10, true)
+		ko_text_sprite.text = "빛과 소리의 거대한 소용돌이 속에서, 타오르는 푸른 불꽃의 벼락이 지면을 강타한다!"
+		ko_text_sprite.text_color = 0x3e
+	else
+		x, y = image_print(scroll_img, "In a cataclysm of sound and light, a bolt of searing ", 8, 310, 8, 10, 0x3e)
+		image_print(scroll_img, "blue fire strikes the earth!", 8, 310, x, y, 0x3e)
+	end
 	scroll.image = scroll_img
 	
 	g_window_tbl["strike"].visible = true
@@ -670,8 +727,15 @@ local function window_sequence()
 	end
 	
 	scroll_img = image_load("blocks.shp", 1)
-	x, y = image_print(scroll_img, "Lightning among the stones!", 8, 310, 73, 10, 0x3e)
-	image_print(scroll_img, "Is this a sign from distant Britannia?", 8, 310, 41, 18, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 8, 0x98 + 10, true)
+		ko_text_sprite.text = "돌무더기 사이에 내리친 번개! 이것은 저 멀리 브리타니아에서 온 신호인가?"
+		ko_text_sprite.text_color = 0x3e
+	else
+		x, y = image_print(scroll_img, "Lightning among the stones!", 8, 310, 73, 10, 0x3e)
+		image_print(scroll_img, "Is this a sign from distant Britannia?", 8, 310, 41, 18, 0x3e)
+	end
 	scroll.image = scroll_img
 		
 	--scroll window.
@@ -721,9 +785,16 @@ local function window_sequence()
 	end
 
 	scroll_img = image_load("blocks.shp", 2)
-	x, y = image_print(scroll_img, "You bolt from your house, stumbling, running blind in the", 7, 310, 8, 12, 0x3e)
-	x, y = image_print(scroll_img, " storm. Into the forest, down the path, through the ", 7, 310, x, y, 0x3e)
-	image_print(scroll_img, "rain... to the stones.", 7, 310, x, y, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 8, 0x98 + 12, true)
+		ko_text_sprite.text = "그대는 집 밖으로 뛰쳐나와 폭풍 속에서 비틀거리며 앞만 보고 달린다. 숲을 지나고, 오솔길을 내려가고, 빗줄기를 뚫고... 마침내 돌들이 서 있는 곳에 다다른다."
+		ko_text_sprite.text_color = 0x3e
+	else
+		x, y = image_print(scroll_img, "You bolt from your house, stumbling, running blind in the", 7, 310, 8, 12, 0x3e)
+		x, y = image_print(scroll_img, " storm. Into the forest, down the path, through the ", 7, 310, x, y, 0x3e)
+		image_print(scroll_img, "rain... to the stones.", 7, 310, x, y, 0x3e)
+	end
 	scroll.image = scroll_img
 	scroll.visible = true
 
@@ -803,12 +874,19 @@ local function stones_sequence()
 
 	local scroll_img = image_load("blocks.shp", 2)
 	local scroll = sprite_new(scroll_img, 1, 0xc, true)
+	local ko_text_sprite = nil
 
-	local x, y = image_print(scroll_img, "Near the stones, the smell of damp, blasted earth hangs ", 7, 303, 7, 8, 0x3e)
-	x, y = image_print(scroll_img, "in the air. In a frozen moment of lightning-struck ", 7, 303, x, y, 0x3e)
-	x, y = image_print(scroll_img, "daylight, you glimpse a tiny obsidian stone in the ", 7, 303, x, y, 0x3e)
-	x, y = image_print(scroll_img, "midst of the circle!", 7, 303, x, y, 0x3e)
-	
+	if korean_mode then
+		ko_text_sprite = sprite_new(nil, 7, 0xc + 8, true)
+		ko_text_sprite.text = "돌 근처에 다다르자, 습하고 타버린 흙 냄새가 공중에 감돈다. 번개가 한낮처럼 사방을 밝힌 찰나의 순간, 그대는 원 중앙에 놓인 작은 흑요석 하나를 발견한다!"
+		ko_text_sprite.text_color = 0x3e
+	else
+		local x, y = image_print(scroll_img, "Near the stones, the smell of damp, blasted earth hangs ", 7, 303, 7, 8, 0x3e)
+		x, y = image_print(scroll_img, "in the air. In a frozen moment of lightning-struck ", 7, 303, x, y, 0x3e)
+		x, y = image_print(scroll_img, "daylight, you glimpse a tiny obsidian stone in the ", 7, 303, x, y, 0x3e)
+		x, y = image_print(scroll_img, "midst of the circle!", 7, 303, x, y, 0x3e)
+	end
+
 	fade_in()
 
 	if stones_update() == true then
@@ -819,7 +897,14 @@ local function stones_sequence()
 	g_stones_tbl["hand"].visible = true
 	
 	scroll_img = image_load("blocks.shp", 0)
-	image_print(scroll_img, "Wondering, you pick it up....", 8, 234, 0x2a, 8, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 0x21, 0x1e + 8, true)
+		ko_text_sprite.text = "의구심을 품은 채, 그대는 그것을 집어 든다...."
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "Wondering, you pick it up....", 8, 234, 0x2a, 8, 0x3e)
+	end
 	scroll.image = scroll_img
 	scroll.x = 0x21
 	scroll.y = 0x1e
@@ -844,8 +929,15 @@ local function stones_sequence()
 	g_stones_tbl["gate_cover"].visible = true
 	
 	scroll_img = image_load("blocks.shp", 1)
-	x, y = image_print(scroll_img, "...and from the heart of the stones, a softly glowing door ", 7, 303, 7, 10, 0x3e)
-	image_print(scroll_img, "ascends in silence!", 7, 303, x, y, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 1, 0xa0 + 10, true)
+		ko_text_sprite.text = "...그러자 돌들의 중심에서 부드럽게 빛나는 문이 정적 속에 솟아오른다!"
+		ko_text_sprite.text_color = 0x3e
+	else
+		x, y = image_print(scroll_img, "...and from the heart of the stones, a softly glowing door ", 7, 303, 7, 10, 0x3e)
+		image_print(scroll_img, "ascends in silence!", 7, 303, x, y, 0x3e)
+	end
 	scroll.image = scroll_img
 	scroll.x = 0x1
 	scroll.y = 0xa0
@@ -899,9 +991,16 @@ local function stones_sequence()
 	end
 	
 	scroll_img = image_load("blocks.shp", 2)
-	x, y = image_print(scroll_img, "Exultant memories wash over you as you clutch the stone. ", 7, 303, 7, 8, 0x3e)
-	x, y = image_print(scroll_img, "When last you saw an orb such as this, it was cast down ", 7, 303, x, y, 0x3e)
-	image_print(scroll_img, "by Lord British to banish the tyrant Blackthorn!", 7, 303, x, y, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 1, 0x98 + 8, true)
+		ko_text_sprite.text = "돌을 움켜쥐자 환희에 찬 기억들이 뇌리를 스친다. 예전에 이와 같은 보주를 보았을 때, 그것은 로드 브리티시께서 폭군 블랙손을 추방하기 위해 던지셨던 것이었다!"
+		ko_text_sprite.text_color = 0x3e
+	else
+		x, y = image_print(scroll_img, "Exultant memories wash over you as you clutch the stone. ", 7, 303, 7, 8, 0x3e)
+		x, y = image_print(scroll_img, "When last you saw an orb such as this, it was cast down ", 7, 303, x, y, 0x3e)
+		image_print(scroll_img, "by Lord British to banish the tyrant Blackthorn!", 7, 303, x, y, 0x3e)
+	end
 	scroll.image = scroll_img
 	scroll.x = 0x1
 	scroll.y = 0x98
@@ -929,9 +1028,16 @@ local function stones_sequence()
 	g_stones_tbl["hand"].visible = false
 	
 	scroll_img = image_load("blocks.shp", 2)
-	image_print(scroll_img, "But your joy soon gives way to apprehension.", 7, 303, 16, 8, 0x3e)
-	image_print(scroll_img, "The gate to Britannia has always been blue...", 7, 303, 18, 24, 0x3e)
-	image_print(scroll_img, "as blue as the morning sky.", 7, 303, 76, 32, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 1, 0x98 + 8, true)
+		ko_text_sprite.text = "하지만 기쁨은 곧 불안으로 바뀐다. 브리타니아로 향하는 문은 언제나 아침 하늘처럼 푸른색이었거늘..."
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "But your joy soon gives way to apprehension.", 7, 303, 16, 8, 0x3e)
+		image_print(scroll_img, "The gate to Britannia has always been blue...", 7, 303, 18, 24, 0x3e)
+		image_print(scroll_img, "as blue as the morning sky.", 7, 303, 76, 32, 0x3e)
+	end
 	scroll.image = scroll_img
 	scroll.visible = true
 		
@@ -940,18 +1046,32 @@ local function stones_sequence()
 	end
 	
 	scroll_img = image_load("blocks.shp", 1)
-	x,y = image_print(scroll_img, "Abruptly, the portal quivers and begins to sink ", 7, 303, 7, 10, 0x3e)
-	image_print(scroll_img, "into the ground.  Its crimson light wanes!", 7, 303, x, y, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 1, 0xa0 + 10, true)
+		ko_text_sprite.text = "갑자기 관문이 진동하며 땅 밑으로 가라앉기 시작한다. 그 진홍빛 광채가 희미해져 간다!"
+		ko_text_sprite.text_color = 0x3e
+	else
+		x,y = image_print(scroll_img, "Abruptly, the portal quivers and begins to sink ", 7, 303, 7, 10, 0x3e)
+		image_print(scroll_img, "into the ground.  Its crimson light wanes!", 7, 303, x, y, 0x3e)
+	end
 	scroll.image = scroll_img
 	scroll.x = 0x1
 	scroll.y = 0xa0
-	
+
 	if stones_shake_moongate() == true then
 		return false
 	end
-	
+
 	scroll_img = image_load("blocks.shp", 1)
-	x,y = image_print(scroll_img, "Desperation makes the decision an easy one.", 7, 303, 22, 14, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 1, 0xa0 + 14, true)
+		ko_text_sprite.text = "절박함이 선택을 결단으로 바꾼다."
+		ko_text_sprite.text_color = 0x3e
+	else
+		x,y = image_print(scroll_img, "Desperation makes the decision an easy one.", 7, 303, 22, 14, 0x3e)
+	end
 	scroll.image = scroll_img
 	scroll.x = 0x1
 	scroll.y = 0xa0
@@ -1027,6 +1147,7 @@ local function stones_sequence()
 end
 
 local function play()
+init_korean()
 mouse_cursor_set_pointer(0)
 mouse_cursor_visible(false)
 load_images("intro_1.shp")
@@ -2346,14 +2467,28 @@ local function intro()
 	
 	local scroll_img = image_load("blocks.shp", 2)
 	local scroll = sprite_new(scroll_img, 1, 0x98, true)
-	
-	image_print(scroll_img, "Dazed, you emerge from the portal to find yourself standing on a desolate plain. Nearby rests a massive rune-struck altar, shrouded in moonlit fog.", 7, 308, 8, 8, 0x3e)
+	local ko_text_sprite = nil
+
+	if korean_mode then
+		ko_text_sprite = sprite_new(nil, 8, 0x98 + 8, true)
+		ko_text_sprite.text = "정신이 혼미한 채 관문을 빠져나오자, 그대는 황량한 평원에 서 있음을 깨닫는다. 근처에는 달빛 안개에 휩싸인, 룬이 새겨진 거대한 제단이 놓여 있다."
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "Dazed, you emerge from the portal to find yourself standing on a desolate plain. Nearby rests a massive rune-struck altar, shrouded in moonlit fog.", 7, 308, 8, 8, 0x3e)
+	end
 
 	if should_exit(wait_for_input()) == true then intro_exit() return end
 	
 	scroll_img = image_load("blocks.shp", 2)
 	scroll.image = scroll_img
-	image_print(scroll_img, "At first the plain is still. Then a hundred voices raise a slow, deathlike song, drawing closer and closer with each passing moment. You are seized by an urge to run...", 7, 308, 8, 8, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 8, 0x98 + 8, true)
+		ko_text_sprite.text = "평원은 적막에 잠겨 있다. 이윽고 수백 명의 목소리가 장례곡 같은 느린 노래를 부르며 한 걸음씩 다가온다. 그대는 도망치고 싶은 충동에 휩싸이지만..."
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "At first the plain is still. Then a hundred voices raise a slow, deathlike song, drawing closer and closer with each passing moment. You are seized by an urge to run...", 7, 308, 8, 8, 0x3e)
+	end
 
 	if intro_wait() == false then return end
 	
@@ -2398,23 +2533,44 @@ local function intro()
 	scroll.x = 0x21
 	scroll.y = 0x9d
 	scroll.visible = true
-	image_print(scroll_img, "...but you have no place to go.", 7, 308, 35, 8, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 0x21, 0x9d + 8, true)
+		ko_text_sprite.text = "...갈 곳이 없다."
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "...but you have no place to go.", 7, 308, 35, 8, 0x3e)
+	end
 
 	if intro_wait() == false then return end
-	
+
 	scroll_img = image_load("blocks.shp", 2)
 	scroll.image = scroll_img
 	scroll.x = 0x1
 	scroll.y = 0x98
-	image_print(scroll_img, "Before you can offer a protest to the creatures who surround you, scaly claws grasp your body.", 7, 308, 8, 12, 0x3e)
-	
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 8, 0x98 + 12, true)
+		ko_text_sprite.text = "그대를 에워싼 생물들에게 저항하기도 전에, 비늘 돋은 발톱들이 그대의 몸을 낚아챈다."
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "Before you can offer a protest to the creatures who surround you, scaly claws grasp your body.", 7, 308, 8, 12, 0x3e)
+	end
+
 	if intro_wait() == false then return end
 
 	scroll_img = image_load("blocks.shp", 1)
 	scroll.image = scroll_img
 	scroll.x = 0x1
 	scroll.y = 0xa0
-	image_print(scroll_img, "With unearthly strength, the monsters bind you to the altar stone!", 7, 308, 11, 10, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 11, 0xa0 + 10, true)
+		ko_text_sprite.text = "괴물들은 초자연적인 힘으로 그대를 제단 바위 위에 묶어버린다!"
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "With unearthly strength, the monsters bind you to the altar stone!", 7, 308, 11, 10, 0x3e)
+	end
 	
 	avatar.visible = true
 	ropes.visible = true
@@ -2477,7 +2633,14 @@ local function intro()
 	scroll.x = 0x1
 	scroll.y = 0xa0
 	scroll.visible = true
-	image_print(scroll_img, "Kneeling, the hordes sway and chant as a stately winged nightmare steps forward.", 32, 262, 33, 10, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 33, 0xa0 + 10, true)
+		ko_text_sprite.text = "무릎을 꿇은 무리들이 몸을 흔들며 영창을 외우자, 위엄 있는 날개 달린 악몽 같은 존재가 앞으로 걸어 나온다."
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "Kneeling, the hordes sway and chant as a stately winged nightmare steps forward.", 32, 262, 33, 10, 0x3e)
+	end
 
 	local input = nil
 	local left_idx = 1
@@ -2502,7 +2665,14 @@ local function intro()
 	scroll.x = 0x1
 	scroll.y = 0x98
 	scroll.visible = true
-	image_print(scroll_img, "The leader unwraps a velvet covered, brass-bound book and recites from it in a formal, stilted tongue.", 7, 308, 8, 12, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 8, 0x98 + 12, true)
+		ko_text_sprite.text = "그 지도자는 벨벳에 싸인 구리 장식의 책을 펼치더니, 격식 있고 딱딱한 말투로 무언가를 낭독한다."
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "The leader unwraps a velvet covered, brass-bound book and recites from it in a formal, stilted tongue.", 7, 308, 8, 12, 0x3e)
+	end
 
 	input = nil
 	while input == nil do
@@ -2522,7 +2692,14 @@ local function intro()
 
 	scroll_img = image_load("blocks.shp", 2)
 	scroll.image = scroll_img
-	image_print(scroll_img, "Shouts and jeers explode from the masses as the priest slams shut the book. In his hand a malignant dagger drips with moonlight.", 7, 308, 8, 12, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 8, 0x98 + 12, true)
+		ko_text_sprite.text = "사제가 책을 덮자마자 군중 사이에서 함성과 조롱이 터져 나온다. 그의 손에 든 불길한 단검에는 차가운 달빛이 맺혀 흐른다."
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "Shouts and jeers explode from the masses as the priest slams shut the book. In his hand a malignant dagger drips with moonlight.", 7, 308, 8, 12, 0x3e)
+	end
 
 	input = nil
 	while input == nil do
@@ -2544,7 +2721,14 @@ local function intro()
 	scroll.image = scroll_img
 	scroll.x = 0x1
 	scroll.y = 0xa0
-	image_print(scroll_img, "You close your eyes. A dying scream, certainly your own, curdles the air.", 80, 228, 16, 10, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 16, 0xa0 + 10, true)
+		ko_text_sprite.text = "그대는 눈을 감는다. 그대의 것으로 분명한 단말마의 비명이 공기를 얼어붙게 만든다."
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "You close your eyes. A dying scream, certainly your own, curdles the air.", 80, 228, 16, 10, 0x3e)
+	end
 	
 	moongate.visible = true
 	g_pal_counter = 0
@@ -2592,38 +2776,66 @@ local function intro()
 	scroll.x = 0x1
 	scroll.y = 0x50
 	scroll.visible = true
-	image_print(scroll_img, "Catcalls, the dagger, a scream, Death....", 7, 308, 39, 14, 0x3e)
-	
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 39, 0x50 + 14, true)
+		ko_text_sprite.text = "야유, 단검, 비명, 그리고 죽음...."
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "Catcalls, the dagger, a scream, Death....", 7, 308, 39, 14, 0x3e)
+	end
+
 	fade_in()
-	
+
 	if intro_wait() == false then return end
 
 	fade_out()
-	
+
 	scroll_img = image_load("blocks.shp", 1)
 	scroll.image = scroll_img
-	image_print(scroll_img, "Pandemonium. Shrieks of rage, of terror.", 7, 308, 34, 14, 0x3e)
-		
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 34, 0x50 + 14, true)
+		ko_text_sprite.text = "대혼란. 분노와 공포의 외침."
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "Pandemonium. Shrieks of rage, of terror.", 7, 308, 34, 14, 0x3e)
+	end
+
 	fade_in()
-	
+
 	if intro_wait() == false then return end
 
 	fade_out()
-	
+
 	scroll_img = image_load("blocks.shp", 1)
 	scroll.image = scroll_img
-	image_print(scroll_img, "From the inevitable, an impossibility emerges.", 7, 308, 16, 14, 0x3e)
-	
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 16, 0x50 + 14, true)
+		ko_text_sprite.text = "피할 수 없는 파멸 속에서, 불가능한 구원이 나타난다."
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "From the inevitable, an impossibility emerges.", 7, 308, 16, 14, 0x3e)
+	end
+
 	fade_in()
-	
+
 	if intro_wait() == false then return end
-	
+
 	fade_out()
-	
+
 	scroll_img = image_load("blocks.shp", 1)
 	scroll.image = scroll_img
-	image_print(scroll_img, "You are still alive.", 7, 308, 101, 14, 0x3e)
-		
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 101, 0x50 + 14, true)
+		ko_text_sprite.text = "그대는 아직 살아 있다."
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "You are still alive.", 7, 308, 101, 14, 0x3e)
+	end
+
 	fade_in()
 		
 	if intro_wait() == false then return end
@@ -2658,7 +2870,14 @@ local function intro()
 	scroll.x = 0x1
 	scroll.y = 0x98
 	scroll.visible = true
-	image_print(scroll_img, "Silent red light fills the darkness. There is the wooden clack of a crossbow, and a violet- fletched rose blooms in the priest\39s barren forehead.", 7, 308, 8, 8, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 8, 0x98 + 8, true)
+		ko_text_sprite.text = "고요한 붉은 빛이 어둠을 채운다. 석궁의 기계음이 들리고, 사제의 미간에 보랏빛 깃이 달린 장미 한 송이가 피어난다."
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "Silent red light fills the darkness. There is the wooden clack of a crossbow, and a violet- fletched rose blooms in the priest\39s barren forehead.", 7, 308, 8, 8, 0x3e)
+	end
 	
 	input = nil
 	while input == nil do
@@ -2763,7 +2982,14 @@ local function intro()
 	scroll.x = 0x1
 	scroll.y = 0x98
 	scroll.visible = true
-	image_print(scroll_img, "Friendly faces vault from a newborn moongate, while a rain of quarrels holds the furious mob at bay. The knight Dupre\39s sword flashes twice in the darkness, slicing away your bonds!", 7, 308, 8, 8, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 8, 0x98 + 8, true)
+		ko_text_sprite.text = "새로 생긴 문게이트에서 친숙한 얼굴들이 뛰어오고, 화살 비가 쏟아져 분노한 무리들을 저지한다. 기사 듀프레의 검이 어둠 속에서 두 번 번뜩이며 그대를 묶은 밧줄을 끊어낸다!"
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "Friendly faces vault from a newborn moongate, while a rain of quarrels holds the furious mob at bay. The knight Dupre\39s sword flashes twice in the darkness, slicing away your bonds!", 7, 308, 8, 8, 0x3e)
+	end
 		
 	input = nil
 	while input == nil do
@@ -2819,7 +3045,14 @@ local function intro()
 	scroll_img = image_load("blocks.shp", 2)
 	scroll.image = scroll_img
 	scroll.visible = true
-	image_print(scroll_img, "\"Quickly, old friend! To the gate!\127 Accompanied by the swordsman Shamino and a grinning, crossbow-wielding Iolo the Bard, Dupre thrusts a spare sword into your hand.", 7, 308, 8, 8, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 8, 0x98 + 8, true)
+		ko_text_sprite.text = "\"서두르게, 오랜 친구여! 관문으로!\" 검사 샤미노와 미소를 짓고 있는 음유시인 이올로가 석궁을 든 채 엄호하고, 듀프레가 그대의 손에 여분의 검 한 자루를 쥐여준다."
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "\"Quickly, old friend! To the gate!\127 Accompanied by the swordsman Shamino and a grinning, crossbow-wielding Iolo the Bard, Dupre thrusts a spare sword into your hand.", 7, 308, 8, 8, 0x3e)
+	end
 		
 	input = nil
 	while input == nil do
@@ -2839,7 +3072,14 @@ local function intro()
 
 	scroll_img = image_load("blocks.shp", 2)
 	scroll.image = scroll_img
-	image_print(scroll_img, "Snatching the fallen priest\39s book, Iolo dives into the redness with Shamino at his heels. The howling throng surges forward, all of one terrible mind.", 7, 308, 8, 8, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 8, 0x98 + 8, true)
+		ko_text_sprite.text = "쓰러진 사제의 책을 낚아챈 이올로가 붉은 관문 속으로 뛰어들고 샤미노가 그 뒤를 따른다. 울부짖는 군중들이 하나의 끔찍한 의지를 품고 파도처럼 몰려든다."
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "Snatching the fallen priest\39s book, Iolo dives into the redness with Shamino at his heels. The howling throng surges forward, all of one terrible mind.", 7, 308, 8, 8, 0x3e)
+	end
 	
 	input = nil
 	while input == nil do
@@ -2861,7 +3101,14 @@ local function intro()
 	scroll.image = scroll_img
 	scroll.x = 0x1
 	scroll.y = 0xa0
-	image_print(scroll_img, "The gate wanes rapidly as you and Dupre charge through...", 130, 178, 12, 10, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 12, 0xa0 + 10, true)
+		ko_text_sprite.text = "그대와 듀프레가 뛰어들자 관문의 빛이 빠르게 사라져 가고..."
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "The gate wanes rapidly as you and Dupre charge through...", 130, 178, 12, 10, 0x3e)
+	end
 
 	for i=0,150,1 do
 		left_idx = intro_sway_gargs(gargs_left, left_idx, false)
@@ -2886,7 +3133,14 @@ local function intro()
 	scroll.image = scroll_img
 	scroll.x = 0x21
 	scroll.y = 0x9d
-	image_print(scroll_img, "...but not rapidly enough.", 7, 308, 50, 8, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 0x21, 0x9d + 8, true)
+		ko_text_sprite.text = "...하지만 충분히 빠르지는 않았다."
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "...but not rapidly enough.", 7, 308, 50, 8, 0x3e)
+	end
 
 	input = nil
 	while input == nil do
@@ -2907,7 +3161,14 @@ local function intro()
 	scroll.image = scroll_img
 	scroll.x = 0x1
 	scroll.y = 0x98
-	image_print(scroll_img, "From the mob\39s vanguard, three of the abominations scramble toward the gate. Driven by fury, the creatures hurl their bodies into the portal\39s last handspan of light!", 7, 308, 8, 8, 0x3e)
+	if korean_mode then
+		if ko_text_sprite then ko_text_sprite.visible = false end
+		ko_text_sprite = sprite_new(nil, 8, 0x98 + 8, true)
+		ko_text_sprite.text = "군중의 선봉에서 세 마리의 흉측한 괴물들이 관문을 향해 기어오른다. 광기에 사로잡힌 그 생물들은 관문의 마지막 빛 줄기 속으로 자신들의 몸을 던진다!"
+		ko_text_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "From the mob\39s vanguard, three of the abominations scramble toward the gate. Driven by fury, the creatures hurl their bodies into the portal\39s last handspan of light!", 7, 308, 8, 8, 0x3e)
+	end
 
 	input = nil
 	while input == nil do
