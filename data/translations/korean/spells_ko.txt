@@ -1,0 +1,99 @@
+# Ultima 6 Spell Name Translations (Korean)
+# Format: SPELL_NUM|ENGLISH|KOREAN
+# SPELL_NUM = (circle-1)*16 + (spell_index-1)
+
+# Circle 1 (0-9)
+0|Create Food|식량 생성
+1|Detect Magic|마법 감지
+2|Detect Trap|함정 감지
+3|Dispel Magic|마법 해제
+4|Douse|불 끄기
+5|Harm|해침
+6|Heal|치유
+7|Help|도움
+8|Ignite|점화
+9|Light|빛
+
+# Circle 2 (16-25)
+16|Infravision|열 감지
+17|Magic Arrow|마법 화살
+18|Poison|독
+19|Reappear|재출현
+20|Sleep|수면
+21|Telekinesis|염력
+22|Trap|함정
+23|Unlock Magic|마법 해제
+24|Untrap|함정 해제
+25|Vanish|소멸
+
+# Circle 3 (32-41)
+32|Curse|저주
+33|Dispel Field|장막 해제
+34|Fireball|화염구
+35|Great Light|대광명
+36|Lock|잠금
+37|Mass Awaken|대량 각성
+38|Mass Sleep|대량 수면
+39|Peer|투시
+40|Protection|보호
+41|Repel Undead|언데드 퇴치
+
+# Circle 4 (48-57)
+48|Animate|생명 주입
+49|Conjure|소환
+50|Disable|무력화
+51|Fire Field|화염 장막
+52|Great Heal|대치유
+53|Locate|위치 파악
+54|Mass Dispel|대량 해제
+55|Poison Field|독 장막
+56|Sleep Field|수면 장막
+57|Wind Change|바람 변경
+
+# Circle 5 (64-73)
+64|Energy Field|에너지 장막
+65|Explosion|폭발
+66|Insect Swarm|곤충 떼
+67|Invisibility|투명
+68|Lightning|번개
+69|Paralyze|마비
+70|Pickpocket|소매치기
+71|Reveal|발견
+72|Seance|강령술
+73|X-ray|투시
+
+# Circle 6 (80-89)
+80|Charm|매혹
+81|Clone|복제
+82|Confuse|혼란
+83|Flame Wind|화염 바람
+84|Hail Storm|우박 폭풍
+85|Mass Protect|대량 보호
+86|Negate Magic|마법 무효화
+87|Poison Wind|독 바람
+88|Replicate|복제
+89|Web|거미줄
+
+# Circle 7 (96-105)
+96|Chain Bolt|연쇄 번개
+97|Enchant|마법 부여
+98|Energy Wind|에너지 바람
+99|Fear|공포
+100|Gate Travel|관문 이동
+101|Kill|죽음
+102|Mass Curse|대량 저주
+103|Mass Invis|대량 투명
+104|Wing Strike|날개 공격
+105|Wizard Eye|마법사의 눈
+
+# Circle 8 (112-121)
+112|Armageddon|아마겟돈
+113|Death Wind|죽음의 바람
+114|Eclipse|일식
+115|Mass Charm|대량 매혹
+116|Mass Kill|대량 살상
+117|Resurrect|부활
+118|Slime|슬라임
+119|Summon|소환
+120|Time Stop|시간 정지
+121|Tremor|진동

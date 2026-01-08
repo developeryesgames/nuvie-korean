@@ -1,4 +1,4 @@
-# UI Text Translations - Korean
+﻿# UI Text Translations - Korean
 # Format: ENGLISH|KOREAN
 
 # Command Bar Actions
@@ -22,14 +22,14 @@ No|아니오
 Cancel|취소
 OK|확인
 Done|완료
-Exit|나가기
+Exit|종료
 
 # Inventory
-Inventory|소지품
+Inventory|인벤토리
 Weight|무게
-Gold|금화
+Gold|금
 Food|식량
-Armor|방어력
+Armor|방어구
 
 # Stats
 Strength|힘
@@ -38,7 +38,7 @@ Intelligence|지능
 Level|레벨
 Experience|경험치
 Health|체력
-Magic|마력
+Magic|마나
 
 # Directions
 North|북
@@ -64,19 +64,18 @@ Dead|사망
 Flee|도주
 
 # Messages
-You see|당신은 본다
-You get|당신은 집었다
-You drop|당신은 버렸다
-You use|당신은 사용했다
-Nothing|아무것도 없다
-Locked|잠겨있다
-Unlocked|열렸다
+You see|그대가 보기에
+You get|그대는 얻는다
+You drop|그대는 버린다
+You use|그대는 사용한다
+Nothing|아무것도 없음
+Locked|잠김
+Unlocked|잠금 해제
 
-# Character Names (Party Members)
+# Character Names (Party Members) - 파티원
 Avatar|아바타
-Efood|구명식량
 Shamino|샤미노
-Iolo|아이올로
+Iolo|이올로
 Dupre|듀프레
 Jaana|자나
 Mariah|마리아
@@ -90,11 +89,233 @@ Seggallion|세갈리온
 Leodon|레오돈
 Beh Lem|베렘
 
-# NPCs
+# Major NPCs - 주요 NPC
 Lord British|로드 브리티시
 Nystul|니스툴
 Chuckles|처클스
 Sherry|셰리
+Tholden|톨덴
+Dr. Cat|닥터 캣
+Captain Fox|폭스 선장
+Captain John|존 선장
+Smith|스미스
+
+# Britain NPCs - 브리튼
+Kenneth|케네스
+Nan|난
+Ariana|아리아나
+Matt|매트
+Anya|아냐
+Gwenneth|그웨네스
+Peyton|페이튼
+Max|맥스
+Lazeena|라지나
+Fyodor|표도르
+Daver|데이버
+Efram|에프람
+Rufus|루퍼스
+Nema|네마
+Cullen|컬렌
+Tiberius|티베리우스
+Wilbur|윌버
+Arty|아티
+
+# Yew NPCs - 유
+Lynn|린
+Terri|테리
+Kytyn|키틴
+Maldric|말드릭
+Thariand|타리안드
+Ephemerides|에페메리데스
+Xiao|시아오
+Dargoth|다르고스
+Rob|롭
+Aganar|아가나르
+Manrel|만렐
+Penumbra|페넘브라
+Derydlus|데리들루스
+Zellivan|젤리반
+Nicodemus|니코데무스
+Boskin|보스킨
+Lenora|레노라
+
+# Minoc NPCs - 미녹
+Selganor|셀가노르
+Tara|타라
+Michelle|미셸
+Aaron|아론
+Dale|데일
+James|제임스
+Trebor|트레버
+Troy|트로이
+Doris|도리스
+Sandy|샌디
+Whitsaber|휘트세이버
+Lawrence|로렌스
+Isabella|이사벨라
+
+# Trinsic NPCs - 트린식
+Harold|해롤드
+Brandon|브랜든
+Immanuelle|임마누엘레
+Tobatha|토바사
+Trenton|트렌튼
+Gideon|기드온
+Stivius|스티비우스
+Marta|마르타
+
+# Skara Brae NPCs - 스카라 브래
+Yorl|요를
+Dezana|데자나
+Horance|호랜스
+Marney|마니
+Michael|마이클
+Quenton|퀜튼
+
+# Jhelom NPCs - 젤롬
+Antonio|안토니오
+William|윌리엄
+Conor|코너
+Charlotte|샬롯
+Dunbar|던바
+Aurendir|아우렌디르
+Patrick|패트릭
+
+# Moonglow NPCs - 문글로우
+Thindle|신들
+Mortude|모르투드
+Marissa|마리사
+Arbeth|아베스
+Grison|그리손
+Dorin|도린
+Merideth|메리데스
+Hendle|헨들
+Ubermon|우버몬
+Timothy|티모시
+
+# Cove NPCs - 코브
+Nomaan|노만
+Stelnar|스텔나르
+Van Kellian|반 켈리안
+Heftimus|헤프티무스
+Lyssandra|리산드라
+Culham|컬햄
+Jerris|제리스
+Arvin|아빈
+Martin|마틴
+Peer|피어
+Ben|벤
+Le'nard|레나드
+Andrea|안드레아
+Utomo|우토모
+
+# Paws NPCs - 포즈
+Elad|엘라드
+Leonna|레오나
+Budo|부도
+Homer|호머
+Johann|요한
+Shawn|숀
+
+# Buccaneer's Den NPCs - 해적 소굴
+Petroph|페트로프
+Enrik|엔릭
+Fentrissa|펜트리사
+Gilron|길론
+Artegal|아테갈
+Gertan|게르탄
+Ed|에드
+Sasha|사샤
+Ahrmaand|아르만드
+
+# New Magincia NPCs - 뉴 마진시아
+Rudyom|루디옴
+Sutek|수텍
+Pushme Pullyu|푸쉬미 풀유
+Gorn|고른
+Zoltan|졸탄
+Karina|카리나
+Kador|케이더
+Taynith|테이니스
+Arturos|아투로스
+Andreas|안드레아스
+Wanda|완다
+
+# Empath Abbey NPCs - 공감의 수도원
+Sin'Vraal|신브랄
+Bonn|본
+Papa|파파
+Mama|마마
+Myles|마일스
+Glen|글렌
+
+# Serpent's Hold NPCs - 뱀의 요새
+Sylaina|실라이나
+Stephanie|스테파니
+Faren|파렌
+Zeke|지크
+Eckhart|에크하르트
+Gherick|게릭
+Shubin|슈빈
+Amanda|아만다
+Caradon|카라돈
+Morchella|모르첼라
+de Hugh|드 휴
+Loubet|루베
+Koranada|코라나다
+
+# Other NPCs - 기타 NPC
+Simon|사이먼
+Tessa|테사
+Finn|핀
+Bolesh|볼레쉬
+Pridgarm|프리드가름
+
+# Gargoyle NPCs - 가고일
+Caretaker|관리자
+Draxinusom|드락시누솜
+Naxatilor|낙사틸로르
+Valkadesh|발카데쉬
+Lensmaker|렌즈공
+Snake Charmer|뱀 조련사
+Goodscrafter|물건공
+Healer|치료사
+Weaponsmith|무기장인
+Foodmaker|음식공
+
+# Farmers - 농부
+Farmer Nash|농부 내쉬
+Farmer Krill|농부 크릴
+
+# Thieves - 도둑
+Mole|두더지
+Sionnach|시오나흐
+Mandrake|맨드레이크
+Sinjen|신젠
+Phoenix|피닉스
+
+# Sea Captain - 선장
+Daros|다로스
+Ybarra|이바라
+
+# Others
+Linda|린다
+
+# Shrine spirits - 성지 정령
+Mondain|몬데인
+Minax|미낙스
+Exodus|엑소더스
+Honesty|정직
+Compassion|자비
+Valor|용맹
+Justice|정의
+Sacrifice|희생
+Honor|명예
+Spirituality|영성
+Humility|겸손
+Singularity|단일성
+Wisp|위습
+Guard|경비병
 
 # Monsters
 rat|쥐
@@ -116,26 +337,33 @@ hydra|히드라
 cyclops|사이클롭스
 
 # Common Items (for look_obj fallback)
-carpet|양탄자
+carpet|카펫
 chair|의자
 table|탁자
 bed|침대
 door|문
 chest|상자
 barrel|통
-crate|상자
+crate|나무상자
 torch|횃불
-candle|초
+torches|횃불
+candle|양초
 book|책
 scroll|두루마리
 key|열쇠
 gold|금화
+gold coin|금화
+gold coins|금화
+gold nugget|금덩이
+gold nuggets|금덩이
 food|음식
 bread|빵
+loaves of bread|빵 덩어리
 meat|고기
-fish|물고기
+portions of meat|고기 조각
+fish|생선
 ale|맥주
-wine|와인
+wine|포도주
 water|물
 potion|물약
 sword|검
@@ -145,28 +373,35 @@ axe|도끼
 bow|활
 crossbow|석궁
 arrow|화살
+arrows|화살
 bolt|볼트
+bolts|볼트
 shield|방패
 helm|투구
 armor|갑옷
-boots|부츠
+armour|갑옷
+boots|장화
 gloves|장갑
 ring|반지
 amulet|부적
 staff|지팡이
 wand|마법봉
+fire wand|불 지팡이
+lightning wand|번개 지팡이
 orb|오브
 gem|보석
+gems|보석
 mirror|거울
 clock|시계
+desk|책상
 bag|가방
 backpack|배낭
 spellbook|마법서
-reagent|마법재료
+reagent|마법 재료
 stone|돌
 rock|바위
 tree|나무
-grass|잔디
+grass|풀
 wall|벽
 floor|바닥
 stairs|계단
@@ -180,3 +415,375 @@ bones|뼈
 skull|해골
 corpse|시체
 blood|피
+boomerang|부메랑
+flask of oil|기름통
+flasks of oil|기름통
+
+# Reagents (magic materials)
+black pearl|검은 진주
+black pearls|검은 진주
+blood moss|피 이끼
+bits of blood moss|피 이끼 조각
+garlic|마늘
+bulbs of garlic|마늘
+ginseng|인삼
+ginseng root|인삼 뿌리
+ginseng roots|인삼 뿌리
+mandrake root|만드레이크 뿌리
+mandrake roots|만드레이크 뿌리
+nightshade|독버섯
+nightshade mushroom|독버섯
+nightshade mushrooms|독버섯
+spider silk|거미줄
+spidersilk|거미줄
+strands of spidersilk|거미줄
+sulfurous ash|유황재
+bits of sulfurous ash|유황재 조각
+
+# Rings
+invisibility ring|투명의 반지
+protection ring|보호의 반지
+regeneration ring|재생의 반지
+
+# Other items
+sextant|육분의
+moonstone|문스톤
+Orb of the Moons|달의 오브
+lock pick|자물쇠 따개
+lock picks|자물쇠 따개
+ankh|앙크
+ankh amulet|앙크 부적
+Move-|이동-
+what?|무엇?
+
+nothing|아무것도 없음
+nothing\!|아무것도 없음\!
+nothing.|아무것도 없음.
+On what: |무엇에: 
+On Whom: |누구에게: 
+Searching here, you find |수색하니  
+
+# System Messages
+Not in vehicle.\n|이동 수단에 타고 있지 않습니다.\n
+Talking to yourself?\n|혼잣말인가요?\n
+Not on screen.\n|화면에 없습니다.\n
+Not in solo mode.\n|혼자 모드가 아닙니다.\n
+Not in solo mode.\n\n|혼자 모드가 아닙니다.\n\n
+No response\n|응답 없음\n
+Funny, no response.\n|이상하군요, 응답이 없습니다.\n
+pass.\n|통과.\n
+Not usable\n|사용할 수 없음\n
+\nNot usable\n|\n사용할 수 없습니다\n
+Out of range!\n|범위를 벗어났습니다!\n
+\nOut of range!\n|\n범위를 벗어났습니다!\n
+\n\nOut of range!|\n\n범위를 벗어났습니다!
+\n\nOut of range!\n|\n\n범위를 벗어났습니다!\n
+Can't reach it|손이 닿지 않습니다
+\nCan't reach it\n|\n손이 닿지 않습니다\n
+\n\nCan't reach it|\n\n손이 닿지 않습니다
+Blocked.\n|막혔습니다.\n
+Blocked.\n\n|막혔습니다.\n\n
+\n\nBlocked!|\n\n막혔습니다!
+Not possible\n|불가능합니다\n
+Not possible\n\n|불가능합니다\n\n
+\nNot possible!\n\n|\n불가능합니다!\n\n
+Not possible!\n\n|불가능합니다!\n\n
+Failed.\n\n|실패했습니다.\n\n
+\nAn item can't be placed inside itself!\n\n|\n아이템은 자기 자신 안에 넣을 수 없습니다!\n\n
+\nYou can't do that!\n\n|\n그렇게 할 수 없습니다!\n\n
+\nHow can a container go into itself!\n\n|\n용기가 자기 자신 안에 들어갈 수 없습니다!\n\n
+\nnot a container\n\n|\n용기가 아닙니다\n\n
+\nOnly moonstones can go into the vortex cube.\n\n|\n문스톤만 소용돌이 큐브에 넣을 수 있습니다.\n\n
+\nThe spellbook already has this spell.\n\n|\n마법서에 이미 이 주문이 있습니다.\n\n
+\nOnly spells can go into the spellbook.\n\n|\n주문만 마법서에 넣을 수 있습니다.\n\n
+Not in combat mode!\n\n|전투 모드가 아닙니다!\n\n
+Not in combat mode!\n|전투 모드가 아닙니다!\n
+Solo mode\n\n|혼자 모드\n\n
+Party mode\n|파티 모드\n
+Not everyone is here.\n|모두 여기 있지 않습니다.\n
+\nNot while using control cheat!\n\n|\n컨트롤 치트 사용 중에는 안 됩니다!\n\n
+Begin combat!\n\n|전투 시작!\n\n
+Break off combat!\n\n|전투 종료!\n\n
+\nToo heavy!\n|\n너무 무겁습니다!\n
+\nCan't be readied!\n|\n준비할 수 없습니다!\n
+\nNo place to put!\n|\n놓을 곳이 없습니다!\n
+How many? |몇 개?
+\nHow many hours? |\n몇 시간?
+Who will guard? |누가 지킵니까? 
+none\n|없음\n
+nobody.\n|아무도 없음.\n
+nowhere.\n|아무데도 없음.\n
+Not while aboard balloon!\n\n|열기구 탑승 중에는 불가합니다!\n\n
+Not while aboard ship!\n\n|배 탑승 중에는 불가합니다!\n\n
+\n\nOnly within the party!|\n\n파티 내에서만 가능합니다!
+Location:|위치:
+Location? |위치? 
+Npc number? |NPC 번호? 
+Object number? |오브젝트 번호? 
+
+# System Messages (usecode)
+\nopened!\n|\n열림!\n
+\nclosed!\n|\n닫힘!\n
+\nlocked\n|\n잠겨 있음\n
+\nunlocked\n|\n잠금 해제\n
+\nmagically locked\n|\n마법으로 잠겨 있음\n
+\nNot now!\n|\n지금은 안 됩니다!\n
+ is lit.\n|에 불이 켜졌다.\n
+ is doused.\n|의 불이 꺼졌다.\n
+\nYou drink it.\n|\n마셨다.\n
+\nYou eat the food.\n|\n음식을 먹었다.\n
+\nCan\'t (Un)lock an opened door\n|\n열린 문은 잠금 해제 불가\n
+On whom: |누구에게:
+
+# System Messages (usecode)
+\nCan't (Un)lock an opened door\n|\n열려 있는 문은 (잠금) 해제할 수 없습니다\n
+
+# Search Result Items
+loaves of bread|빵 덩어리
+loaves of bread |빵 덩어리 
+Portions of meat|고기 조각
+Portions of meat |고기 조각 
+portions of meat|고기 조각
+portions of meat |고기 조각 
+and torches|그리고 횃불
+and torches |그리고 횃불 
+torches|횃불
+torches |횃불 
+
+
+
+
+
+
+
+
+# UseCode Messages (additional)
+\nOut of range.\n|\n범위를 벗어났습니다.\n
+Out of range.\n|범위를 벗어났습니다.\n
+\nBlocked.\n|\n막혔습니다.\n
+Blocked\n|막혔습니다\n
+\nNot readied.\n|\n준비되지 않았습니다.\n
+Not readied.\n|준비되지 않았습니다.\n
+\nDone!\n|\n완료!\n
+Done!\n|완료!\n
+\nNo effect!\n|\n효과 없음!\n
+\nWrong mantra!\n|\n잘못된 만트라!\n
+\nThe Codex has vanished!\n|\n코덱스가 사라졌습니다!\n
+\nNo Effect!\n|\n효과 없음!\n
+\nOpen the drawbridge.\n|\n도개교를 올립니다.\n
+\nClose the drawbridge.\n|\n도개교를 내립니다.\n
+Cannot be buried here!\n|여기에는 묻을 수 없습니다!\n
+buried.\n|묻었습니다.\n
+\nYou can't figure out how to use it.\n|\n어떻게 사용하는지 알 수 없습니다.\n
+Failed\n|실패\n
+Failed.\n|실패했습니다.\n
+a red moon gate appears.\n|붉은 문게이트가 나타났다.\n
+\nYou need to stand next to water.\n|\n물가에 서 있어야 합니다.\n
+\nGot it, but can't carry it.\n|\n얻었지만 들고 갈 수 없습니다.\n
+\nGot it!\n|\n얻었다!\n
+\nDidn't get a fish.\n|\n물고기를 잡지 못했습니다.\n
+You dig a hole.\n|구멍을 판다.\n
+No Effect.\n|효과 없음.\n
+You find a water fountain.\n|물 분수를 발견했다.\n
+You find a gold nugget.\n|금덩이를 발견했다.\n
+Make a wish? |소원을 빌까? 
+
+Wish for: |소원: 
+
+\nFailed\n\n|\n실패\n\n
+\nNo effect\n\n|\n효과 없음\n\n
+\nYou got food|\n식량을 얻었다
+, but you can't carry it.\n\n|, 하지만 들고 갈 수 없습니다.\n\n
+.\n\n|.\n\n
+\nSqueak!\n|\n끼익!\n
+Enter degrees followed by N, S, E or W.\n\nAt latitude=|N, S, E, W를 붙여 각도를 입력하세요.\n\n위도=
+  longitude=|  경도=
+\nDone\n\n|\n완료\n\n
+\nKey broke.\n|\n열쇠가 부러졌습니다.\n
+\nunlocked!\n|\n잠금 해제!\n
+\nlocked!\n|\n잠김!\n
+\nOnly next to land.\n|\n육지 옆에서만 가능합니다.\n
+\nYou must place it in water first.\n|\n먼저 물에 넣어야 합니다.\n
+\nShip not usable\n|\n배는 사용할 수 없습니다\n
+\nA deed is required.\n|\n증서가 필요합니다.\n
+Missing a mammoth silk bag.\n|매머드 실크 자루가 없습니다.\n
+Missing a balloon basket.\n|열기구 바구니가 없습니다.\n
+Missing a cauldron.\n|가마솥이 없습니다.\n
+Missing a rope.\n|밧줄이 없습니다.\n
+\nYou need an empty bucket.\n|\n빈 양동이가 필요합니다.\n
+\nYou need a bucket.\n|\n양동이가 필요합니다.\n
+\nDone\n|\n완료\n
+\nYou need some milk.\n|\n우유가 필요합니다.\n
+\nYou need an empty honey jar.\n|\n빈 꿀병이 필요합니다.\n
+\nYou need a honey jar.\n|\n꿀병이 필요합니다.\n
+Sherry says: "Eeek!!! I'm afraid of horses!"\n|셰리가 말한다: "꺅!!! 난 말이 무서워!"\n
+BehLem says: "Horses are for food!"\n|베렘이 말한다: "말은 먹는 거야!"\n
+You're already on a horse!\n|이미 말에 타고 있습니다!\n
+\nHorse not boardable!\n|\n말에 탈 수 없습니다!\n
+\nYou feel a breeze.\n|\n바람이 느껴집니다.\n
+\nNo free hand to hold the torch.\n|\n횃불을 들 빈 손이 없습니다.\n
+\nA torch burned out.\n|\n횃불이 꺼졌습니다.\n
+\nTorch is lit.\n|\n횃불에 불이 켜졌습니다.\n
+\nMagical energy prevents you from removing the amulet.\n|\n마법 에너지가 부적을 벗는 것을 막습니다.\n
+You study the scroll!\n|두루마리를 읽었다!\n
+\nThe flame of |\n불꽃: 
+truth|진실
+love|사랑
+courage|용기
+.\n|.\n
+
+
+To north.|북쪽으로.
+
+To south.|남쪽으로.
+To east.|동쪽으로.
+To west.|서쪽으로.
+
+
+To North,|북쪽으로
+To South,|남쪽으로
+To East,|동쪽으로
+To West,|서쪽으로
+
+
+
+# Directions (lowercase)\r\nnorth|북쪽
+south|남쪽
+east|동쪽
+west|서쪽
+North|북쪽
+South|남쪽
+East|동쪽
+West|서쪽
+Northeast|북동쪽
+Southeast|남동쪽
+Southwest|남서쪽
+Northwest|북서쪽
+nowhere|아무데도 없음
+
+north|북쪽으로
+south|남쪽으로
+east|동쪽으로
+west|서쪽으로
+North|북쪽으로
+South|남쪽으로
+East|동쪽으로
+West|서쪽으로
+Northeast|북동쪽으로
+Southeast|남동쪽으로
+Southwest|남서쪽으로
+Northwest|북서쪽으로
+nowhere|아무데도 없음
+
+Ready-%s\n|장착-%s\n
+Unready-%s\n|장착해제-%s\n
+Can't be readied!\n|장착할 수 없습니다!\n
+Can't be readied!|장착할 수 없습니다!
+
+
+\nNo spellbook is readied.\n|\n장착된 마법서가 없습니다.\n
+\nNo spellbook is readied.\n\n|\n장착된 마법서가 없습니다.\n\n
+
+# UseCode messages (lever, door, container, etc.)
+\nmagically locked\n|\n마법으로 잠김\n
+\nunlocked\n|\n잠금 해제\n
+\nlocked\n|\n잠김\n
+\nNot now!\n|\n지금은 안됨!\n
+\nclosed!\n|\n닫힘!\n
+\nopened!\n|\n열림!\n
+\nNot in solo mode.\n|\n솔로 모드가 아님.\n
+a secret door|비밀문
+\nNo effect\n|\n효과 없음\n
+\nNot usable\n|\n사용 불가\n
+Mantra: |만트라:
+\nDone!\n|\n완료!\n
+\nNo effect!\n|\n효과 없음!\n
+\nWrong mantra!\n|\n잘못된 만트라!\n
+\nThe Codex has vanished!\n|\n코덱스가 사라졌습니다!\n
+\nNo Effect!\n|\n효과 없음!\n
+\nOpen the drawbridge.\n|\n도개교를 엽니다.\n
+\nClose the drawbridge.\n|\n도개교를 닫습니다.\n
+Cannot be buried here!\n|여기에 묻을 수 없습니다!\n
+buried.\n|묻었습니다.\n
+\nYou can't figure out how to use it.\n|\n사용 방법을 모르겠습니다.\n
+Failed\n|실패\n
+Failed.\n|실패.\n
+a red moon gate appears.\n|붉은 문게이트가 나타납니다.\n
+\nYou need to stand next to water.\n|\n물 옆에 서 있어야 합니다.\n
+\nGot it, but can't carry it.\n|\n잡았지만 들 수 없습니다.\n
+\nGot it!\n|\n잡았다!\n
+\nDidn't get a fish.\n|\n물고기를 못 잡았습니다.\n
+nowhere.\n|아무데도.\n
+\nNot readied.\n|\n장착되지 않음.\n
+Not on screen.\n|화면에 없음.\n
+Out of range.\n|범위 밖.\n
+Blocked\n|막힘\n
+No effect\n|효과 없음\n
+You dig a hole.\n|구멍을 팠습니다.\n
+No Effect.\n|효과 없음.\n
+You find a water fountain.\n|물 분수를 발견했습니다.\n
+You find a gold nugget.\n|금덩이를 발견했습니다.\n
+Make a wish? |소원을 빌까요?
+Wish for: |소원:
+\nFailed\n\n|\n실패\n\n
+\nNo effect\n\n|\n효과 없음\n\n
+\nYou got food|\n음식을 얻었습니다
+, but you can't carry it.\n\n|, 하지만 들 수 없습니다.\n\n
+\nSqueak!\n|\n찍!\n
+Enter degrees followed by N, S, E or W.\n\nAt latitude=|도수를 입력하고 N, S, E, W를 붙이세요.\n\n위도=
+  longitude=|  경도=
+\nDone\n\n|\n완료\n\n
+ is lit.\n| 점화됨.\n
+ is doused.\n| 꺼짐.\n
+\nYou drink it.\n|\n마셨습니다.\n
+\nYou eat the food.\n|\n음식을 먹었습니다.\n
+\nKey broke.\n|\n열쇠가 부러졌습니다.\n
+\nunlocked!\n|\n잠금 해제!\n
+\nlocked!\n|\n잠김!\n
+\nCan't (Un)lock an opened door\n|\n열린 문은 잠글 수 없음\n
+\nOnly next to land.\n|\n육지 옆에서만 가능.\n
+\nYou must place it in water first.\n|\n먼저 물에 놓아야 합니다.\n
+\nShip not usable\n|\n배 사용 불가\n
+\nA deed is required.\n|\n증서가 필요합니다.\n
+Missing a mammoth silk bag.\n|매머드 실크 가방이 없습니다.\n
+Missing a balloon basket.\n|기구 바구니가 없습니다.\n
+Missing a cauldron.\n|가마솥이 없습니다.\n
+Missing a rope.\n|밧줄이 없습니다.\n
+Done!\n|완료!\n
+\nYou need an empty bucket.\n|\n빈 양동이가 필요합니다.\n
+\nYou need a bucket.\n|\n양동이가 필요합니다.\n
+\nDone\n|\n완료\n
+\nYou need some milk.\n|\n우유가 필요합니다.\n
+\nYou need an empty honey jar.\n|\n빈 꿀단지가 필요합니다.\n
+\nYou need a honey jar.\n|\n꿀단지가 필요합니다.\n
+You're already on a horse!\n|이미 말에 타고 있습니다!\n
+\nHorse not boardable!\n|\n말에 탈 수 없습니다!\n
+\nYou feel a breeze.\n|\n바람이 느껴집니다.\n
+\nYou can see yourself!|\n자신이 보입니다!
+\n\nNot in solo mode.\n|\n\n솔로 모드가 아님.\n
+\nYou must be in party mode to enter.\n\n|\n입장하려면 파티 모드여야 합니다.\n\n
+\nYou forgot the Orb of the Moons!\n|\n달의 오브를 잊었습니다!\n
+\nNo free hand to hold the torch.\n|\n횃불을 들 빈 손이 없습니다.\n
+\nA torch burned out.\n|\n횃불이 타버렸습니다.\n
+\nTorch is lit.\n|\n횃불에 불을 붙였습니다.\n
+\nMagical energy prevents you from removing the amulet.\n|\n마법 에너지가 부적을 벗지 못하게 합니다.\n
+You study the scroll!\n|두루마리를 공부합니다!\n
+\nThe flame of |\n불꽃:
+truth|진실
+love|사랑
+courage|용기
+
+# Lever/switch messages
+\nSwitch the lever, you hear a noise.\n|\n레버를 당기니 소리가 납니다.\n
+\nSwitch the lever, strange, nothing happened.\n|\n레버를 당겼지만, 이상하게 아무 일도 없습니다.\n
+\nOperate the switch, you hear a noise.\n|\n스위치를 작동하니 소리가 납니다.\n
+\nOperate the switch, strange, nothing happened.\n|\n스위치를 작동했지만, 이상하게 아무 일도 없습니다.\n
+ the passthrough.\n| 통로.\n
+
+# Horse messages
+Sherry says: "Eeek!!! I'm afraid of horses!"\n|셰리가 말합니다: "으악!!! 말이 무서워요!"\n
+BehLem says: "Horses are for food!"\n|베흘렘이 말합니다: "말은 음식이야!"\n
+
+# Potion messages
+No effect\n|효과 없음\n
+

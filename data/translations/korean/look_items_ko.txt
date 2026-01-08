@@ -1,508 +1,1811 @@
-# Item descriptions - Korean translation
-# Format: INDEX|ENGLISH|KOREAN
+# Item descriptions - Korean translation (indexed by tile_num)
+# Format: TILE_NUM|ENGLISH|KOREAN
+# Reference: docs/ultima6/tileflag_data.txt
 
 0|Nothing|아무것도 없음
-2|grass|잔디
+1|grass|잔디
+2|swamp|늪
+3|swamp|늪
 4|swamp|늪
-6|shrub|관목
-8|bush|덤불
+5|shrub|관목
+6|bush|덤불
+7|bush|덤불
+8|water|물
+9|water|물
 10|water|물
-12|shore|해안
-14|tree|나무
-16|grass|잔디
-18|tree|나무
-20|dead tree|죽은 나무
-22|scrub|덤불
-24|shrub|관목
-26|earth|흙
-28|embankment|둑
-30|earth|흙
-32|mountain|산
-34|snowcaps|눈덮인 봉우리
-36|wall|벽
-38|field|들판
-40|crops|농작물
-42|arrow slit|화살 구멍
-44|window|창문
-46|crenellation|흉벽
-48|window|창문
-51|wall|벽
-53|floor|바닥
-55|wet earth|젖은 흙
-57|puddle|물웅덩이
-59|pool|연못
-61|floor|바닥
-63|lava|용암
-65|pyramid|피라미드
-67|earthen wall|흙벽
-69|ethereal void|에테르 공간
-73|wall|벽
-75|lightsource|광원
-76|force field|역장
-78|moonstone|문스톤
-80|sling stone|투석돌
-81|moonstone|문스톤
-83|leather helm|가죽 투구
-84|chain coif|사슬 두건
-85|iron helm|철 투구
-86|spiked helm|가시 투구
-87|winged helm|날개 투구
-88|brass helm|황동 투구
-89|Gargoyle Helm|가고일 투구
-90|magic helm|마법 투구
-91|wooden shield|나무 방패
-92|curved heater|곡면 방패
-93|winged shield|날개 방패
-94|kite shield|카이트 방패
-95|spiked shield|가시 방패
-96|black shield|검은 방패
-97|door shield|문 방패
-98|magic shield|마법 방패
-99|cloth armour|천 갑옷
-100|leather armor|가죽 갑옷
-101|ring mail|링 메일
-102|scale mail|스케일 메일
-103|chain mail|사슬 갑옷
-104|plate mail|판금 갑옷
-105|magic armour|마법 갑옷
-106|spiked collar|가시 목걸이
-107|guild belt|길드 벨트
-108|Gargoyle Belt|가고일 벨트
-109|leather boots|가죽 장화
-110|swamp boots|늪지 장화
+11|water|물
+12|water|물
+13|water|물
+14|water|물
+15|water|물
+16|shore|해안
+17|shore|해안
+18|shore|해안
+19|shore|해안
+20|shore|해안
+21|shore|해안
+22|shore|해안
+23|shore|해안
+24|shore|해안
+25|shore|해안
+26|shore|해안
+27|shore|해안
+28|shore|해안
+29|shore|해안
+30|shore|해안
+31|shore|해안
+32|shore|해안
+33|shore|해안
+34|shore|해안
+35|shore|해안
+36|shore|해안
+37|shore|해안
+38|shore|해안
+39|shore|해안
+40|shore|해안
+41|shore|해안
+42|shore|해안
+43|shore|해안
+44|shore|해안
+45|shore|해안
+46|shore|해안
+47|shore|해안
+48|tree|나무
+49|tree|나무
+50|tree|나무
+51|tree|나무
+52|grass|잔디
+53|grass|잔디
+54|grass|잔디
+55|grass|잔디
+56|grass|잔디
+57|grass|잔디
+58|grass|잔디
+59|grass|잔디
+60|grass|잔디
+61|grass|잔디
+62|grass|잔디
+63|grass|잔디
+64|tree|나무
+65|tree|나무
+66|tree|나무
+67|tree|나무
+68|tree|나무
+69|tree|나무
+70|tree|나무
+71|tree|나무
+72|dead tree|죽은 나무
+73|scrub|덤불
+74|scrub|덤불
+75|scrub|덤불
+76|scrub|덤불
+77|scrub|덤불
+78|shrub|관목
+79|earth|흙
+80|earth|흙
+81|earth|흙
+82|earth|흙
+83|earth|흙
+84|earth|흙
+85|earth|흙
+86|earth|흙
+87|earth|흙
+88|earth|흙
+89|earth|흙
+90|earth|흙
+91|earth|흙
+92|earth|흙
+93|earth|흙
+94|earth|흙
+95|earth|흙
+96|embankment|둑
+97|embankment|둑
+98|embankment|둑
+99|embankment|둑
+100|embankment|둑
+101|embankment|둑
+102|embankment|둑
+103|embankment|둑
+104|embankment|둑
+105|embankment|둑
+106|embankment|둑
+107|embankment|둑
+108|earth|흙
+109|earth|흙
+110|earth|흙
 111|earth|흙
-112|floor|바닥
-113|sling|투석기
-114|club|곤봉
-115|main gauche|마인 고슈
-116|spear|창
-117|throwing axe|투척 도끼
-118|dagger|단검
-119|mace|철퇴
-120|morning star|모닝스타
-121|bow|활
-122|crossbow|석궁
-123|sword|검
-124|two-handed hammer|양손 망치
-125|two-handed axe|양손 도끼
-126|two-handed sword|양손 검
-127|halberd|미늘창
-128|glass sword|유리 검
-129|boomerang|부메랑
-130|triple crossbow|삼중 석궁
-131|force field|역장
-132|wizard eye|마법사의 눈
-133|web|거미줄
-134|magic bow|마법 활
-135|arrows|화살
-136|bolts|볼트
-137|spellbook|마법서
-138|spell|주문
-139|Codex|코덱스
-140|Book of Prophecies|예언서
-141|Book of Circles|원의 서
-142|Vortex Cube|볼텍스 큐브
-143|lock picks|자물쇠 따개
-144|key|열쇠
-145|black pearls|검은 진주
-146|blood moss|피 이끼
-147|garlic|마늘
-148|ginseng roots|인삼 뿌리
-149|mandrake roots|만드레이크 뿌리
-150|nightshade mushrooms|독버섯
-151|spidersilk|거미줄
-152|sulfurous ash|유황재
-153|moonstone|문스톤
-154|ankh amulet|앙크 부적
-155|snake amulet|뱀 부적
-156|Amulet of Submission|복종의 부적
-157|gems|보석
-158|staff|지팡이
-159|lightning wand|번개 지팡이
-160|fire wand|불 지팡이
-161|storm cloak|폭풍 망토
-162|ring|반지
-163|flask of oil|기름통
-164|red gate|붉은 문
-165|moongate|문게이트
-166|gavel|망치
-167|Orb of the Moons|달의 오브
-168|gold coins|금화
-169|gold nuggets|금덩이
-170|torches|횃불
-171|lit torch|켜진 횃불
-172|Zu Ylem|주 일렘
-173|silver snake venom|은뱀 독
-174|sextant|육분의
-175|spinning wheel|물레
-176|bunch of grapes|포도 송이
-177|butter|버터
-178|Gargish vocabulary|가고일어 사전
-179|open chest|열린 상자
-180|chest|상자
-181|locked chest|잠긴 상자
-182|magically locked chest|마법으로 잠긴 상자
-183|backpack|배낭
-184|scythe|낫
-185|pitchfork|쇠스랑
-186|rake|갈퀴
-187|pick|곡괭이
-188|shovel|삽
-189|hoe|괭이
-190|wooden ladder|나무 사다리
-191|yoke|멍에
-192|oven spatula|오븐 주걱
-193|rolling pin|밀대
-194|spatula|주걱
-195|ladle|국자
-196|cooking sheet|조리판
-197|cleaver|식칼
-198|knife|칼
-199|wine|포도주
-200|mead|벌꿀술
-201|ale|맥주
-202|wine glass|와인잔
-203|plate|접시
-204|mug|머그잔
-205|silverware|은식기
-206|candle|촛불
-207|lit candle|켜진 촛불
-208|mirror|거울
-209|broken mirror|깨진 거울
-210|tunic|튜닉
-211|hanger|옷걸이
-212|dress|드레스
-213|skillet|프라이팬
-214|loaf of bread|빵 한 덩이
-215|portion of meat|고기
-216|rolls|롤빵
-217|cake|케이크
-218|cheese|치즈
-219|ham|햄
-220|horse carcass|말 사체
-221|horse chops|말고기
-222|skewer|꼬치
-223|pants|바지
-224|plant|식물
-225|flowers|꽃
-226|wall mount|벽걸이
-227|decorative sword|장식 검
-228|decorative shield|장식 방패
-229|picture|그림
-230|tapestry|태피스트리
-231|candelabra|촛대
-232|person sleeping|잠자는 사람
-233|cauldron|가마솥
-234|ship deed|배 증서
-235|inkwell|잉크병
-236|book|책
-237|scroll|두루마리
-238|panpipes|팬파이프
-239|telescope|망원경
-240|crystal ball|수정구
-241|harpsichord|하프시코드
-242|harp|하프
-243|lute|류트
-244|clock|시계
-245|endtable|탁자
-246|water vase|꽃병
-247|stove|화덕
-248|bed|침대
-249|fireplace|벽난로
-250|stalagmite|석순
-251|sack of grain|곡식 자루
-252|sack of flour|밀가루 자루
-253|remains|유해
-254|rubber ducky|고무 오리
-255|Urn of Ashes|재 항아리
-256|fumarole|분기공
-257|spikes|가시
-258|trap|함정
-259|switch|스위치
-260|electric field|전기장
-261|chest of drawers|서랍장
-262|desk|책상
-263|bucket|양동이
-264|bucket of water|물 양동이
-265|bucket of milk|우유 양동이
-266|churn|버터 통
-267|beehive|벌통
-268|honey jar|꿀단지
-269|jar of honey|꿀단지
-270|cloth|천
-271|open barrel|열린 통
-272|sealed barrel|밀봉된 통
-273|jug|주전자
-274|bag|가방
-275|cask|작은 통
-276|bale of wool|양모 뭉치
-277|basket|바구니
-278|open crate|열린 상자
-279|crate|상자
-280|small jug|작은 주전자
-281|milk bottle|우유병
-282|wheat|밀
-283|vat|큰 통
-284|wine cask|와인 통
-285|cutting table|절단대
-286|loom|베틀
-287|hood|두건
-288|fire|불
-289|horseshoes|말굽쇠
-290|pliers|펜치
-291|hammer|망치
-292|water trough|물통
-293|brazier|화로
-294|flaming brazier|타오르는 화로
-295|holy brazier|성스러운 화로
-296|rod|막대
-297|hook|갈고리
-298|meat|고기
-299|ribs|갈비
-300|dead animal|죽은 동물
-301|fan|부채
-302|mouse hole|쥐구멍
-303|wine press|포도 압착기
-304|stable|마구간
-305|bookshelf|책장
-306|anvil|모루
-307|bellows|풀무
-308|oven|오븐
-309|flag|깃발
-310|cannon|대포
-311|cannon balls|포탄
-312|powder keg|화약통
-313|lit powder|점화된 화약
-314|foot rail|발판
-315|spool of thread|실 꾸러미
-316|spool of silk|비단 꾸러미
-317|pennant|페넌트
-318|table|탁자
-319|shadow|그림자
-320|table|탁자
-321|shadow|그림자
-322|spittoon|타구
-323|well|우물
-324|fountain|분수
-325|sundial|해시계
-326|bell|종
-327|table|탁자
-328|shadow|그림자
-329|table|탁자
-330|shadow|그림자
-331|silk cloth|비단
-332|Rune of Honesty|정직의 룬
-333|Rune of Compassion|자비의 룬
-334|Rune of Valor|용기의 룬
-335|Rune of Justice|정의의 룬
-336|Rune of Sacrifice|희생의 룬
-337|Rune of Honor|명예의 룬
-338|Rune of Spirituality|영성의 룬
-339|Rune of Humility|겸손의 룬
-340|table|탁자
-341|shadow|그림자
-342|chair|의자
-343|campfire|모닥불
-344|cross|십자가
-345|tombstone|묘비
-346|protection ring|보호의 반지
-347|regeneration ring|재생의 반지
-348|invisibility ring|투명의 반지
-349|table leg|탁자 다리
-350|shadow|그림자
-351|table leg|탁자 다리
-352|shadow|그림자
-353|stocks|족쇄
-354|person in stocks|족쇄에 갇힌 사람
-355|fishing pole|낚싯대
-356|fish|물고기
-357|grave|무덤
-358|guillotine|단두대
-359|lever|레버
-360|drawbridge|도개교
-361|balloon plans|기구 설계도
-362|doorsill|문턱
-363|doorway|출입구
-364|steps|계단
-365|tile|타일
-366|yew log|주목 통나무
-367|blue potion|파란 물약
-368|red potion|빨간 물약
-369|yellow potion|노란 물약
-370|green potion|초록 물약
-371|orange potion|주황 물약
-372|purple potion|보라 물약
-373|black potion|검은 물약
-374|white potion|흰 물약
-375|steps|계단
-376|yew board|주목 널판
-377|passthrough|통로
-378|table|탁자
-379|passthrough|통로
-380|fence|울타리
-381|bars|철창
-382|anchor|닻
-383|rope|밧줄
-384|pole|기둥
-385|walkway|보도
-386|water wheel|물레방아
-387|crank|크랭크
-388|log saw|통나무 톱
-389|mill stone|맷돌
-390|shaft|축
-391|gearwork|톱니바퀴
-392|chain|사슬
-393|lightsource|광원
-394|heatsource|열원
-395|xylophone|실로폰
-396|oaken door|참나무 문
-397|windowed door|창문 달린 문
-398|cedar door|삼나무 문
-399|steel door|철문
-400|doorway|출입구
-401|archway|아치형 통로
-402|carpet|양탄자
-403|cookfire|조리용 불
-404|logs|통나무
-405|cookfire|조리용 불
-406|logs|통나무
-407|cookfire|조리용 불
-408|ladder|사다리
-409|trellis|격자
-410|volcano|화산
-411|crater|분화구
-412|hole|구멍
-413|bones|뼈
-414|portcullis|격자문
-415|stone table|돌 탁자
-416|stone lion|돌 사자
-417|silver horn|은나팔
-418|floor|바닥
-419|stone|돌
-420|lamppost|가로등
-421|fire field|불의 장
-422|poison field|독의 장
-423|protection field|보호의 장
-424|sleep field|수면의 장
-425|statue|조각상
-426|guardian|수호자
-427|pool|연못
-428|monolith|모노리스
-429|pillar|기둥
-430|book stand|독서대
-431|mine shaft|광산 갱도
-432|dungeon|던전
-433|cave|동굴
-434|throne|왕좌
-435|altar|제단
-436|Altar of singularity|특이점의 제단
-437|altar of singularity|특이점의 제단
-438|mat|매트
-439|government sign|관청 표지판
-440|food shop|식품점
-441|guild|길드
-442|shipwright|조선소
-443|armoury|무기점
-444|fletcher|화살 제조소
-445|herbalist|약초상
-446|textile shop|직물점
-447|healer|치료사
-448|blacksmith|대장간
-449|inn|여관
-450|sign|표지판
-451|signpost|표지판
-452|sign|표지판
-453|gargoyle sign|가고일 표지판
-454|sign|표지판
-455|secret door|비밀문
-456|egg|알
-457|charge|충전
-458|effect|효과
-459|blood|피
-460|dead body|시체
-461|pile of bones|뼈 무더기
-462|dead cyclops|죽은 사이클롭스
-463|dead gargoyle|죽은 가고일
-464|giant rat|거대 쥐
-465|insects|곤충
-466|giant bat|거대 박쥐
-467|giant squid|거대 오징어
-468|sea serpent|바다뱀
-469|reaper|리퍼
-470|sheep|양
-471|dog|개
-472|deer|사슴
-473|wolf|늑대
-474|ghost|유령
-475|gremlin|그렘린
-476|mouse|쥐
-477|gazer|게이저
-478|bird|새
-479|corpser|콥서
-480|snake|뱀
-481|rabbit|토끼
-482|rot worms|썩은 벌레
-483|giant spider|거대 거미
-484|gargoyle|가고일
-485|acid slug|산성 슬러그
-486|tangle vine|얽힌 덩굴
-487|daemon|데몬
-488|skeleton|해골
-489|drake|드레이크
-490|headless|머리없는 자
-491|troll|트롤
-492|mongbat|몽뱃
-493|wisp|위습
-494|hydra|히드라
-495|slime|슬라임
-496|fighter|전사
-497|swashbuckler|검객
-498|mage|마법사
-499|villager|마을 주민
-500|merchant|상인
-501|child|아이
-502|guard|경비병
-503|jester|광대
-504|peasant|농부
-505|farmer|농부
-506|musician|음악가
-507|woman|여인
-508|cat|고양이
-509|silver tablet|은판
-510|silver fragment|은조각
-511|farmer|농부
-512|musician|음악가
-513|shrine|성지
-514|Britannian Lens|브리타니아 렌즈
-515|broken lens|깨진 렌즈
-516|Gargoyle Lens|가고일 렌즈
-517|Statue of Mondain|몬데인 조각상
-518|Statue of Minax|미낙스 조각상
-519|Statue of Exodus|엑소더스 조각상
-520|part of a map|지도 조각
-521|Lord British|로드 브리티시
-522|Avatar|아바타
-523|dragon|드래곤
-524|ship|배
-525|silver serpent|은뱀
-526|skiff|작은 배
-527|raft|뗏목
-528|nothing|아무것도 없음
-529|dragon egg|드래곤 알
-530|hatched dragon egg|부화한 드래곤 알
-531|pull chain|당기는 사슬
-532|balloon|기구
-533|mammoth silk bag|매머드 비단 주머니
-534|balloon basket|기구 바구니
-535|balloon|기구
-536|cyclops|사이클롭스
-537|hydra|히드라
-538|giant scorpion|거대 전갈
-539|giant ant|거대 개미
-540|cow|소
-541|alligator|악어
-542|horse|말
-543|horse with rider|기수가 탄 말
-544|horse|말
-545|horse with rider|기수가 탄 말
-546|horse|말
+112|mountain|산
+113|mountain|산
+114|mountain|산
+115|mountain|산
+116|mountain|산
+117|mountain|산
+118|mountain|산
+119|mountain|산
+120|mountain|산
+121|mountain|산
+122|mountain|산
+123|mountain|산
+124|mountain|산
+125|snowcaps|눈덮인 봉우리
+126|snowcaps|눈덮인 봉우리
+127|snowcaps|눈덮인 봉우리
+128|snowcaps|눈덮인 봉우리
+129|snowcaps|눈덮인 봉우리
+130|snowcaps|눈덮인 봉우리
+131|snowcaps|눈덮인 봉우리
+132|snowcaps|눈덮인 봉우리
+133|snowcaps|눈덮인 봉우리
+134|snowcaps|눈덮인 봉우리
+135|snowcaps|눈덮인 봉우리
+136|snowcaps|눈덮인 봉우리
+137|snowcaps|눈덮인 봉우리
+138|snowcaps|눈덮인 봉우리
+139|snowcaps|눈덮인 봉우리
+140|wall|벽
+141|wall|벽
+142|wall|벽
+143|wall|벽
+144|wall|벽
+145|wall|벽
+146|wall|벽
+147|wall|벽
+148|wall|벽
+149|wall|벽
+150|wall|벽
+151|wall|벽
+152|wall|벽
+153|wall|벽
+154|wall|벽
+155|wall|벽
+156|wall|벽
+157|wall|벽
+158|wall|벽
+159|wall|벽
+160|wall|벽
+161|wall|벽
+162|wall|벽
+163|wall|벽
+164|wall|벽
+165|wall|벽
+166|wall|벽
+167|wall|벽
+168|wall|벽
+169|wall|벽
+170|wall|벽
+171|wall|벽
+172|wall|벽
+173|wall|벽
+174|wall|벽
+175|wall|벽
+176|wall|벽
+177|wall|벽
+178|wall|벽
+179|wall|벽
+180|wall|벽
+181|wall|벽
+182|wall|벽
+183|wall|벽
+184|wall|벽
+185|wall|벽
+186|wall|벽
+187|wall|벽
+188|field|들판
+189|crops|농작물
+190|crops|농작물
+191|crops|농작물
+192|arrow slit|화살 구멍
+193|arrow slit|화살 구멍
+194|arrow slit|화살 구멍
+195|arrow slit|화살 구멍
+196|window|창문
+197|window|창문
+198|crenellation|흉벽
+199|crenellation|흉벽
+200|window|창문
+201|window|창문
+202|window|창문
+203|window|창문
+204|window|창문
+205|window|창문
+207|wall|벽
+208|floor|바닥
+209|floor|바닥
+210|floor|바닥
+211|floor|바닥
+212|floor|바닥
+213|floor|바닥
+214|floor|바닥
+215|floor|바닥
+216|floor|바닥
+217|wet earth|젖은 흙
+218|puddle|물웅덩이
+219|pool|연못
+220|floor|바닥
+221|lava|용암
+222|lava|용암
+223|lava|용암
+224|pyramid|피라미드
+225|pyramid|피라미드
+226|pyramid|피라미드
+227|pyramid|피라미드
+228|pyramid|피라미드
+229|pyramid|피라미드
+230|pyramid|피라미드
+231|pyramid|피라미드
+232|pyramid|피라미드
+233|pyramid|피라미드
+234|pyramid|피라미드
+235|pyramid|피라미드
+236|pyramid|피라미드
+237|pyramid|피라미드
+238|pyramid|피라미드
+239|pyramid|피라미드
+240|earthen wall|흙벽
+241|earthen wall|흙벽
+242|earthen wall|흙벽
+243|earthen wall|흙벽
+244|earthen wall|흙벽
+245|earthen wall|흙벽
+246|earthen wall|흙벽
+247|earthen wall|흙벽
+248|earthen wall|흙벽
+249|earthen wall|흙벽
+250|earthen wall|흙벽
+251|earthen wall|흙벽
+252|ethereal void|에테르 공간
+253|ethereal void|에테르 공간
+254|ethereal void|에테르 공간
+266|wall|벽
+267|wall|벽
+268|wall|벽
+269|wall|벽
+270|wall|벽
+271|wall|벽
+344|lightsource|광원
+345|lightsource|광원
+346|lightsource|광원
+347|lightsource|광원
+348|force field|역장
+349|force field|역장
+350|force field|역장
+351|force field|역장
+361|moonstone|문스톤
+362|moonstone|문스톤
+363|moonstone|문스톤
+398|sling stone|투석돌
+399|moonstone|문스톤
+512|leather helm|가죽 투구
+513|chain coif|사슬 두건
+514|iron helm|철 투구
+515|spiked helm|가시 투구
+516|winged helm|날개 투구
+517|brass helm|황동 투구
+518|Gargoyle Helm|가고일 투구
+519|magic helm|마법 투구
+520|wooden shield|나무 방패
+521|curved heater|곡면 방패
+522|winged shield|날개 방패
+523|kite shield|카이트 방패
+524|spiked shield|가시 방패
+525|black shield|검은 방패
+526|door shield|문 방패
+527|magic shield|마법 방패
+528|cloth armour|천 갑옷
+529|leather armor|가죽 갑옷
+530|ring mail|링 메일
+531|scale mail|스케일 메일
+532|chain mail|사슬 갑옷
+533|plate mail|판금 갑옷
+534|magic armour|마법 갑옷
+535|spiked collar|가시 목걸이
+536|guild belt|길드 벨트
+537|Gargoyle Belt|가고일 벨트
+538|leather boots|가죽 장화
+539|swamp boots|늪지 장화
+540|earth|흙
+541|floor|바닥
+542|floor|바닥
+543|floor|바닥
+544|sling|투석기
+545|club|곤봉
+546|main gauche|마인 고슈
+547|spear|창
+548|throwing axe|투척 도끼
+549|dagger|단검
+550|mace|철퇴
+551|morning star|모닝스타
+552|bow|활
+553|crossbow|석궁
+554|sword|검
+555|two-handed hammer|양손 망치
+556|two-handed axe|양손 도끼
+557|two-handed sword|양손 검
+558|halberd|미늘창
+559|glass sword|유리 검
+560|boomerang|부메랑
+561|triple crossbow|삼중 석궁
+562|force field|역장
+563|wizard eye|마법사의 눈
+564|web|거미줄
+565|magic bow|마법 활
+568|spellbook|마법서
+569|spell|주문
+570|Codex|코덱스
+571|Book of Prophecies|예언서
+572|Book of Circles|원의 서
+573|Vortex Cube|볼텍스 큐브
+575|key|열쇠
+576|black pearl|검은 진주
+576|black pearls|검은 진주
+577|bit of blood moss|피 이끼 조각
+577|bits of blood moss|피 이끼 조각
+578|bulb of garlic|마늘
+578|bulbs of garlic|마늘
+579|ginseng root|인삼 뿌리
+579|ginseng roots|인삼 뿌리
+580|mandrake root|만드레이크 뿌리
+580|mandrake roots|만드레이크 뿌리
+581|nightshade mushroom|독버섯
+581|nightshade mushrooms|독버섯
+582|strand of spidersilk|거미줄
+582|strands of spidersilk|거미줄
+583|bit of sulfurous ash|유황재 조각
+583|bits of sulfurous ash|유황재 조각
+584|moonstone|문스톤
+585|moonstone|문스톤
+586|moonstone|문스톤
+587|moonstone|문스톤
+588|moonstone|문스톤
+589|moonstone|문스톤
+590|moonstone|문스톤
+591|moonstone|문스톤
+592|ankh amulet|앙크 부적
+593|snake amulet|뱀 부적
+594|Amulet of Submission|복종의 부적
+596|staff|지팡이
+597|lightning wand|번개 지팡이
+598|fire wand|불 지팡이
+599|storm cloak|폭풍 망토
+600|ring|반지
+602|red gate|붉은 문
+603|moongate|문게이트
+604|moongate|문게이트
+605|moongate|문게이트
+606|gavel|망치
+607|Orb of the Moons|달의 오브
+611|lit torch|켜진 횃불
+612|Zu Ylem|주 일렘
+613|silver snake venom|은뱀 독
+614|sextant|육분의
+615|spinning wheel|물레
+616|bunch of grapes|포도 송이
+617|butter|버터
+618|Gargish vocabulary|가고일어 사전
+619|open chest|열린 상자
+620|chest|상자
+621|locked chest|잠긴 상자
+622|magically locked chest|마법으로 잠긴 상자
+623|backpack|배낭
+624|scythe|낫
+625|pitchfork|쇠스랑
+626|rake|갈퀴
+627|pick|곡괭이
+628|shovel|삽
+629|hoe|괭이
+630|wooden ladder|나무 사다리
+631|yoke|멍에
+632|oven spatula|오븐 주걱
+633|rolling pin|밀대
+634|spatula|주걱
+635|ladle|국자
+636|cooking sheet|조리판
+637|cleaver|식칼
+638|knife|칼
+639|knife|칼
+640|wine|포도주
+641|mead|벌꿀술
+642|ale|맥주
+643|wine glass|와인잔
+644|plate|접시
+645|mug|머그잔
+646|silverware|은식기
+647|candle|촛불
+648|lit candle|켜진 촛불
+649|mirror|거울
+650|mirror|거울
+651|broken mirror|깨진 거울
+652|tunic|튜닉
+653|hanger|옷걸이
+654|dress|드레스
+655|skillet|프라이팬
+658|rolls|롤빵
+659|cake|케이크
+660|cheese|치즈
+661|ham|햄
+662|horse carcass|말 사체
+663|horse carcass|말 사체
+664|horse chops|말고기
+665|skewer|꼬치
+666|skewer|꼬치
+667|skewer|꼬치
+668|skewer|꼬치
+669|pants|바지
+670|plant|식물
+671|flowers|꽃
+672|wall mount|벽걸이
+673|wall mount|벽걸이
+674|decorative sword|장식 검
+675|decorative sword|장식 검
+676|decorative shield|장식 방패
+677|decorative shield|장식 방패
+678|picture|그림
+679|picture|그림
+680|tapestry|태피스트리
+681|tapestry|태피스트리
+682|candelabra|촛대
+683|candelabra|촛대
+684|person sleeping|잠자는 사람
+685|person sleeping|잠자는 사람
+686|cauldron|가마솥
+687|cauldron|가마솥
+688|ship deed|배 증서
+689|inkwell|잉크병
+690|book|책
+691|scroll|두루마리
+692|panpipes|팬파이프
+693|telescope|망원경
+694|crystal ball|수정구
+695|harpsichord|하프시코드
+696|harp|하프
+697|lute|류트
+698|clock|시계
+699|clock|시계
+700|endtable|탁자
+701|water vase|꽃병
+702|stove|화덕
+703|stove|화덕
+704|bed|침대
+705|bed|침대
+706|bed|침대
+707|bed|침대
+708|bed|침대
+709|bed|침대
+710|bed|침대
+711|bed|침대
+712|bed|침대
+713|bed|침대
+714|bed|침대
+715|bed|침대
+716|fireplace|벽난로
+717|fireplace|벽난로
+718|fireplace|벽난로
+719|fireplace|벽난로
+720|stalagmite|석순
+721|stalagmite|석순
+722|sack of grain|곡식 자루
+723|sack of flour|밀가루 자루
+724|remains|유해
+725|remains|유해
+726|remains|유해
+727|remains|유해
+728|rubber ducky|고무 오리
+729|Urn of Ashes|재 항아리
+730|fumarole|분기공
+731|spikes|가시
+732|trap|함정
+733|switch|스위치
+734|switch|스위치
+735|electric field|전기장
+736|chest of drawers|서랍장
+737|chest of drawers|서랍장
+738|chest of drawers|서랍장
+739|chest of drawers|서랍장
+740|desk|책상
+741|desk|책상
+742|bucket|양동이
+743|bucket of water|물 양동이
+744|bucket of milk|우유 양동이
+745|churn|버터 통
+746|beehive|벌통
+747|honey jar|꿀단지
+748|jar of honey|꿀단지
+749|cloth|천
+750|cloth|천
+751|cloth|천
+752|open barrel|열린 통
+753|sealed barrel|밀봉된 통
+754|jug|주전자
+755|bag|가방
+756|cask|작은 통
+757|bale of wool|양모 뭉치
+758|basket|바구니
+759|open crate|열린 상자
+760|crate|상자
+761|small jug|작은 주전자
+762|small jug|작은 주전자
+763|milk bottle|우유병
+764|wheat|밀
+765|wheat|밀
+766|wheat|밀
+767|wheat|밀
+768|vat|큰 통
+769|vat|큰 통
+770|vat|큰 통
+771|vat|큰 통
+772|wine cask|와인 통
+773|wine cask|와인 통
+774|wine cask|와인 통
+775|wine cask|와인 통
+776|cutting table|절단대
+777|cutting table|절단대
+778|cutting table|절단대
+779|cutting table|절단대
+780|loom|베틀
+781|loom|베틀
+782|loom|베틀
+783|loom|베틀
+784|hood|두건
+785|hood|두건
+786|hood|두건
+787|hood|두건
+788|fire|불
+789|fire|불
+790|fire|불
+791|fire|불
+792|horseshoes|말굽쇠
+793|pliers|펜치
+794|hammer|망치
+795|water trough|물통
+796|brazier|화로
+797|flaming brazier|타오르는 화로
+798|holy brazier|성스러운 화로
+799|holy brazier|성스러운 화로
+800|rod|막대
+801|rod|막대
+802|hook|갈고리
+803|meat|고기
+804|ribs|갈비
+805|dead animal|죽은 동물
+806|fan|부채
+807|mouse hole|쥐구멍
+808|mouse hole|쥐구멍
+809|wine press|포도 압착기
+810|wine press|포도 압착기
+811|wine press|포도 압착기
+812|wine press|포도 압착기
+813|stable|마구간
+814|stable|마구간
+815|stable|마구간
+816|bookshelf|책장
+817|bookshelf|책장
+818|bookshelf|책장
+819|bookshelf|책장
+820|bookshelf|책장
+821|bookshelf|책장
+822|bookshelf|책장
+823|bookshelf|책장
+824|bookshelf|책장
+825|bookshelf|책장
+826|bookshelf|책장
+827|bookshelf|책장
+828|anvil|모루
+829|bellows|풀무
+830|oven|오븐
+831|flag|깃발
+832|cannon|대포
+833|cannon|대포
+834|cannon|대포
+835|cannon|대포
+836|cannon balls|포탄
+837|powder keg|화약통
+838|lit powder|점화된 화약
+839|foot rail|발판
+840|foot rail|발판
+841|foot rail|발판
+842|foot rail|발판
+843|foot rail|발판
+844|spool of thread|실 꾸러미
+845|spool of silk|비단 꾸러미
+846|pennant|페넌트
+847|pennant|페넌트
+848|table|탁자
+849|table|탁자
+850|table|탁자
+851|shadow|그림자
+852|table|탁자
+853|table|탁자
+854|shadow|그림자
+855|spittoon|타구
+856|well|우물
+857|well|우물
+858|well|우물
+859|well|우물
+860|fountain|분수
+861|sundial|해시계
+862|bell|종
+863|bell|종
+864|table|탁자
+865|table|탁자
+866|table|탁자
+867|shadow|그림자
+868|table|탁자
+869|table|탁자
+870|shadow|그림자
+871|silk cloth|비단
+872|Rune of Honesty|정직의 룬
+873|Rune of Compassion|자비의 룬
+874|Rune of Valor|용기의 룬
+875|Rune of Justice|정의의 룬
+876|Rune of Sacrifice|희생의 룬
+877|Rune of Honor|명예의 룬
+878|Rune of Spirituality|영성의 룬
+879|Rune of Humility|겸손의 룬
+880|table|탁자
+881|table|탁자
+882|table|탁자
+883|shadow|그림자
+884|shadow|그림자
+885|chair|의자
+886|chair|의자
+887|chair|의자
+888|chair|의자
+889|campfire|모닥불
+890|campfire|모닥불
+891|cross|십자가
+892|tombstone|묘비
+893|protection ring|보호의 반지
+894|regeneration ring|재생의 반지
+895|invisibility ring|투명의 반지
+896|table leg|탁자 다리
+897|shadow|그림자
+898|table leg|탁자 다리
+899|shadow|그림자
+900|stocks|족쇄
+901|stocks|족쇄
+902|person in stocks|족쇄에 갇힌 사람
+903|person in stocks|족쇄에 갇힌 사람
+904|fishing pole|낚싯대
+905|fish|물고기
+906|grave|무덤
+907|guillotine|단두대
+908|guillotine|단두대
+909|guillotine|단두대
+910|guillotine|단두대
+911|guillotine|단두대
+912|lever|레버
+913|lever|레버
+914|drawbridge|도개교
+915|drawbridge|도개교
+916|drawbridge|도개교
+917|drawbridge|도개교
+918|drawbridge|도개교
+919|drawbridge|도개교
+920|drawbridge|도개교
+921|drawbridge|도개교
+922|drawbridge|도개교
+923|balloon plans|기구 설계도
+924|doorsill|문턱
+925|doorway|출입구
+926|doorway|출입구
+927|doorway|출입구
+928|steps|계단
+929|steps|계단
+930|steps|계단
+931|steps|계단
+932|tile|타일
+933|tile|타일
+934|tile|타일
+935|yew log|주목 통나무
+936|blue potion|파란 물약
+937|red potion|빨간 물약
+938|yellow potion|노란 물약
+939|green potion|초록 물약
+940|orange potion|주황 물약
+941|purple potion|보라 물약
+942|black potion|검은 물약
+943|white potion|흰 물약
+944|steps|계단
+945|steps|계단
+946|steps|계단
+947|steps|계단
+948|steps|계단
+949|steps|계단
+950|steps|계단
+951|steps|계단
+952|steps|계단
+953|steps|계단
+954|steps|계단
+955|steps|계단
+956|yew board|주목 널판
+957|passthrough|통로
+958|passthrough|통로
+959|passthrough|통로
+960|table|탁자
+961|table|탁자
+962|table|탁자
+963|table|탁자
+964|table|탁자
+965|table|탁자
+966|table|탁자
+967|table|탁자
+968|table|탁자
+969|table|탁자
+970|table|탁자
+971|table|탁자
+972|table|탁자
+973|passthrough|통로
+974|passthrough|통로
+975|passthrough|통로
+976|fence|울타리
+977|fence|울타리
+978|fence|울타리
+979|fence|울타리
+980|fence|울타리
+981|fence|울타리
+982|bars|철창
+983|bars|철창
+984|bars|철창
+985|bars|철창
+986|bars|철창
+987|bars|철창
+988|bars|철창
+989|anchor|닻
+990|rope|밧줄
+991|pole|기둥
+992|walkway|보도
+993|walkway|보도
+994|walkway|보도
+995|walkway|보도
+996|walkway|보도
+997|walkway|보도
+998|walkway|보도
+999|walkway|보도
+1000|walkway|보도
+1001|walkway|보도
+1002|walkway|보도
+1003|walkway|보도
+1004|walkway|보도
+1005|walkway|보도
+1006|walkway|보도
+1007|walkway|보도
+1008|water wheel|물레방아
+1009|crank|크랭크
+1010|log saw|통나무 톱
+1011|mill stone|맷돌
+1012|shaft|축
+1013|shaft|축
+1014|shaft|축
+1015|shaft|축
+1016|gearwork|톱니바퀴
+1017|gearwork|톱니바퀴
+1018|gearwork|톱니바퀴
+1019|gearwork|톱니바퀴
+1020|chain|사슬
+1021|lightsource|광원
+1022|heatsource|열원
+1023|xylophone|실로폰
+1024|oaken door|참나무 문
+1025|oaken door|참나무 문
+1026|oaken door|참나무 문
+1027|oaken door|참나무 문
+1028|oaken door|참나무 문
+1029|oaken door|참나무 문
+1030|oaken door|참나무 문
+1031|oaken door|참나무 문
+1032|oaken door|참나무 문
+1033|oaken door|참나무 문
+1034|oaken door|참나무 문
+1035|oaken door|참나무 문
+1036|oaken door|참나무 문
+1037|oaken door|참나무 문
+1038|oaken door|참나무 문
+1039|oaken door|참나무 문
+1040|windowed door|창문 달린 문
+1041|windowed door|창문 달린 문
+1042|windowed door|창문 달린 문
+1043|windowed door|창문 달린 문
+1044|windowed door|창문 달린 문
+1045|windowed door|창문 달린 문
+1046|windowed door|창문 달린 문
+1047|windowed door|창문 달린 문
+1048|windowed door|창문 달린 문
+1049|windowed door|창문 달린 문
+1050|windowed door|창문 달린 문
+1051|windowed door|창문 달린 문
+1052|windowed door|창문 달린 문
+1053|windowed door|창문 달린 문
+1054|windowed door|창문 달린 문
+1055|windowed door|창문 달린 문
+1056|cedar door|삼나무 문
+1057|cedar door|삼나무 문
+1058|cedar door|삼나무 문
+1059|cedar door|삼나무 문
+1060|cedar door|삼나무 문
+1061|cedar door|삼나무 문
+1062|cedar door|삼나무 문
+1063|cedar door|삼나무 문
+1064|cedar door|삼나무 문
+1065|cedar door|삼나무 문
+1066|cedar door|삼나무 문
+1067|cedar door|삼나무 문
+1068|cedar door|삼나무 문
+1069|cedar door|삼나무 문
+1070|cedar door|삼나무 문
+1071|cedar door|삼나무 문
+1072|steel door|철문
+1073|steel door|철문
+1074|steel door|철문
+1075|steel door|철문
+1076|steel door|철문
+1077|steel door|철문
+1078|steel door|철문
+1079|steel door|철문
+1080|steel door|철문
+1081|steel door|철문
+1082|steel door|철문
+1083|steel door|철문
+1084|steel door|철문
+1085|steel door|철문
+1086|steel door|철문
+1087|steel door|철문
+1088|doorway|출입구
+1089|doorway|출입구
+1090|doorway|출입구
+1091|doorway|출입구
+1092|doorway|출입구
+1093|doorway|출입구
+1094|doorway|출입구
+1095|doorway|출입구
+1096|doorway|출입구
+1097|doorway|출입구
+1098|doorway|출입구
+1099|doorway|출입구
+1100|archway|아치형 통로
+1101|archway|아치형 통로
+1102|archway|아치형 통로
+1103|archway|아치형 통로
+1104|carpet|양탄자
+1105|carpet|양탄자
+1106|carpet|양탄자
+1107|carpet|양탄자
+1108|carpet|양탄자
+1109|carpet|양탄자
+1110|carpet|양탄자
+1111|carpet|양탄자
+1112|carpet|양탄자
+1113|carpet|양탄자
+1114|carpet|양탄자
+1115|carpet|양탄자
+1116|carpet|양탄자
+1117|carpet|양탄자
+1118|carpet|양탄자
+1119|carpet|양탄자
+1120|carpet|양탄자
+1121|carpet|양탄자
+1122|cookfire|조리용 불
+1123|cookfire|조리용 불
+1124|logs|통나무
+1125|logs|통나무
+1126|cookfire|조리용 불
+1127|cookfire|조리용 불
+1128|cookfire|조리용 불
+1129|cookfire|조리용 불
+1130|logs|통나무
+1131|logs|통나무
+1132|cookfire|조리용 불
+1133|cookfire|조리용 불
+1134|ladder|사다리
+1135|ladder|사다리
+1136|trellis|격자
+1137|trellis|격자
+1138|trellis|격자
+1139|trellis|격자
+1140|volcano|화산
+1141|crater|분화구
+1142|hole|구멍
+1143|bones|뼈
+1144|bones|뼈
+1145|bones|뼈
+1146|bones|뼈
+1147|bones|뼈
+1148|portcullis|격자문
+1149|portcullis|격자문
+1150|portcullis|격자문
+1151|portcullis|격자문
+1152|stone table|돌 탁자
+1153|stone table|돌 탁자
+1154|stone lion|돌 사자
+1155|stone lion|돌 사자
+1156|silver horn|은나팔
+1157|silver horn|은나팔
+1158|floor|바닥
+1159|stone|돌
+1160|lamppost|가로등
+1161|lamppost|가로등
+1162|lamppost|가로등
+1163|lamppost|가로등
+1164|fire field|불의 장
+1165|poison field|독의 장
+1166|protection field|보호의 장
+1167|sleep field|수면의 장
+1168|statue|조각상
+1169|statue|조각상
+1170|statue|조각상
+1171|statue|조각상
+1172|guardian|수호자
+1173|guardian|수호자
+1174|guardian|수호자
+1175|guardian|수호자
+1176|guardian|수호자
+1177|guardian|수호자
+1178|guardian|수호자
+1179|guardian|수호자
+1180|pool|연못
+1181|pool|연못
+1182|pool|연못
+1183|pool|연못
+1184|monolith|모노리스
+1185|monolith|모노리스
+1186|monolith|모노리스
+1187|monolith|모노리스
+1188|pillar|기둥
+1189|pillar|기둥
+1190|pillar|기둥
+1191|pillar|기둥
+1192|book stand|독서대
+1193|book stand|독서대
+1194|mine shaft|광산 갱도
+1195|mine shaft|광산 갱도
+1196|dungeon|던전
+1197|dungeon|던전
+1198|cave|동굴
+1199|cave|동굴
+1200|throne|왕좌
+1201|throne|왕좌
+1202|throne|왕좌
+1203|throne|왕좌
+1204|altar|제단
+1205|altar|제단
+1206|altar|제단
+1207|altar|제단
+1208|Altar of singularity|특이점의 제단
+1209|altar of singularity|특이점의 제단
+1210|altar of singularity|특이점의 제단
+1211|altar of singularity|특이점의 제단
+1212|mat|매트
+1213|mat|매트
+1214|mat|매트
+1215|mat|매트
+1216|government sign|관청 표지판
+1217|government sign|관청 표지판
+1218|food shop|식품점
+1219|food shop|식품점
+1220|guild|길드
+1221|guild|길드
+1222|shipwright|조선소
+1223|shipwright|조선소
+1224|armoury|무기점
+1225|armoury|무기점
+1226|fletcher|화살 제조소
+1227|fletcher|화살 제조소
+1228|herbalist|약초상
+1229|herbalist|약초상
+1230|textile shop|직물점
+1231|textile shop|직물점
+1232|healer|치료사
+1233|healer|치료사
+1234|blacksmith|대장간
+1235|blacksmith|대장간
+1236|inn|여관
+1237|inn|여관
+1238|sign|표지판
+1239|sign|표지판
+1240|sign|표지판
+1241|sign|표지판
+1242|sign|표지판
+1243|sign|표지판
+1244|sign|표지판
+1245|sign|표지판
+1246|signpost|표지판
+1247|sign|표지판
+1248|gargoyle sign|가고일 표지판
+1249|sign|표지판
+1250|sign|표지판
+1251|sign|표지판
+1252|secret door|비밀문
+1253|secret door|비밀문
+1254|secret door|비밀문
+1255|secret door|비밀문
+1256|egg|알
+1257|charge|충전
+1258|effect|효과
+1259|blood|피
+1260|blood|피
+1261|blood|피
+1262|dead body|시체
+1263|dead body|시체
+1264|dead body|시체
+1265|dead body|시체
+1266|dead body|시체
+1267|dead body|시체
+1268|dead body|시체
+1269|dead body|시체
+1270|dead body|시체
+1271|pile of bones|뼈 무더기
+1272|dead cyclops|죽은 사이클롭스
+1273|dead cyclops|죽은 사이클롭스
+1274|dead cyclops|죽은 사이클롭스
+1275|dead cyclops|죽은 사이클롭스
+1276|dead gargoyle|죽은 가고일
+1277|dead gargoyle|죽은 가고일
+1278|dead gargoyle|죽은 가고일
+1279|dead gargoyle|죽은 가고일
+1280|giant rat|거대 쥐
+1281|giant rat|거대 쥐
+1282|giant rat|거대 쥐
+1283|giant rat|거대 쥐
+1284|giant rat|거대 쥐
+1285|giant rat|거대 쥐
+1286|giant rat|거대 쥐
+1287|giant rat|거대 쥐
+1288|insects|곤충
+1289|insects|곤충
+1290|insects|곤충
+1291|insects|곤충
+1292|giant bat|거대 박쥐
+1293|giant bat|거대 박쥐
+1294|giant bat|거대 박쥐
+1295|giant bat|거대 박쥐
+1296|giant squid|거대 오징어
+1297|giant squid|거대 오징어
+1298|giant squid|거대 오징어
+1299|giant squid|거대 오징어
+1300|sea serpent|바다뱀
+1301|sea serpent|바다뱀
+1302|sea serpent|바다뱀
+1303|sea serpent|바다뱀
+1304|sea serpent|바다뱀
+1305|sea serpent|바다뱀
+1306|sea serpent|바다뱀
+1307|sea serpent|바다뱀
+1308|reaper|리퍼
+1309|reaper|리퍼
+1310|reaper|리퍼
+1311|reaper|리퍼
+1312|sheep|양
+1313|sheep|양
+1314|sheep|양
+1315|sheep|양
+1316|sheep|양
+1317|sheep|양
+1318|sheep|양
+1319|sheep|양
+1320|dog|개
+1321|dog|개
+1322|dog|개
+1323|dog|개
+1324|dog|개
+1325|dog|개
+1326|dog|개
+1327|dog|개
+1328|deer|사슴
+1329|deer|사슴
+1330|deer|사슴
+1331|deer|사슴
+1332|deer|사슴
+1333|deer|사슴
+1334|deer|사슴
+1335|deer|사슴
+1336|wolf|늑대
+1337|wolf|늑대
+1338|wolf|늑대
+1339|wolf|늑대
+1340|wolf|늑대
+1341|wolf|늑대
+1342|wolf|늑대
+1343|wolf|늑대
+1344|ghost|유령
+1345|ghost|유령
+1346|ghost|유령
+1347|ghost|유령
+1348|gremlin|그렘린
+1349|gremlin|그렘린
+1350|gremlin|그렘린
+1351|gremlin|그렘린
+1352|mouse|쥐
+1353|mouse|쥐
+1354|mouse|쥐
+1355|mouse|쥐
+1356|gazer|게이저
+1357|gazer|게이저
+1358|gazer|게이저
+1359|gazer|게이저
+1360|bird|새
+1361|bird|새
+1362|bird|새
+1363|bird|새
+1364|corpser|콥서
+1365|corpser|콥서
+1366|corpser|콥서
+1367|corpser|콥서
+1368|snake|뱀
+1369|snake|뱀
+1370|snake|뱀
+1371|snake|뱀
+1372|snake|뱀
+1373|snake|뱀
+1374|snake|뱀
+1375|snake|뱀
+1376|rabbit|토끼
+1377|rabbit|토끼
+1378|rabbit|토끼
+1379|rabbit|토끼
+1380|rot worms|썩은 벌레
+1381|rot worms|썩은 벌레
+1382|rot worms|썩은 벌레
+1383|rot worms|썩은 벌레
+1384|giant spider|거대 거미
+1385|giant spider|거대 거미
+1386|giant spider|거대 거미
+1387|giant spider|거대 거미
+1388|giant spider|거대 거미
+1389|giant spider|거대 거미
+1390|giant spider|거대 거미
+1391|giant spider|거대 거미
+1392|gargoyle|가고일
+1393|gargoyle|가고일
+1394|gargoyle|가고일
+1395|gargoyle|가고일
+1396|gargoyle|가고일
+1397|gargoyle|가고일
+1398|gargoyle|가고일
+1399|gargoyle|가고일
+1400|gargoyle|가고일
+1401|gargoyle|가고일
+1402|gargoyle|가고일
+1403|gargoyle|가고일
+1404|gargoyle|가고일
+1405|gargoyle|가고일
+1406|gargoyle|가고일
+1407|gargoyle|가고일
+1408|gargoyle|가고일
+1409|gargoyle|가고일
+1410|gargoyle|가고일
+1411|gargoyle|가고일
+1412|gargoyle|가고일
+1413|gargoyle|가고일
+1414|gargoyle|가고일
+1415|gargoyle|가고일
+1416|gargoyle|가고일
+1417|gargoyle|가고일
+1418|gargoyle|가고일
+1419|gargoyle|가고일
+1420|gargoyle|가고일
+1421|gargoyle|가고일
+1422|gargoyle|가고일
+1423|gargoyle|가고일
+1424|gargoyle|가고일
+1425|gargoyle|가고일
+1426|gargoyle|가고일
+1427|gargoyle|가고일
+1428|gargoyle|가고일
+1429|gargoyle|가고일
+1430|gargoyle|가고일
+1431|gargoyle|가고일
+1432|gargoyle|가고일
+1433|gargoyle|가고일
+1434|gargoyle|가고일
+1435|gargoyle|가고일
+1436|gargoyle|가고일
+1437|gargoyle|가고일
+1438|gargoyle|가고일
+1439|gargoyle|가고일
+1440|gargoyle|가고일
+1441|gargoyle|가고일
+1442|gargoyle|가고일
+1443|gargoyle|가고일
+1444|gargoyle|가고일
+1445|gargoyle|가고일
+1446|gargoyle|가고일
+1447|gargoyle|가고일
+1448|gargoyle|가고일
+1449|gargoyle|가고일
+1450|gargoyle|가고일
+1451|gargoyle|가고일
+1452|acid slug|산성 슬러그
+1453|acid slug|산성 슬러그
+1454|acid slug|산성 슬러그
+1455|acid slug|산성 슬러그
+1456|tangle vine|얽힌 덩굴
+1457|tangle vine|얽힌 덩굴
+1458|tangle vine|얽힌 덩굴
+1459|tangle vine|얽힌 덩굴
+1460|tangle vine|얽힌 덩굴
+1461|tangle vine|얽힌 덩굴
+1462|tangle vine|얽힌 덩굴
+1463|tangle vine|얽힌 덩굴
+1464|daemon|데몬
+1465|daemon|데몬
+1466|daemon|데몬
+1467|daemon|데몬
+1468|daemon|데몬
+1469|daemon|데몬
+1470|daemon|데몬
+1471|daemon|데몬
+1472|skeleton|해골
+1473|skeleton|해골
+1474|skeleton|해골
+1475|skeleton|해골
+1476|skeleton|해골
+1477|skeleton|해골
+1478|skeleton|해골
+1479|skeleton|해골
+1480|drake|드레이크
+1481|drake|드레이크
+1482|drake|드레이크
+1483|drake|드레이크
+1484|drake|드레이크
+1485|drake|드레이크
+1486|drake|드레이크
+1487|drake|드레이크
+1488|headless|머리없는 자
+1489|headless|머리없는 자
+1490|headless|머리없는 자
+1491|headless|머리없는 자
+1492|headless|머리없는 자
+1493|headless|머리없는 자
+1494|headless|머리없는 자
+1495|headless|머리없는 자
+1496|troll|트롤
+1497|troll|트롤
+1498|troll|트롤
+1499|troll|트롤
+1500|troll|트롤
+1501|troll|트롤
+1502|troll|트롤
+1503|troll|트롤
+1504|mongbat|몽뱃
+1505|mongbat|몽뱃
+1506|mongbat|몽뱃
+1507|mongbat|몽뱃
+1508|mongbat|몽뱃
+1509|mongbat|몽뱃
+1510|mongbat|몽뱃
+1511|mongbat|몽뱃
+1512|wisp|위습
+1513|wisp|위습
+1514|wisp|위습
+1515|wisp|위습
+1516|hydra|히드라
+1517|hydra|히드라
+1518|hydra|히드라
+1519|hydra|히드라
+1520|slime|슬라임
+1521|slime|슬라임
+1522|slime|슬라임
+1523|slime|슬라임
+1524|slime|슬라임
+1525|slime|슬라임
+1526|slime|슬라임
+1527|slime|슬라임
+1528|slime|슬라임
+1529|slime|슬라임
+1530|slime|슬라임
+1531|slime|슬라임
+1532|slime|슬라임
+1533|slime|슬라임
+1534|slime|슬라임
+1535|slime|슬라임
+1536|fighter|전사
+1537|fighter|전사
+1538|fighter|전사
+1539|fighter|전사
+1540|fighter|전사
+1541|fighter|전사
+1542|fighter|전사
+1543|fighter|전사
+1544|fighter|전사
+1545|fighter|전사
+1546|fighter|전사
+1547|fighter|전사
+1548|fighter|전사
+1549|fighter|전사
+1550|fighter|전사
+1551|fighter|전사
+1552|swashbuckler|검객
+1553|swashbuckler|검객
+1554|swashbuckler|검객
+1555|swashbuckler|검객
+1556|swashbuckler|검객
+1557|swashbuckler|검객
+1558|swashbuckler|검객
+1559|swashbuckler|검객
+1560|swashbuckler|검객
+1561|swashbuckler|검객
+1562|swashbuckler|검객
+1563|swashbuckler|검객
+1564|swashbuckler|검객
+1565|swashbuckler|검객
+1566|swashbuckler|검객
+1567|swashbuckler|검객
+1568|mage|마법사
+1569|mage|마법사
+1570|mage|마법사
+1571|mage|마법사
+1572|mage|마법사
+1573|mage|마법사
+1574|mage|마법사
+1575|mage|마법사
+1576|mage|마법사
+1577|mage|마법사
+1578|mage|마법사
+1579|mage|마법사
+1580|mage|마법사
+1581|mage|마법사
+1582|mage|마법사
+1583|mage|마법사
+1584|villager|마을 주민
+1585|villager|마을 주민
+1586|villager|마을 주민
+1587|villager|마을 주민
+1588|villager|마을 주민
+1589|villager|마을 주민
+1590|villager|마을 주민
+1591|villager|마을 주민
+1592|villager|마을 주민
+1593|villager|마을 주민
+1594|villager|마을 주민
+1595|villager|마을 주민
+1596|villager|마을 주민
+1597|villager|마을 주민
+1598|villager|마을 주민
+1599|villager|마을 주민
+1600|merchant|상인
+1601|merchant|상인
+1602|merchant|상인
+1603|merchant|상인
+1604|merchant|상인
+1605|merchant|상인
+1606|merchant|상인
+1607|merchant|상인
+1608|merchant|상인
+1609|merchant|상인
+1610|merchant|상인
+1611|merchant|상인
+1612|merchant|상인
+1613|merchant|상인
+1614|merchant|상인
+1615|merchant|상인
+1616|child|아이
+1617|child|아이
+1618|child|아이
+1619|child|아이
+1620|child|아이
+1621|child|아이
+1622|child|아이
+1623|child|아이
+1624|child|아이
+1625|child|아이
+1626|child|아이
+1627|child|아이
+1628|child|아이
+1629|child|아이
+1630|child|아이
+1631|child|아이
+1632|guard|경비병
+1633|guard|경비병
+1634|guard|경비병
+1635|guard|경비병
+1636|guard|경비병
+1637|guard|경비병
+1638|guard|경비병
+1639|guard|경비병
+1640|guard|경비병
+1641|guard|경비병
+1642|guard|경비병
+1643|guard|경비병
+1644|guard|경비병
+1645|guard|경비병
+1646|guard|경비병
+1647|guard|경비병
+1648|jester|광대
+1649|jester|광대
+1650|jester|광대
+1651|jester|광대
+1652|jester|광대
+1653|jester|광대
+1654|jester|광대
+1655|jester|광대
+1656|jester|광대
+1657|jester|광대
+1658|jester|광대
+1659|jester|광대
+1660|jester|광대
+1661|jester|광대
+1662|jester|광대
+1663|jester|광대
+1664|peasant|농부
+1665|peasant|농부
+1666|peasant|농부
+1667|peasant|농부
+1668|peasant|농부
+1669|peasant|농부
+1670|peasant|농부
+1671|peasant|농부
+1672|peasant|농부
+1673|peasant|농부
+1674|peasant|농부
+1675|peasant|농부
+1676|peasant|농부
+1677|peasant|농부
+1678|peasant|농부
+1679|peasant|농부
+1680|farmer|농부
+1681|farmer|농부
+1682|farmer|농부
+1683|farmer|농부
+1684|farmer|농부
+1685|farmer|농부
+1686|farmer|농부
+1687|farmer|농부
+1688|farmer|농부
+1689|farmer|농부
+1690|farmer|농부
+1691|farmer|농부
+1692|farmer|농부
+1693|farmer|농부
+1694|farmer|농부
+1695|farmer|농부
+1696|musician|음악가
+1697|musician|음악가
+1698|musician|음악가
+1699|musician|음악가
+1700|musician|음악가
+1701|musician|음악가
+1702|musician|음악가
+1703|musician|음악가
+1704|musician|음악가
+1705|musician|음악가
+1706|musician|음악가
+1707|musician|음악가
+1708|musician|음악가
+1709|musician|음악가
+1710|musician|음악가
+1711|musician|음악가
+1712|woman|여인
+1713|woman|여인
+1714|woman|여인
+1715|woman|여인
+1716|woman|여인
+1717|woman|여인
+1718|woman|여인
+1719|woman|여인
+1720|woman|여인
+1721|woman|여인
+1722|woman|여인
+1723|woman|여인
+1724|woman|여인
+1725|woman|여인
+1726|woman|여인
+1727|woman|여인
+1728|cat|고양이
+1729|cat|고양이
+1730|cat|고양이
+1731|cat|고양이
+1732|silver tablet|은판
+1733|silver fragment|은조각
+1734|farmer|농부
+1735|farmer|농부
+1736|musician|음악가
+1737|musician|음악가
+1738|musician|음악가
+1739|musician|음악가
+1740|musician|음악가
+1741|musician|음악가
+1742|musician|음악가
+1743|musician|음악가
+1744|shrine|성지
+1745|Britannian Lens|브리타니아 렌즈
+1746|broken lens|깨진 렌즈
+1747|Gargoyle Lens|가고일 렌즈
+1748|Statue of Mondain|몬데인 조각상
+1749|Statue of Minax|미낙스 조각상
+1750|Statue of Exodus|엑소더스 조각상
+1751|part of a map|지도 조각
+1752|part of a map|지도 조각
+1753|part of a map|지도 조각
+1754|part of a map|지도 조각
+1755|part of a map|지도 조각
+1756|part of a map|지도 조각
+1757|part of a map|지도 조각
+1758|part of a map|지도 조각
+1759|part of a map|지도 조각
+1760|Lord British|로드 브리티시
+1761|Lord British|로드 브리티시
+1762|Lord British|로드 브리티시
+1763|Lord British|로드 브리티시
+1764|Lord British|로드 브리티시
+1765|Lord British|로드 브리티시
+1766|Lord British|로드 브리티시
+1767|Lord British|로드 브리티시
+1768|Lord British|로드 브리티시
+1769|Lord British|로드 브리티시
+1770|Lord British|로드 브리티시
+1771|Lord British|로드 브리티시
+1772|Lord British|로드 브리티시
+1773|Lord British|로드 브리티시
+1774|Lord British|로드 브리티시
+1775|Lord British|로드 브리티시
+1776|Avatar|아바타
+1777|Avatar|아바타
+1778|Avatar|아바타
+1779|Avatar|아바타
+1780|Avatar|아바타
+1781|Avatar|아바타
+1782|Avatar|아바타
+1783|Avatar|아바타
+1784|Avatar|아바타
+1785|Avatar|아바타
+1786|Avatar|아바타
+1787|Avatar|아바타
+1788|Avatar|아바타
+1789|Avatar|아바타
+1790|Avatar|아바타
+1791|Avatar|아바타
+1792|dragon|드래곤
+1793|dragon|드래곤
+1794|dragon|드래곤
+1795|dragon|드래곤
+1796|dragon|드래곤
+1797|dragon|드래곤
+1798|dragon|드래곤
+1799|dragon|드래곤
+1800|dragon|드래곤
+1801|dragon|드래곤
+1802|dragon|드래곤
+1803|dragon|드래곤
+1804|dragon|드래곤
+1805|dragon|드래곤
+1806|dragon|드래곤
+1807|dragon|드래곤
+1808|dragon|드래곤
+1809|dragon|드래곤
+1810|dragon|드래곤
+1811|dragon|드래곤
+1812|dragon|드래곤
+1813|dragon|드래곤
+1814|dragon|드래곤
+1815|dragon|드래곤
+1816|dragon|드래곤
+1817|dragon|드래곤
+1818|dragon|드래곤
+1819|dragon|드래곤
+1820|dragon|드래곤
+1821|dragon|드래곤
+1822|dragon|드래곤
+1823|dragon|드래곤
+1824|dragon|드래곤
+1825|dragon|드래곤
+1826|dragon|드래곤
+1827|dragon|드래곤
+1828|dragon|드래곤
+1829|dragon|드래곤
+1830|dragon|드래곤
+1831|dragon|드래곤
+1832|ship|배
+1833|ship|배
+1834|ship|배
+1835|ship|배
+1836|ship|배
+1837|ship|배
+1838|ship|배
+1839|ship|배
+1840|ship|배
+1841|ship|배
+1842|ship|배
+1843|ship|배
+1844|ship|배
+1845|ship|배
+1846|ship|배
+1847|ship|배
+1848|ship|배
+1849|ship|배
+1850|ship|배
+1851|ship|배
+1852|ship|배
+1853|ship|배
+1854|ship|배
+1855|ship|배
+1856|silver serpent|은뱀
+1857|silver serpent|은뱀
+1858|silver serpent|은뱀
+1859|silver serpent|은뱀
+1860|silver serpent|은뱀
+1861|silver serpent|은뱀
+1862|silver serpent|은뱀
+1863|silver serpent|은뱀
+1864|silver serpent|은뱀
+1865|silver serpent|은뱀
+1866|silver serpent|은뱀
+1867|silver serpent|은뱀
+1868|silver serpent|은뱀
+1869|silver serpent|은뱀
+1870|silver serpent|은뱀
+1871|silver serpent|은뱀
+1872|skiff|작은 배
+1873|skiff|작은 배
+1874|skiff|작은 배
+1875|skiff|작은 배
+1876|raft|뗏목
+1877|nothing|아무것도 없음
+1878|dragon egg|드래곤 알
+1879|hatched dragon egg|부화한 드래곤 알
+1880|pull chain|당기는 사슬
+1881|balloon|기구
+1882|mammoth silk bag|매머드 비단 주머니
+1883|balloon basket|기구 바구니
+1884|balloon|기구
+1885|balloon|기구
+1886|balloon|기구
+1887|balloon|기구
+1888|cyclops|사이클롭스
+1889|cyclops|사이클롭스
+1890|cyclops|사이클롭스
+1891|cyclops|사이클롭스
+1892|cyclops|사이클롭스
+1893|cyclops|사이클롭스
+1894|cyclops|사이클롭스
+1895|cyclops|사이클롭스
+1896|cyclops|사이클롭스
+1897|cyclops|사이클롭스
+1898|cyclops|사이클롭스
+1899|cyclops|사이클롭스
+1900|cyclops|사이클롭스
+1901|cyclops|사이클롭스
+1902|cyclops|사이클롭스
+1903|cyclops|사이클롭스
+1904|cyclops|사이클롭스
+1905|cyclops|사이클롭스
+1906|cyclops|사이클롭스
+1907|cyclops|사이클롭스
+1908|cyclops|사이클롭스
+1909|cyclops|사이클롭스
+1910|cyclops|사이클롭스
+1911|cyclops|사이클롭스
+1912|cyclops|사이클롭스
+1913|cyclops|사이클롭스
+1914|cyclops|사이클롭스
+1915|cyclops|사이클롭스
+1916|cyclops|사이클롭스
+1917|cyclops|사이클롭스
+1918|cyclops|사이클롭스
+1919|cyclops|사이클롭스
+1920|hydra|히드라
+1921|hydra|히드라
+1922|hydra|히드라
+1923|hydra|히드라
+1924|hydra|히드라
+1925|hydra|히드라
+1926|hydra|히드라
+1927|hydra|히드라
+1928|hydra|히드라
+1929|hydra|히드라
+1930|hydra|히드라
+1931|hydra|히드라
+1932|hydra|히드라
+1933|hydra|히드라
+1934|hydra|히드라
+1935|hydra|히드라
+1936|hydra|히드라
+1937|hydra|히드라
+1938|hydra|히드라
+1939|hydra|히드라
+1940|hydra|히드라
+1941|hydra|히드라
+1942|hydra|히드라
+1943|hydra|히드라
+1944|hydra|히드라
+1945|hydra|히드라
+1946|hydra|히드라
+1947|hydra|히드라
+1948|hydra|히드라
+1949|hydra|히드라
+1950|hydra|히드라
+1951|hydra|히드라
+1952|giant scorpion|거대 전갈
+1953|giant scorpion|거대 전갈
+1954|giant scorpion|거대 전갈
+1955|giant scorpion|거대 전갈
+1956|giant scorpion|거대 전갈
+1957|giant scorpion|거대 전갈
+1958|giant scorpion|거대 전갈
+1959|giant scorpion|거대 전갈
+1960|giant scorpion|거대 전갈
+1961|giant scorpion|거대 전갈
+1962|giant scorpion|거대 전갈
+1963|giant scorpion|거대 전갈
+1964|giant scorpion|거대 전갈
+1965|giant scorpion|거대 전갈
+1966|giant scorpion|거대 전갈
+1967|giant scorpion|거대 전갈
+1968|giant ant|거대 개미
+1969|giant ant|거대 개미
+1970|giant ant|거대 개미
+1971|giant ant|거대 개미
+1972|giant ant|거대 개미
+1973|giant ant|거대 개미
+1974|giant ant|거대 개미
+1975|giant ant|거대 개미
+1976|giant ant|거대 개미
+1977|giant ant|거대 개미
+1978|giant ant|거대 개미
+1979|giant ant|거대 개미
+1980|giant ant|거대 개미
+1981|giant ant|거대 개미
+1982|giant ant|거대 개미
+1983|giant ant|거대 개미
+1984|cow|소
+1985|cow|소
+1986|cow|소
+1987|cow|소
+1988|cow|소
+1989|cow|소
+1990|cow|소
+1991|cow|소
+1992|cow|소
+1993|cow|소
+1994|cow|소
+1995|cow|소
+1996|cow|소
+1997|cow|소
+1998|cow|소
+1999|cow|소
+2000|alligator|악어
+2001|alligator|악어
+2002|alligator|악어
+2003|alligator|악어
+2004|alligator|악어
+2005|alligator|악어
+2006|alligator|악어
+2007|alligator|악어
+2008|alligator|악어
+2009|alligator|악어
+2010|alligator|악어
+2011|alligator|악어
+2012|alligator|악어
+2013|alligator|악어
+2014|alligator|악어
+2015|alligator|악어
+2016|horse|말
+2017|horse|말
+2018|horse|말
+2019|horse|말
+2020|horse|말
+2021|horse|말
+2022|horse|말
+2023|horse|말
+2024|horse|말
+2025|horse|말
+2026|horse|말
+2027|horse|말
+2028|horse|말
+2029|horse|말
+2030|horse|말
+2031|horse|말
+2032|horse with rider|기수가 탄 말
+2033|horse|말
+2034|horse|말
+2035|horse|말
+2036|horse|말
+2037|horse|말
+2038|horse with rider|기수가 탄 말
+2039|Nothing|아무것도 없음
+2040|Nothing|아무것도 없음
+2041|Nothing|아무것도 없음
+2042|Nothing|아무것도 없음
+2043|Nothing|아무것도 없음
+2044|Nothing|아무것도 없음
+2045|Nothing|아무것도 없음
+2046|Nothing|아무것도 없음
+2047|Nothing|아무것도 없음
