@@ -7774,3 +7774,18 @@
 202|"Watch your step, $G."|"발밑 조심하시오, $G."
 202|"Welcome to our city!"|"우리 도시에 오신 걸 환영하오!"
 202|The guard nods respectfully as you pass.|당신이 지나가자 경비병이 정중하게 고개를 끄덕인다.
+202|a muscular, well armored guard.\n*|건장하고 무장이 잘 된 경비병이다.\n*
+202|"Hello. Can I help you with something?"|"안녕하시오. 무엇을 도와드릴까요?"
+202|"Well, what can I help you with?"|"그래서, 무엇을 도와드릴까요?"
+202|"I'm not allowed to give out that information."|"그 정보는 알려드릴 수가 없소."
+202|"I am one of Lord British's elite guards. We keep @order throughout @Britannia."|"나는 로드 브리티시의 정예 경비병 중 한 명이오. 우리는 @브리타니아(Britannia) 전역에서 @질서(order)를 지키고 있소."
+202|"Many things could disturb the peace of a town."|"마을의 평화를 어지럽히는 것들이 많소."
+202|"There's always someone making trouble, or some creature that needs to be driven away."|"항상 말썽을 일으키는 자가 있거나, 쫓아내야 할 생물이 있기 마련이오."
+202|"We try to prevent @murder and other violence."|"우리는 @살인(murder)과 다른 폭력을 막으려 하오."
+202|"If someone becomes too much of a nuisance, we have to throw them in prison."|"누군가 너무 골칫거리가 되면, 감옥에 가둬야 하오."
+202|"Britannia has some excellent @prisons."|"브리타니아에는 훌륭한 @감옥(prisons)들이 있소."
+202|"There are a few, scattered around Britannia."|"브리타니아 곳곳에 몇 군데 있소."
+202|"The most famous is Wrong."|"가장 유명한 곳은 롱(Wrong)이오."
+202|"Taking a life is one of the most horrible crimes imaginable. Anyone who does so is punished severely."|"생명을 빼앗는 것은 상상할 수 있는 가장 끔찍한 범죄 중 하나요. 그런 짓을 한 자는 엄하게 처벌받소."
+202|"If that is all, then I'll be back about my duties."|"이게 전부라면, 다시 임무로 복귀하겠소."
+202|"Perhaps you should ask somebody else."|"아마 다른 사람에게 물어보시는 게 좋겠소."

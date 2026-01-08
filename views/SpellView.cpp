@@ -50,6 +50,7 @@
 #include "Game.h"
 
 static const char circle_num_tbl[][8] = {"1ST", "2ND", "3RD", "4TH", "5TH", "6TH", "7TH", "8TH"};
+static const char circle_num_tbl_ko[][16] = {"1써클", "2써클", "3써클", "4써클", "5써클", "6써클", "7써클", "8써클"};
 static const int obj_n_reagent[8]={OBJ_U6_MANDRAKE_ROOT, OBJ_U6_NIGHTSHADE, OBJ_U6_BLACK_PEARL, OBJ_U6_BLOOD_MOSS, OBJ_U6_SPIDER_SILK, OBJ_U6_GARLIC, OBJ_U6_GINSENG, OBJ_U6_SULFUROUS_ASH};
 
 #define NEWMAGIC_BMP_W 144
@@ -330,8 +331,8 @@ void SpellView::display_level_text()
 
  if(use_4x)
  {
-   korean_font->drawStringUTF8(screen, circle_num_tbl[level-1], area.x + (96 + 8) * scale, area.y + NEWMAGIC_BMP_H * scale, 0x48, 0, 1);
-   korean_font->drawStringUTF8(screen, "level", area.x + 96 * scale, area.y + (NEWMAGIC_BMP_H + 8) * scale, 0x48, 0, 1);
+   // Korean: Display "1써클" in single line instead of "1ST" + "level"
+   korean_font->drawStringUTF8(screen, circle_num_tbl_ko[level-1], area.x + 96 * scale, area.y + (NEWMAGIC_BMP_H + 4) * scale, 0x48, 0, 1);
  }
  else
  {

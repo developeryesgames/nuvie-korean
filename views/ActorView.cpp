@@ -313,35 +313,48 @@ void ActorView::display_actor_stats()
  bool use_4x = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
 
  if(use_4x) {
-   // 4x scaled stats display
-   // Portrait is 56x64 * 4 = 224x256, stats start at portrait_width (224px)
-   uint16 stats_x = area.x + 224 + 8; // After portrait with some padding
+   // 4x scaled stats display - Korean translated and centered
+   // Portrait is 56x64 * 4 = 224x256
+   // Stats area is roughly 176px wide (from portrait edge to window edge)
+   uint16 stats_area_x = area.x + 224; // Start after portrait
+   uint16 stats_area_w = 176; // Available width for stats
    uint16 stats_y = area.y + 32; // Below name
-   uint16 line_height = 32; // 32px per line
+   uint16 line_height = 28; // Slightly smaller for better fit
    uint8 text_color = 0x48; // Brown color for Korean text
 
-   sprintf(buf,"%d", Game::get_game()->get_script()->call_actor_str_adj(actor));
-   uint16 str_len = korean_font->drawStringUTF8(screen, "STR:", stats_x, stats_y, text_color, 0, 1);
-   korean_font->drawStringUTF8(screen, buf, stats_x + str_len, stats_y, actor->get_str_text_color(), 0, 1);
+   // Helper lambda-like approach: center text in stats area
+   auto center_text = [&](const char* text, uint16 y, uint8 color) {
+     uint16 text_w = korean_font->getStringWidthUTF8(text);
+     uint16 x = stats_area_x + (stats_area_w - text_w) / 2;
+     korean_font->drawStringUTF8(screen, text, x, y, color, 0, 1);
+   };
 
-   sprintf(buf,"%d",Game::get_game()->get_script()->call_actor_dex_adj(actor));
-   str_len = korean_font->drawStringUTF8(screen, "DEX:", stats_x, stats_y + line_height, text_color, 0, 1);
-   korean_font->drawStringUTF8(screen, buf, stats_x + str_len, stats_y + line_height, actor->get_dex_text_color(), 0, 1);
+   // STR (힘)
+   sprintf(buf,"힘:%d", Game::get_game()->get_script()->call_actor_str_adj(actor));
+   center_text(buf, stats_y, actor->get_str_text_color());
 
-   sprintf(buf,"INT:%d",Game::get_game()->get_script()->call_actor_int_adj(actor));
-   korean_font->drawStringUTF8(screen, buf, stats_x, stats_y + line_height * 2, text_color, 0, 1);
+   // DEX (민첩)
+   sprintf(buf,"민첩:%d",Game::get_game()->get_script()->call_actor_dex_adj(actor));
+   center_text(buf, stats_y + line_height, actor->get_dex_text_color());
 
-   korean_font->drawStringUTF8(screen, "Magic", stats_x, stats_y + line_height * 3, text_color, 0, 1);
-   sprintf(buf,"%d/%d",actor->get_magic(),actor->get_maxmagic());
-   korean_font->drawStringUTF8(screen, buf, stats_x, stats_y + line_height * 4, text_color, 0, 1);
+   // INT (지능)
+   sprintf(buf,"지능:%d",Game::get_game()->get_script()->call_actor_int_adj(actor));
+   center_text(buf, stats_y + line_height * 2, text_color);
 
-   korean_font->drawStringUTF8(screen, "Health", stats_x, stats_y + line_height * 5, text_color, 0, 1);
-   sprintf(buf,"%d/%d",actor->get_hp(),actor->get_maxhp());
-   korean_font->drawStringUTF8(screen, buf, stats_x, stats_y + line_height * 6, hp_text_color, 0, 1);
+   // Magic (마력)
+   sprintf(buf,"마력:%d/%d",actor->get_magic(),actor->get_maxmagic());
+   center_text(buf, stats_y + line_height * 3, text_color);
 
-   korean_font->drawStringUTF8(screen, "Lev/Exp", stats_x, stats_y + line_height * 7, text_color, 0, 1);
-   sprintf(buf,"%d/%d",actor->get_level(),actor->get_exp());
-   korean_font->drawStringUTF8(screen, buf, stats_x, stats_y + line_height * 8, text_color, 0, 1);
+   // Health (체력)
+   sprintf(buf,"체력:%d/%d",actor->get_hp(),actor->get_maxhp());
+   center_text(buf, stats_y + line_height * 4, hp_text_color);
+
+   // Level/Exp (레벨/경험)
+   sprintf(buf,"레벨:%d",actor->get_level());
+   center_text(buf, stats_y + line_height * 5, text_color);
+
+   sprintf(buf,"경험:%d",actor->get_exp());
+   center_text(buf, stats_y + line_height * 6, text_color);
    return;
  }
 

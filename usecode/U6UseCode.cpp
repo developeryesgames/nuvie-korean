@@ -543,6 +543,11 @@ bool U6UseCode::use_ladder(Obj *obj, UseCodeEvent ev)
 
  if(obj->frame_n == 0) // DOWN
    {
+    if(obj->z >= 5) // Cannot go below dungeon level 5
+      {
+       scroll->display_string("\nCan't go down any further.\n");
+       return true;
+      }
     if(obj->z == 0)//handle the transition from the surface to the first dungeon level
       {
        x = (obj->x & 0x07) | (obj->x >> 2 & 0xF8);
@@ -552,6 +557,11 @@ bool U6UseCode::use_ladder(Obj *obj, UseCodeEvent ev)
    }
  else //UP
    {
+    if(obj->z == 0) // Cannot go above surface level
+      {
+       scroll->display_string("\nCan't go up any further.\n");
+       return true;
+      }
     if(obj->z == 1)//we use obj->quality to tell us which surface chunk to come up in.
       {
        x = obj->x / 8 * 8 * 4 + ((obj->quality & 0x03) * 8) + (obj->x - obj->x / 8 * 8);
