@@ -536,7 +536,6 @@ void MapWindow::moveLevel(uint8 new_level)
 
 void MapWindow::moveMap(sint16 new_x, sint16 new_y, sint8 new_level, uint8 new_x_add, uint8 new_y_add)
 {
-
   map_width = map->get_width(new_level);
 
  if(new_x < 0)
@@ -1984,7 +1983,7 @@ void MapWindow::boundaryFill(unsigned char *map_ptr, uint16 pitch, uint16 x, uin
  uint16 pos;
  uint16 tmp_x, tmp_y;
  uint16 p_cur_x, p_cur_y; //wrapped cur_x - 1 and wrapped cur_y - 1
- 
+
  p_cur_x = WRAPPED_COORD(cur_x - TMP_MAP_BORDER,cur_level);
  p_cur_y = WRAPPED_COORD(cur_y - TMP_MAP_BORDER,cur_level);
 	
@@ -2030,13 +2029,13 @@ void MapWindow::boundaryFill(unsigned char *map_ptr, uint16 pitch, uint16 x, uin
 
  uint16 xp1,xm1;
  uint16 yp1,ym1;
- 
+
  xp1 = WRAPPED_COORD(x+1,cur_level);
  xm1 = WRAPPED_COORD(x-1,cur_level);
 
  yp1 = WRAPPED_COORD(y+1,cur_level);
  ym1 = WRAPPED_COORD(y-1,cur_level);
- 
+
  boundaryFill(map_ptr, pitch, xp1,   y);
  boundaryFill(map_ptr, pitch,   x, yp1);
  boundaryFill(map_ptr, pitch, xp1, yp1);
@@ -2045,7 +2044,6 @@ void MapWindow::boundaryFill(unsigned char *map_ptr, uint16 pitch, uint16 x, uin
  boundaryFill(map_ptr, pitch,   x, ym1);
  boundaryFill(map_ptr, pitch, xp1, ym1);
  boundaryFill(map_ptr, pitch, xm1, yp1);
-
 
  return;
 }

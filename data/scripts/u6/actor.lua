@@ -355,7 +355,7 @@ function actor_tile_dmg(actor, map_tile)
 					local str = actor_str_adj(actor)
 					if str < random(1, 0x1e) then
 						actor.paralyzed = true
-						print("`"..actor.name.." is stuck in a web!\n")
+						print("`"..korean_translate(actor.name)..korean_translate(" is stuck in a web!\n"))
 					end
 				end
 			elseif (map_tile >= 2 and map_tile <= 5) or map_tile == 1165 then --swamp tiles or poison field.
@@ -364,7 +364,7 @@ function actor_tile_dmg(actor, map_tile)
 				if swamp_boots == false or map_tile == 1165 then
 					if (actor_type == nil or actor_type[19] == 0) and actor.poisoned == false then --19 immune to poison
 						actor.poisoned = true
-						print(actor.name.." poisoned!\n")
+						print(korean_translate(actor.name)..korean_translate(" poisoned!\n"))
 						hit_anim(actor.x, actor.y)
 					end
 				end
@@ -904,7 +904,7 @@ function acid_slug_dissolve_item(target_actor)
 	
 	if obj ~= nil then
 		play_sfx(SFX_SLUG_DISSOLVE, true)
-		print("A slug dissolves "..target_actor.name.."'s "..obj.name.."!\n")
+		print(korean_translate("A slug dissolves ")..korean_translate(target_actor.name)..korean_translate("'s ")..korean_translate(obj.name)..korean_translate("!\n"))
 		Actor.inv_remove_obj(target_actor, obj)
 		obj = nil
 	end
@@ -926,7 +926,7 @@ function gremlin_steal_item(target_actor)
 	
 	if obj ~= nil then
 		play_sfx(SFX_FAILURE, true)
-		print("`"..target_actor.name.."  has been robbed!\n")
+		print("`"..korean_translate(target_actor.name)..korean_translate(" has been robbed!\n"))
 		Actor.inv_remove_obj(target_actor, obj)
 		obj = nil
 	end
@@ -970,9 +970,9 @@ function actor_take_hit(attacker, defender, max_dmg)
       
       attacker.exp = attacker.exp + exp_gained
    else
-      print("`"..defender.name.." grazed.\n")
+      print("`"..korean_translate(defender.name)..korean_translate(" grazed.\n"))
    end
-   
+
    if defender_type == "actor" then
       
       actor_yell_for_help(attacker, defender, max_dmg)
@@ -989,7 +989,7 @@ function actor_take_hit(attacker, defender, max_dmg)
          
          if attacker_obj_n == 0x165 then --corpser
          	play_sfx(SFX_CORPSER_DRAGGED_UNDER, true)
-            print("`"..defender.name.." dragged under!\n")
+            print("`"..korean_translate(defender.name)..korean_translate(" dragged under!\n"))
             defender.corpser_flag = true
             if defender.in_party == true then
                party_update_leader()
@@ -1007,14 +1007,14 @@ function actor_take_hit(attacker, defender, max_dmg)
          local actor_type = actor_tbl[attacker_obj_n]
          if actor_type ~= nil and actor_type[15] == 1 and math.random(0, 3) == 0 and defender.actor_num ~= 0 then --actor is poisonous, don't poison vehicles.
          	defender.poisoned = true
-         	print("`"..defender.name..korean_translate(" poisoned!\n"))
+         	print("`"..korean_translate(defender.name)..korean_translate(" poisoned!\n"))
          end
-         
+
          if max_dmg > 0 then
          	actor_hit_msg(defender)
          end
       else
-         print("`"..defender.name..korean_translate(" killed!\n"))
+         print("`"..korean_translate(defender.name)..korean_translate(" killed!\n"))
          --FIXME do party roster change. maybe
       end
       
@@ -1246,7 +1246,7 @@ function slime_divide(slime)
 		if map_can_put(new_x, new_y, from_z) then
 			Actor.clone(slime, new_x, new_y, from_z)
 			slime_update_frames()
-			print("Slime divides!\n")
+			print(korean_translate("Slime divides!\n"))
 			return
 		end
 	end
@@ -1324,13 +1324,13 @@ function out_of_ammo(attacker, weapon, print_message)
 
    if (weapon_obj_n == 41 or weapon_obj_n == 54) and Actor.inv_has_obj_n(attacker, 55) == false then --bow, magic bow, arrows
       if(print_message) then
-         print("Out of arrows!\n")
+         print(korean_translate("Out of arrows!\n"))
       end
       return true --no arrows, bail out
    end
    if (weapon_obj_n == 42 or weapon_obj_n == 50) and Actor.inv_has_obj_n(attacker, 56) == false then --crossbow, triple crossbow, bolts
       if(print_message) then
-         print("Out of bolts!\n")
+         print(korean_translate("Out of bolts!\n"))
       end
       return true --no bolts, bail out
    end
@@ -1348,7 +1348,7 @@ function actor_attack(attacker, target_x, target_y, target_z, weapon, foe)
    local weapon_quality = weapon.quality
 
 	if foe ~= nil and foe.actor_num == attacker.actor_num then
-		print("\n"..attacker.name.." is try to attack itself. Report me!\n")  -- this shouldn't happen
+		print("\n"..korean_translate(attacker.name)..korean_translate(" is trying to attack itself. Report me!\n"))  -- this shouldn't happen
 		return
 	end
    
@@ -1427,23 +1427,23 @@ function actor_attack(attacker, target_x, target_y, target_z, weapon, foe)
    if weapon_obj_n == 0x150 or weapon_obj_n == 0x39 then --charge, spellbook
 
       if weapon_quality == 0x81 and actor_obj_n == 0x175 then -- special wisp magic (wisp teleport), wisp
-                  
+
          if toss_actor(attacker, player_loc.x, player_loc.y, player_loc.z) == true then
-         
-            print("Wisp teleports!\n")
+
+            print(korean_translate("Wisp teleports!\n"))
          end
 
          return
       end
-      
+
       local spell_retcode = 0
 
       magic_cast_spell(weapon_quality, attacker, {x = target_x, y = target_y, z = target_z})
-      
+
       if weapon_quality == 0x50 and spell_retcode == 0xfe then
-         print("`"..foe.name .. " is charmed.\n")
+         print("`"..korean_translate(foe.name)..korean_translate(" is charmed.\n"))
       elseif weapon_quality == 0x45 and spell_retcode == 0 then
-         print("`"..foe.name .. " is paralyzed.\n")
+         print("`"..korean_translate(foe.name)..korean_translate(" is paralyzed.\n"))
       end
       
       return
@@ -1552,7 +1552,7 @@ function actor_attack(attacker, target_x, target_y, target_z, weapon, foe)
          end
       
          if weapon_obj_n == 0x30 then
-            print("Thy sword hath shattered!\n")
+            print(korean_translate("Thy sword hath shattered!\n"))
             Actor.inv_remove_obj(attacker, weapon)
          end
       end
@@ -1600,7 +1600,7 @@ function combat_range_weapon_1D5F9(attacker, target_x, target_y, target_z, foe, 
       --lightning wand, fire wand
       if random(1, 100) == 37 then
       	Actor.inv_remove_obj(attacker, weapon)
-      	print("A wand has vanished!\n")
+      	print(korean_translate("A wand has vanished!\n"))
       end
    elseif weapon_obj_n == 0x53 then
       --flask of oil
@@ -2012,7 +2012,7 @@ function advance_time(num_turns)
 						
 						if obj_name ~= nil then
 							Actor.inv_remove_obj(actor, obj)
-							print("A "..obj_name.." has vanished!\n")
+							print(korean_translate("A ")..korean_translate(obj_name)..korean_translate(" has vanished!\n"))
 						end
 					end
 				end
@@ -2127,15 +2127,15 @@ function actor_corpser_regurgitation(actor)
    if actor.corpser_flag == false then return end
    
    if actor.wt == WT_PLAYER then
-      print("\n"..actor.name..":\nARGH!\n")
+      print("\n"..korean_translate(actor.name)..":\n"..korean_translate("ARGH!\n"))
    end
-   
+
    local random = math.random
    local val = random(1, 0x1e)
-     
+
    if val < actor_str_adj(actor) then
       play_sfx(SFX_CORPSER_REGURGITATE, true)
-      print("`"..actor.name.." regurgitated!\n")
+      print("`"..korean_translate(actor.name)..korean_translate(" regurgitated!\n"))
       actor.corpser_flag = false
       if actor.in_party == true then
          party_update_leader()
@@ -2225,12 +2225,12 @@ end
 function actor_get_obj(actor, obj)
 
 	if obj.getable == false then
-		print("\n\nNot possible.")
+		print(korean_translate("\n\nNot possible."))
 		return false
 	end
-	
+
 	if Actor.can_carry_obj_weight(actor, obj) == false then
-		print("\n\nThe total is too heavy.")
+		print(korean_translate("\n\nThe total is too heavy."))
 		return false
 	end
 
@@ -2353,17 +2353,17 @@ function caught_by_guard(actor)
    --end
    
    Actor.show_portrait(actor)
-   
-   print("\n\"Thou art under arrest!\"\n\n\"Wilt thou come quietly?\"\n\n:")
-   
+
+   print(korean_translate("\n\"Thou art under arrest!\"\n\n\"Wilt thou come quietly?\"\n\n:"))
+
    local var_6 = input_select("yn", false)
-   
+
    actor.wt = 0x81
-   
+
    Actor.hide_portrait()
-   
+
    if var_6 == "Y" then
-      print("es\n\nThe guard strikes thee unconscious!\n\nThou dost awaken to...\n")
+      print(korean_translate("es\n\nThe guard strikes thee unconscious!\n\nThou dost awaken to...\n"))
       --sub_2ACA1()
       
       fade_out()
@@ -2414,8 +2414,8 @@ function caught_by_guard(actor)
       ax = sub_46DC()
    --]]
    else
-   
-      print("o\n\n\"Then defend thyself, rogue!\"\n")
+
+      print(korean_translate("o\n\n\"Then defend thyself, rogue!\"\n"))
       activate_city_guards()
       actor.wt = WT_ASSAULT
       actor.align = ALIGNMENT_EVIL
@@ -3564,7 +3564,7 @@ function spell_charm_actor(attacker, foe)
 		foe.old_align = foe.align
 		foe.align = attacker.align
 		hit_anim(foe.x, foe.y)
-		print("\n"..foe.name.." is charmed.\n")
+		print("\n"..korean_translate(foe.name)..korean_translate(" is charmed.\n"))
 		if foe.in_party == true then
 			party_update_leader()
 		end
@@ -3623,28 +3623,28 @@ function actor_use_effect(actor, effect)
 	local effect_type = random(0, 3)
     Obj.removeFromEngine(effect) -- moved here so it won't be seen in chest
 	if effect_type == 0 then
-		print("Acid!\n")
+		print(korean_translate("Acid!\n"))
 		actor_hit(actor, random(1, 0x14))
-		
+
 	elseif effect_type == 1 then
-		print("Poison!\n")
+		print(korean_translate("Poison!\n"))
 		actor.poisoned = true
 		hit_anim(actor.x, actor.y)
-		
+
 	elseif effect_type == 2 then
-		print("Bomb!\n")
+		print(korean_translate("Bomb!\n"))
 		local hit_items = explosion(0x17e, actor.x, actor.y)
-  
+
 		for k,v in pairs(hit_items) do
 			if v.luatype == "actor" then
 				actor_hit(v, random(1, 0x14))
 			end
 		end
-		
+
 	elseif effect_type == 3 then
-		print("Gas!\n")
+		print(korean_translate("Gas!\n"))
 		local hit_items = explosion(0x17c, actor.x, actor.y)
-  
+
 		for k,v in pairs(hit_items) do
 			if v.luatype == "actor" then
 				v.poisoned = true
@@ -3680,10 +3680,10 @@ function actor_avatar_death()
 		Actor.use(avatar) --dismount from horse
 	end
 	avatar.asleep = true --we do this so it looks like the avatar is dead.
-	print("\nAn unending darkness engulfs thee...\n\n")
+	print(korean_translate("\nAn unending darkness engulfs thee...\n\n"))
 	play_sfx(SFX_AVATAR_DEATH, true)
 	fade_out()
-	print("A voice in the darkness intones, \"KAL LOR!\"\n")
+	print(korean_translate("A voice in the darkness intones, \"KAL LOR!\"\n"))
 	play_sfx(SFX_KAL_LOR, true)
 	avatar.asleep = false
 	party_dismount_from_horses();

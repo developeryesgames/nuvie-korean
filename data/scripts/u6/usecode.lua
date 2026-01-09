@@ -4,13 +4,13 @@ function use_telescope(obj, actor)
 	if obj.on_map == true then
 		mapwindow_center_at_location(obj.x, obj.y, obj.z)
 	else -- FIXME - should probably work in the inventory (can't be done without cheating though)
-		print("Not usable\n")
+		print(korean_translate("Not usable\n"))
 		return
 	end
-	local dir = really_get_direction("Direction-")
+	local dir = really_get_direction(korean_translate("Direction-"))
 	if dir == nil or dir == DIR_NONE then
 		mapwindow_center_at_location(actor.x, actor.y, actor.z)
-		print("nowhere.\n")
+		print(korean_translate("nowhere.\n"))
 		return
 	end
 	local dir_string = direction_string(dir)
@@ -34,8 +34,8 @@ function use_telescope(obj, actor)
 	mapwindow_set_enable_blacking(true)
 	
 	mapwindow_center_at_location(actor.x, actor.y, actor.z)
-	print("\nDone\n")
-	
+	print(korean_translate("\nDone\n"))
+
 end
 
 function use_silver_horn(obj, actor)
@@ -43,20 +43,20 @@ function use_silver_horn(obj, actor)
 	for i=0,0xff do
 		local tmp_actor = Actor.get(i)
 		if tmp_actor.obj_n == 413 and tmp_actor.alive == true and actor_find_max_xy_distance(tmp_actor, actor.x, actor.y) <= 8 then
-			print("Not now!\n")
+			print(korean_translate("Not now!\n"))
 			return
 		end
 	end
-	
+
 	local random = math.random
-	
+
 	for i=1,3 do
 		local new_x = random(1, 7) + random(1, 7) + actor.x - 8
 		local new_y = random(1, 7) + random(1, 7) + actor.y - 8
 		local snake = Actor.new(413, new_x, new_y, actor.z, ALIGNMENT_CHAOTIC)
 	end
-	
-	print("Silver snakes are generated!\n")
+
+	print(korean_translate("Silver snakes are generated!\n"))
 end
 
 

@@ -500,15 +500,15 @@ end
 
 function use_keg(obj)
 	if obj.frame_n ~= 0 then
-		print("\nNo effect\n")
+		print(korean_translate("\nNo effect\n"))
 		return
 	end
-	
+
 	if g_keg_timer > 0 then
-		print("\nNot now\n")
+		print(korean_translate("\nNot now\n"))
 	else
 		obj.frame_n = 1
-		print("\nPowder lit!\n")
+		print(korean_translate("\nPowder lit!\n"))
 		g_keg_timer = 3
 	end
 end
@@ -587,7 +587,7 @@ function explode_surrounding_objects(x, y, z)
 			
 			if map_obj ~= nil and map_obj.frame_n <= 0xc then
 				Obj.removeFromEngine(map_obj)
-				print("\nThe door is blown up!\n")
+				print(korean_translate("\nThe door is blown up!\n"))
 			end
 		end
 	end

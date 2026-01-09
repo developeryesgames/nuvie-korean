@@ -1,4 +1,5 @@
 #include <cassert>
+#include <set>
 #include "nuvieDefs.h"
 
 #include "Game.h"
@@ -123,18 +124,30 @@ bool TimeQueue::call_timer(uint32 now)
         if(tevent->repeat_count > 0) // don't reduce count if infinite (-1)
             --tevent->repeat_count;
     }
-    else
+    else {
         delete_timer(tevent); // if not repeated, safe to delete
+    }
 
     return(true);
 }
 
 
+// Track deleted pointers to prevent double-free
+static std::set<void*> deleted_timers;
+
 /* Delete a timer, if its can_delete flag is true. Remove from the queue first!
  */
 bool TimeQueue::delete_timer(TimedEvent *tevent)
 {
+    if(tevent == NULL) {
+        return false;
+    }
+    // Check for double-free
+    if(deleted_timers.find(tevent) != deleted_timers.end()) {
+        return false;
+    }
     if(tevent->tq_can_delete) {
+        deleted_timers.insert(tevent);
         delete tevent;
         return true;
     }

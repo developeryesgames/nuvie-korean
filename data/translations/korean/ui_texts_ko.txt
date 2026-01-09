@@ -792,6 +792,8 @@ No effect\n|효과 없음\n
  yells for help!\n| 도움을 외친다!\n
  poisoned!\n| 중독되었다!\n
  killed!\n| 죽었다!\n
+ grazed.\n| 스침.\n
+ dragged under!\n| 끌려갔다!\n
 critical!\n|치명상!\n
 heavily wounded.\n|중상을 입었다.\n
 heavily |중상:
@@ -802,6 +804,24 @@ barely |경미:
 wounded.\n|상처를 입었다.\n
 Tangle vine killed!\n|덩굴이 죽었다!\n
  broken!\n| 부서졌다!\n
+ is stuck in a web!\n| 거미줄에 걸렸다!\n
+A slug dissolves |슬러그가 녹였다:
+'s |의
+!\n|!\n
+ has been robbed!\n| 도둑맞았다!\n
+Slime divides!\n|슬라임이 분열했다!\n
+Out of arrows!\n|화살이 없다!\n
+Out of bolts!\n|볼트가 없다!\n
+ is trying to attack itself. Report me!\n| 자신을 공격하려 한다. 버그 신고 요망!\n
+Wisp teleports!\n|위습이 텔레포트했다!\n
+ is charmed.\n| 매혹되었다.\n
+ is paralyzed.\n| 마비되었다.\n
+Thy sword hath shattered!\n|검이 부서졌다!\n
+A wand has vanished!\n|마법봉이 사라졌다!\n
+A |
+ has vanished!\n|이(가) 사라졌다!\n
+ARGH!\n|으악!\n
+ regurgitated!\n| 토해냈다!\n
 
 # Combat - stealing
 Stop Thief!!!\n|도둑이야!!!\n
@@ -809,8 +829,39 @@ Stop Thief!!!\n|도둑이야!!!\n
 Stealing!!!\n|도둑질!!!\n
 
 # Combat - other messages
+\n\nNot possible.|\n\n불가능합니다.
+\n\nThe total is too heavy.|\n\n너무 무겁습니다.
 Not possible.|불가능합니다.
 The total is too heavy.|너무 무겁습니다.
+
+# Trap effects
+Acid!\n|산성!\n
+Poison!\n|독!\n
+Bomb!\n|폭탄!\n
+Gas!\n|가스!\n
+
+# Guard arrest dialogue
+\n"Thou art under arrest!"\n\n"Wilt thou come quietly?"\n\n:|\n"넌 체포됐다!"\n\n"순순히 따라오겠나?"\n\n:
+es\n\nThe guard strikes thee unconscious!\n\nThou dost awaken to...\n|예\n\n경비병이 널 기절시켰다!\n\n정신을 차리니...\n
+o\n\n"Then defend thyself, rogue!"\n|아니\n\n"그렇다면 각오해라, 악당!"\n
+
+# Death messages
+\nAn unending darkness engulfs thee...\n\n|\n끝없는 어둠이 널 삼킨다...\n\n
+A voice in the darkness intones, "KAL LOR!"\n|어둠 속에서 목소리가 울린다, "칼 로르!"\n
+
+# Powder/keg messages
+\nNo effect\n|\n효과 없음\n
+\nNot now\n|\n지금은 안됨\n
+\nPowder lit!\n|\n화약에 불이 붙었다!\n
+\nThe door is blown up!\n|\n문이 폭파되었다!\n
+
+# Usecode messages
+Not usable\n|사용 불가\n
+Direction-|방향-
+nowhere.\n|아무데도.\n
+\nDone\n|\n완료\n
+Not now!\n|지금은 안됨!\n
+Silver snakes are generated!\n|은 뱀이 생성되었다!\n
 
 # Rest messages (TimedEvent.cpp)
 Mealtime!\n|식사 시간!\n
