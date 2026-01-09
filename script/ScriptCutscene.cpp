@@ -1145,6 +1145,10 @@ static int nscript_get_mouse_x(lua_State *L)
 	int x, y;
 	cutScene->get_screen()->get_mouse_location(&x, &y);
 	x -= cutScene->get_x_off();
+	// Scale down for 4x render mode (Lua uses 320x200 coordinates)
+	uint8 scale = cutScene->get_render_scale();
+	if (scale > 1)
+		x /= scale;
 	lua_pushinteger(L, x);
 	return 1;
 }
@@ -1154,6 +1158,10 @@ static int nscript_get_mouse_y(lua_State *L)
 	int x, y;
 	cutScene->get_screen()->get_mouse_location(&x, &y);
 	y -= cutScene->get_y_off();
+	// Scale down for 4x render mode (Lua uses 320x200 coordinates)
+	uint8 scale = cutScene->get_render_scale();
+	if (scale > 1)
+		y /= scale;
 	lua_pushinteger(L, y);
 	return 1;
 }
