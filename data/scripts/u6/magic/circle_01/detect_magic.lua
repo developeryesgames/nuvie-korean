@@ -16,15 +16,15 @@ local magical_tiles = {
 [0x48E] = 1,[0x48F] = 1,[0x6D0] = 1,[0x6D1] = 1,[0x6D2] = 1,[0x6D3] = 1}
 
 local potion_name = {
-[0] = "an awaken",
-[1] = "a cure",
-[2] = "a heal",
-[3] = "a poison",
-[4] = "a sleep",
-[5] = "a protection",
-[6] = "an invisibility",
-[7] = "an xray vision",
-[8] = "an unknown"
+[0] = "awaken",
+[1] = "cure",
+[2] = "heal",
+[3] = "poison",
+[4] = "sleep",
+[5] = "protection",
+[6] = "invisibility",
+[7] = "xray vision",
+[8] = "unknown"
 }
 
 fade_obj_blue(obj)
@@ -36,24 +36,24 @@ if magical_tiles[obj.tile_num] ~= nil then
 		if frame_n > 8 then
 			frame_n = 8
 		end
-		print("\nIt's " .. potion_name[frame_n] .. " potion.\n")
+		print(korean_translate("\nIt's ")..korean_translate(potion_name[frame_n])..korean_translate(" potion.\n"))
 	else
-		print("\nIt's magical.\n")
+		print(korean_translate("\nIt's magical.\n"))
 	end
 else
 	--not magical
 	local has_charge = false
 	local child
-	for child in container_objs(obj) do  -- look through container for effect object. 
+	for child in container_objs(obj) do  -- look through container for effect object.
 		if child.obj_n == 0x150 then --charge
 			has_charge = true
-			print("\nIt shows a charge of " .. magic_spell_name(child.quality) .. ".\n")
+			print(korean_translate("\nIt shows a charge of ")..korean_get_spell_name(child.quality)..korean_translate(".\n"))
 			break
-	  	end
+		end
 	end
-	
+
 	if has_charge == false then
-		print("\nIt's not magical.\n")
+		print(korean_translate("\nIt's not magical.\n"))
 	end
 end
 

@@ -8,4 +8,4 @@ print("\n")
 
 hail_storm_effect(loc)
 
-print("\nSuccess\n")
+print(korean_translate("\nSuccess\n"))

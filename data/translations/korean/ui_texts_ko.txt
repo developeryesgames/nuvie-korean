@@ -835,3 +835,52 @@ garlic|마늘
 ginseng|인삼
 sulfurous ash|유황재
 
+# Magic spell messages (magic.lua)
+nothing\n|아무것도\n
+nothing|아무것도
+\nout of range\n|\n사정거리 밖\n
+\nSuccess\n|\n성공\n
+\nNo effect\n|\n효과 없음\n
+\nBlocked!\n|\n막힘!\n
+\nFailed\n|\n실패\n
+\nNot possible\n|\n불가능\n
+
+# Magic spell messages (individual spells)
+ is paralyzed.\n| 마비됨.\n
+\nCreated |생성:
+ food.\n|개 음식.\n
+\nIt's |
+ potion.\n| 물약.\n
+\nIt's magical.\n|\n마법이다.\n
+\nIt shows a charge of |\n마법 충전:
+.\n|.\n
+\nIt's not magical.\n|\n마법이 아니다.\n
+\nIt's trapped.\n|\n함정이 있다.\n
+\nNo trap.\n|\n함정 없음.\n
+Direction-|방향-
+\nBlocked\n|\n막힘\n
+\nNot Possible\n|\n불가능\n
+\nunlocked!\n|\n잠금 해제!\n
+\nCan't (Un)lock an opened door\n|\n열린 문은 잠글 수 없음\n
+\nmagically locked!\n|\n마법으로 잠김!\n
+Which object:|어떤 물건:
+\ncan't carry!\n|\n들 수 없음!\n
+\nDone\n|\n완료\n
+with: |다음으로:
+\nIt's full\n|\n가득 참\n
+none\n\n|없음\n\n
+To phase |달 단계로:
+\nNo foes.\n|\n적이 없음.\n
+\nThe corpse is too old!\n|\n시체가 너무 오래되었음!\n
+
+# Potion names (detect magic)
+awaken|각성
+cure|치료
+heal|회복
+poison|독
+sleep|수면
+protection|보호
+invisibility|투명
+xray vision|투시
+unknown|알 수 없음
+

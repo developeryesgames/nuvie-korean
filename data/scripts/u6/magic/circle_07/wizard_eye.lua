@@ -5,4 +5,4 @@ local loc = caster_get_location()
 
 wizard_eye_effect(0x28, loc)
 
-print("\nDone\n")
+print(korean_translate("\nDone\n"))

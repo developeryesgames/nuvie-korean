@@ -3,15 +3,15 @@ local actor = select_actor_with_projectile(0x18b, caster)
 
 if actor == nil then return end
 
-print("Which object:")
+print(korean_translate("Which object:"))
 
 local obj = get_obj_from_inventory(actor)
 
 if obj ~= nil then
-	print(obj.name.."\n")
+	print(korean_translate(obj.name).."\n")
 
 	if Actor.can_carry_obj(actor, obj) == false then
-		print("\ncan't carry!\n")
+		print(korean_translate("\ncan't carry!\n"))
 		return
 	end
 

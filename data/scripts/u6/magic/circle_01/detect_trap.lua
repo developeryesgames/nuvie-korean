@@ -16,7 +16,7 @@ if actor_int >= dice_roll then
 	for child in container_objs(obj) do  -- look through container for effect object. 
 		if child.obj_n == 337 then --effect
 			found = true
-			print("\nIt's trapped.\n");
+			print(korean_translate("\nIt's trapped.\n"));
 			break
 		end
 	end
@@ -24,7 +24,7 @@ if actor_int >= dice_roll then
 end
 
 if found == false then
-    print("\nNo trap.\n");
+    print(korean_translate("\nNo trap.\n"));
 end
 
 obj = nil

@@ -7,5 +7,5 @@ local obj = Obj.new(129,0,0,qty)
 
 Obj.moveToInv(obj, magic_get_caster())
 
-print("\nCreate " .. obj.qty .. " food.\n")
+print(korean_translate("\nCreated ")..obj.qty..korean_translate(" food.\n"))
 

@@ -111,9 +111,9 @@ select_actor = function()
 	end
 	
 	if actor == nil then
-		print("nothing\n");
+		print(korean_translate("nothing\n"));
 	else
-		print(actor.name.."\n");
+		print(korean_translate(actor.name).."\n");
 		if out_of_spell_range(actor.x, actor.y) then return end
 	end
 
@@ -122,19 +122,19 @@ end
 
 select_obj = function()
 	if g_magic_target ~= nil then return map_get_obj(g_magic_target) end
-	
+
 	print(korean_translate("On what: "));
 
 	local obj = get_obj()
-	
+
 	if obj == nil then
-		print("nothing\n");
+		print(korean_translate("nothing\n"));
 	else
-		print(obj.name .. "\n");
+		print(korean_translate(obj.name) .. "\n");
 		if obj.on_map and out_of_spell_range(obj.x, obj.y) then return end
 	end
 
-	return obj 
+	return obj
 end
 
 function select_actor_or_obj()
@@ -150,13 +150,13 @@ function select_actor_or_obj()
 		actor = obj
 		if is_player == true then
 			if obj ~= nil then
-				print(obj.name.."\n")
+				print(korean_translate(obj.name).."\n")
 			else
-				print("nothing\n")
+				print(korean_translate("nothing\n"))
 			end
 		end
 	elseif is_player == true then
-		print(actor.name.."\n")
+		print(korean_translate(actor.name).."\n")
 	end
 
 	magic_casting_fade_effect(caster)
@@ -171,20 +171,20 @@ function select_actor_with_projectile(projectile_tile, caster)
 	if caster == nil then caster = magic_get_caster() end
 
 	local is_player = caster_is_player()
-	
+
 	local loc = select_location_with_prompt("On Whom: ")
 	local actor = map_get_actor(loc)
 	if actor == nil then
 		local obj = map_get_obj(loc)
 		if is_player == true then
 			if obj ~= nil then
-				print(obj.name.."\n")
+				print(korean_translate(obj.name).."\n")
 			else
-				print("nothing\n")
+				print(korean_translate("nothing\n"))
 			end
 		end
 	elseif is_player == true then
-		print(actor.name.."\n")
+		print(korean_translate(actor.name).."\n")
 	end
 	
 	magic_casting_fade_effect(caster)
@@ -210,9 +210,9 @@ function select_actor_or_obj_with_projectile(projectile_tile, caster)
 	if item == nil then
 		item = map_get_obj(loc)
 	end
-	
+
 	if item ~= nil then
-		print(item.name)
+		print(korean_translate(item.name))
 	else
 		print(korean_translate("nothing"))
 	end
@@ -241,9 +241,9 @@ function select_obj_with_projectile(projectile_tile, caster)
 	local loc = select_location_with_prompt("On What: ")
 	local obj = map_get_obj(loc)
 	if obj == nil then
-		print("nothing\n");
+		print(korean_translate("nothing\n"));
 	else
-		print(obj.name.."\n");
+		print(korean_translate(obj.name).."\n");
 	end
 
 	magic_casting_fade_effect(caster)
@@ -284,7 +284,7 @@ end
 
 function out_of_spell_range(target_x, target_y)
 	if Actor.get_range(magic_get_caster(), target_x, target_y) > 7 then
-		print("\nout of range\n")
+		print(korean_translate("\nout of range\n"))
 		return true
 	else
 		return false
@@ -425,35 +425,35 @@ end
 
 function magic_success()
 	if caster_is_player() then
-		print("\nSuccess\n")
+		print(korean_translate("\nSuccess\n"))
 		play_sfx(SFX_SUCCESS)
 	end
 end
 
 function magic_no_effect()
 	if caster_is_player() then
-		print("\nNo effect\n")
+		print(korean_translate("\nNo effect\n"))
 		play_sfx(SFX_FAILURE)
 	end
 end
 
 function magic_blocked()
 	if caster_is_player() then
-		print("\nBlocked!\n")
+		print(korean_translate("\nBlocked!\n"))
 		play_sfx(SFX_FAILURE)
 	end
 end
 
 function magic_failed()
 	if caster_is_player() then
-		print("\nFailed\n")
+		print(korean_translate("\nFailed\n"))
 		play_sfx(SFX_FAILURE)
 	end
 end
 
 function magic_not_possible()
 	if caster_is_player() then
-		print("\nNot possible\n")
+		print(korean_translate("\nNot possible\n"))
 		play_sfx(SFX_FAILURE)
 	end
 end

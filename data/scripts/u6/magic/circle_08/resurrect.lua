@@ -14,7 +14,7 @@ if obj ~= nil and g_armageddon == false then
         Actor.resurrect(actor, obj.x, obj.y, obj.z, obj)
         magic_success()
       else
-        print("\nThe corpse is too old!\n")
+        print(korean_translate("\nThe corpse is too old!\n"))
       end
     end
   else

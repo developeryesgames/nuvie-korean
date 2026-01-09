@@ -8,16 +8,16 @@ if item.luatype == "obj" then
 	if item.obj_n == 0x120 or item.obj_n == 0x10c then --crank, lever
 		Obj.use(item)
 	elseif item.weight >= 0.01 then
-		local dir = get_direction("Direction-")
-		print("`"..direction_string(dir).."\n")
+		local dir = get_direction(korean_translate("Direction-"))
+		print("`"..korean_translate(direction_string(dir)).."\n")
 		local new_x, new_y = direction_get_loc(dir, item.x, item.y)
 		if map_can_put_obj(new_x, new_y, item.z) == true then
 			Obj.moveToMap(item, new_x, new_y, item.z)
 		else
-			print("\nBlocked\n")
+			print(korean_translate("\nBlocked\n"))
 		end
 	else
-		print("\nNot Possible\n")
+		print(korean_translate("\nNot Possible\n"))
 	end
 else
 	magic_no_effect() --do nothing with actors.

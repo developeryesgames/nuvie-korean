@@ -9,7 +9,7 @@ print("\n")
 
 hit_anim(actor.x, actor.y)
 actor.paralyzed = true
-print(actor.name.." is paralyzed.\n")
+print(korean_translate(actor.name)..korean_translate(" is paralyzed.\n"))
 
 if actor.in_party == true then
 	party_update_leader()

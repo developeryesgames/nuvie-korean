@@ -1,4 +1,4 @@
-print("To phase ")
+print(korean_translate("To phase "))
 local phase = input_select_integer(nil,true)
 
 

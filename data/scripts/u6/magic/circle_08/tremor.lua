@@ -36,5 +36,5 @@ for x = x - 5,loc_x + 5 do
 	end
 end
 
-print("\nSuccess\n")
+print(korean_translate("\nSuccess\n"))
 

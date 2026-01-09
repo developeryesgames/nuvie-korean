@@ -28,7 +28,7 @@ for i=1,0xff do
 end
 
 if foes_present == false then
-	print("\nNo foes.\n")
+	print(korean_translate("\nNo foes.\n"))
 	play_sfx(SFX_FAILURE)
 end
 
