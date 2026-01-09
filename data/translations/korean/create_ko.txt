@@ -3,7 +3,7 @@
 
 # === BASIC PROMPTS ===
 CREATE_NAME|그대는 어떤 이름으로 불리길 원하는가?
-CREATE_GENDER|그대는 남성인가, 아니면 여성인가?
+CREATE_GENDER|그대는 남성(M)인가, 여성(F)인가?
 CREATE_SEX|성별 변경
 CREATE_PORTRAIT|초상화 변경
 CREATE_CONTINUE|계속하기

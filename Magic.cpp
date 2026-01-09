@@ -46,6 +46,7 @@
 #include "U6objects.h"
 #include "Magic.h"
 #include "Game.h"
+#include "KoreanTranslation.h"
 #include "GameClock.h"
 #include "misc/U6LList.h"
 #include "Effect.h"
@@ -187,15 +188,25 @@ bool Magic::cast()
     return false;
   }
 //20110701 Pieter Luteijn: add an assert(spell[index]) to be sure it's not NULL?
+  // Get Korean spell name if available
+  KoreanTranslation *korean = Game::get_game()->get_korean_translation();
+  std::string spell_name = spell[index]->name;
+  if(korean && korean->isEnabled())
+  {
+    std::string korean_name = korean->getSpellName(index);
+    if(!korean_name.empty())
+      spell_name = korean_name;
+  }
+
   if(cast_buffer_len != 0)
   {
     event->scroll->display_string("\n(");
-    event->scroll->display_string(spell[index]->name);
+    event->scroll->display_string(spell_name.c_str());
     event->scroll->display_string(")\n");;
   }
   else
   {
-    event->scroll->display_string(spell[index]->name);
+    event->scroll->display_string(spell_name.c_str());
     event->scroll->display_string("\n\"");
     display_spell_incantation(index);
     event->scroll->display_string("\"\n");
@@ -336,7 +347,17 @@ void Magic::display_spell_incantation(uint8 index)
 
 void Magic::show_spell_description(uint8 index)
 {
-	event->scroll->display_string(spell[index]->name);
+	// Get Korean spell name if available
+	KoreanTranslation *korean = Game::get_game()->get_korean_translation();
+	std::string spell_name = spell[index]->name;
+	if(korean && korean->isEnabled())
+	{
+		std::string korean_name = korean->getSpellName(index);
+		if(!korean_name.empty())
+			spell_name = korean_name;
+	}
+
+	event->scroll->display_string(spell_name.c_str());
 	event->scroll->display_string("-");
 	display_spell_incantation(index);
 	display_ingredients(index);
@@ -344,18 +365,34 @@ void Magic::show_spell_description(uint8 index)
 
 void Magic::display_ingredients(uint8 index)
 {
-	event->scroll->display_string("\nIngredients:\n");
+	KoreanTranslation *korean = Game::get_game()->get_korean_translation();
+	bool use_korean = korean && korean->isEnabled();
+
+	if(use_korean)
+		event->scroll->display_string("\n재료:\n");
+	else
+		event->scroll->display_string("\nIngredients:\n");
+
 	if(spell[index]->reagents == 0)
 	{
-		event->scroll->display_string("None\n\n");
+		if(use_korean)
+			event->scroll->display_string("없음\n\n");
+		else
+			event->scroll->display_string("None\n\n");
 		return;
 	}
 	string list;
-	for (uint8 shift=0;shift<8;shift++) 
+	for (uint8 shift=0;shift<8;shift++)
 	{
 		if (1<<shift&spell[index]->reagents) {
 			list += " ";
-			list += reagent[shift];
+			if(use_korean)
+			{
+				std::string translated = korean->translate(reagent[shift]);
+				list += translated;
+			}
+			else
+				list += reagent[shift];
 			list += "\n";
 		}
 	}

@@ -22,6 +22,7 @@
 #include "Effect.h"
 
 #include "TimedEvent.h"
+#include "KoreanTranslation.h"
 
 #define MESG_TIMED CB_TIMED
 
@@ -899,24 +900,50 @@ void TimedRest::eat(Actor *actor)
 
     if(food)
     {
-        scroll->display_fmt_string("%s has food.\n", actor->get_name());
+        KoreanTranslation *korean = Game::get_game()->get_korean_translation();
+        if(korean && korean->isEnabled())
+        {
+            std::string actor_name = korean->translate(actor->get_name());
+            scroll->display_fmt_string("%s%s", actor_name.c_str(), korean->translate(" has food.\n").c_str());
+        }
+        else
+            scroll->display_fmt_string("%s has food.\n", actor->get_name());
         Game::get_game()->get_usecode()->destroy_obj(food, 1);
         number_that_had_food++;
     }
     else
-        scroll->display_fmt_string("%s has no food.\n", actor->get_name());
+    {
+        KoreanTranslation *korean = Game::get_game()->get_korean_translation();
+        if(korean && korean->isEnabled())
+        {
+            std::string actor_name = korean->translate(actor->get_name());
+            scroll->display_fmt_string("%s%s", actor_name.c_str(), korean->translate(" has no food.\n").c_str());
+        }
+        else
+            scroll->display_fmt_string("%s has no food.\n", actor->get_name());
+    }
 }
 
 /* Look for a bard in the party and have them play a tune. */
 void TimedRest::bard_play()
 {
-    scroll->display_string("Mealtime!\n");
+    KoreanTranslation *korean = Game::get_game()->get_korean_translation();
+    if(korean && korean->isEnabled())
+        scroll->display_string(korean->translate("Mealtime!\n").c_str());
+    else
+        scroll->display_string("Mealtime!\n");
     for(int b=0; b<party->get_party_size(); b++)
         if(party->get_actor(b)->get_obj_n() == OBJ_U6_MUSICIAN)
         {
             Actor *bard = party->get_actor(b);
             bard->morph(OBJ_U6_MUSICIAN_PLAYING);
-            scroll->display_fmt_string("%s plays a tune.\n", bard->get_name());
+            if(korean && korean->isEnabled())
+            {
+                std::string bard_name = korean->translate(bard->get_name());
+                scroll->display_fmt_string("%s%s", bard_name.c_str(), korean->translate(" plays a tune.\n").c_str());
+            }
+            else
+                scroll->display_fmt_string("%s plays a tune.\n", bard->get_name());
             break;
         }
 }
@@ -929,13 +956,20 @@ void TimedRest::sleep()
         if(party->get_actor(b)->get_obj_n() == OBJ_U6_MUSICIAN_PLAYING)
             party->get_actor(b)->morph(OBJ_U6_MUSICIAN);
 
+    KoreanTranslation *korean = Game::get_game()->get_korean_translation();
     for(int s=0; s<party->get_party_size(); s++)
     {
         Actor *actor = party->get_actor(s);
         if(actor == lookout)
         {
             actor->set_worktype(WORKTYPE_U6_LOOKOUT);
-            scroll->display_fmt_string("\n%s stands guard while the party rests.\n", actor->get_name());
+            if(korean && korean->isEnabled())
+            {
+                std::string actor_name = korean->translate(actor->get_name());
+                scroll->display_fmt_string("\n%s%s", actor_name.c_str(), korean->translate(" stands guard while the party rests.\n").c_str());
+            }
+            else
+                scroll->display_fmt_string("\n%s stands guard while the party rests.\n", actor->get_name());
         }
         else
         {

@@ -313,11 +313,11 @@ uint16 KoreanFont::getStringWidthUTF8(const char *str, uint8 scale)
         }
         else
         {
-            // Default width: 75% of cell width for Korean, half for ASCII
+            // Default spacing: 75% for Korean (24px for 32px cell), 50% for ASCII
             if (codepoint >= 0xAC00 && codepoint <= 0xD7A3) {
-                char_width = (cell_width * 3) / 4;  // Korean: 12px for 16px cell
+                char_width = (cell_width * 3) / 4;  // Korean: 24px for 32px cell
             } else if (codepoint >= 0x20 && codepoint < 0x7F) {
-                char_width = cell_width / 2;  // ASCII: 8px for 16px cell
+                char_width = cell_width / 2;  // ASCII: 16px for 32px cell
             } else {
                 char_width = (cell_width * 3) / 4;
             }
@@ -425,7 +425,7 @@ uint16 KoreanFont::drawCharUnicode(Screen *screen, uint32 codepoint, uint16 x, u
     }
 
     // Return character width (scaled)
-    // Apply kerning adjustment - reduce spacing for tighter text
+    // For 32x32 font, use 75% of cell width for Korean, half for ASCII
     uint16 width;
     if (char_widths && index < total_chars && char_widths[index] != cell_width)
     {
@@ -434,11 +434,11 @@ uint16 KoreanFont::drawCharUnicode(Screen *screen, uint32 codepoint, uint16 x, u
     }
     else
     {
-        // Default width: 75% of cell width for Korean, half for ASCII
+        // Default spacing: 75% for Korean (24px for 32px cell), 50% for ASCII
         if (codepoint >= 0xAC00 && codepoint <= 0xD7A3) {
-            width = (cell_width * 3) / 4;  // Korean: 12px for 16px cell
+            width = (cell_width * 3) / 4;  // Korean: 24px for 32px cell
         } else if (codepoint >= 0x20 && codepoint < 0x7F) {
-            width = cell_width / 2;  // ASCII: 8px for 16px cell
+            width = cell_width / 2;  // ASCII: 16px for 32px cell
         } else {
             width = (cell_width * 3) / 4;
         }

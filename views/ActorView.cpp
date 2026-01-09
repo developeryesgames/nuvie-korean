@@ -472,7 +472,11 @@ void ActorView::moveCursorToButton(sint8 button_num)
  */
 void ActorView::update_cursor()
 {
-	cursor_pos.px = ((cursor_pos.x + 1) * 16) - 16;
+	FontManager *font_manager = Game::get_game()->get_font_manager();
+	bool use_4x = font_manager && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+	uint8 scale = use_4x ? 4 : 1;
+
+	cursor_pos.px = ((cursor_pos.x + 1) * 16 * scale) - 16 * scale;
 	cursor_pos.py = party_button->area.y;
 	cursor_pos.px += area.x;
 	//cursor_pos.py += area.y;

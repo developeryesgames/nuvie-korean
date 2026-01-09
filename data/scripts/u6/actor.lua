@@ -1007,14 +1007,14 @@ function actor_take_hit(attacker, defender, max_dmg)
          local actor_type = actor_tbl[attacker_obj_n]
          if actor_type ~= nil and actor_type[15] == 1 and math.random(0, 3) == 0 and defender.actor_num ~= 0 then --actor is poisonous, don't poison vehicles.
          	defender.poisoned = true
-         	print("`"..defender.name.." poisoned!\n")
+         	print("`"..defender.name..korean_translate(" poisoned!\n"))
          end
          
          if max_dmg > 0 then
          	actor_hit_msg(defender)
          end
       else
-         print("`"..defender.name.." killed!\n")
+         print("`"..defender.name..korean_translate(" killed!\n"))
          --FIXME do party roster change. maybe
       end
       
@@ -1111,13 +1111,13 @@ function actor_hit(defender, max_dmg, attacker, no_hit_anim)
 		--object logic here
 		if defender_obj_n == 0x16e then -- tangle vine
 			--FIXME do something with tangle vine. -- I think the message is all that needed added
-			print("\nTangle vine killed!\n") -- The pod doesn't have this text in the original for some reason
+			print("\n"..korean_translate("Tangle vine killed!\n")) -- The pod doesn't have this text in the original for some reason
 		elseif defender.stackable == false and defender.qty ~= 0 then
 			hit_anim(defender.x, defender.y)
 			if (defender_obj_n < 0x129 or defender_obj_n > 0x12c or defender.frame_n < 0xc) --check frame_n for door objects
 				and (defender_obj_n ~= 0x62 or defender.frame_n ~= 3) then --don't attack open chests
 				if defender.qty <= max_dmg then
-					print("\n`"..defender.name .. " broken!\n")
+					print("\n`"..defender.name..korean_translate(" broken!\n"))
 	
 					local child
 					for child in container_objs(defender) do  -- look through container for effect object. 
@@ -1151,37 +1151,37 @@ end
 function actor_hit_msg(actor)
 
 	if actor.obj_n == 0x1a7 then return end --balloon
-	
+
 	local hp = actor.hp
-	
+
 	if hp == 0 then return end
-	
+
 	local di = math.floor((hp * 4) / actor.max_hp)
-	
+
 	local s
-	
+	local actor_name = korean_translate(actor.name)
+
 	if di < 4 then
-		s = "\n`"..actor.name.." "
+		s = "\n`"..actor_name.." "
 	end
-	
+
 	if di == 0 then
-		s = s.."critical!\n"
+		s = s..korean_translate("critical!\n")
 		local wt = actor.wt
 		if actor_int_adj(actor) >= 5 and wt ~= WT_BERSERK and wt ~= WT_STATIONARY and wt > WT_FRONT then
 			actor.wt = WT_RETREAT
 		end
 	elseif di < 4 then
-	
+		-- Translate full condition string for proper Korean translation
 		if di == 1 then
-			s = s.."heavily "
+			s = s..korean_translate("heavily wounded.\n")
 		elseif di == 2 then
-			s = s.."lightly "
+			s = s..korean_translate("lightly wounded.\n")
 		elseif di == 3 then
-			s = s.."barely "
+			s = s..korean_translate("barely wounded.\n")
 		end
-		s = s.."wounded.\n"
 	end
-	
+
 	if s ~= nil then
 		print(s)
 	end
@@ -2185,7 +2185,7 @@ function actor_yell_for_help(attacking_actor, defending_actor, dmg)
 
       if attacking_actor.wt == WT_PLAYER and actor_base ~= nil then
          if actor_base[7] ~= 0 and dmg > 0 then  --[7] == can_talk 
-            print("`"..defending_actor.name.." yells for help!\n")
+            print("`"..defending_actor.name..korean_translate(" yells for help!\n"))
             activate_city_guards()
          end
       end
@@ -2245,16 +2245,16 @@ function actor_get_obj(actor, obj)
 
 			if actor.alive == true and actor.z == player_loc.z and actor.in_party == false and actor.align == ALIGNMENT_NEUTRAL and actor.asleep == false then
 				if actor_find_max_xy_distance(actor, player_loc.x, player_loc.y) < 0x6 then
-					print("\n\n\"Stop Thief!!!\"\n")
+					print("\n\n"..korean_translate("\"Stop Thief!!!\"\n"))
 					activate_city_guards()
 					caught_stealing = true
 					break
 				end
 			end
 		end
-		
+
 		if caught_stealing == false then
-			print("\n\nStealing!!!\n")
+			print("\n\n"..korean_translate("Stealing!!!\n"))
 		end
 	end
 	

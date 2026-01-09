@@ -8,12 +8,21 @@ local korean_mode = false
 local ko_texts = {}
 
 local function init_korean()
-    if is_korean_enabled and is_korean_enabled() then
-        korean_mode = true
-        -- Load translation file
-        if load_translation then
-            load_translation("intro_ko.txt")
+    io.stderr:write("init_korean() called\n")
+    if is_korean_enabled then
+        io.stderr:write("is_korean_enabled function exists\n")
+        local result = is_korean_enabled()
+        io.stderr:write("is_korean_enabled() returned: " .. tostring(result) .. "\n")
+        if result then
+            korean_mode = true
+            io.stderr:write("korean_mode set to true\n")
+            -- Load translation file
+            if load_translation then
+                load_translation("intro_ko.txt")
+            end
         end
+    else
+        io.stderr:write("is_korean_enabled function does NOT exist!\n")
     end
 end
 
@@ -377,9 +386,10 @@ local function lounge_sequence()
 	local scroll = sprite_new(scroll_img, 1, 0x9f, true)
 	
 	-- Korean text sprite for intro
+	-- scroll y=0x9f=159, image text y=10 -> absolute y = 159+10 = 169 = 0xa9
 	local ko_text_sprite = nil
 	if korean_mode then
-		ko_text_sprite = sprite_new(nil, 8, 0xa7, true)
+		ko_text_sprite = sprite_new(nil, 9, 0xa9, true)  -- x=scroll.x+8=1+8=9, y=0x9f+10=0xa9
 		ko_text_sprite.text = "그대가 브리타니아로부터 영광스럽게 귀환한 지도, 이 세계의 시간으로 다섯 계절이 흘렀다."
 		ko_text_sprite.text_color = 0x3e
 	else
@@ -400,9 +410,11 @@ local function lounge_sequence()
 	end
 	
 	scroll_img = image_load("blocks.shp", 2)
+	-- scroll.x=1, scroll.y=0x98, image text starts at x=7, y=8
+	-- absolute: x=1+7=8, y=0x98+8=0xa0
 	if korean_mode then
 		if ko_text_sprite then ko_text_sprite.visible = false end
-		ko_text_sprite = sprite_new(nil, 7, 0x98, true)
+		ko_text_sprite = sprite_new(nil, 8, 0xa0, true)
 		ko_text_sprite.text = "그대는 아바타로서의 위험천만한 모험의 삶을 뒤로하고, 평화로운 세계의 고독한 평온함과 맞바꾸었다. 하지만 텔레비전 속의 초인들은 그대 곁에서 죽어간 친구들의 빈자리를 결코 대신할 수 없었다!"
 		ko_text_sprite.text_color = 0x3e
 	else
@@ -429,9 +441,11 @@ local function lounge_sequence()
 	end
 
 	scroll_img = image_load("blocks.shp", 0)
+	-- scroll.x=0x21=33, scroll.y=0x9d=157, image text starts at x=39, y=8
+	-- absolute: x=33+39=72=0x48, y=157+8=165=0xa5
 	if korean_mode then
 		if ko_text_sprite then ko_text_sprite.visible = false end
-		ko_text_sprite = sprite_new(nil, 0x21, 0x9d, true)
+		ko_text_sprite = sprite_new(nil, 0x48, 0xa5, true)
 		ko_text_sprite.text = "밖에서는 차가운 바람이 일기 시작하고..."
 		ko_text_sprite.text_color = 0x3e
 	else
@@ -464,7 +478,8 @@ local function lounge_sequence()
 	
 	hide_lounge()
 	scroll.visible = false
-	
+	if ko_text_sprite then ko_text_sprite.visible = false end
+
 	return true
 end
 
@@ -764,21 +779,22 @@ local function window_sequence()
 	if window_update() == true then
 		return false
 	end
-	
+
 	scroll.visible = false
+	if ko_text_sprite then ko_text_sprite.visible = false end
 	i = 0
 	while i < 68 do
-	
+
 		display_window()
 		canvas_update()
 		input = input_poll()
 		if should_exit(input) then
 			return false
 		end
-	
+
 		canvas_update()
 		input = input_poll()
-	
+
 		g_window_tbl["door_left"].x = g_window_tbl["door_left"].x - 1
 		g_window_tbl["door_right"].x = g_window_tbl["door_right"].x + 1
 		i = i + 1
@@ -803,7 +819,8 @@ local function window_sequence()
 	end
 
 	scroll.visible = false
-	
+	if ko_text_sprite then ko_text_sprite.visible = false end
+
 end
 
 local function stones_rotate_palette()
@@ -976,7 +993,8 @@ local function stones_sequence()
 	g_stones_tbl["hand"].x = 0x9b
 	g_stones_tbl["hand"].visible = true
 	scroll.visible = false
-	
+	if ko_text_sprite then ko_text_sprite.visible = false end
+
 	for i=0xc7,0x44,-2  do
 		stones_rotate_palette()
 		g_stones_tbl["hand"].y = i
@@ -1009,9 +1027,10 @@ local function stones_sequence()
 	if stones_update() == true then
 		return false
 	end
-	
+
 	scroll.visible = false
-	
+	if ko_text_sprite then ko_text_sprite.visible = false end
+
 	for i=0x44,0xc7,2  do
 		stones_rotate_palette()
 		g_stones_tbl["hand"].y = i
@@ -1024,9 +1043,9 @@ local function stones_sequence()
 			return false
 		end
 	end
-	
+
 	g_stones_tbl["hand"].visible = false
-	
+
 	scroll_img = image_load("blocks.shp", 2)
 	if korean_mode then
 		if ko_text_sprite then ko_text_sprite.visible = false end
@@ -1079,9 +1098,10 @@ local function stones_sequence()
 	if stones_shake_moongate() == true then
 		return false
 	end
-	
+
 	scroll.visible = false
-	
+	if ko_text_sprite then ko_text_sprite.visible = false end
+
 	g_stones_tbl["avatar"].visible = true
 	
 	canvas_set_palette_entry(0x19, 0, 0, 0)
@@ -1310,6 +1330,38 @@ local gypsy_question_text = {
 "\"In thy youth thou didst pledge to marry thy sweetheart. Now thou art on a sacred quest in distant lands. Thy sweetheart doth ask thee to keep thy vow. Dost thou A) Honor thy pledge to wed; or B) Follow thy Spiritual crusade?\127",
 "\"Though thou art but a peasant shepherd, thou art discovered to be the sole descendant of a noble family long thought extinct. Dost thou A) Honorably take up the arms of thy ancestors; or B) Humbly resume thy life of simplicity and peace?\127",
 "\"Thy parents wish thee to become an apprentice. Two positions are available. Dost thou A) Become an acolyte in a worthy Spiritual order; or B) Become an assistant to a humble village cobbler?\127",
+}
+
+-- Korean question texts
+local gypsy_question_text_ko = {
+"\"금액을 확인하지 않은 금화 주머니를 전달해달라는 부탁을 받은 그대는 가난한 거지를 만났다. 그대는 A) 정직하게 금화를 전달하여 신뢰에 보답하겠는가, 아니면 B) 자애를 베풀어 어차피 확인하지 않을 금화 한 닢을 거지에게 주겠는가?\"",
+"\"부재중인 주군으로부터 친구들이 참전한 격전지에 합류하지 말라는 명을 받았다. 그대는 A) 정직하게 명을 받들어 복종하겠는가, 아니면 B) 용기를 발휘해 전우들을 돕고 나중에 그 사실을 부정하겠는가?\"",
+"\"한 상인이 그대의 친구에게 갚아야 할 돈을 오랫동안 미루고 있다. 그러던 중 그 상인이 금화 주머니를 떨어뜨리는 것을 보았다. 그대는 A) 정직하게 주머니를 그대로 돌려주겠는가, 아니면 B) 정의의 이름으로 친구의 몫을 먼저 떼어 주겠는가?\"",
+"\"그대와 친구는 용감하지만 가난한 전사다. 둘은 함께 거대한 용을 처치하러 떠났다. 친구는 자기가 용을 죽였다고 생각하지만, 치명타를 입힌 것은 그대였다. 그대는 A) 정직하게 보상을 요구하겠는가, 아니면 B) 우정을 위해 금화를 포기하는 희생을 치르겠는가?\"",
+"\"그대는 어떤 대가를 치르더라도 주군을 보호하겠노라 맹세했으나, 그가 죄를 지었음을 알고 있다. 관리들이 그대에게 사실을 묻는다. 그대는 A) 정직하게 말하여 맹세를 깨겠는가, 아니면 B) 맹세를 묵묵히 지켜 명예를 고수하겠는가?\"",
+"\"그대의 친구가 영성 단체에 가입하려 한다. 그대는 불확실한 그의 영적 순수성을 보증해달라는 요청을 받았다. 그대는 A) 정직하게 의구심을 표하겠는가, 아니면 B) 그의 영성 증진을 바라며 보증을 서주겠는가?\"",
+"\"주군은 자기가 용을 죽였다고 착각하고 있으나, 사실 그대의 창이 용을 쓰러뜨렸다는 증거가 있다. 질문을 받았을 때 그대는 A) 정직하게 공적을 주장하겠는가, 아니면 B) 겸손하게 주군이 믿는 대로 내버려 두겠는가?\"",
+"\"그대는 결투 중에 숙적의 무기를 떨어뜨려 그를 제압했다. 그의 생사는 그대의 손에 달렸다. 그대는 A) 자애를 베풀어 항복을 받아주겠는가, 아니면 B) 용맹한 결투가에게 기대되는 대로 그를 처단하겠는가?\"",
+"\"20년 만에 그대의 절친한 친구들을 죽인 원수를 찾아냈다. 그런데 알고 보니 그는 한 어린 소녀를 홀로 부양하는 유일한 보호자였다. 그대는 A) 아이를 생각하는 자애로운 마음으로 그를 살려주겠는가, 아니면 B) 정의의 이름으로 그를 처단하겠는가?\"",
+"\"그대와 친구들은 패배하여 퇴각 명령을 받았다. 명령을 거스르고 그대는 A) 자애로운 마음으로 멈춰 서서 부상당한 동료를 돕겠는가, 아니면 B) 다른 이들이 도망칠 수 있도록 추격해오는 적을 막아내는 희생을 치르겠는가?\"",
+"\"그대는 죄수들을 고문하는 주군을 받들기로 맹세했다. 매일 밤 죄수들의 비명소리가 들려온다. 그대는 A) 자애로운 마음으로 이 사실을 고발하겠는가, 아니면 B) 맹세에 따른 명예를 지키기 위해 모르는 척하겠는가?\"",
+"\"그대는 모든 생명을 신성하게 보존하라고 배웠다. 한 남자가 독사에 물려 치명상을 입고 고통 없는 죽음을 구걸하고 있다. 그대는 A) 자애로운 마음으로 그의 고통을 끝내주겠는가, 아니면 B) 영성 신념에 따라 외면하겠는가?\"",
+"\"국왕 경비대장이 아이들을 격려하기 위해 병원을 방문해 용맹한 무용담을 들려줄 사람을 찾는다. 그대는 A) 자애를 베풀기 위해 허풍쟁이 역할을 자처하겠는가, 아니면 B) 겸손하게 다른 이에게 양보하겠는가?\"",
+"\"그대는 타국 주군과의 중요한 조약을 체결하러 파견되었다. 주군은 제안에는 동의하지만 저녁 식사 자리에서 그대의 조국을 모욕한다. 그대는 A) 용맹하게 모욕을 견디겠는가, 아니면 B) 정의롭게 일어나 사과를 요구하겠는가?\"",
+"\"건장한 기사가 앞을 가로막으며 음식을 내놓으라고 위협한다. 그대는 A) 용맹하게 거절하고 기사와 싸우겠는가, 아니면 B) 굶주린 기사에게 식량을 내어주는 희생을 하겠는가?\"",
+"\"전투 중 지휘관의 빈 텐트를 지키라는 명령을 받았다. 전황은 나빠지고 그대는 동료들을 돕고 싶은 열망에 사로잡힌다. 그대는 A) 용맹하게 전장으로 뛰어들겠는가, 아니면 B) 초소를 지키며 명예를 다하겠는가?\"",
+"\"동네 불량배가 싸움을 걸어온다. 그대는 A) 용맹하게 그 악당을 때려눕히겠는가, 아니면 B) 결국 아무런 득이 되지 않음을 영성으로 깨닫고 거절하겠는가?\"",
+"\"그대는 평범한 어부지만 뛰어난 검술가다. 주군이 평화 유지군을 소집하려 한다. 그대는 A) 용맹함을 증명하기 위해 소집에 응하겠는가, 아니면 B) 주군의 형식적인 기사 서임 제안을 겸손하게 거절하겠는가?\"",
+"\"전투 중 한 동료가 초소를 버리고 도망쳐 많은 이를 위험에 빠뜨리는 것을 보았다. 도망치던 그는 적들에게 포위당했다. 그대는 A) 정의롭게 그가 혼자 싸우도록 내버려 두겠는가, 아니면 B) 그를 돕기 위해 자신의 목숨을 거는 희생을 치르겠는가?\"",
+"\"그대는 주군의 모든 명령을 따르기로 맹세했다. 그는 탐나는 땅을 차지하기 위해 주인을 쫓아내라고 명한다. 그대는 A) 정의를 위해 거절하고 불명예를 안겠는가, 아니면 B) 맹세를 지키는 명예를 위해 땅 주인을 쫓아내겠는가?\"",
+"\"그대는 모든 사람에게 미덕이 있다고 믿는다. 한 불량배가 주군의 물건을 훔치는 것을 보았다. 그대는 A) 그를 정의의 심판대에 세우겠는가, 아니면 B) 그가 선한 영성의 길로 돌아오도록 직접 설득하겠는가?\"",
+"\"그대는 생명을 지키기 위해 홀로 거대한 용을 처치했으나 아무도 보지 못했다. 가난한 전사가 자기가 죽였다며 보상을 요구한다. 그대는 A) 정의롭게 나서서 보상을 주장하겠는가, 아니면 B) 스스로의 자부심만으로 만족하며 겸손하게 살아가겠는가?\"",
+"\"그대는 살인 용의자를 압송하기로 맹세한 현상금 사냥꾼이다. 포획 후 그가 무죄임을 믿게 되었다. 그대는 A) 자신의 신념을 위해 막대한 현상금을 포기하는 희생을 하겠는가, 아니면 B) 약속대로 그를 인도하여 명예를 지키겠는가?\"",
+"\"그대는 평생 자선과 의로운 일에 헌신했다. 여관 주인인 삼촌이 병석에 누워 그대에게 주점을 맡아달라고 부탁한다. 그대는 A) 친척을 돕기 위해 순수한 삶을 포기하는 희생을 하겠는가, 아니면 B) 거절하고 영성의 부름을 따르겠는가?\"",
+"\"그대는 부유한 노상인이며 죽음이 가까웠다. 그대는 A) 굶주린 아이들을 위해 전 재산을 내어주는 희생을 하여 대중의 찬사를 받겠는가, 아니면 B) 겸손하게 남은 여생을 살며 후계자들에게 재산을 물려주겠는가?\"",
+"\"젊은 시절 연인과 결혼을 약속했으나, 지금은 먼 땅에서 신성한 퀘스트를 수행 중이다. 연인이 맹세를 지켜달라고 간청한다. 그대는 A) 결혼 약속을 지키는 명예를 택하겠는가, 아니면 B) 영성의 성전을 계속하겠는가?\"",
+"\"그대는 평범한 양치기지만, 멸문한 줄 알았던 고귀한 가문의 유일한 후손임이 밝혀졌다. 그대는 A) 조상의 무기를 들고 명예롭게 가문을 일으키겠는가, 아니면 B) 소박하고 평화로운 삶을 겸손하게 이어가겠는가?\"",
+"\"부모님이 그대가 견습생이 되길 바라며 두 자리를 제안하셨다. 그대는 A) 훌륭한 영성 단체의 수사가 되겠는가, 아니면 B) 마을 구두 수선공의 조수가 되어 겸손하게 일하겠는가?\"",
 }
 
 	local gypsy_questions = {
@@ -1699,30 +1751,44 @@ local function gypsy_vial_anim(vial)
 end
 
 local function gypsy_ask_questions(num_questions, scroll)
-	
+
 	local strength_adjustment_tbl = { 0, 0, 2, 0, 1, 1, 1, 0 }
-	local dex_adjustment_tbl = { 0, 2, 0, 1, 1, 0, 1, 0 } 
+	local dex_adjustment_tbl = { 0, 2, 0, 1, 1, 0, 1, 0 }
 	local int_adjustment_tbl = { 2, 0, 0, 1, 0, 1, 1, 0 }
-	
+
+	local ko_question_sprite = nil
+
 	for i=0,num_questions-1,1 do
 		local q = gypsy_questions[g_question_tbl[i*2+1]*8 + g_question_tbl[i*2+2] + 1]
-	
+
 		local scroll_img = image_load("blocks.shp", 3)
 		scroll.image = scroll_img
-		image_print(scroll_img, gypsy_question_text[q - 104], 7, 303, 8, 9, 0x3e)
-	
+
+		-- Korean: Use Korean question text
+		if korean_mode then
+			if ko_question_sprite then ko_question_sprite.visible = false end
+			ko_question_sprite = sprite_new(nil, 8, 0x7c + 9, true)
+			ko_question_sprite.text = gypsy_question_text_ko[q - 104]
+			ko_question_sprite.text_color = 0x3e
+		else
+			image_print(scroll_img, gypsy_question_text[q - 104], 7, 303, 8, 9, 0x3e)
+		end
+
 		local vial = gypsy_ab_select(q)
-	
+
 		gypsy_vial_anim(vial)
-		
+
 		g_str = g_str + strength_adjustment_tbl[vial]
 		g_dex = g_dex + dex_adjustment_tbl[vial]
 		g_int = g_int + int_adjustment_tbl[vial]
-	
+
 		g_question_tbl[i+1] = vial-1
-	
+
 		--io.stderr:write(q.." "..vial.."("..g_str..","..g_dex..","..g_int..")\n")
 	end
+
+	-- Hide Korean question sprite when done
+	if korean_mode and ko_question_sprite then ko_question_sprite.visible = false end
 end
 
 
@@ -1800,96 +1866,202 @@ g_keycode_tbl =
 }
 local function create_character()
 	music_play("create.m")
-	
+
 	local bubbles = sprite_new(image_new(100,100, 0), 110, 30, false)
 	local bg = sprite_new(image_load("vellum1.shp", 0), 0x10, 0x50, true)
-	image_print(bg.image, "By what name shalt thou be called?", 7, 303, 36, 24, 0x48)
-	
+
+	-- Korean question text sprite (positioned on vellum)
+	local question_sprite = nil
+	if korean_mode then
+		-- vellum at (0x10, 0x50), text offset (36, 24) -> absolute (0x10+36, 0x50+24) = (52, 104) = (0x34, 0x68)
+		question_sprite = sprite_new(nil, 0x34, 0x68, true)
+		question_sprite.text = "그대를 무어라 부르면 되겠는가?"
+		question_sprite.text_color = 0x48
+	else
+		image_print(bg.image, "By what name shalt thou be called?", 7, 303, 36, 24, 0x48)
+	end
+
 	local name = sprite_new(nil, 0x34, 0x78, true)
 	name.text = ""
+	local name_base = ""  -- Base text without composing
 	local char_index = 0
 	local input = nil
 
+	-- Enable text input mode for Korean IME support
+	if korean_mode and text_input_start then
+		text_input_start()
+	end
+
 	while input == nil do
-		canvas_update()
-		input = input_poll()
-		if input ~= nil then
-			if should_exit(input) == true then
-				bg.visible = false
-				name.visible = false
-				return false
-			end
-			local name_text = name.text
-			local len = string.len(name_text)
-			if (input == 8 or input == SDLK_LEFT) and len > 0 then
-				name.text = string.sub(name_text, 1, len - 1)
-				if len == 1 then -- old len
-					char_index = 0
-				else
-					char_index = string.byte(name_text, len -1)
-				end
-			elseif input == 13 and len > 0 then --return
-				break;
-			elseif g_keycode_tbl[input] ~= nil and len < 13 then
-				char_index = input
-				name.text = name_text..g_keycode_tbl[input]
-			elseif input == SDLK_UP then --up
-				if char_index == 0 then
-					if len > 0 then
-						char_index = 97 --a
-					else
-						char_index = 65 --A
-					end
-				elseif char_index <= 32 then --gap in characters
-					char_index = 48
-				elseif char_index >= 57 and  char_index < 65 then --gap in characters
-					char_index = 65
-				elseif char_index >= 90 and char_index < 97 then --gap in characters
-					char_index = 97
-				elseif char_index >= 122 then --last char
-					char_index = 32
-				else
-					char_index = char_index + 1
-				end
-
-				if len > 0 then -- erase char
-					name_text = string.sub(name_text, 1, len - 1)
-				end
-				name.text = name_text..g_keycode_tbl[char_index]
-			elseif input == SDLK_DOWN then --down
-				if char_index == 0 then
-					if len > 0 then
-						char_index = 122 --z
-					else
-						char_index = 90 --Z
-					end
-				elseif char_index == 65 then --gap in characters
-					char_index = 57
-				elseif char_index == 97 then --gap in characters
-					char_index = 90
-				elseif char_index <= 32 then --first char
-					char_index = 122
-				elseif char_index <= 48 then --gap in characters
-					char_index = 32
-				else
-					char_index = char_index - 1
-				end
-
-				if len > 0 then -- erase char
-					name_text = string.sub(name_text, 1, len - 1)
-				end
-				name.text = name_text..g_keycode_tbl[char_index]
-			elseif input == SDLK_RIGHT and len < 13 then --right
-				char_index = 97 --a
-				name.text = name_text.."a"
-			end
-			input = nil
+		-- Update display with composing text for Korean mode
+		if korean_mode and get_composing_text then
+			local composing = get_composing_text()
+			name.text = name_base .. composing
 		end
+
+		canvas_update()
+
+		-- Korean mode uses input_poll_text for UTF-8 text input
+		if korean_mode and input_poll_text then
+			input = input_poll_text()
+			if input ~= nil then
+				-- Check if input is a string (text) or number (special key)
+				if type(input) == "string" then
+					-- UTF-8 text input (Korean or ASCII) - finalized text
+					local new_text = name_base .. input
+					-- Limit name length (count UTF-8 characters, not bytes)
+					local char_count = 0
+					for _ in string.gmatch(new_text, "[%z\1-\127\194-\244][\128-\191]*") do
+						char_count = char_count + 1
+					end
+					if char_count <= 13 then
+						name_base = new_text
+						name.text = name_base
+					end
+				elseif type(input) == "number" then
+					if input == 27 then -- Escape
+						if text_input_stop then text_input_stop() end
+						bg.visible = false
+						name.visible = false
+						if question_sprite then question_sprite.visible = false end
+						return false
+					elseif input == 8 then -- Backspace
+						-- Remove last UTF-8 character from base text
+						local chars = {}
+						for c in string.gmatch(name_base, "[%z\1-\127\194-\244][\128-\191]*") do
+							table.insert(chars, c)
+						end
+						if #chars > 0 then
+							table.remove(chars)
+							name_base = table.concat(chars)
+							name.text = name_base
+						end
+					elseif input == 13 then -- Enter
+						-- First, commit any composing text
+						if commit_composing_text then
+							local committed = commit_composing_text()
+							if committed then
+								local new_text = name_base .. committed
+								local char_count = 0
+								for _ in string.gmatch(new_text, "[%z\1-\127\194-\244][\128-\191]*") do
+									char_count = char_count + 1
+								end
+								if char_count <= 13 then
+									name_base = new_text
+									name.text = name_base
+								end
+							end
+						end
+						-- Check if name is not empty
+						local char_count = 0
+						for _ in string.gmatch(name_base, "[%z\1-\127\194-\244][\128-\191]*") do
+							char_count = char_count + 1
+						end
+						if char_count > 0 then
+							break
+						end
+					end
+				end
+				input = nil
+			end
+		else
+			-- Original English input handling
+			input = input_poll()
+			if input ~= nil then
+				if should_exit(input) == true then
+					bg.visible = false
+					name.visible = false
+					return false
+				end
+				local name_text = name.text
+				local len = string.len(name_text)
+				if (input == 8 or input == SDLK_LEFT) and len > 0 then
+					name.text = string.sub(name_text, 1, len - 1)
+					if len == 1 then -- old len
+						char_index = 0
+					else
+						char_index = string.byte(name_text, len -1)
+					end
+				elseif input == 13 and len > 0 then --return
+					break;
+				elseif g_keycode_tbl[input] ~= nil and len < 13 then
+					char_index = input
+					name.text = name_text..g_keycode_tbl[input]
+				elseif input == SDLK_UP then --up
+					if char_index == 0 then
+						if len > 0 then
+							char_index = 97 --a
+						else
+							char_index = 65 --A
+						end
+					elseif char_index <= 32 then --gap in characters
+						char_index = 48
+					elseif char_index >= 57 and  char_index < 65 then --gap in characters
+						char_index = 65
+					elseif char_index >= 90 and char_index < 97 then --gap in characters
+						char_index = 97
+					elseif char_index >= 122 then --last char
+						char_index = 32
+					else
+						char_index = char_index + 1
+					end
+
+					if len > 0 then -- erase char
+						name_text = string.sub(name_text, 1, len - 1)
+					end
+					name.text = name_text..g_keycode_tbl[char_index]
+				elseif input == SDLK_DOWN then --down
+					if char_index == 0 then
+						if len > 0 then
+							char_index = 122 --z
+						else
+							char_index = 90 --Z
+						end
+					elseif char_index == 65 then --gap in characters
+						char_index = 57
+					elseif char_index == 97 then --gap in characters
+						char_index = 90
+					elseif char_index <= 32 then --first char
+						char_index = 122
+					elseif char_index <= 48 then --gap in characters
+						char_index = 32
+					else
+						char_index = char_index - 1
+					end
+
+					if len > 0 then -- erase char
+						name_text = string.sub(name_text, 1, len - 1)
+					end
+					name.text = name_text..g_keycode_tbl[char_index]
+				elseif input == SDLK_RIGHT and len < 13 then --right
+					char_index = 97 --a
+					name.text = name_text.."a"
+				end
+				input = nil
+			end
+		end
+	end
+
+	-- Disable text input mode
+	if korean_mode and text_input_stop then
+		text_input_stop()
 	end
 	
 	name.x = 0x10 + (284 - canvas_string_length(name.text)) / 2
-	
-	image_print(bg.image, "And art thou Male, or Female?", 7, 303, 52, 56, 0x48)
+
+	-- Hide name question and show gender question
+	if question_sprite then
+		question_sprite.visible = false
+	end
+
+	if korean_mode then
+		-- vellum at (0x10, 0x50), text offset (52, 56) -> absolute (68, 136) = (0x44, 0x88)
+		question_sprite = sprite_new(nil, 0x44, 0x88, true)
+		question_sprite.text = "그대는 남성(M)인가, 여성(F)인가?"
+		question_sprite.text_color = 0x48
+	else
+		image_print(bg.image, "And art thou Male, or Female?", 7, 303, 52, 56, 0x48)
+	end
 	local gender_sprite = sprite_new(nil, 154, 152, true)
 	gender_sprite.text = ""
 
@@ -1903,6 +2075,7 @@ local function create_character()
 				bg.visible = false
 				name.visible = false
 				gender_sprite.visible = false
+				if question_sprite then question_sprite.visible = false end
 				return false
 			end
 			if input == 77 or input == 109 then
@@ -1914,10 +2087,18 @@ local function create_character()
 			elseif input == SDLK_UP or input == SDLK_DOWN then --up and down
 				if gender == 0 then
 					gender = 1 --male
-					gender_sprite.text = "M"
+					if korean_mode then
+						gender_sprite.text = "남"
+					else
+						gender_sprite.text = "M"
+					end
 				else
 					gender = 0 --female
-					gender_sprite.text = "F"
+					if korean_mode then
+						gender_sprite.text = "여"
+					else
+						gender_sprite.text = "F"
+					end
 				end
 			elseif input == 13 and gender_sprite.text ~= "" then --return
 				break;
@@ -1927,6 +2108,7 @@ local function create_character()
 		end
 	end
 	gender_sprite.visible = false
+	if question_sprite then question_sprite.visible = false end
 	load_images("vellum1.shp")
 	bg.image = g_img_tbl[0]
 	
@@ -2069,11 +2251,20 @@ local function create_character()
 	
 	local scroll_img = image_load("blocks.shp", 1)
 	local scroll = sprite_new(scroll_img, 1, 0xa0, true)
-	
-	local x, y = image_print(scroll_img, "\"Welcome, O Seeker!\127", 7, 303, 96, 14, 0x3e)
-	
+
+	-- Korean: Welcome message
+	local ko_welcome_sprite = nil
+	if korean_mode then
+		ko_welcome_sprite = sprite_new(nil, 96, 0xa0 + 14, true)
+		ko_welcome_sprite.text = "\"어서 오시오, 구도자여!\""
+		ko_welcome_sprite.text_color = 0x3e
+	else
+		local x, y = image_print(scroll_img, "\"Welcome, O Seeker!\127", 7, 303, 96, 14, 0x3e)
+	end
+
 	wait_for_input()
-	
+	if korean_mode and ko_welcome_sprite then ko_welcome_sprite.visible = false end
+
 	scroll.visible = false
 	
 	input = nil
@@ -2093,20 +2284,37 @@ local function create_character()
 	scroll_img = image_load("blocks.shp", 2)
 	scroll.x = 1
 	scroll.y = 0x98
-	image_print(scroll_img, "A lonely stroll along an unfamiliar forest path brings you upon a curious gypsy wagon, its exotic colors dappled in the summer shade.", 7, 303, 8, 12, 0x3e)
+	-- Korean: GYPSY_INTRO_1 - Gypsy wagon intro
+	local ko_gypsy_sprite = nil
+	if korean_mode then
+		ko_gypsy_sprite = sprite_new(nil, 8, 0xa0, true)
+		ko_gypsy_sprite.text = "낯선 숲길을 따라 홀로 거닐던 중, 여름날의 그림자가 드리워진 이국적인 색채의 기묘한 집시 마차와 마주친다."
+		ko_gypsy_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "A lonely stroll along an unfamiliar forest path brings you upon a curious gypsy wagon, its exotic colors dappled in the summer shade.", 7, 303, 8, 12, 0x3e)
+	end
 	scroll.image = scroll_img
 	scroll.visible = true
-		
+
 	wait_for_input()
 
 	scroll_img = image_load("blocks.shp", 2)
 	scroll.x = 1
 	scroll.y = 0x98
-	image_print(scroll_img, "A woman's voice rings out with friendship, beckoning you into across the wagon's threshold and, as it happens, into another life....", 7, 303, 8, 12, 0x3e)
+	-- Korean: GYPSY_INTRO_2 - Woman's voice
+	if korean_mode then
+		if ko_gypsy_sprite then ko_gypsy_sprite.visible = false end
+		ko_gypsy_sprite = sprite_new(nil, 8, 0xa0, true)
+		ko_gypsy_sprite.text = "한 여인의 다정한 목소리가 울려 퍼지며 그대를 마차 안으로, 그리고 새로운 삶으로 인도한다...."
+		ko_gypsy_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "A woman's voice rings out with friendship, beckoning you into across the wagon's threshold and, as it happens, into another life....", 7, 303, 8, 12, 0x3e)
+	end
 	scroll.image = scroll_img
 	scroll.visible = true
-	
+
 	wait_for_input()
+	if korean_mode and ko_gypsy_sprite then ko_gypsy_sprite.visible = false end
 	
 	scroll.visible = false
 	
@@ -2171,20 +2379,37 @@ local function create_character()
 	scroll.x = 1
 	scroll.y = 0x7c
 	scroll.visible = true
-		
+
 	local scroll_img = image_load("blocks.shp", 3)
 	scroll.image = scroll_img
-	x, y = image_print(scroll_img, "\"At last thou hast come to fulfill thy destiny,\127 the gypsy says. She smiles, as if in great relief.", 7, 303, 8, 19, 0x3e)
-	image_print(scroll_img, "\"Sit before me now, and I shall pour the light of Virtue into the shadows of thy future.\127", 7, 303, 8, y+16, 0x3e)
-	
+	-- Korean: GYPSY_INTRO_3 - Destiny text
+	local ko_gypsy_text = nil
+	if korean_mode then
+		ko_gypsy_text = sprite_new(nil, 8, 0x7c + 19, true)
+		ko_gypsy_text.text = "\"마침내 그대의 운명을 완수하러 왔구료,\" 집시 여인이 말한다. 그녀는 안도한 듯 미소를 짓는다. \"내 앞에 앉으시오. 그대 미래의 그림자 속에 미덕의 빛을 부어주겠노라.\""
+		ko_gypsy_text.text_color = 0x3e
+	else
+		x, y = image_print(scroll_img, "\"At last thou hast come to fulfill thy destiny,\127 the gypsy says. She smiles, as if in great relief.", 7, 303, 8, 19, 0x3e)
+		image_print(scroll_img, "\"Sit before me now, and I shall pour the light of Virtue into the shadows of thy future.\127", 7, 303, 8, y+16, 0x3e)
+	end
+
 	wait_for_input()
-	
+
 	scroll_img = image_load("blocks.shp", 3)
 	scroll.image = scroll_img
-	x, y = image_print(scroll_img, "On a wooden table eight bottles stand, a rainbow of bubbling liquids.", 7, 303, 8, 19, 0x3e)
-	image_print(scroll_img, "\"Behold the Virtues of the Avatar,\127 the woman says. \"Let us begin the casting!\127", 7, 303, 8, y+16, 0x3e)
-	
+	-- Korean: GYPSY_INTRO_4 - Behold the Virtues
+	if korean_mode then
+		if ko_gypsy_text then ko_gypsy_text.visible = false end
+		ko_gypsy_text = sprite_new(nil, 8, 0x7c + 19, true)
+		ko_gypsy_text.text = "나무 탁자 위에는 여덟 개의 병이 놓여 있고, 무지갯빛 액체들이 거품을 내며 빛나고 있다. \"아바타의 미덕을 보시오,\" 여인이 말한다. \"이제 선택을 시작합시다!\""
+		ko_gypsy_text.text_color = 0x3e
+	else
+		x, y = image_print(scroll_img, "On a wooden table eight bottles stand, a rainbow of bubbling liquids.", 7, 303, 8, 19, 0x3e)
+		image_print(scroll_img, "\"Behold the Virtues of the Avatar,\127 the woman says. \"Let us begin the casting!\127", 7, 303, 8, y+16, 0x3e)
+	end
+
 	wait_for_input()
+	if korean_mode and ko_gypsy_text then ko_gypsy_text.visible = false end
 	canvas_set_palette_entry(19, 200, 200, 200) -- fix mouse cursor
 	canvas_set_palette_entry(27, 68, 68, 68) -- fix mouse cursor
 
@@ -2213,13 +2438,22 @@ local function create_character()
 	b_button.visible = false
 	g_ab_highlight.visible = false
 	mouse_cursor_visible(false)
-	
+
 	scroll_img = image_load("blocks.shp", 3)
 	scroll.image = scroll_img
-	image_print(scroll_img, "\"The path of the Avatar lies beneath thy feet, worthy "..name.text..",\127 the gypsy intones. With a mysterious smile, she passes you the flask of shimmering liquids. \"Drink of these waters and go forth among our people, who shall receive thee in joy!\127", 7, 303, 8, 16, 0x3e)
-	
+	-- Korean: GYPSY_COMPLETE - Path of the Avatar
+	local ko_complete_text = nil
+	if korean_mode then
+		ko_complete_text = sprite_new(nil, 8, 0x7c + 16, true)
+		local complete_msg = "\"아바타의 길은 그대의 발밑에 있소, 고귀한 " .. name.text .. "여,\" 집시 여인이 읊조린다. 그녀는 신비로운 미소를 지으며 반짝이는 액체가 담긴 플라스크를 건넨다. \"이 물을 마시고 우리 백성들 사이로 나아가시오. 그들이 기쁨으로 그대를 맞이할 것이오!\""
+		ko_complete_text.text = complete_msg
+		ko_complete_text.text_color = 0x3e
+	else
+		image_print(scroll_img, "\"The path of the Avatar lies beneath thy feet, worthy "..name.text..",\127 the gypsy intones. With a mysterious smile, she passes you the flask of shimmering liquids. \"Drink of these waters and go forth among our people, who shall receive thee in joy!\127", 7, 303, 8, 16, 0x3e)
+	end
+
 	-- wait_for_input()
-	
+
 	input = nil
 	while input == nil do
 		gypsy_update_bubbles(g_gypsy_tbl["jar_liquid"].image)
@@ -2229,6 +2463,7 @@ local function create_character()
 			break
 		end
 	end
+	if korean_mode and ko_complete_text then ko_complete_text.visible = false end
 
 	fade_out()
 	
@@ -2252,8 +2487,16 @@ local function create_character()
 	scroll.x = 1
 	scroll.y = 0x98
 	scroll.visible = true
-	image_print(scroll_img, "As you drink from the flask, vertigo overwhelms you. A soothing mist obscures the gypsy's face, and you sink without fear into an untroubled sleep.", 7, 303, 8, 8, 0x3e)
-	
+	-- Korean: GYPSY_DRINK - Drinking the flask
+	local ko_drink_sprite = nil
+	if korean_mode then
+		ko_drink_sprite = sprite_new(nil, 8, 0x98 + 8, true)
+		ko_drink_sprite.text = "플라스크의 물을 마시자 심한 현기증이 몰려온다. 포근한 안개가 집시 여인의 얼굴을 가리고, 그대는 아무런 두려움 없이 깊은 잠 속으로 빠져든다."
+		ko_drink_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "As you drink from the flask, vertigo overwhelms you. A soothing mist obscures the gypsy's face, and you sink without fear into an untroubled sleep.", 7, 303, 8, 8, 0x3e)
+	end
+
 	--wait_for_input()
 
 	input = nil
@@ -2265,7 +2508,8 @@ local function create_character()
 			break
 		end
 	end
-	
+	if korean_mode and ko_drink_sprite then ko_drink_sprite.visible = false end
+
 	scroll.visible = false
 		
 	canvas_set_bg_color(0x75)
@@ -2281,27 +2525,54 @@ local function create_character()
 	scroll.visible = false
 	
 	fade_in()
-	
-	scroll_img = image_load("blocks.shp", 2)
-	scroll.image = scroll_img
-	scroll.visible = true
-	image_print(scroll_img, "You wake in a different time, upon another world's shore. Though the Avatar's quests bring you both triumph and tragedy, never do you stray from the path of the Eight Virtues.", 7, 303, 8, 8, 0x3e)
-
-	wait_for_input()
-	
-	scroll_img = image_load("blocks.shp", 2)
-	scroll.image = scroll_img
-	scroll.visible = true
-	image_print(scroll_img, "The sagas of Ultima IV and Ultima V chronicle your perilous travels, and your name and your deeds are written forever among Britannia's legends....", 7, 303, 8, 8, 0x3e)
-	
-	wait_for_input()
 
 	scroll_img = image_load("blocks.shp", 2)
 	scroll.image = scroll_img
 	scroll.visible = true
-	image_print(scroll_img, "Finally, tempered by your struggles against the enemies of Virtue, you are proven ready to answer the epic challenge of Ultima VI!", 7, 303, 8, 12, 0x3e)
-	
+	-- Korean: GYPSY_WAKE - You wake in a different time
+	local ko_wake_sprite = nil
+	if korean_mode then
+		ko_wake_sprite = sprite_new(nil, 8, 0x98 + 8, true)
+		ko_wake_sprite.text = "그대는 다른 시간, 다른 세계의 해안가에서 눈을 뜬다. 아바타로서의 모험이 승리와 비극을 동시에 가져다주었으나, 그대는 결코 여덟 가지 미덕의 길에서 벗어나지 않았다."
+		ko_wake_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "You wake in a different time, upon another world's shore. Though the Avatar's quests bring you both triumph and tragedy, never do you stray from the path of the Eight Virtues.", 7, 303, 8, 8, 0x3e)
+	end
+
 	wait_for_input()
+	if korean_mode and ko_wake_sprite then ko_wake_sprite.visible = false end
+
+	scroll_img = image_load("blocks.shp", 2)
+	scroll.image = scroll_img
+	scroll.visible = true
+	-- Korean: GYPSY_SAGA - The sagas of Ultima IV and V
+	local ko_saga_sprite = nil
+	if korean_mode then
+		ko_saga_sprite = sprite_new(nil, 8, 0x98 + 8, true)
+		ko_saga_sprite.text = "울티마 4와 울티마 5의 대서사시는 그대의 위험천만했던 여정을 기록하고 있으며, 그대의 이름과 행적은 브리타니아의 전설 속에 영원히 새겨져 있다...."
+		ko_saga_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "The sagas of Ultima IV and Ultima V chronicle your perilous travels, and your name and your deeds are written forever among Britannia's legends....", 7, 303, 8, 8, 0x3e)
+	end
+
+	wait_for_input()
+	if korean_mode and ko_saga_sprite then ko_saga_sprite.visible = false end
+
+	scroll_img = image_load("blocks.shp", 2)
+	scroll.image = scroll_img
+	scroll.visible = true
+	-- Korean: GYPSY_READY - Ready to answer the epic challenge
+	local ko_ready_sprite = nil
+	if korean_mode then
+		ko_ready_sprite = sprite_new(nil, 8, 0x98 + 12, true)
+		ko_ready_sprite.text = "마침내, 미덕의 적들에 맞선 투쟁으로 단련된 그대는 울티마 6의 대서사시적인 도전에 응답할 준비가 되었음을 증명한다!"
+		ko_ready_sprite.text_color = 0x3e
+	else
+		image_print(scroll_img, "Finally, tempered by your struggles against the enemies of Virtue, you are proven ready to answer the epic challenge of Ultima VI!", 7, 303, 8, 12, 0x3e)
+	end
+
+	wait_for_input()
+	if korean_mode and ko_ready_sprite then ko_ready_sprite.visible = false end
 	scroll.visible = false
 	
 	canvas_set_bg_color(0)
@@ -2491,15 +2762,16 @@ local function intro()
 	end
 
 	if intro_wait() == false then return end
-	
+
 	local l_move_tbl_x = {1, 1, 0, 1, 1, 1}
 	local l_move_tbl_y = {0, 0, -1, 0, 0, -1}
 
 	local r_move_tbl_x = {-1, -1, -1, -1, -1, -1}
 	local r_move_tbl_y = {-1, -1, 0, -1, -1, -1}
-	
+
 	scroll.visible = false
-	
+	if ko_text_sprite then ko_text_sprite.visible = false end
+
 	local i
 	for i=0,95,1 do
 		gargs_left.x = gargs_left.x + l_move_tbl_x[(i%6)+1]
@@ -2576,11 +2848,12 @@ local function intro()
 	ropes.visible = true
 		
 	if intro_wait() == false then return end
-	
+
 	gargs_left.y = gargs_left.y + 4
 	gargs_right.y = gargs_right.y + 4
 	scroll.visible = false
-	
+	if ko_text_sprite then ko_text_sprite.visible = false end
+
 	garg_body.visible = true
 	garg_head.visible = true
 	
@@ -2839,9 +3112,10 @@ local function intro()
 	fade_in()
 		
 	if intro_wait() == false then return end
-	
+
+	if ko_text_sprite then ko_text_sprite.visible = false end
 	fade_out()
-	
+
 	bg.visible = true
 	moongate.visible = true
 	gargs_left.visible = true
@@ -2853,7 +3127,8 @@ local function intro()
 	ropes.visible = true
 
 	scroll.visible = false
-	
+	if ko_text_sprite then ko_text_sprite.visible = false end
+
 	for i=0,0xff,3 do
 		left_idx = intro_sway_gargs(gargs_left, left_idx, false)
 		right_idx = intro_sway_gargs(gargs_right, right_idx, false)
@@ -2896,18 +3171,19 @@ local function intro()
 	end
 
 	scroll.visible = false
-	
+	if ko_text_sprite then ko_text_sprite.visible = false end
+
 	for i=0,42,1 do
 		left_idx = intro_sway_gargs(gargs_left, left_idx, false)
 		right_idx = intro_sway_gargs(gargs_right, right_idx, false)
 		moongate_rotate_palette()
-	
+
 		local x =  math.random(-1, 2)
 		garg_body.x = garg_body.x + x
 		garg_body.y = garg_body.y + 3
 		garg_head.x = garg_head.x + x
 		garg_head.y = garg_head.y + 3
-	
+
 		input = input_poll()
 		if input ~= nil then
 			if should_exit(input) ==  true then
@@ -3008,8 +3284,9 @@ local function intro()
 	end
 
 	scroll.visible = false
+	if ko_text_sprite then ko_text_sprite.visible = false end
 	ropes.visible = false
-	
+
 	for i=0,82,1 do
 		left_idx = intro_sway_gargs(gargs_left, left_idx, false)
 		right_idx = intro_sway_gargs(gargs_right, right_idx, false)
@@ -3186,7 +3463,8 @@ local function intro()
 	end
 
 	scroll.visible = false
-		
+	if ko_text_sprite then ko_text_sprite.visible = false end
+
 	intro_exit()
 end
 

@@ -90,7 +90,7 @@ end
 function select_location_with_prompt(prompt)
 if g_magic_target ~= nil then return g_magic_target end
 
-print(prompt)
+print(korean_translate(prompt))
 return get_target()
 end
 

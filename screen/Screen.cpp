@@ -838,6 +838,8 @@ bool Screen::blit4x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16
     else
       {
        sint32 skip = (-dest_x + 3) / 4;
+       if(skip >= src_w)
+         return false;
        src_buf += skip;
        src_w -= skip;
        dest_w = src_w * 4;
@@ -852,6 +854,8 @@ bool Screen::blit4x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16
     else
       {
        sint32 skip = (-dest_y + 3) / 4;
+       if(skip >= src_h)
+         return false;
        src_buf += src_pitch * skip;
        src_h -= skip;
        dest_h = src_h * 4;
@@ -887,6 +891,8 @@ bool Screen::blit4x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16
    if(clip_rect->x > dest_x)
       {
        sint32 skip = (clip_rect->x - dest_x + 3) / 4;
+       if(skip >= src_w)
+         return false;
        src_x = skip;
        src_w -= skip;
        dest_x = clip_rect->x;
@@ -896,6 +902,8 @@ bool Screen::blit4x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16
    if(clip_rect->y > dest_y)
      {
       sint32 skip = (clip_rect->y - dest_y + 3) / 4;
+      if(skip >= src_h)
+        return false;
       src_y = skip;
       src_h -= skip;
       dest_y = clip_rect->y;

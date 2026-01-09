@@ -377,8 +377,15 @@ void Event::get_target(const char *prompt) {
 //    use_obj = src;
   assert(mode != INPUT_MODE);
   set_mode(INPUT_MODE); // saves previous mode
-  if (prompt)
-    scroll->display_string(prompt);
+  if (prompt) {
+    KoreanTranslation *korean = game->get_korean_translation();
+    if (korean && korean->isEnabled()) {
+      std::string translated = korean->translate(prompt);
+      scroll->display_string(translated.c_str());
+    } else {
+      scroll->display_string(prompt);
+    }
+  }
   input.get_direction = false;
 
   map_window->centerCursor();
@@ -788,7 +795,11 @@ bool Event::attack() {
       }
     }
     if (actor->is_visible()) {
-      scroll->display_string(actor->get_name());
+      KoreanTranslation *korean = game->get_korean_translation();
+      std::string name = actor->get_name();
+      if(korean && korean->isEnabled())
+        name = korean->translate(name);
+      scroll->display_string(name.c_str());
       scroll->display_string(".\n");
     }
   }
@@ -2802,7 +2813,11 @@ bool Event::drop_count(uint16 qty) {
       get_target("Location:");
     else // h4x0r3d by SB-X... eventually integrate MapWindow dragndrop better with this drop-action
     {
-      scroll->display_string("Location:");
+      KoreanTranslation *korean = game->get_korean_translation();
+      if (korean && korean->isEnabled())
+        scroll->display_string("위치:");
+      else
+        scroll->display_string("Location:");
       perform_drop(); // use already selected target: drop_x,drop_y
     }
   } else

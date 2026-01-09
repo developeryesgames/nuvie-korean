@@ -517,7 +517,8 @@ Not while aboard balloon!\n\n|열기구 탑승 중에는 불가합니다!\n\n
 Not while aboard ship!\n\n|배 탑승 중에는 불가합니다!\n\n
 \n\nOnly within the party!|\n\n파티 내에서만 가능합니다!
 Location:|위치:
-Location? |위치? 
+Location: |위치:
+Location? |위치?
 Npc number? |NPC 번호? 
 Object number? |오브젝트 번호? 
 
@@ -786,4 +787,51 @@ BehLem says: "Horses are for food!"\n|베흘렘이 말합니다: "말은 음식�
 
 # Potion messages
 No effect\n|효과 없음\n
+
+# Combat messages (actor.lua)
+ yells for help!\n| 도움을 외친다!\n
+ poisoned!\n| 중독되었다!\n
+ killed!\n| 죽었다!\n
+critical!\n|치명상!\n
+heavily wounded.\n|중상을 입었다.\n
+heavily |중상:
+lightly wounded.\n|경상을 입었다.\n
+lightly |경상:
+barely wounded.\n|경미한 상처를 입었다.\n
+barely |경미:
+wounded.\n|상처를 입었다.\n
+Tangle vine killed!\n|덩굴이 죽었다!\n
+ broken!\n| 부서졌다!\n
+
+# Combat - stealing
+Stop Thief!!!\n|도둑이야!!!\n
+"Stop Thief!!!"\n|"도둑이야!!!"\n
+Stealing!!!\n|도둑질!!!\n
+
+# Combat - other messages
+Not possible.|불가능합니다.
+The total is too heavy.|너무 무겁습니다.
+
+# Rest messages (TimedEvent.cpp)
+Mealtime!\n|식사 시간!\n
+ plays a tune.\n| 연주를 한다.\n
+ has food.\n| 식량이 있다.\n
+ has no food.\n| 식량이 없다.\n
+ stands guard while the party rests.\n| 파티가 쉬는 동안 경계를 선다.\n
+
+# Magic messages
+\nThat spell is not in thy spellbook!\n|\n그 주문은 마법서에 없습니다!\n
+\nNo spellbook is readied.\n|\n마법서를 장착하지 않았습니다.\n
+\nIngredients:\n|\n재료:\n
+None\n\n|없음\n\n
+
+# Reagent names
+mandrake root|맨드레이크 뿌리
+nightshade|나이트셰이드
+black pearl|검은 진주
+blood moss|피이끼
+spider silk|거미 실크
+garlic|마늘
+ginseng|인삼
+sulfurous ash|유황재
 

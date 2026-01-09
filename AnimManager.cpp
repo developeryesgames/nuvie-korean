@@ -200,8 +200,16 @@ bool AnimManager::destroy_anim(NuvieAnim *anim_pt)
  */
 void AnimManager::drawTile(Tile *tile, uint16 x, uint16 y)
 {
-    viewsurf->blit(mapwindow_x_offset+x, mapwindow_y_offset+y, tile->data, 8, tile_pitch, tile_pitch, 16,
-                   tile->transparent, &viewport);
+    uint8 scale = map_window ? map_window->get_map_tile_scale() : 1;
+    if(scale == 4)
+        viewsurf->blit4x(mapwindow_x_offset+x*4, mapwindow_y_offset+y*4, tile->data, 8, 16, 16, 16,
+                         tile->transparent, &viewport);
+    else if(scale == 2)
+        viewsurf->blit2x(mapwindow_x_offset+x*2, mapwindow_y_offset+y*2, tile->data, 8, 16, 16, 16,
+                         tile->transparent, &viewport);
+    else
+        viewsurf->blit(mapwindow_x_offset+x, mapwindow_y_offset+y, tile->data, 8, tile_pitch, tile_pitch, 16,
+                       tile->transparent, &viewport);
 }
 
 void AnimManager::drawText(Font *font, const char *text, uint16 x, uint16 y)

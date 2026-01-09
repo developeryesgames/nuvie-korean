@@ -867,10 +867,12 @@ void MsgScroll::set_input_mode(bool state, const char *allowed, bool can_escape,
    //FIXME SDL2 SDL_EnableUNICODE(1); // allow character translation
    input_buf.erase(0,input_buf.length());
    composing_text.clear();  // Clear IME composition text
+   SDL_StartTextInput();  // Enable text input for Korean IME
  }
  else
  {
    //FIXME SDL2 SDL_EnableUNICODE(0); // reduce translation overhead when not needed
+   SDL_StopTextInput();  // Disable text input
    if(callback_target)
      do_callback = true; // **DELAY until end-of-method so callback can set_input_mode() again**
  }
@@ -1428,7 +1430,7 @@ void MsgScroll::Display(bool full_redraw)
  else
   {
    if(use_korean)
-     clearCursor(area.x + cursor_x, area.y + cursor_y * font_height);
+     clearCursor(area.x + left_margin + cursor_x + 8, area.y + cursor_y * font_height + 8);
    else
      clearCursor(area.x + 8 * cursor_x, area.y + cursor_y * 8);
   }
@@ -1522,11 +1524,13 @@ void MsgScroll::drawCursor(uint16 x, uint16 y)
  uint8 korean_scale = use_korean ? 2 : 1; // 2x scale for 8x8 U6 font (16x16 cursor in Korean mode)
 
  if(input_char != 0) { // show letter selected by arrow keys
+    // For input_char, draw at text position (without cursor offset)
+    uint16 text_y = use_korean ? (y - 8) : y;
     if(use_korean)
-      korean_font->drawCharUnicode(screen, get_char_from_input_char(), x, y, cursor_color, 1);
+      korean_font->drawCharUnicode(screen, get_char_from_input_char(), x - 8, text_y, cursor_color, 1);
     else
       font->drawChar(screen, get_char_from_input_char(), x, y, cursor_color);
-    screen->update(x, y, cursor_size, cursor_size);
+    screen->update(use_korean ? (x - 8) : x, text_y, cursor_size, cursor_size);
     return;
  }
  // Special characters (arrows, spinning ankh) are not in Korean font charmap
@@ -1701,6 +1705,7 @@ void MsgScroll::increase_input_char()
 		input_char = (input_char + 1) % 38;
 	if(permit_input != NULL && !strchr(permit_input, get_char_from_input_char())) // might only be needed for the teleport cheat menu
 		increase_input_char();
+	scroll_updated = true; // Force redraw to clear previous input_char
 }
 
 void MsgScroll::decrease_input_char()
@@ -1717,6 +1722,7 @@ void MsgScroll::decrease_input_char()
 		input_char = input_char == 0 ? 37 : input_char - 1;
 	if(permit_input != NULL && !strchr(permit_input, get_char_from_input_char())) // might only be needed for the teleport cheat menu
 		decrease_input_char();
+	scroll_updated = true; // Force redraw to clear previous input_char
 }
 
 uint8 MsgScroll::get_char_from_input_char()

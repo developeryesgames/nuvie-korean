@@ -130,6 +130,7 @@ private:
 	uint8 bg_color;
 	bool solid_bg;
 	bool rotate_game_palette;
+	uint8 render_scale;  // 1 for normal, 4 for original+ mode
 
 public:
 	ScriptCutscene(GUI *g, Configuration *cfg, SoundManager *sm);
@@ -163,6 +164,7 @@ public:
 
 	uint16 get_x_off() { return x_off; }
 	uint16 get_y_off() { return y_off; }
+	uint8 get_render_scale() { return render_scale; }
 
 	Font *get_font() { return (Font *)font; }
 	Configuration *get_config() { return config; }

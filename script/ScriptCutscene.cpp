@@ -41,6 +41,7 @@
 #include "KoreanTranslation.h"
 
 #include "ScriptCutscene.h"
+#include "Console.h"
 
 #define DELUXE_PAINT_MAGIC 0x4d524f46 // "FORM"
 
@@ -51,6 +52,11 @@
 
 static ScriptCutscene *cutScene = NULL;
 ScriptCutscene *get_cutscene() { return cutScene; }
+
+// Cutscene-specific Korean font (initialized before Game is loaded)
+static KoreanFont *cutscene_korean_font = NULL;
+static bool cutscene_korean_enabled = false;
+static std::string cutscene_composing_text;  // IME composition text for Korean input
 
 static int nscript_image_set(lua_State *L);
 static int nscript_image_get(lua_State *L);
@@ -125,10 +131,43 @@ static int nscript_input_poll(lua_State *L);
 static int nscript_config_set(lua_State *L);
 static int nscript_canvas_print_korean(lua_State *L);
 static int nscript_load_translation(lua_State *L);
+static int nscript_is_korean_enabled(lua_State *L);
+static int nscript_text_input_start(lua_State *L);
+static int nscript_text_input_stop(lua_State *L);
+static int nscript_input_poll_text(lua_State *L);
+static int nscript_get_composing_text(lua_State *L);
+static int nscript_commit_composing_text(lua_State *L);
 
 void nscript_init_cutscene(lua_State *L, Configuration *cfg, GUI *gui, SoundManager *sm)
 {
    cutScene = new ScriptCutscene(gui, cfg, sm);
+
+   // Initialize cutscene Korean font before Game is loaded
+   std::string korean_enabled_str;
+   cfg->value("config/language/korean_enabled", korean_enabled_str, "no");
+   if(korean_enabled_str == "yes")
+   {
+      std::string datadir = gui->get_data_dir();
+      std::string fonts_path, korean_path, bmp_path, charmap_path;
+
+      build_path(datadir, "fonts", fonts_path);
+      build_path(fonts_path, "korean", korean_path);
+      build_path(korean_path, "korean_font_32x32.bmp", bmp_path);
+      build_path(korean_path, "korean_font_32x32_charmap.txt", charmap_path);
+
+      cutscene_korean_font = new KoreanFont();
+      if(cutscene_korean_font->init(bmp_path, charmap_path))
+      {
+         cutscene_korean_enabled = true;
+         ConsoleAddInfo("ScriptCutscene: Korean font loaded for cutscenes");
+      }
+      else
+      {
+         delete cutscene_korean_font;
+         cutscene_korean_font = NULL;
+         ConsoleAddInfo("ScriptCutscene: Failed to load Korean font");
+      }
+   }
 
    luaL_newmetatable(L, "nuvie.Image");
    luaL_register(L, NULL, nscript_imagelib_m);
@@ -249,6 +288,24 @@ void nscript_init_cutscene(lua_State *L, Configuration *cfg, GUI *gui, SoundMana
 
    lua_pushcfunction(L, nscript_load_translation);
    lua_setglobal(L, "load_translation");
+
+   lua_pushcfunction(L, nscript_is_korean_enabled);
+   lua_setglobal(L, "is_korean_enabled");
+
+   lua_pushcfunction(L, nscript_text_input_start);
+   lua_setglobal(L, "text_input_start");
+
+   lua_pushcfunction(L, nscript_text_input_stop);
+   lua_setglobal(L, "text_input_stop");
+
+   lua_pushcfunction(L, nscript_input_poll_text);
+   lua_setglobal(L, "input_poll_text");
+
+   lua_pushcfunction(L, nscript_get_composing_text);
+   lua_setglobal(L, "get_composing_text");
+
+   lua_pushcfunction(L, nscript_commit_composing_text);
+   lua_setglobal(L, "commit_composing_text");
 }
 
 bool nscript_new_image_var(lua_State *L, CSImage *image)
@@ -705,25 +762,29 @@ static int nscript_sprite_set(lua_State *L)
 
 	if(!strcmp(key, "clip_x"))
 	{
-		sprite->clip_rect.x = lua_tointeger(L, 3) + cutScene->get_x_off();
+		uint8 scale = cutScene->get_render_scale();
+		sprite->clip_rect.x = cutScene->get_x_off() + lua_tointeger(L, 3) * scale;
 		return 0;
 	}
 
 	if(!strcmp(key, "clip_y"))
 	{
-		sprite->clip_rect.y = lua_tointeger(L, 3) + cutScene->get_y_off();
+		uint8 scale = cutScene->get_render_scale();
+		sprite->clip_rect.y = cutScene->get_y_off() + lua_tointeger(L, 3) * scale;
 		return 0;
 	}
 
 	if(!strcmp(key, "clip_w"))
 	{
-		sprite->clip_rect.w = lua_tointeger(L, 3);
+		uint8 scale = cutScene->get_render_scale();
+		sprite->clip_rect.w = lua_tointeger(L, 3) * scale;
 		return 0;
 	}
 
 	if(!strcmp(key, "clip_h"))
 	{
-		sprite->clip_rect.h = lua_tointeger(L, 3);
+		uint8 scale = cutScene->get_render_scale();
+		sprite->clip_rect.h = lua_tointeger(L, 3) * scale;
 		return 0;
 	}
 	if(!strcmp(key, "text"))
@@ -1182,21 +1243,32 @@ ScriptCutscene::ScriptCutscene(GUI *g, Configuration *cfg, SoundManager *sm) : G
 	config = cfg;
 	gui = g;
 
-	cursor = Game::get_game()->get_cursor();
-	x_off = Game::get_game()->get_game_x_offset();
-	y_off = Game::get_game()->get_game_y_offset();
+	// Determine render scale based on game style (original+ uses 4x)
+	Game *game = Game::get_game();
+	render_scale = (game && game->is_original_plus()) ? 4 : 1;
 
-	x_off += (Game::get_game()->get_game_width() - 320)/2; // center it
-	y_off += (Game::get_game()->get_game_height() - 200)/2; // center it
+	cursor = game ? game->get_cursor() : NULL;
+	x_off = game ? game->get_game_x_offset() : 0;
+	y_off = game ? game->get_game_y_offset() : 0;
 
-	nuvie_game_t game_type = Game::get_game()->get_game_type();
+	uint16 base_width = 320 * render_scale;
+	uint16 base_height = 200 * render_scale;
+
+	// Center the cutscene area
+	if(game)
+	{
+		x_off += (game->get_game_width() - base_width)/2;
+		y_off += (game->get_game_height() - base_height)/2;
+	}
+
+	nuvie_game_t game_type = game ? game->get_game_type() : NUVIE_GAME_U6;
 
 	GUI_Widget::Init(NULL, 0, 0, g->get_width(), g->get_height());
 
 	clip_rect.x = x_off;
 	clip_rect.y = y_off;
-	clip_rect.w = 320;
-	clip_rect.h = 200;
+	clip_rect.w = base_width;
+	clip_rect.h = base_height;
 
 	screen = g->get_screen();
 	gui->AddWidget(this);
@@ -1689,7 +1761,10 @@ void ScriptCutscene::hide_sprites()
 	{
 		CSSprite *s = *it;
 		if(s->visible)
+		{
 			s->visible = false;
+			s->text.clear();  // Clear text to prevent lingering Korean text
+		}
 	}
 }
 
@@ -1734,12 +1809,15 @@ void ScriptCutscene::Display(bool full_redraw)
 	if(cursor && cursor->is_visible())
 		cursor->clear();
 
+	uint16 scaled_width = 320 * render_scale;
+	uint16 scaled_height = 200 * render_scale;
+
   if(solid_bg)
   {
     if(full_redraw)
       screen->fill(bg_color,0,0,area.w, area.h);
     else
-      screen->fill(bg_color,x_off,y_off,320, 200);
+      screen->fill(bg_color,x_off,y_off,scaled_width, scaled_height);
   }
 
 	if(screen_opacity > 0)
@@ -1753,18 +1831,43 @@ void ScriptCutscene::Display(bool full_redraw)
 				{
 					uint16 w, h;
 					s->image->shp->get_size(&w, &h);
-					uint16 x, y;
-					s->image->shp->get_hot_point(&x, &y);
-					screen->blit(x_off+s->x-x, y_off+s->y-y, s->image->shp->get_data(), 8, w, h, w, true, s->clip_rect.w != 0 ? &s->clip_rect : &clip_rect, s->opacity);
+					uint16 hx, hy;
+					s->image->shp->get_hot_point(&hx, &hy);
+
+					if(render_scale == 4)
+					{
+						// Use 4x scaled rendering for original+ mode
+						int draw_x = x_off + (s->x - hx) * render_scale;
+						int draw_y = y_off + (s->y - hy) * render_scale;
+						// clip_rect is already scaled when set via lua
+						screen->blit4x(draw_x, draw_y, s->image->shp->get_data(), 8, w, h, w, true, s->clip_rect.w != 0 ? &s->clip_rect : &clip_rect);
+					}
+					else
+					{
+						screen->blit(x_off+s->x-hx, y_off+s->y-hy, s->image->shp->get_data(), 8, w, h, w, true, s->clip_rect.w != 0 ? &s->clip_rect : &clip_rect, s->opacity);
+					}
 				}
 
 				if(s->text.length() > 0)
 				{
 				  // Check for Korean mode
-				  Game *game = Game::get_game();
-				  FontManager *fm = game ? game->get_font_manager() : NULL;
-				  KoreanFont *korean_font = fm ? fm->get_korean_font() : NULL;
-				  bool use_korean = korean_font && fm->is_korean_enabled();
+				  KoreanFont *korean_font = cutscene_korean_font;
+				  bool use_korean = cutscene_korean_enabled && korean_font;
+
+				  // If no cutscene font, try Game's FontManager
+				  if(!use_korean)
+				  {
+				    Game *game = Game::get_game();
+				    if(game)
+				    {
+				      FontManager *fm = game->get_font_manager();
+				      if(fm && fm->is_korean_enabled())
+				      {
+				        korean_font = fm->get_korean_font();
+				        use_korean = (korean_font != NULL);
+				      }
+				    }
+				  }
 
 				  if(s->text_align != 0)
 				  {
@@ -1773,13 +1876,51 @@ void ScriptCutscene::Display(bool full_redraw)
 				  else
 				  {
 				    uint8 color = (s->text_color == 0xffff) ? 0x48 : (uint8)s->text_color;
-				    if(use_korean)
+				    if(use_korean && korean_font)
 				    {
-				      korean_font->drawStringUTF8(screen, s->text.c_str(), s->x + x_off, s->y + y_off, color, 0, 1);
+				      // Scale coordinates for 4x mode
+				      int draw_x = x_off + s->x * render_scale;
+				      int draw_y = y_off + s->y * render_scale;
+
+				      // Right edge for word wrap (screen width minus margin)
+				      int right_edge = x_off + (320 * render_scale) - (8 * render_scale);
+				      int line_height = korean_font->getCharHeightScaled(1) + 4; // 32px + 4px spacing
+				      int current_x = draw_x;
+				      int current_y = draw_y;
+				      int line_start_x = draw_x;
+
+				      // Korean text: wrap character by character (not word-based)
+				      const char *text = s->text.c_str();
+				      const char *p = text;
+				      while(*p)
+				      {
+				        // Get next UTF-8 character
+				        const char *char_start = p;
+				        uint32 cp = KoreanFont::nextUTF8Char(p);
+				        std::string ch(char_start, p - char_start);
+
+				        // Get character width
+				        int char_width = korean_font->getStringWidthUTF8(ch.c_str(), 1);
+
+				        // Check if character fits on current line
+				        if(current_x + char_width > right_edge && current_x > line_start_x)
+				        {
+				          // Move to next line
+				          current_x = line_start_x;
+				          current_y += line_height;
+				        }
+
+				        // Draw the character and advance position
+				        // drawStringUTF8 returns the width drawn, not new x position
+				        current_x += korean_font->drawStringUTF8(screen, ch.c_str(), current_x, current_y, color, 0, 1);
+				      }
 				    }
 				    else
 				    {
-				      font->drawString(screen, s->text.c_str(), s->x + x_off, s->y + y_off, color, color);
+				      // For English text, scale coordinates in 4x mode
+				      int draw_x = x_off + s->x * render_scale;
+				      int draw_y = y_off + s->y * render_scale;
+				      font->drawString(screen, s->text.c_str(), draw_x, draw_y, color, color);
 				    }
 				  }
 				}
@@ -1788,7 +1929,7 @@ void ScriptCutscene::Display(bool full_redraw)
 
 		if(screen_opacity < 255)
 		{
-			screen->fade(x_off,y_off,320,200, screen_opacity, bg_color);
+			screen->fade(x_off,y_off,scaled_width,scaled_height, screen_opacity, bg_color);
 		}
 	}
 
@@ -1798,7 +1939,7 @@ void ScriptCutscene::Display(bool full_redraw)
 	if(full_redraw)
 		screen->update(0,0,area.w,area.h);
 	else
-		screen->update(x_off,y_off,320, 200);
+		screen->update(x_off,y_off,scaled_width, scaled_height);
 }
 
 void ScriptCutscene::Hide()
@@ -2094,4 +2235,147 @@ static int nscript_canvas_print_korean(lua_State *L)
     lua_pushinteger(L, end_x);
     lua_pushinteger(L, y);
     return 2;
+}
+
+// Check if Korean mode is enabled: is_korean_enabled() - returns true/false
+static int nscript_is_korean_enabled(lua_State *L)
+{
+    // First try cutscene-specific Korean font (for intro/ending before Game loads)
+    if(cutscene_korean_enabled && cutscene_korean_font)
+    {
+        lua_pushboolean(L, true);
+        return 1;
+    }
+
+    // Fall back to Game's FontManager (for cutscenes during gameplay)
+    Game *game = Game::get_game();
+    if(game)
+    {
+        FontManager *fm = game->get_font_manager();
+        if(fm && fm->is_korean_enabled())
+        {
+            lua_pushboolean(L, true);
+            return 1;
+        }
+    }
+
+    lua_pushboolean(L, false);
+    return 1;
+}
+
+// Text input functions for Korean IME support
+// text_input_start() - Enable SDL text input mode (for IME)
+static int nscript_text_input_start(lua_State *L)
+{
+    SDL_StartTextInput();
+    cutscene_composing_text.clear();
+    return 0;
+}
+
+// text_input_stop() - Disable SDL text input mode
+static int nscript_text_input_stop(lua_State *L)
+{
+    SDL_StopTextInput();
+    cutscene_composing_text.clear();
+    return 0;
+}
+
+// get_composing_text() - Get current IME composition text
+static int nscript_get_composing_text(lua_State *L)
+{
+    lua_pushstring(L, cutscene_composing_text.c_str());
+    return 1;
+}
+
+// commit_composing_text() - Commit and clear composing text, returns the committed text
+static int nscript_commit_composing_text(lua_State *L)
+{
+    if(!cutscene_composing_text.empty())
+    {
+        lua_pushstring(L, cutscene_composing_text.c_str());
+        cutscene_composing_text.clear();
+        return 1;
+    }
+    return 0;  // No composing text
+}
+
+// input_poll_text() - Poll for text input, returns: nil (no input), string (text), or number (special key)
+// Special keys: 8=backspace, 13=enter, 27=escape, negative=arrow keys
+static int nscript_input_poll_text(lua_State *L)
+{
+    SDL_Event event;
+    while(SDL_PollEvent(&event))
+    {
+        if(event.type == SDL_TEXTINPUT)
+        {
+            // Text input from IME (UTF-8 string) - finalized text
+            cutscene_composing_text.clear();  // Clear composing since we got finalized text
+            lua_pushstring(L, event.text.text);
+            return 1;
+        }
+        else if(event.type == SDL_TEXTEDITING)
+        {
+            // IME composition text (not yet finalized)
+            cutscene_composing_text = event.edit.text;
+            // Don't return anything - just update composing text
+            // The Lua code will call get_composing_text() to display it
+        }
+        else if(event.type == SDL_KEYDOWN)
+        {
+            SDL_Keycode key = event.key.keysym.sym;
+
+            // Handle special keys
+            if(key == SDLK_RETURN || key == SDLK_KP_ENTER)
+            {
+                lua_pushinteger(L, 13);  // Enter
+                return 1;
+            }
+            else if(key == SDLK_ESCAPE)
+            {
+                lua_pushinteger(L, 27);  // Escape
+                return 1;
+            }
+            else if(key == SDLK_BACKSPACE)
+            {
+                // If there's composing text, clear it first
+                if(!cutscene_composing_text.empty())
+                {
+                    cutscene_composing_text.clear();
+                    // Don't return backspace - just cleared composing text
+                }
+                else
+                {
+                    lua_pushinteger(L, 8);   // Backspace
+                    return 1;
+                }
+            }
+            else if(key == SDLK_LEFT)
+            {
+                lua_pushinteger(L, INPUT_KEY_LEFT);
+                return 1;
+            }
+            else if(key == SDLK_RIGHT)
+            {
+                lua_pushinteger(L, INPUT_KEY_RIGHT);
+                return 1;
+            }
+            else if(key == SDLK_UP)
+            {
+                lua_pushinteger(L, INPUT_KEY_UP);
+                return 1;
+            }
+            else if(key == SDLK_DOWN)
+            {
+                lua_pushinteger(L, INPUT_KEY_DOWN);
+                return 1;
+            }
+        }
+        else if(event.type == SDL_MOUSEBUTTONDOWN)
+        {
+            lua_pushinteger(L, 0);  // Mouse click
+            return 1;
+        }
+    }
+
+    return 0;  // No input (returns nil)
 }
