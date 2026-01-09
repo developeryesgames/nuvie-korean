@@ -1,4 +1,28 @@
 /Debug/
+/Release/
 .cproject
 .project
 .idea
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Build artifacts
+*.obj
+*.pdb
+*.ilk
+
+# Game data (original files - do not commit)
+ULTIMA6/
+*.lbm
+CONVERSE.A
+CONVERSE.B
+OBJLIST
+SAVEGAME.*
+
+# IDE
+*.suo
+*.user
+.vs/
