@@ -53,6 +53,7 @@
 #include "Weather.h"
 #include "Script.h"
 #include "Event.h"
+#include "KoreanTranslation.h"
 
 #ifdef WIN32
   #define OBJLIST_FILENAME "savegame\\objlist"
@@ -570,7 +571,12 @@ bool SaveGame::save_objlist()
  
  game->get_script()->call_save_game(&objlist);
 
- scroll->display_string("\nGame Saved\n\n");
+ KoreanTranslation *korean = game->get_korean_translation();
+ if (korean && korean->isEnabled()) {
+   scroll->display_string("\n게임 저장 완료\n\n");
+ } else {
+   scroll->display_string("\nGame Saved\n\n");
+ }
  scroll->display_prompt();
 
  return true;
