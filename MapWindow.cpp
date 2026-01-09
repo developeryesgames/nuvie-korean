@@ -3084,8 +3084,9 @@ void MapWindow::get_movement_direction(uint16 mx, uint16 my, sint16 &rel_x, sint
     if(game->is_original_plus_full_map() && game->get_event()->get_mode() != INPUT_MODE)
         cent_x -= (map_center_xoff + 1)/2; // player is off center
 
-    mx = (mx - area.x)/16;
-    my = (my - area.y)/16;
+    uint16 tile_size = 16 * map_tile_scale;
+    mx = (mx - area.x)/tile_size;
+    my = (my - area.y)/tile_size;
     uint16 dist_x = abs(mx - cent_x), dist_y = abs(my - cent_y);
 
     rel_x = rel_y = 0;

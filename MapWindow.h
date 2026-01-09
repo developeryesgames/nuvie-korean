@@ -191,7 +191,7 @@ SDL_Rect paper_clip_rect;
  void moveMapRelative(sint16 rel_x, sint16 rel_y);
  void shiftMapRelative(sint16 rel_x, sint16 rel_y);
  void set_mousecenter(sint16 new_x, sint16 new_y) { mousecenter_x = new_x; mousecenter_y = new_y; }
- void reset_mousecenter() { mousecenter_x = win_width / 2; mousecenter_y = win_height / 2; }
+ void reset_mousecenter() { mousecenter_x = (win_width - 1 - map_center_xoff) / 2; mousecenter_y = (win_height - 1) / 2; }
  uint16 get_win_area() { return win_width*win_height; }
  void centerMapOnActor(Actor *actor);
  void centerMap(uint16 x, uint16 y, uint8 z);
