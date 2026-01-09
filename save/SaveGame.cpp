@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  SaveGame.cpp
  *  Nuvie
  *
@@ -23,6 +23,7 @@
 
 #include <list>
 #include <cassert>
+#include <cstring>
 
 #include "SDL.h"
 
@@ -60,6 +61,23 @@
   #define OBJLIST_FILENAME "savegame/objlist"
   #define OBJBLK_FILENAME  "savegame/objblkxx"
 #endif
+
+// Helper function to get UTF-8 safe length (does not cut in the middle of a character)
+static size_t utf8_safe_len(const std::string &s, size_t max_bytes) {
+    size_t i = 0;
+    while (i < s.size() && i < max_bytes) {
+        unsigned char c = static_cast<unsigned char>(s[i]);
+        size_t clen = 1;
+        if ((c & 0x80) == 0) clen = 1;           // ASCII
+        else if ((c & 0xE0) == 0xC0) clen = 2;   // 2-byte UTF-8
+        else if ((c & 0xF0) == 0xE0) clen = 3;   // 3-byte UTF-8 (Korean)
+        else if ((c & 0xF8) == 0xF0) clen = 4;   // 4-byte UTF-8
+
+        if (i + clen > max_bytes) break;  // Would exceed limit
+        i += clen;
+    }
+    return i;
+}
 
 SaveGame::SaveGame(Configuration *cfg)
 {
@@ -219,6 +237,16 @@ bool SaveGame::load_original()
 
  objlist.open(data, objlist_file.get_size(), NUVIE_BUF_COPY);
  free(data);
+
+ // Check if this is a new game from character creation
+ bool newgame = false;
+ config->value("config/newgame", newgame, false);
+ if(newgame)
+ {
+   DEBUG(0,LEVEL_WARNING,"load_original: Applying new game data");
+   update_objlist_for_new_game();
+   config->set("config/newgame", false);
+ }
 
  load_objlist();
 
@@ -601,11 +629,12 @@ void SaveGame::update_objlist_for_new_game_u6()
 
 	config->value("config/newgamedata/name", name, "Avatar");
 	objlist.seek(0xf00);
-	int len = name.length();
-	if(len > 13)
-		len = 13;
-
-	objlist.writeBuf((unsigned char *)name.c_str(), len+1);
+	// Use UTF-8 safe length to avoid cutting Korean characters in the middle
+	size_t len = utf8_safe_len(name, 13);
+	DEBUG(0,LEVEL_WARNING,"New game name: [%s] byte_len=%zu safe_len=%zu", name.c_str(), name.length(), len);
+	char name_buf[14] = {0};  // 14 bytes with guaranteed NUL termination
+	memcpy(name_buf, name.c_str(), len);
+	objlist.writeBuf((unsigned char *)name_buf, 14);
 
 	objlist.seek(0x1c71); //gender
 
@@ -645,14 +674,13 @@ void SaveGame::update_objlist_for_new_game_u6()
 void SaveGame::update_objlist_for_new_game_se()
 {
   std::string name = "";
-
   config->value("config/newgamedata/name", name, "Avatar");
   objlist.seek(0xf00);
-  int len = name.length();
-  if(len > 13)
-    len = 13;
-
-  objlist.writeBuf((unsigned char *)name.c_str(), len+1);
+  // Use UTF-8 safe length to avoid cutting Korean characters in the middle
+  size_t len = utf8_safe_len(name, 13);
+  char name_buf[14] = {0};  // 14 bytes with guaranteed NUL termination
+  memcpy(name_buf, name.c_str(), len);
+  objlist.writeBuf((unsigned char *)name_buf, 14);
 
   int str,dex,intelligence;
   config->value("config/newgamedata/str", str, 0xf);
@@ -683,11 +711,11 @@ void SaveGame::update_objlist_for_new_game_md()
 
   config->value("config/newgamedata/name", name, "Avatar");
   objlist.seek(0xf00);
-  int len = name.length();
-  if(len > 13)
-    len = 13;
-
-  objlist.writeBuf((unsigned char *)name.c_str(), len+1);
+  // Use UTF-8 safe length to avoid cutting Korean characters in the middle
+  size_t len = utf8_safe_len(name, 13);
+  char name_buf[14] = {0};  // 14 bytes with guaranteed NUL termination
+  memcpy(name_buf, name.c_str(), len);
+  objlist.writeBuf((unsigned char *)name_buf, 14);
 
   int str,dex,intelligence;
   config->value("config/newgamedata/str", str, 0xf);

@@ -105,7 +105,7 @@ AI가 못하는 것:
 다운로드
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-GitHub: [링크]
+GitHub: https://github.com/developeryesgames/nuvie-korean
 
 ※ 정품 필요함 (GOG에서 구매 가능)
 

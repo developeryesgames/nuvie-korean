@@ -2047,6 +2047,12 @@ local function create_character()
 		text_input_stop()
 	end
 	
+	-- Save the name to a separate variable before it gets cleared
+	local saved_name = name.text
+	print("DEBUG: After name input, saved_name = [" .. tostring(saved_name) .. "]")
+	-- Save the name to config immediately after input
+	config_set("config/newgamedata/name", saved_name)
+	print("DEBUG: Saved name to config immediately: [" .. tostring(saved_name) .. "]")
 	name.x = 0x10 + (284 - canvas_string_length(name.text)) / 2
 
 	-- Hide name question and show gender question
@@ -2578,9 +2584,12 @@ local function create_character()
 	canvas_set_bg_color(0)
 	fade_out()
 	
+	print("DEBUG: Setting config/newgame = true")
 	config_set("config/newgame", true)
 	
-	config_set("config/newgamedata/name", name.text)
+	-- Name already saved immediately after input
+	-- print("DEBUG: Setting name = " .. tostring(name.text))
+	-- config_set("config/newgamedata/name", saved_name) -- Already saved immediately
 	config_set("config/newgamedata/gender", gender)
 	config_set("config/newgamedata/portrait", portrait_num)
 	config_set("config/newgamedata/str", g_str)

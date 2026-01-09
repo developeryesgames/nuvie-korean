@@ -137,9 +137,11 @@ bool SaveManager::load_save()
 	bool newsave = false;
 
 	config->value("config/newgame", newsave, false);
+	DEBUG(0,LEVEL_WARNING,"SaveManager::load_save() newsave=%d", newsave ? 1 : 0);
 
 	if(newsave)
 	{
+		DEBUG(0,LEVEL_WARNING,"Starting load_new() for new game");
 		return savegame->load_new();
 	}
 
@@ -168,7 +170,8 @@ bool SaveManager::load_latest_save()
    {
     if(savegame->load_original() == false)          // fall back to savegame/ if no nuvie savegames exist.
       {
-       return savegame->load_new();                 // if all else fails try to load a new game.
+       DEBUG(0,LEVEL_WARNING,"Starting load_new() for new game");
+		return savegame->load_new();                 // if all else fails try to load a new game.
       }
    }
 
@@ -261,7 +264,8 @@ bool SaveManager::load(SaveSlot *save_slot)
    if(!save_slot->is_new_save() && savegame->load_original())
      return true;
    else
-     return savegame->load_new();
+     DEBUG(0,LEVEL_WARNING,"Starting load_new() for new game");
+		return savegame->load_new();
  }
 
  build_path(savedir, save_slot->get_filename()->c_str(), save_filename);
