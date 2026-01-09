@@ -68,6 +68,7 @@ public:
     bool loadBookTranslations(const std::string &filename);
     bool loadDialogueTranslations(const std::string &filename);
     bool loadSpellTranslations(const std::string &filename);
+    bool loadKeywordTranslations(const std::string &filename);
 
     // Get translated text
     std::string getLookText(uint16 item_index);
@@ -80,6 +81,9 @@ public:
 
     // Translate a string if translation exists, otherwise return original
     std::string translate(const std::string &english_text);
+
+    // Get English keyword from Korean input (for conversation system)
+    std::string getEnglishKeyword(const std::string &korean_keyword);
 
     // Check if translation exists
     bool hasLookTranslation(uint16 item_index);

@@ -1,0 +1,552 @@
+# Item descriptions from LOOK.LZD
+# Format: INDEX|NAME
+
+0|Nothing
+1|
+2|grass
+3|
+4|swamp
+5|
+6|shrub
+7|
+8|bush
+9|
+10|water
+11|/
+12|shore
+13|3
+14|tree
+15|?
+16|grass
+17|G
+18|tree
+19|H
+20|dead tree
+21|M
+22|scrub
+23|N
+24|shrub
+25|_
+26|earth
+27|k
+28|embankment
+29|o
+30|earth
+31||
+32|mountain
+33|
+34|snowcaps
+35|»
+36|wall
+37|¼
+38|field
+39|¿
+40|crops
+41|Ã
+42|arrow slit
+43|Å
+44|window
+45|Ç
+46|crenellation
+47|Í
+48|window
+49|Î
+50|Ï
+51|wall
+52|Ø
+53|floor
+54|Ù
+55|wet earth
+56|Ú
+57|puddle
+58|Û
+59|pool
+60|Ü
+61|floor
+62|ß
+63|lava
+64|ï
+65|pyramid
+66|û
+67|earthen wall
+68|þ
+69|ethereal void
+70|ÿ
+71|	
+72|	
+73|wall
+74|W
+75|[lightsource
+76|_force field
+77|h
+78|kmoonstone
+79|
+80|sling stone
+81|moonstone
+82|ÿ
+83|leather helm
+84|chain coif
+85|iron helm
+86|spiked helm
+87|winged helm
+88|brass helm
+89|Gargoyle Helm
+90|magic helm
+91|wooden shield
+92|	curved heater
+93|
+winged shield
+94|kite shield
+95|spiked shield
+96|black shield
+97|door shield
+98|magic shield
+99|cloth armour
+100|leather armor
+101|ring mail
+102|scale mail
+103|chain mail
+104|plate mail
+105|magic armour
+106|spiked collar
+107|guild belt
+108|Gargoyle Belt
+109|leather boots
+110|swamp boots
+111|earth
+112|floor
+113| sling
+114|!club
+115|"main gauche
+116|#spear
+117|$throwing axe
+118|%dagger
+119|&mace
+120|'morning star
+121|(bow
+122|)crossbow
+123|*sword
+124|+two-handed hammer
+125|,two-handed axe
+126|-two-handed sword
+127|.halberd
+128|/glass sword
+129|0boomerang
+130|1triple crossbow
+131|2force field
+132|3wizard eye
+133|4web
+134|5magic bow
+135|6arrow\s
+136|7bolt\s
+137|8spellbook
+138|9spell
+139|:Codex
+140|;Book of Prophecies
+141|<Book of Circles
+142|=Vortex Cube
+143|>lock pick\s
+144|?key
+145|@black pearl\s
+146|Abit\s of blood moss
+147|Bbulb\s of garlic
+148|Cginseng root\s
+149|Dmandrake root\s
+150|Enightshade mushroom\s
+151|Fstrand\s of spidersilk
+152|Gbit\s of sulfurous ash
+153|Omoonstone
+154|Pankh amulet
+155|Qsnake amulet
+156|RAmulet of Submission
+157|Sgem\s
+158|Tstaff
+159|Ulightning wand
+160|Vfire wand
+161|Wstorm cloak
+162|Xring
+163|Yflask\s of oil
+164|Zred gate
+165|]moongate
+166|^gavel
+167|_Orb of the Moons
+168|`gold coin\s
+169|agold nugget\s
+170|btorch\es
+171|clit torch
+172|dZu Ylem
+173|esilver snake venom
+174|fsextant
+175|gspinning wheel
+176|hbunch of grapes
+177|ibutter
+178|jGargish vocabulary
+179|kopen chest
+180|lchest
+181|mlocked chest
+182|nmagically locked chest
+183|obackpack
+184|pscythe
+185|qpitchfork
+186|rrake
+187|spick
+188|tshovel
+189|uhoe
+190|vwooden ladder
+191|wyoke
+192|xoven spatula
+193|yrolling pin
+194|zspatula
+195|{ladle
+196||cooking sheet
+197|}cleaver
+198|knife
+199|wine
+200|mead
+201|ale
+202|wine glass
+203|plate
+204|mug
+205|silverware
+206|candle
+207|lit candle
+208|mirror
+209|broken mirror
+210|tunic
+211|hanger
+212|dress
+213|skillet
+214|loa/f\ves of bread
+215|portion\s of meat
+216|rolls
+217|cake
+218|cheese
+219|ham
+220|horse carcass
+221|horse chops
+222|skewer
+223|pants
+224|plant
+225|flowers
+226|¡wall mount
+227|£decorative sword
+228|¥decorative shield
+229|§picture
+230|©tapestry
+231|«candelabra
+232|­person sleeping
+233|¯cauldron
+234|°ship deed
+235|±inkwell
+236|²book
+237|³scroll
+238|´panpipes
+239|µtelescope
+240|¶crystal ball
+241|·harpsichord
+242|¸harp
+243|¹lute
+244|»clock
+245|¼endtable
+246|½water vase
+247|¿stove
+248|Ëbed
+249|Ïfireplace
+250|Ñstalagmite
+251|Òsack of grain
+252|Ósack of flour
+253|×remains
+254|Ørubber ducky
+255|ÙUrn of Ashes
+256|Úfumarole
+257|Ûspikes
+258|Ütrap
+259|Þswitch
+260|ßelectric field
+261|ãchest of drawers
+262|ådesk
+263|æbucket
+264|çbucket of water
+265|èbucket of milk
+266|échurn
+267|êbeehive
+268|ëhoney jar
+269|ìjar of honey
+270|ïcloth
+271|ðopen barrel
+272|ñsealed barrel
+273|òjug
+274|óbag
+275|ôcask
+276|õbale of wool
+277|öbasket
+278|÷open crate
+279|øcrate
+280|úsmall jug
+281|ûmilk bottle
+282|ÿwheat
+283|vat
+284|wine cask
+285|cutting table
+286|loom
+287|hood
+288|fire
+289|horseshoes
+290|pliers
+291|hammer
+292|water trough
+293|brazier
+294|flaming brazier
+295|holy brazier
+296|!rod
+297|"hook
+298|#meat
+299|$ribs
+300|%dead animal
+301|&fan
+302|(mouse hole
+303|,wine press
+304|/stable
+305|;bookshelf
+306|<anvil
+307|=bellows
+308|>oven
+309|?flag
+310|Ccannon
+311|Dcannon balls
+312|Epowder keg
+313|Flit powder
+314|Kfoot rail
+315|Lspool of thread
+316|Mspool of silk
+317|Opennant
+318|Rtable
+319|Sshadow
+320|Utable
+321|Vshadow
+322|Wspittoon
+323|[well
+324|\fountain
+325|]sundial
+326|_bell
+327|btable
+328|cshadow
+329|etable
+330|fshadow
+331|gsilk cloth
+332|hRune of Honesty
+333|iRune of Compassion
+334|jRune of Valor
+335|kRune of Justice
+336|lRune of Sacrifice
+337|mRune of Honor
+338|nRune of Spirituality
+339|oRune of Humility
+340|rtable
+341|tshadow
+342|xchair
+343|zcampfire
+344|{cross
+345||tombstone
+346|}protection ring
+347|~regeneration ring
+348|invisibility ring
+349|table leg
+350|shadow
+351|table leg
+352|shadow
+353|stocks
+354|person in stocks
+355|fishing pole
+356|fish
+357|grave
+358|guillotine
+359|lever
+360|drawbridge
+361|balloon plans
+362|doorsill
+363|doorway
+364|£steps
+365|¦tile
+366|§yew log
+367|¨blue potion
+368|©red potion
+369|ªyellow potion
+370|«green potion
+371|¬orange potion
+372|­purple potion
+373|®black potion
+374|¯white potion
+375|»steps
+376|¼yew board
+377|¿passthrough
+378|Ìtable
+379|Ïpassthrough
+380|Õfence
+381|Übars
+382|Ýanchor
+383|Þrope
+384|ßpole
+385|ïwalkway
+386|ðwater wheel
+387|ñcrank
+388|òlog saw
+389|ómill stone
+390|÷shaft
+391|ûgearwork
+392|üchain
+393|ýlightsource
+394|þheatsource
+395|ÿxylophone
+396|oaken door
+397|windowed door
+398|/cedar door
+399|?steel door
+400|Kdoorway
+401|Oarchway
+402|acarpet
+403|ccookfire
+404|elogs
+405|icookfire
+406|klogs
+407|mcookfire
+408|oladder
+409|strellis
+410|tvolcano
+411|ucrater
+412|vhole
+413|{bones
+414|portcullis
+415|stone table
+416|stone lion
+417|silver horn
+418|floor
+419|stone
+420|lamppost
+421|fire field
+422|poison field
+423|protection field
+424|sleep field
+425|statue
+426|guardian
+427|pool
+428|£monolith
+429|§pillar
+430|©book stand
+431|«mine shaft
+432|­dungeon
+433|¯cave
+434|³throne
+435|·altar
+436|¸Altar of singularity
+437|»altar of singularity
+438|¿mat
+439|Ágovernment sign
+440|Ãfood shop
+441|Åguild
+442|Çshipwright
+443|Éarmoury
+444|Ëfletcher
+445|Íherbalist
+446|Ïtextile shop
+447|Ñhealer
+448|Óblacksmith
+449|Õinn
+450|Ýsign
+451|Þsignpost
+452|ßsign
+453|àgargoyle sign
+454|ãsign
+455|çsecret door
+456|èegg
+457|écharge
+458|êeffect
+459|íblood
+460|ödead body
+461|÷pile of bones
+462|ûdead cyclops
+463|ÿdead gargoyle
+464|giant rat
+465|insects
+466|giant bat
+467|giant squid
+468|sea serpent
+469|reaper
+470|'sheep
+471|/dog
+472|7deer
+473|?wolf
+474|Cghost
+475|Ggremlin
+476|Kmouse
+477|Ogazer
+478|Sbird
+479|Wcorpser
+480|_snake
+481|crabbit
+482|grot worms
+483|ogiant spider
+484|«gargoyle
+485|¯acid slug
+486|·tangle vine
+487|¿daemon
+488|Çskeleton
+489|Ïdrake
+490|×headless
+491|ßtroll
+492|çmongbat
+493|ëwisp
+494|ïhydra
+495|ÿslime
+496|fighter
+497|swashbuckler
+498|/mage
+499|?villager
+500|Omerchant
+501|_child
+502|oguard
+503|jester
+504|peasant
+505|farmer
+506|¯musician
+507|¿woman
+508|Ãcat
+509|Äsilver tablet
+510|Åsilver fragment
+511|Çfarmer
+512|Ïmusician
+513|Ðshrine
+514|ÑBritannian Lens
+515|Òbroken lens
+516|ÓGargoyle Lens
+517|ÔStatue of Mondain
+518|ÕStatue of Minax
+519|ÖStatue of Exodus
+520|ßpart of a map
+521|ïLord British
+522|ÿAvatar
+523|'dragon
+524|?ship
+525|Osilver serpent
+526|Sskiff
+527|Traft
+528|Unothing
+529|Vdragon egg
+530|Whatched dragon egg
+531|Xpull chain
+532|Yballoon
+533|Zmammoth silk bag
+534|[balloon basket
+535|_balloon
+536|cyclops
+537|hydra
+538|¯giant scorpion
+539|¿giant ant
+540|Ïcow
+541|ßalligator
+542|ïhorse
+543|ðhorse with rider
+544|õhorse
+545|öhorse with rider
+546|horse
+547|

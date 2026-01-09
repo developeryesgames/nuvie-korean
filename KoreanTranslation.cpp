@@ -98,6 +98,14 @@ bool KoreanTranslation::init()
         ConsoleAddInfo("KoreanTranslation: Loaded spell translations");
     }
 
+    // Load keyword translations (Korean -> English for conversation input)
+    std::string keywords_path;
+    build_path(data_path, "keywords_ko.txt", keywords_path);
+    if (loadKeywordTranslations(keywords_path))
+    {
+        ConsoleAddInfo("KoreanTranslation: Loaded keyword translations");
+    }
+
     if (enabled)
     {
         ConsoleAddInfo("KoreanTranslation: Korean translation system initialized - ENABLED");
@@ -875,6 +883,61 @@ std::string KoreanTranslation::getSpellName(uint16 spell_num)
 
     std::map<uint16, std::string>::iterator it = spell_translations.find(spell_num);
     if (it != spell_translations.end())
+        return it->second;
+    return "";
+}
+
+bool KoreanTranslation::loadKeywordTranslations(const std::string &filename)
+{
+    std::ifstream file(filename.c_str());
+    if (!file.is_open())
+    {
+        DEBUG(0, LEVEL_WARNING, "KoreanTranslation: Cannot open %s\n", filename.c_str());
+        return false;
+    }
+
+    keywords.clear();
+    std::string line;
+    int loaded = 0;
+
+    while (std::getline(file, line))
+    {
+        if (line.empty() || line[0] == '#')
+            continue;
+
+        // Format: KOREAN|ENGLISH (first 4 chars)
+        size_t pos = line.find('|');
+        if (pos == std::string::npos)
+            continue;
+
+        std::string korean = line.substr(0, pos);
+        std::string english = line.substr(pos + 1);
+
+        // Trim whitespace
+        while (!korean.empty() && (korean.back() == ' ' || korean.back() == '\r'))
+            korean.pop_back();
+        while (!english.empty() && (english.back() == ' ' || english.back() == '\r'))
+            english.pop_back();
+
+        if (!korean.empty() && !english.empty())
+        {
+            keywords[korean] = english;
+            loaded++;
+        }
+    }
+
+    file.close();
+    DEBUG(0, LEVEL_INFORMATIONAL, "KoreanTranslation: Loaded %d keyword translations\n", loaded);
+    return loaded > 0;
+}
+
+std::string KoreanTranslation::getEnglishKeyword(const std::string &korean_keyword)
+{
+    if (!enabled)
+        return "";
+
+    std::map<std::string, std::string>::iterator it = keywords.find(korean_keyword);
+    if (it != keywords.end())
         return it->second;
     return "";
 }

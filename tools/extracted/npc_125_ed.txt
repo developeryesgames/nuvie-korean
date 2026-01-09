@@ -1,0 +1,6 @@
+# NPC 125: ed
+# Source: CONVERSE.B
+
+[DESC]
+an unconcious man, his face twisted with pain. *òHe offers you no response. ¶
+

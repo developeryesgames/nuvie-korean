@@ -282,33 +282,20 @@ void ConverseInterpret::exec()
 }
 
 
-// Map Korean keywords to English equivalents
-static const char* getEnglishKeyword(const std::string &keyword)
+// Map Korean keywords to English equivalents (uses KoreanTranslation class)
+static std::string getEnglishKeywordFromKorean(const std::string &keyword)
 {
-    // Common Korean keyword mappings
-    if (keyword == "도움" || keyword == "\xeb\x8f\x84\xec\x9b\x80") return "help";
-    if (keyword == "이야기" || keyword == "\xec\x9d\xb4\xec\x95\xbc\xea\xb8\xb0") return "stor";
-    if (keyword == "이름" || keyword == "\xec\x9d\xb4\xeb\xa6\x84") return "name";
-    if (keyword == "일" || keyword == "\xec\x9d\xbc") return "job";
-    if (keyword == "모험" || keyword == "\xeb\xaa\xa8\xed\x97\x98") return "ques";
-    if (keyword == "합류" || keyword == "\xed\x95\xa9\xeb\xa5\x98") return "join";
-    if (keyword == "떠나" || keyword == "\xeb\x96\xa0\xeb\x82\x98") return "leav";
-    if (keyword == "안녕" || keyword == "\xec\x95\x88\xeb\x85\x95") return "bye";
-    if (keyword == "가고일" || keyword == "\xea\xb0\x80\xea\xb3\xa0\xec\x9d\xbc") return "garg";
-    if (keyword == "오두막" || keyword == "\xec\x98\xa4\xeb\x91\x90\xeb\xa7\x89") return "hut";
-    if (keyword == "음유시인" || keyword == "\xec\x9d\x8c\xec\x9c\xa0\xec\x8b\x9c\xec\x9d\xb8") return "bard";
-    if (keyword == "아내" || keyword == "\xec\x95\x84\xeb\x82\xb4") return "wife";
-    if (keyword == "미녹" || keyword == "\xeb\xaf\xb8\xeb\x85\xb9") return "mino";
-    if (keyword == "브리튼" || keyword == "\xeb\xb8\x8c\xeb\xa6\xac\xed\x8a\xbc") return "brit";
-    if (keyword == "성지" || keyword == "\xec\x84\xb1\xec\xa7\x80") return "shri";
-    if (keyword == "덕목" || keyword == "\xeb\x8d\x95\xeb\xaa\xa9") return "virt";
-    if (keyword == "모아" || keyword == "\xeb\xaa\xa8\xec\x95\x84" || keyword == "모으") return "gath";
-    if (keyword == "나눠" || keyword == "\xeb\x82\x98\xeb\x88\xa0" || keyword == "나누") return "spli";
-    if (keyword == "차" || keyword == "\xec\xb0\xa8") return "tea";
-    if (keyword == "폴리" || keyword == "\xed\x8f\xb4\xeb\xa6\xac") return "foll";
-    if (keyword == "견습생" || keyword == "\xea\xb2\xac\xec\x8a\xb5\xec\x83\x9d") return "appr";
-    if (keyword == "코빼기" || keyword == "\xec\xbd\x94\xeb\xb9\xa0\xea\xb8\xb0") return "nose";
-    return NULL;
+    Game *game = Game::get_game();
+    KoreanTranslation *korean = game ? game->get_korean_translation() : NULL;
+
+    if (korean && korean->isEnabled())
+    {
+        std::string result = korean->getEnglishKeyword(keyword);
+        if (!result.empty())
+            return result;
+    }
+
+    return "";
 }
 
 // Check if text looks like a greeting (first dialogue after description)
@@ -1525,8 +1512,8 @@ bool ConverseInterpret::check_keywords(string keystr, string instr)
 
     // If Korean input, try to map to English keyword first
     std::string mapped_input = instr;
-    const char* eng_kw = getEnglishKeyword(instr);
-    if (eng_kw)
+    std::string eng_kw = getEnglishKeywordFromKorean(instr);
+    if (!eng_kw.empty())
         mapped_input = eng_kw;
 
     // check each comma-separated keyword
