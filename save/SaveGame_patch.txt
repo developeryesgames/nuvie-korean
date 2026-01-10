@@ -1,0 +1,18 @@
+--- AFTER LINE 62 (#endif) ADD THIS ---
+
+// Helper function to get UTF-8 safe length (doesn't cut in the middle of a character)
+static size_t utf8_safe_len(const std::string &s, size_t max_bytes) {
+    size_t i = 0;
+    while (i < s.size() && i < max_bytes) {
+        unsigned char c = static_cast<unsigned char>(s[i]);
+        size_t clen = 1;
+        if ((c & 0x80) == 0) clen = 1;           // ASCII
+        else if ((c & 0xE0) == 0xC0) clen = 2;   // 2-byte UTF-8
+        else if ((c & 0xF0) == 0xE0) clen = 3;   // 3-byte UTF-8 (Korean)
+        else if ((c & 0xF8) == 0xF0) clen = 4;   // 4-byte UTF-8
+
+        if (i + clen > max_bytes) break;  // Would exceed limit
+        i += clen;
+    }
+    return i;
+}

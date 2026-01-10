@@ -119,7 +119,7 @@ bool Look::init()
  return true;
 }
 
-const char *Look::get_description(uint16 tile_num, bool *plural)
+const char *Look::get_description(uint16 tile_num, bool *plural, bool translate)
 {
  const char *desc;
  char c;
@@ -133,6 +133,8 @@ const char *Look::get_description(uint16 tile_num, bool *plural)
  desc = look_tbl[tile_num];
 
  // Check for Korean translation
+ if(translate)
+ {
  Game *game = Game::get_game();
  if(game)
  {
@@ -182,6 +184,7 @@ const char *Look::get_description(uint16 tile_num, bool *plural)
      }
    }
  }
+ } // end if(translate)
 
  len = strlen(desc);
 

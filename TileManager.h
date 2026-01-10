@@ -170,7 +170,7 @@ class TileManager
    uint16 get_tile_index(uint16 tile_index) { return(tileindex[tile_index]); }
    void set_anim_loop(uint16 tile_num, sint8 loopc, uint8 loop = 0);
 
-   const char *lookAtTile(uint16 tile_num, uint16 qty, bool show_prefix);
+   const char *lookAtTile(uint16 tile_num, uint16 qty, bool show_prefix, bool translate = true);
    bool tile_is_stackable(uint16 tile_num);
    void update();
    void update_timed_tiles(uint8 hour);

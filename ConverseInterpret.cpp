@@ -356,7 +356,15 @@ void ConverseInterpret::do_text()
   {
     // Look up translation by NPC number + English text
     uint8 npc_num = converse->script_num;
-    DEBUG(0, LEVEL_INFORMATIONAL, "KoreanTranslation: NPC %d, raw_english='%s'\n", npc_num, raw_english.c_str());
+
+    // Preserve trailing newlines from original text
+    std::string trailing_newlines;
+    size_t orig_len = raw_english.length();
+    while (orig_len > 0 && (raw_english[orig_len-1] == '\n' || raw_english[orig_len-1] == '\r')) {
+      trailing_newlines = raw_english[orig_len-1] + trailing_newlines;
+      orig_len--;
+    }
+
     std::string korean_text = korean->getDialogueTranslation(npc_num, raw_english);
 
     if (!korean_text.empty())
@@ -380,8 +388,33 @@ void ConverseInterpret::do_text()
         }
       }
 
-      while ((pos = korean_text.find("$N")) != std::string::npos)
-        korean_text.replace(pos, 2, korean->getNPCName(converse->name));
+      // Handle $N with particles first, then plain $N
+      {
+        std::string n_value = korean->translate(converse->name);
+        // $N(이)가 - 10 bytes
+        const char* n_iga_pattern = "$N(\xEC\x9D\xB4)\xEA\xB0\x80";
+        while ((pos = korean_text.find(n_iga_pattern)) != std::string::npos) {
+          korean_text.replace(pos, 10, n_value + KoreanTranslation::getParticle_iga(n_value));
+        }
+        // $N(은)는 - 10 bytes
+        const char* n_eunneun_pattern = "$N(\xEC\x9D\x80)\xEB\x8A\x94";
+        while ((pos = korean_text.find(n_eunneun_pattern)) != std::string::npos) {
+          korean_text.replace(pos, 10, n_value + KoreanTranslation::getParticle_eunneun(n_value));
+        }
+        // $N(을)를 - 10 bytes
+        const char* n_eulreul_pattern = "$N(\xEC\x9D\x84)\xEB\xA5\xBC";
+        while ((pos = korean_text.find(n_eulreul_pattern)) != std::string::npos) {
+          korean_text.replace(pos, 10, n_value + KoreanTranslation::getParticle_eulreul(n_value));
+        }
+        // $N이 - 5 bytes: $N(2) + 이(3)
+        const char* n_i_pattern = "$N\xEC\x9D\xB4";
+        while ((pos = korean_text.find(n_i_pattern)) != std::string::npos) {
+          korean_text.replace(pos, 5, n_value + KoreanTranslation::getParticle_iga(n_value));
+        }
+        // Plain $N
+        while ((pos = korean_text.find("$N")) != std::string::npos)
+          korean_text.replace(pos, 2, n_value);
+      }
 
       while ((pos = korean_text.find("$G")) != std::string::npos)
         korean_text.replace(pos, 2, converse->player->get_gender_title());
@@ -513,6 +546,9 @@ void ConverseInterpret::do_text()
       }
 
 
+      // Append preserved trailing newlines
+      korean_text += trailing_newlines;
+
       converse->print(korean_text.c_str());
       return;
     }
@@ -548,7 +584,7 @@ string ConverseInterpret::get_formatted_text(const char *c_str)
                       Game *game = Game::get_game();
                       KoreanTranslation *korean = game ? game->get_korean_translation() : NULL;
                       if (korean && korean->isEnabled())
-                         output.append(korean->getNPCName(converse->name));
+                         output.append(korean->translate(converse->name));
                       else
                          output.append(converse->name);
                    }
@@ -866,7 +902,8 @@ bool ConverseInterpret::op(stack<converse_typed_value> &i)
             break;
         case U6OP_IF: // 0xa1 (test val)
             set_break(U6OP_ELSE);
-            set_run(pop_arg(i) ? true : false);
+            v[0] = pop_arg(i);
+            set_run(v[0] ? true : false);
             break;
         case U6OP_ENDIF: // 0xa2
             break; // (frame only)
@@ -928,8 +965,9 @@ bool ConverseInterpret::op(stack<converse_typed_value> &i)
                 {
                     if(decl_t == 0xb3)
                         converse->set_svar(decl_v, get_rstr(v[0]));
-                    else if(decl_t == 0xb2)
+                    else if(decl_t == 0xb2) {
                         converse->set_var(decl_v, v[0]);
+                    }
                 }
                 else
                 {
@@ -953,9 +991,6 @@ bool ConverseInterpret::op(stack<converse_typed_value> &i)
             break;
         case U6OP_JUMP: // 0xb0
             v[0] = pop_arg(i);
-#ifdef CONVERSE_DEBUG
-            DEBUG(1,LEVEL_DEBUGGING,"Converse: JUMP 0x%04x\n", v[0]);
-#endif
             cs->seek(v[0]);
             leave_all(); // always run
             break;
@@ -966,7 +1001,17 @@ bool ConverseInterpret::op(stack<converse_typed_value> &i)
             char *dstring = get_db_string(v[0], v[1]);
             if(dstring)
             {
-                converse->set_output(dstring); // data may have special symbols
+                // Try to translate DATA string (e.g., reagent names)
+                KoreanTranslation *korean = Game::get_game()->get_korean_translation();
+                if(korean && korean->isEnabled())
+                {
+                    std::string translated = korean->translate(dstring);
+                    converse->set_output(translated.c_str());
+                }
+                else
+                {
+                    converse->set_output(dstring);
+                }
 //                converse->print(dstring); // data can have no special symbols -- wrong
 //                converse->print("\n");
                 free(dstring);
@@ -1094,12 +1139,10 @@ bool ConverseInterpret::op(stack<converse_typed_value> &i)
             converse->desc = strdup(get_formatted_text(get_text().c_str()).c_str()); // collected
             Game *game = Game::get_game();
             KoreanTranslation *korean = game ? game->get_korean_translation() : NULL;
-            DEBUG(0, LEVEL_INFORMATIONAL, "U6OP_SLOOK: npc=%d, desc='%s'\n", converse->script_num, converse->desc);
             if (korean && korean->isEnabled())
             {
                 // Use English text-based translation for DESC
                 std::string korean_desc = korean->getDialogueTranslation(converse->script_num, converse->desc);
-                DEBUG(0, LEVEL_INFORMATIONAL, "U6OP_SLOOK: korean_desc='%s'\n", korean_desc.c_str());
 
                 if (!korean_desc.empty())
                 {
@@ -1108,7 +1151,7 @@ bool ConverseInterpret::op(stack<converse_typed_value> &i)
                     while ((pos = korean_desc.find("$P")) != std::string::npos)
                         korean_desc.replace(pos, 2, converse->player->get_name());
                     while ((pos = korean_desc.find("$N")) != std::string::npos)
-                        korean_desc.replace(pos, 2, korean->getNPCName(converse->name));
+                        korean_desc.replace(pos, 2, korean->translate(converse->name));
                     while ((pos = korean_desc.find("$G")) != std::string::npos)
                         korean_desc.replace(pos, 2, converse->player->get_gender_title());
                     while ((pos = korean_desc.find("$T")) != std::string::npos)
@@ -1235,7 +1278,9 @@ bool ConverseInterpret::evop(stack<converse_typed_value> &i)
                 out.val = evop_eq(i);
             break;
         case U6OP_ADD: // 0x90
-            out.val = pop_arg(i) + pop_arg(i);
+            v[1] = pop_arg(i);
+            v[0] = pop_arg(i);
+            out.val = v[0] + v[1];
             break;
         case U6OP_SUB: // 0x91
             v[1] = pop_arg(i);
@@ -1322,7 +1367,8 @@ bool ConverseInterpret::evop(stack<converse_typed_value> &i)
             }
             break;
         case U6OP_VAR: // 0xb2
-            out.val = converse->get_var(pop_arg(i));
+            v[0] = pop_arg(i);
+            out.val = converse->get_var(v[0]);
             break;
         case U6OP_SVAR: // 0xb3 (using new rstring)
             out.val = add_rstr(converse->get_svar(pop_arg(i))); // rstr num
@@ -1635,10 +1681,22 @@ void ConverseInterpret::assign_input()
 {
     // FIXME: Nuvie treats 0xF9-INPUTSTR & 0xFB-INPUT as identical, but in U6
     //        0xFB-INPUT could not input strings.
-    if(decl_t == 0xb2)
-        converse->set_var(decl_v, strtol(converse->get_input().c_str(), NULL, 10));
+    std::string input_str = converse->get_input();
+    if(decl_t == 0xb2) {
+        long val = strtol(input_str.c_str(), NULL, 10);
+
+        // FIX: NPC 25 (baker Gweneth) has off-by-one bug in purchase quantity loop.
+        // The script uses "var[5] >= var[4]-1" instead of "var[5] >= var[4]",
+        // causing n-1 items to be purchased when n is requested.
+        // Only apply fix for NPC 25 and quantity variable (decl_v=4).
+        if(converse->script_num == 25 && decl_v == 4 && val >= 1) {
+            val = val + 1;
+        }
+
+        converse->set_var(decl_v, val);
+    }
     if(decl_t == 0xb3)
-        converse->set_svar(decl_v, converse->get_input().c_str());
+        converse->set_svar(decl_v, input_str.c_str());
 }
 
 

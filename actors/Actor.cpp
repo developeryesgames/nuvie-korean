@@ -404,7 +404,7 @@ const char *Actor::get_name(bool force_real_name)
             && !statue)
         name = talk_name;
     else
-        name = actor_manager->look_actor(this, false);
+        name = actor_manager->look_actor(this, false, false);  // No translate - caller will translate
     return(name.c_str());
 }
 

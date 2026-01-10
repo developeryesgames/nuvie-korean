@@ -669,10 +669,8 @@ bool Event::perform_talk(Actor *actor) {
   } else    // some actor that has no script
   {
     // always display look-string on failure
+    // Note: look_actor() already returns Korean translation via lookAtTile -> get_description
     std::string look_str = actor_manager->look_actor(actor);
-    if (korean && korean->isEnabled()) {
-      look_str = korean->translate(look_str);
-    }
     scroll->display_string(look_str.c_str());
     scroll->display_string("\n");
     scroll->display_string((korean && korean->isEnabled()) ? "이상하군, 반응이 없어.\n" : "Funny, no response.\n");
@@ -1140,8 +1138,13 @@ bool Event::look(Actor *actor) {
   KoreanTranslation *korean = game->get_korean_translation();
   if(fm_see && fm_see->is_korean_enabled() && fm_see->get_korean_font() && korean && korean->isEnabled())
   {
-    // Translate actor name if available
-    std::string korean_name = korean->translate(actor_name);
+    // actor_name from look_actor() is already Korean translated
+    // Only translate if it came from party member name (which is English)
+    std::string korean_name = actor_name;
+    if (p_id >= 0) {
+      // Party member names need translation
+      korean_name = korean->translate(actor_name);
+    }
     // Format: "그대는 X를 본다." with proper particle
     scroll->display_string("그대는 ");
     scroll->display_string(korean_name.c_str());
@@ -1236,11 +1239,11 @@ bool Event::lookAtCursor(bool delayed, uint16 x, uint16 y, uint8 z, Obj *obj, Ac
     const char *ground_name = game->get_game_map()->look(x, y, z);
     if(korean_mode)
     {
-      KoreanTranslation *korean = game->get_korean_translation();
-      std::string korean_name = (korean && korean->isEnabled()) ? korean->translate(ground_name) : ground_name;
+      // Note: Map::look() -> lookAtTile() -> get_description() already returns Korean
+      // No need to call translate() again - it would cause "NOT FOUND" log spam
       scroll->display_string("그대는 ");
-      scroll->display_string(korean_name.c_str());
-      scroll->display_string(KoreanTranslation::getParticle_eulreul(korean_name).c_str());
+      scroll->display_string(ground_name);
+      scroll->display_string(KoreanTranslation::getParticle_eulreul(ground_name).c_str());
       scroll->display_string(" 본다.\n");
     }
     else

@@ -820,15 +820,12 @@ bool Screen::blit4x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16
  uint32 dest_w = (uint32)src_w * 4;  // Use uint32 to avoid any overflow
  uint32 dest_h = (uint32)src_h * 4;
 
- static int blit4x_debug_count = 0;
- if(blit4x_debug_count < 5 && src_h > 100) {
-   DEBUG(0, LEVEL_INFORMATIONAL, "blit4x: dest(%d,%d) src_w=%d src_h=%d dest_w=%u dest_h=%u screen(%d,%d)\n",
-         dest_x, dest_y, src_w, src_h, dest_w, dest_h, width, height);
-   blit4x_debug_count++;
- }
+ // Use actual surface dimensions for clipping (scaled screen size)
+ uint32 screen_width = surface->w;
+ uint32 screen_height = surface->h;
 
  // clip to screen.
- if(dest_x >= width || dest_y >= height)
+ if(dest_x >= (sint32)screen_width || dest_y >= (sint32)screen_height)
    return false;
 
  if(dest_x < 0)
@@ -863,15 +860,15 @@ bool Screen::blit4x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16
       }
    }
 
- if(dest_x + dest_w > width)
+ if(dest_x + dest_w > screen_width)
    {
-    src_w = (width - dest_x) / 4;
+    src_w = (screen_width - dest_x) / 4;
     dest_w = src_w * 4;
    }
 
- if(dest_y + dest_h > height)
+ if(dest_y + dest_h > screen_height)
    {
-    src_h = (height - dest_y) / 4;
+    src_h = (screen_height - dest_y) / 4;
     dest_h = src_h * 4;
    }
 

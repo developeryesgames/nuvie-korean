@@ -648,24 +648,24 @@ void ActorManager::set_player(Actor *a)
 /* Returns an actor's "look-string," a general description of their occupation
  * or appearance. (the tile description)
  */
-const char *ActorManager::look_actor(Actor *a, bool show_prefix)
+const char *ActorManager::look_actor(Actor *a, bool show_prefix, bool translate)
 {
     uint16 tile_num = obj_manager->get_obj_tile_num(a->base_obj_n);
     if(tile_num == 0)
       {
        uint8 actor_num = a->id_n;
        if(actor_num == 191) // U6: Statue of Exodus
-         return tile_manager->lookAtTile(obj_manager->get_obj_tile_num(399), 0, show_prefix);
+         return tile_manager->lookAtTile(obj_manager->get_obj_tile_num(399), 0, show_prefix, translate);
        else if(actor_num == 189) // Statue of Mondain
-         return tile_manager->lookAtTile(obj_manager->get_obj_tile_num(397), 0, show_prefix);
+         return tile_manager->lookAtTile(obj_manager->get_obj_tile_num(397), 0, show_prefix, translate);
        else if(actor_num == 190) // Statue of Minax
-         return tile_manager->lookAtTile(obj_manager->get_obj_tile_num(398), 0, show_prefix);
+         return tile_manager->lookAtTile(obj_manager->get_obj_tile_num(398), 0, show_prefix, translate);
        else if(a->id_n >= 192 && a->id_n <= 200) // shrines
-         return tile_manager->lookAtTile(obj_manager->get_obj_tile_num(393), 0, show_prefix);
+         return tile_manager->lookAtTile(obj_manager->get_obj_tile_num(393), 0, show_prefix, translate);
 
-       return tile_manager->lookAtTile(obj_manager->get_obj_tile_num(a->obj_n), 0, show_prefix);
+       return tile_manager->lookAtTile(obj_manager->get_obj_tile_num(a->obj_n), 0, show_prefix, translate);
       }
-    return tile_manager->lookAtTile(tile_num,0,show_prefix);
+    return tile_manager->lookAtTile(tile_num,0,show_prefix,translate);
 }
 
 // Update area, and spawn or remove actors.

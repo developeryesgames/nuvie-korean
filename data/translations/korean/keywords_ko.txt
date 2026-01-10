@@ -629,7 +629,7 @@
 지하실|base
 지혜|wits
 지휘|capt
-직업|prof
+전문직|prof
 직인|jour
 직함|titl
 진실|trut
@@ -792,7 +792,7 @@
 꼬마|tiny
 자애룬|rune
 음악학교|cons
-안내|dire
+방향|dire
 희귀품|oddi
 조작|mani
 볼트|bolt
@@ -807,7 +807,7 @@
 기구조종사|ball
 조선공|ship
 뱀조련사|snak
-집|hous
+건물|hous
 무릎꿇고|knee
 무기장인|weap
 매조련사|falc
@@ -826,3 +826,6 @@
 떨어져|fell
 평의회|Coun
 뉴마진시아|New
+아픈이|sick
+부상|woun
+환자|infl

@@ -431,8 +431,9 @@ void PartyView::Display(bool full_redraw)
       actor_name = party->get_actor_name(i);
 
       // Translate actor name if Korean mode is enabled
+      // But don't translate player's avatar name (party member 0) - it's user input
       const char *display_name = actor_name;
-      if(use_korean_4x)
+      if(use_korean_4x && i > 0)  // Skip translation for avatar (i==0)
       {
         KoreanTranslation *korean = Game::get_game()->get_korean_translation();
         if(korean && korean->isEnabled())

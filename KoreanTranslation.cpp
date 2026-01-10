@@ -23,6 +23,8 @@
 #include "GUI.h"
 #include "U6misc.h"
 #include "Console.h"
+#include "Game.h"
+#include "Party.h"
 
 #include "KoreanTranslation.h"
 
@@ -46,6 +48,16 @@ KoreanTranslation::~KoreanTranslation()
 
 bool KoreanTranslation::init()
 {
+    // Check if Korean is enabled in config
+    std::string korean_enabled_str;
+    config->value("config/language/korean_enabled", korean_enabled_str, "yes");
+    if(korean_enabled_str != "yes")
+    {
+        ConsoleAddInfo("KoreanTranslation: Disabled in config (korean_enabled=%s)", korean_enabled_str.c_str());
+        enabled = false;
+        return false;
+    }
+
     // Get data path
     std::string path;
     data_path = GUI::get_gui()->get_data_dir();
@@ -178,7 +190,6 @@ bool KoreanTranslation::loadLookTranslations(const std::string &filename)
     }
 
     file.close();
-    DEBUG(0, LEVEL_INFORMATIONAL, "KoreanTranslation: Loaded %d look translations, %d item names\n", loaded, (int)item_names.size());
     return loaded > 0;
 }
 
@@ -258,7 +269,6 @@ bool KoreanTranslation::loadUITranslations(const std::string &filename)
     }
 
     file.close();
-    DEBUG(0, LEVEL_INFORMATIONAL, "KoreanTranslation: Loaded %d UI translations\n", loaded);
     return loaded > 0;
 }
 
@@ -307,7 +317,6 @@ bool KoreanTranslation::loadNPCDialogues(const std::string &filename)
     }
 
     file.close();
-    DEBUG(0, LEVEL_INFORMATIONAL, "KoreanTranslation: Loaded %d NPC dialogue entries\n", loaded);
     return loaded > 0;
 }
 
@@ -372,6 +381,54 @@ std::string KoreanTranslation::translate(const std::string &english_text)
     if (!enabled)
         return english_text;
 
+    // Skip empty or whitespace-only text
+    if (english_text.empty())
+        return english_text;
+
+    bool only_whitespace = true;
+    for (size_t i = 0; i < english_text.length(); i++)
+    {
+        char c = english_text[i];
+        if (c != ' ' && c != '\n' && c != '\r' && c != '\t')
+        {
+            only_whitespace = false;
+            break;
+        }
+    }
+    if (only_whitespace)
+        return english_text;
+
+    // Skip text that's already Korean (UTF-8 Korean starts with 0xEA-0xED)
+    // This prevents unnecessary lookups and "NOT FOUND" logs for already-translated text
+    unsigned char first_byte = (unsigned char)english_text[0];
+    if (first_byte >= 0xEA && first_byte <= 0xED)
+    {
+        return english_text;  // Already Korean
+    }
+
+    // Skip translation for avatar name (user input like "구명식량")
+    // Avatar name is stored in party member 0 and should not be translated
+    Game *game = Game::get_game();
+    if (game)
+    {
+        Party *party = game->get_party();
+        if (party && party->get_party_size() > 0)
+        {
+            const char *avatar_name = party->get_actor_name(0);
+            if (avatar_name)
+            {
+                // Check if text starts with avatar name (handles "구명식량:\n>" case)
+                std::string avatar_str(avatar_name);
+                if (english_text == avatar_str ||
+                    (english_text.length() > avatar_str.length() &&
+                     english_text.substr(0, avatar_str.length()) == avatar_str))
+                {
+                    return english_text;
+                }
+            }
+        }
+    }
+
     // First check UI texts
     std::map<std::string, std::string>::iterator it = ui_texts.find(english_text);
     if (it != ui_texts.end())
@@ -390,9 +447,11 @@ std::string KoreanTranslation::translate(const std::string &english_text)
     it = item_names.find(english_text);
     if (it != item_names.end())
     {
-        DEBUG(0, LEVEL_DEBUGGING, "KoreanTranslation::translate: '%s' -> '%s' (exact)\n",
-              english_text.c_str(), it->second.c_str());
         return it->second;
+    }
+
+    // Debug: log when searching for item names
+    if (english_text == "thread" || english_text == "cloth") {
     }
 
     // Also try case-insensitive match for item names
@@ -402,12 +461,11 @@ std::string KoreanTranslation::translate(const std::string &english_text)
     {
         if (toLowercase(iter->first) == lower_text)
         {
-            DEBUG(0, LEVEL_DEBUGGING, "KoreanTranslation::translate: '%s' -> '%s' (case-insensitive)\n",
-                  english_text.c_str(), iter->second.c_str());
             return iter->second;
         }
     }
 
+    // Not found - return original text without logging (too noisy)
     return english_text;
 }
 
@@ -740,13 +798,11 @@ bool KoreanTranslation::loadDialogueTranslations(const std::string &filename)
     }
 
     file.close();
-    DEBUG(0, LEVEL_INFORMATIONAL, "KoreanTranslation: Loaded %d dialogue translations\n", loaded);
 
     // Debug: list which NPCs have translations
     for (std::map<uint16, std::map<std::string, std::string> >::iterator it = dialogue_translations.begin();
          it != dialogue_translations.end(); ++it)
     {
-        DEBUG(0, LEVEL_INFORMATIONAL, "KoreanTranslation: NPC %d has %d dialogue entries\n", it->first, (int)it->second.size());
     }
 
     return loaded > 0;
@@ -1079,7 +1135,6 @@ bool KoreanTranslation::loadBookTranslations(const std::string &filename)
     }
 
     file.close();
-    DEBUG(0, LEVEL_INFORMATIONAL, "KoreanTranslation: Loaded %d book translations\n", loaded);
     return loaded > 0;
 }
 
@@ -1132,7 +1187,6 @@ bool KoreanTranslation::loadSpellTranslations(const std::string &filename)
     }
 
     file.close();
-    DEBUG(0, LEVEL_INFORMATIONAL, "KoreanTranslation: Loaded %d spell translations\n", loaded);
     return loaded > 0;
 }
 
@@ -1187,7 +1241,6 @@ bool KoreanTranslation::loadKeywordTranslations(const std::string &filename)
     }
 
     file.close();
-    DEBUG(0, LEVEL_INFORMATIONAL, "KoreanTranslation: Loaded %d keyword translations\n", loaded);
     return loaded > 0;
 }
 

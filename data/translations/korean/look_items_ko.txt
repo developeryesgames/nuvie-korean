@@ -1818,4 +1818,110 @@
 2044|Nothing|아무것도 없음
 2045|Nothing|아무것도 없음
 2046|Nothing|아무것도 없음
-2047|Nothing|아무것도 없음999|2-Hnd Sword|양손 검
+2047|Nothing|아무것도 없음
+2048|2-Hnd Sword|양손 검
+
+# Special item name mappings for conversation system (no tile index)
+# Format: DUMMY_INDEX|ENGLISH|KOREAN (index is not used for these)
+9000|thread|실
+9001|Bread|빵
+
+# Reagent names (used in shop DATA tables)
+577|Blood Moss|피 이끼
+578|Garlic|마늘
+579|Ginseng|인삼
+580|Mandrake Root|만드레이크 뿌리
+581|Nightshade|독버섯
+582|Spider Silk|거미줄
+583|Sulfurous Ash|유황재
+584|Black Pearl|흑진주
+
+# Spell names (used in magic shop DATA tables)
+# Circle 1
+9100|Create Food|식량 생성
+9101|Detect Magic|마법 감지
+9102|Detect Trap|함정 감지
+9103|Dispel Magic|마법 해제
+9104|Douse|불 끄기
+9105|Harm|해침
+9106|Heal|치유
+9107|Help|도움
+9108|Ignite|점화
+9109|Light|빛
+# Circle 2
+9110|Infravision|열 감지
+9111|Magic Arrow|마법 화살
+9112|Poison|독
+9113|Reappear|재출현
+9114|Sleep|수면
+9115|Telekinesis|염력
+9116|Trap|함정
+9117|Unlock Magic|마법 해제
+9118|Untrap|함정 해제
+9119|Vanish|소멸
+# Circle 3
+9120|Curse|저주
+9121|Dispel Field|장막 해제
+9122|Fireball|화염구
+9123|Great Light|대광명
+9124|Lock|잠금
+9125|Mass Awaken|대량 각성
+9126|Mass Sleep|대량 수면
+9127|Peer|투시
+9128|Protection|보호
+9129|Repel Undead|언데드 퇴치
+# Circle 4
+9130|Animate|생명 주입
+9131|Conjure|소환
+9132|Disable|무력화
+9133|Fire Field|화염 장막
+9134|Great Heal|대치유
+9135|Locate|위치 파악
+9136|Mass Dispel|대량 해제
+9137|Poison Field|독 장막
+9138|Sleep Field|수면 장막
+9139|Wind Change|바람 변경
+# Circle 5
+9140|Energy Field|에너지 장막
+9141|Explosion|폭발
+9142|Insect Swarm|곤충 떼
+9143|Invisibility|투명
+9144|Lightning|번개
+9145|Paralyze|마비
+9146|Pickpocket|소매치기
+9147|Reveal|발견
+9148|Seance|강령술
+9149|X-ray|투시
+# Circle 6
+9150|Charm|매혹
+9151|Clone|복제
+9152|Confuse|혼란
+9153|Flame Wind|화염 바람
+9154|Hail Storm|우박 폭풍
+9155|Mass Protect|대량 보호
+9156|Negate Magic|마법 무효화
+9157|Poison Wind|독 바람
+9158|Replicate|복제
+9159|Web|거미줄
+# Circle 7
+9160|Chain Bolt|연쇄 번개
+9161|Enchant|마법 부여
+9162|Energy Wind|에너지 바람
+9163|Fear|공포
+9164|Gate Travel|관문 이동
+9165|Kill|죽음
+9166|Mass Curse|대량 저주
+9167|Mass Invis|대량 투명
+9168|Wing Strike|날개 공격
+9169|Wizard Eye|마법사의 눈
+# Circle 8
+9170|Armageddon|아마겟돈
+9171|Death Wind|죽음의 바람
+9172|Eclipse|일식
+9173|Mass Charm|대량 매혹
+9174|Mass Kill|대량 살상
+9175|Resurrect|부활
+9176|Slime|슬라임
+9177|Summon|소환
+9178|Time Stop|시간 정지
+9179|Tremor|진동

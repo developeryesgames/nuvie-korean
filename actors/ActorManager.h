@@ -89,7 +89,7 @@ class ActorManager
  Actor *get_player();
  void set_player(Actor *a);
 
- const char *look_actor(Actor *a, bool show_prefix = true);
+ const char *look_actor(Actor *a, bool show_prefix = true, bool translate = true);
 
  void set_update(bool u) { update = u; }
  bool get_update()       { return(update); }

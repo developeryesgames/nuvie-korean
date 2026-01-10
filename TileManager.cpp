@@ -344,7 +344,7 @@ void TileManager::set_anim_loop(uint16 tile_num, sint8 loopc, uint8 loop)
 }
 
 
-const char *TileManager::lookAtTile(uint16 tile_num, uint16 qty, bool show_prefix)
+const char *TileManager::lookAtTile(uint16 tile_num, uint16 qty, bool show_prefix, bool translate)
 {
  const char *desc;
  bool plural;
@@ -359,7 +359,7 @@ const char *TileManager::lookAtTile(uint16 tile_num, uint16 qty, bool show_prefi
 
  // Use input tile_num for description lookup, not tile->tile_num
  // This ensures correct Korean translation lookup
- desc = look->get_description(tile_num,&plural);
+ desc = look->get_description(tile_num,&plural,translate);
  if(show_prefix == false)
    return desc;
 

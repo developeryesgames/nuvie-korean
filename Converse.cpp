@@ -547,13 +547,13 @@ void Converse::show_portrait(uint8 n)
         if(real_actor->is_met() || player->get_party()->contains_actor(real_actor))
             nameret = npc_name(130);
         else
-            nameret = actors->look_actor(real_actor, false);
+            nameret = actors->look_actor(real_actor, false, false);  // No translate - PortraitView will translate
     }
     else if((actor->is_met() || player->get_party()->contains_actor(actor))
             && !statue) // they need to display statue of names
         nameret = npc_name(n);
     else
-        nameret = actors->look_actor(actor, false);
+        nameret = actors->look_actor(actor, false, false);  // No translate - PortraitView will translate
     if(game->using_new_converse_gump())
     {
         if((game->is_original_plus() && game->get_converse_gump()->W() > game->get_game_width() - game->get_background()->get_border_width())

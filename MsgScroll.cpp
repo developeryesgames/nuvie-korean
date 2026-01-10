@@ -358,19 +358,8 @@ bool MsgScroll::init(char *player_name)
 {
  std::string prompt_string;
 
- // Translate player name for Korean mode
- std::string display_name = player_name;
- FontManager *fm = Game::get_game()->get_font_manager();
- if (fm && fm->is_korean_enabled())
- {
-   KoreanTranslation *korean = Game::get_game()->get_korean_translation();
-   if (korean && korean->isEnabled())
-   {
-     display_name = korean->translate(player_name);
-   }
- }
-
- prompt_string.append(display_name);
+ // Player name should not be translated - it's user input
+ prompt_string.append(player_name);
  if(game_type==NUVIE_GAME_U6)
  {
    prompt_string.append(":\n");
@@ -1141,6 +1130,8 @@ GUI_status MsgScroll::KeyDown(SDL_Keysym key)
 
 GUI_status MsgScroll::TextInput(const char *text)
 {
+    DEBUG(0, LEVEL_INFORMATIONAL, "MsgScroll::TextInput: received text='%s', input_mode=%d, numbers_only=%d\n",
+          text ? text : "(null)", input_mode, numbers_only);
     if(!input_mode || text == NULL || text[0] == '\0')
         return GUI_PASS;
 
@@ -1160,6 +1151,8 @@ GUI_status MsgScroll::TextInput(const char *text)
             // numbers_only mode - only accept if text is digits
             for(const char *p = text; *p; ++p)
             {
+                DEBUG(0, LEVEL_INFORMATIONAL, "MsgScroll::TextInput: checking char '%c' (0x%02x), isdigit=%d\n",
+                      *p, (unsigned char)*p, isdigit(*p));
                 if(isdigit(*p))
                     input_buf_add_char(*p);
             }
@@ -1599,9 +1592,12 @@ bool MsgScroll::input_buf_add_char(char c)
 {
  MsgText token;
  input_char = 0;
+ DEBUG(0, LEVEL_INFORMATIONAL, "MsgScroll::input_buf_add_char: adding char='%c' (0x%02x), numbers_only=%d\n",
+       isprint(c) ? c : '?', (unsigned char)c, numbers_only);
  if(permit_input != NULL)
 	input_buf_remove_char();
  input_buf.append(&c, 1);
+ DEBUG(0, LEVEL_INFORMATIONAL, "MsgScroll::input_buf_add_char: input_buf is now '%s'\n", input_buf.c_str());
  scroll_updated = true;
 
  // Add char to scroll buffer
@@ -1681,6 +1677,8 @@ std::string MsgScroll::get_input()
    {
     s.assign(input_buf);
    }
+ DEBUG(0, LEVEL_INFORMATIONAL, "MsgScroll::get_input: returning '%s' (len=%d), input_mode=%d\n",
+       s.c_str(), (int)s.length(), input_mode);
  fprintf(stdout,"%s",s.c_str());
  fflush(stdout);
  return s;

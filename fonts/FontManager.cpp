@@ -220,6 +220,15 @@ bool FontManager::initConvFonts(nuvie_game_t game_type)
 
 bool FontManager::initKoreanFont()
 {
+  // Check if Korean is enabled in config
+  std::string korean_enabled_str;
+  config->value("config/language/korean_enabled", korean_enabled_str, "yes");
+  if(korean_enabled_str != "yes")
+  {
+    ConsoleAddInfo("FontManager: Korean disabled in config (korean_enabled=%s)", korean_enabled_str.c_str());
+    return false;
+  }
+
   std::string datadir = GUI::get_gui()->get_data_dir();
   std::string path;
 

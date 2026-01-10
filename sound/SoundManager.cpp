@@ -816,7 +816,7 @@ void SoundManager::musicPlay()
 
  if (m_pCurrentSong != NULL)
         {
-         m_pCurrentSong->Play();
+         m_pCurrentSong->Play(true);
          m_pCurrentSong->SetVolume(music_volume);
         }
 
@@ -889,7 +889,7 @@ void SoundManager::musicPlay(const char *filename, uint16 song_num)
 						musicStop();
 						m_pCurrentSong = mp3_song;
 						m_CurrentGroup = "";
-						m_pCurrentSong->Play();
+						m_pCurrentSong->Play(true);
 						m_pCurrentSong->SetVolume(music_volume);
 						return;
 					}
@@ -908,7 +908,7 @@ void SoundManager::musicPlay(const char *filename, uint16 song_num)
 			musicStop();
 			m_pCurrentSong = mp3_song;
 			m_CurrentGroup = "";
-			m_pCurrentSong->Play();
+			m_pCurrentSong->Play(true);
 			m_pCurrentSong->SetVolume(music_volume);
 			return;
 		}
