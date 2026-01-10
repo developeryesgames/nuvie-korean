@@ -23,6 +23,7 @@
 #include "nuvieDefs.h"
 #include "SongMP3.h"
 #include "decoder/MP3AudioStream.h"
+#include "mixer/audiostream.h"
 
 SongMP3::SongMP3(Audio::Mixer *m)
     : mixer(m)
@@ -58,8 +59,13 @@ bool SongMP3::Init(const char *filename) {
 
 bool SongMP3::Play(bool looping) {
     if (stream) {
-        mixer->playStream(Audio::Mixer::kMusicSoundType, &handle, stream,
-                         -1, Audio::Mixer::kMaxChannelVolume, 0, DisposeAfterUse::NO);
+        stream->rewind();
+
+        // Always use LoopingAudioStream - BGM should always loop
+        Audio::LoopingAudioStream *looping_stream =
+            new Audio::LoopingAudioStream((Audio::RewindableAudioStream *)stream, 0, DisposeAfterUse::NO);
+        mixer->playStream(Audio::Mixer::kMusicSoundType, &handle, looping_stream,
+                         -1, Audio::Mixer::kMaxChannelVolume, 0, DisposeAfterUse::YES);
         return true;
     }
     return false;

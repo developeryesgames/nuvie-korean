@@ -29,10 +29,10 @@ class Song : public Sound {
 public:
 
 	virtual bool Init(const char *filename) { return false; }
-	bool Play(bool looping = false) { return false; }
-	bool Stop() { return false; }
-	bool SetVolume(uint8 volume) { return false; }
-	bool FadeOut(float seconds) { return false; }
+	virtual bool Play(bool looping = true) { return false; }
+	virtual bool Stop() { return false; }
+	virtual bool SetVolume(uint8 volume) { return false; }
+	virtual bool FadeOut(float seconds) { return false; }
 
 	void SetName(const char *name) { if(name) m_Filename = name; } // SB-X
 private:

@@ -35,7 +35,7 @@ public:
 
     bool Init(const char *filename);
     bool Init(const char *filename, uint16 song_num) { return Init(filename); }
-    bool Play(bool looping = false);
+    bool Play(bool looping = true);
     bool Stop();
     bool SetVolume(uint8 volume);
     bool FadeOut(float seconds) { return Stop(); }

@@ -48,7 +48,7 @@ using std::vector;
 class Sound {
 public:
 	virtual ~Sound() {};
-	virtual bool Play(bool looping = false) = 0;
+	virtual bool Play(bool looping = true) = 0;
 	virtual bool Stop() = 0;
 	virtual bool FadeOut(float seconds) = 0;
 	virtual bool SetVolume(uint8 volume) = 0; //range 0..255

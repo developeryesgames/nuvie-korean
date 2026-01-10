@@ -189,7 +189,6 @@ int MP3AudioStream::readBuffer(sint16 *buffer, const int numSamples) {
         _endOfData = true;
     }
 
-    // Return actual samples read (LoopingAudioStream uses this to detect EOF)
     return samplesToCopy;
 }
 
