@@ -106,6 +106,14 @@ bool KoreanTranslation::init()
         ConsoleAddInfo("KoreanTranslation: Loaded dialogue translations");
     }
 
+    // Load compound dialogue translations (multi-part dialogues)
+    std::string compound_path;
+    build_path(data_path, "compound_dialogues.txt", compound_path);
+    if (loadDialogueTranslations(compound_path))
+    {
+        ConsoleAddInfo("KoreanTranslation: Loaded compound dialogue translations");
+    }
+
     // Load book/sign/scroll translations
     std::string books_path;
     build_path(data_path, "books_ko.txt", books_path);
@@ -664,7 +672,7 @@ bool KoreanTranslation::loadDialogueTranslations(const std::string &filename)
         return false;
     }
 
-    dialogue_translations.clear();
+    // Don't clear - allow multiple files to be loaded (dialogues_ko.txt + compound_dialogues.txt)
     std::string line;
     int loaded = 0;
 
