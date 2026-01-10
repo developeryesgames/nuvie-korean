@@ -4,6 +4,7 @@ project(nuvie)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${nuvie_SOURCE_DIR}/builds/cmake")
 
 find_package(SDL2 REQUIRED)
+# SDL2_mixer no longer needed - using dr_mp3 and stb_vorbis instead
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLUA_USE_MACOSX -DUNIX -DMACOSX -DHAVE_JOYSTICK_SUPPORT")
@@ -426,6 +427,8 @@ set(SOURCE_FILES
     sound/mixer/decoder/PCSpeakerStream.h
     sound/mixer/decoder/U6AdPlugDecoderStream.cpp
     sound/mixer/decoder/U6AdPlugDecoderStream.h
+    sound/mixer/decoder/MP3AudioStream.cpp
+    sound/mixer/decoder/MP3AudioStream.h
     sound/mixer/audiostream.cpp
     sound/mixer/audiostream.h
     sound/mixer/doublebuffersdl-mixer.cpp
@@ -457,11 +460,72 @@ set(SOURCE_FILES
     sound/Song.h
     sound/SongAdPlug.cpp
     sound/SongAdPlug.h
+    sound/SongMT32.cpp
+    sound/SongMT32.h
+    sound/SongMP3.cpp
+    sound/SongMP3.h
     sound/Sound.h
     sound/SoundManager.cpp
     sound/SoundManager.h
     sound/TownsSfxManager.cpp
     sound/TownsSfxManager.h
+    sound/mixer/decoder/MT32DecoderStream.cpp
+    sound/mixer/decoder/MT32DecoderStream.h
+    sound/mt32emu/Analog.cpp
+    sound/mt32emu/Analog.h
+    sound/mt32emu/BReverbModel.cpp
+    sound/mt32emu/BReverbModel.h
+    sound/mt32emu/c_interface/c_interface.cpp
+    sound/mt32emu/c_interface/c_interface.h
+    sound/mt32emu/c_interface/c_types.h
+    sound/mt32emu/c_interface/cpp_interface.h
+    sound/mt32emu/config.h
+    sound/mt32emu/Display.cpp
+    sound/mt32emu/Display.h
+    sound/mt32emu/Enumerations.h
+    sound/mt32emu/File.cpp
+    sound/mt32emu/File.h
+    sound/mt32emu/globals.h
+    sound/mt32emu/internals.h
+    sound/mt32emu/LA32FloatWaveGenerator.cpp
+    sound/mt32emu/LA32FloatWaveGenerator.h
+    sound/mt32emu/LA32Ramp.cpp
+    sound/mt32emu/LA32Ramp.h
+    sound/mt32emu/LA32WaveGenerator.cpp
+    sound/mt32emu/LA32WaveGenerator.h
+    sound/mt32emu/MemoryRegion.h
+    sound/mt32emu/MidiEventQueue.h
+    sound/mt32emu/MidiStreamParser.cpp
+    sound/mt32emu/MidiStreamParser.h
+    sound/mt32emu/mmath.h
+    sound/mt32emu/mt32emu.h
+    sound/mt32emu/Part.cpp
+    sound/mt32emu/Part.h
+    sound/mt32emu/Partial.cpp
+    sound/mt32emu/Partial.h
+    sound/mt32emu/PartialManager.cpp
+    sound/mt32emu/PartialManager.h
+    sound/mt32emu/Poly.cpp
+    sound/mt32emu/Poly.h
+    sound/mt32emu/ROMInfo.cpp
+    sound/mt32emu/ROMInfo.h
+    sound/mt32emu/SampleRateConverter.cpp
+    sound/mt32emu/SampleRateConverter.h
+    sound/mt32emu/sha1/sha1.cpp
+    sound/mt32emu/Structures.h
+    sound/mt32emu/Synth.cpp
+    sound/mt32emu/Synth.h
+    sound/mt32emu/Tables.cpp
+    sound/mt32emu/Tables.h
+    sound/mt32emu/TVA.cpp
+    sound/mt32emu/TVA.h
+    sound/mt32emu/TVF.cpp
+    sound/mt32emu/TVF.h
+    sound/mt32emu/TVP.cpp
+    sound/mt32emu/TVP.h
+    sound/mt32emu/Types.h
+    sound/mt32emu/VersionTagging.cpp
+    sound/mt32emu/VersionTagging.h
     usecode/U6ObjectTypes.h
     usecode/U6UseCode.cpp
     usecode/U6UseCode.h
@@ -615,6 +679,7 @@ include_directories(script)
 include_directories(sound)
 include_directories(sound/adplug)
 include_directories(sound/mixer)
+include_directories(sound/mt32emu)
 include_directories(usecode)
 include_directories(views)
 

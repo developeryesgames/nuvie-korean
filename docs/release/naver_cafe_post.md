@@ -76,7 +76,7 @@ GitHub: https://github.com/developeryesgames/nuvie-korean
 ■ 제작 과정
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-이 프로젝트는 AI(Claude, Codex, Gemini)를 활용하여 약 40시간 만에 완성했습니다.
+이 프로젝트는 AI(Claude, Codex, Gemini)를 활용하여 약 40시간에 걸쳐 완성했습니다.
 
 본업이 있는 1인 개발자라 피드백 반영이
 다소 늦을 수 있는 점 양해 부탁드립니다.

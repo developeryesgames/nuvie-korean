@@ -44,6 +44,14 @@
 #define SFX_PLAY_ASYNC true
 #define SFX_PLAY_SYNC false
 
+// Music style options
+enum MusicStyle {
+    MUSIC_STYLE_NATIVE,   // Original AdLib/OPL
+    MUSIC_STYLE_MT32,     // MT-32 emulation via Munt
+    MUSIC_STYLE_MP3,      // MP3/OGG files via SDL_mixer
+    MUSIC_STYLE_CUSTOM    // Custom audio files (legacy)
+};
+
 class SfxManager;
 class CEmuopl;
 
@@ -92,6 +100,10 @@ public:
 private:
 	bool LoadCustomSongs(string scriptname);
     bool LoadNativeU6Songs();
+#ifdef HAVE_MT32EMU
+    bool LoadMT32U6Songs();
+#endif
+    bool LoadMP3U6Songs();
     bool loadSong(Song *song, const char *filename);
     bool loadSong(Song *song, const char *filename, const char *title);
     bool groupAddSong(const char *group, Song *song);
@@ -133,6 +145,9 @@ private:
     SfxManager *m_SfxManager;
 
     CEmuopl *opl;
+
+    MusicStyle current_music_style;
+    std::string mt32_rom_path;
 
     int game_type; //FIXME there's a nuvie_game_t, but almost everything uses int game_type (or gametype)
 

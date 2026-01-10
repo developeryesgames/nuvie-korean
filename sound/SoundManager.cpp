@@ -31,6 +31,10 @@
 #include "emuopl.h"
 #include "SoundManager.h"
 #include "SongAdPlug.h"
+#ifdef HAVE_MT32EMU
+#include "SongMT32.h"
+#endif
+#include "SongMP3.h"
 #include "Sample.h"
 #include <algorithm>
 #include <cmath>
@@ -89,6 +93,7 @@ SoundManager::SoundManager ()
   mixer = NULL;
 
   opl = NULL;
+  current_music_style = MUSIC_STYLE_NATIVE;
 }
 
 // function object to delete map<T, SoundCollection *> items
@@ -172,6 +177,12 @@ bool SoundManager::nuvieStartup (Configuration * config)
   config_key = config_get_game_key(config);
   config_key.append("/sounddir");
   config->value (config_key, sound_dir, "");
+
+  // MT-32 ROM path configuration
+  config_key = config_get_game_key(config);
+  config_key.append("/mt32_rom_path");
+  config->value (config_key, mt32_rom_path, sound_dir.c_str());
+
   if(game_type == NUVIE_GAME_U6) { // FM-Towns speech
 	  config_key = config_get_game_key(config);
 	  config_key.append("/enable_speech");
@@ -186,13 +197,47 @@ bool SoundManager::nuvieStartup (Configuration * config)
 
 //  if(music_enabled)  // commented out to allow toggling
     {
-     if(music_style == "native") 
+     DEBUG(0, LEVEL_INFORMATIONAL, "SoundManager: music_style from config = '%s'\n", music_style.c_str());
+
+     if(music_style == "native")
        {
+         DEBUG(0, LEVEL_INFORMATIONAL, "SoundManager: Using NATIVE (AdLib) music\n");
+         current_music_style = MUSIC_STYLE_NATIVE;
          if (game_type == NUVIE_GAME_U6)
 	   LoadNativeU6Songs(); //FIX need to handle MD & SE music too.
        }
+#ifdef HAVE_MT32EMU
+     else if (music_style == "mt32")
+       {
+         current_music_style = MUSIC_STYLE_MT32;
+         if (game_type == NUVIE_GAME_U6) {
+           if (!LoadMT32U6Songs()) {
+             DEBUG(0, LEVEL_WARNING, "MT-32 initialization failed, falling back to native\n");
+             current_music_style = MUSIC_STYLE_NATIVE;
+             LoadNativeU6Songs();
+           }
+         }
+       }
+#endif
+     else if (music_style == "mp3")
+       {
+         DEBUG(0, LEVEL_INFORMATIONAL, "SoundManager: Using MP3 music\n");
+         current_music_style = MUSIC_STYLE_MP3;
+         if (game_type == NUVIE_GAME_U6) {
+           if (!LoadMP3U6Songs()) {
+             DEBUG(0, LEVEL_WARNING, "MP3 music loading failed, falling back to native\n");
+             current_music_style = MUSIC_STYLE_NATIVE;
+             LoadNativeU6Songs();
+           } else {
+             DEBUG(0, LEVEL_INFORMATIONAL, "SoundManager: MP3 music loaded successfully!\n");
+           }
+         }
+       }
      else if (music_style == "custom")
-       LoadCustomSongs(sound_dir);
+       {
+         current_music_style = MUSIC_STYLE_CUSTOM;
+         LoadCustomSongs(sound_dir);
+       }
      else
        DEBUG(0,LEVEL_WARNING,"Unknown music style '%s'\n", music_style.c_str());
 
@@ -272,6 +317,210 @@ bool SoundManager::LoadNativeU6Songs()
  loadSong(song, filename.c_str(), "Dungeon");
  groupAddSong("dungeon", song);
 
+ return true;
+}
+
+#ifdef HAVE_MT32EMU
+bool SoundManager::LoadMT32U6Songs()
+{
+ Song *song;
+ string filename;
+ string midi_dir;
+
+ // Check if MT-32 ROMs exist
+ if (!SongMT32::checkRomsExist(mt32_rom_path)) {
+   DEBUG(0, LEVEL_ERROR, "MT-32 ROMs not found in: %s\n", mt32_rom_path.c_str());
+   DEBUG(0, LEVEL_ERROR, "Please place MT32_CONTROL.ROM and MT32_PCM.ROM in the ROM directory.\n");
+   return false;
+ }
+
+ // Get MIDI directory - typically same as game data dir
+ config_get_path(m_Config, "", midi_dir);
+
+ // Ultima 6 MIDI files from u6midi.zip (Ultima Dragons archive)
+ // File naming: U6-BRIT.MID, U6-FORES.MID, etc.
+
+ // Rule Britannia
+ build_path(midi_dir, "U6-BRIT.MID", filename);
+ song = new SongMT32(mixer->getMixer(), mt32_rom_path);
+ if (loadSong(song, filename.c_str(), "Rule Britannia")) {
+   groupAddSong("random", song);
+ } else {
+   delete song;
+   DEBUG(0, LEVEL_WARNING, "MT-32: Cannot load %s\n", filename.c_str());
+ }
+
+ // Wanderer (Forest)
+ build_path(midi_dir, "U6-FORES.MID", filename);
+ song = new SongMT32(mixer->getMixer(), mt32_rom_path);
+ if (loadSong(song, filename.c_str(), "Wanderer (Forest)")) {
+   groupAddSong("random", song);
+ } else {
+   delete song;
+ }
+
+ // Stones
+ build_path(midi_dir, "U6-STONE.MID", filename);
+ song = new SongMT32(mixer->getMixer(), mt32_rom_path);
+ if (loadSong(song, filename.c_str(), "Stones")) {
+   groupAddSong("random", song);
+ } else {
+   delete song;
+ }
+
+ // Ultima VI Theme
+ build_path(midi_dir, "U6-THEME.MID", filename);
+ song = new SongMT32(mixer->getMixer(), mt32_rom_path);
+ if (loadSong(song, filename.c_str(), "Ultima VI Theme")) {
+   groupAddSong("random", song);
+ } else {
+   delete song;
+ }
+
+ // Engagement and Melee (combat)
+ build_path(midi_dir, "U6-MELEE.MID", filename);
+ song = new SongMT32(mixer->getMixer(), mt32_rom_path);
+ if (loadSong(song, filename.c_str(), "Engagement and Melee")) {
+   groupAddSong("combat", song);
+ } else {
+   delete song;
+ }
+
+ // Captain Johne's Hornpipe (boat)
+ build_path(midi_dir, "U6-HORNP.MID", filename);
+ song = new SongMT32(mixer->getMixer(), mt32_rom_path);
+ if (loadSong(song, filename.c_str(), "Captain Johne's Hornpipe")) {
+   groupAddSong("boat", song);
+ } else {
+   delete song;
+ }
+
+ // Audchar Gargl Zenmur (gargoyle)
+ build_path(midi_dir, "U6-GARG.MID", filename);
+ song = new SongMT32(mixer->getMixer(), mt32_rom_path);
+ if (loadSong(song, filename.c_str(), "Audchar Gargl Zenmur")) {
+   groupAddSong("gargoyle", song);
+ } else {
+   delete song;
+ }
+
+ // Dungeon
+ build_path(midi_dir, "U6-DUNG.MID", filename);
+ song = new SongMT32(mixer->getMixer(), mt32_rom_path);
+ if (loadSong(song, filename.c_str(), "Dungeon")) {
+   groupAddSong("dungeon", song);
+ } else {
+   delete song;
+ }
+
+ // Additional songs from MIDI pack
+ // Intro
+ build_path(midi_dir, "U6-INTRO.MID", filename);
+ song = new SongMT32(mixer->getMixer(), mt32_rom_path);
+ if (loadSong(song, filename.c_str(), "Intro")) {
+   groupAddSong("intro", song);
+ } else {
+   delete song;
+ }
+
+ // End/Credits
+ build_path(midi_dir, "U6-END.MID", filename);
+ song = new SongMT32(mixer->getMixer(), mt32_rom_path);
+ if (loadSong(song, filename.c_str(), "End Credits")) {
+   groupAddSong("endgame", song);
+ } else {
+   delete song;
+ }
+
+ DEBUG(0, LEVEL_INFORMATIONAL, "MT-32: Loaded Ultima VI songs\n");
+ return true;
+}
+#endif
+
+bool SoundManager::LoadMP3U6Songs()
+{
+ Song *song;
+ string filename;
+ string music_dir;
+ int songs_loaded = 0;
+
+ // Get music directory from config, default to "music" subfolder
+ std::string config_key = config_get_game_key(m_Config);
+ config_key.append("/music_dir");
+ m_Config->value(config_key, music_dir, "");
+
+ DEBUG(0, LEVEL_INFORMATIONAL, "MP3: Config key: %s, value: '%s'\n", config_key.c_str(), music_dir.c_str());
+
+ if (music_dir.empty()) {
+   // Try default "music" subfolder in game directory
+   std::string game_dir;
+   config_key = config_get_game_key(m_Config);
+   config_key.append("/gamedir");
+   m_Config->value(config_key, game_dir, "");
+   build_path(game_dir, "music", music_dir);
+   DEBUG(0, LEVEL_INFORMATIONAL, "MP3: Using default music dir from gamedir: %s\n", music_dir.c_str());
+ }
+
+ DEBUG(0, LEVEL_INFORMATIONAL, "MP3: Looking for music in: %s\n", music_dir.c_str());
+
+ // Ultima 6 MP3 files - try various naming conventions
+ // Tom's MT-32 Collection uses: u6_brit.mp3, u6_forest.mp3, etc.
+ // Also try: brit.mp3, brit.ogg, BRIT.MP3, etc.
+
+ struct SongMapping {
+   const char *group;
+   const char *title;
+   const char *filenames[6]; // Multiple possible filenames
+ };
+
+ // Supported filename patterns:
+ // - Nuvie style: brit.mp3, forest.mp3, stones.mp3, ultima.mp3, engage.mp3, hornpipe.mp3, gargoyle.mp3, dungeon.mp3, intro.mp3, end.mp3
+ // - Dor-Lomin MT-32 Archive: rulebritannia.mp3, wanderer.mp3, stones.mp3, ultimatheme.mp3, engagement-melee.mp3,
+ //   capnjohnhornpipe.mp3, gargoyles.mp3, dungeon.mp3, introduction.mp3, unification.mp3, opening.mp3, createcharacter.mp3
+ // - Tom's MT-32 Collection: u6_brit.mp3, etc.
+ static const SongMapping song_mappings[] = {
+   {"random", "Rule Britannia", {"brit.mp3", "rulebritannia.mp3", "rule_britannia.mp3", "u6_brit.mp3", "brit.ogg", nullptr}},
+   {"random", "Wanderer (Forest)", {"forest.mp3", "wanderer.mp3", "u6_forest.mp3", "forest.ogg", nullptr, nullptr}},
+   {"random", "Stones", {"stones.mp3", "u6_stones.mp3", "stones.ogg", nullptr, nullptr, nullptr}},
+   {"random", "Ultima VI Theme", {"ultima.mp3", "ultimatheme.mp3", "u6_theme.mp3", "ultima.ogg", "theme.mp3", nullptr}},
+   {"combat", "Engagement and Melee", {"engage.mp3", "engagement-melee.mp3", "u6_melee.mp3", "engage.ogg", "combat.mp3", nullptr}},
+   {"boat", "Captain Johne's Hornpipe", {"hornpipe.mp3", "capnjohnhornpipe.mp3", "u6_hornpipe.mp3", "hornpipe.ogg", nullptr, nullptr}},
+   {"gargoyle", "Audchar Gargl Zenmur", {"gargoyle.mp3", "gargoyles.mp3", "u6_gargoyle.mp3", "gargoyle.ogg", nullptr, nullptr}},
+   {"dungeon", "Dungeon", {"dungeon.mp3", "u6_dungeon.mp3", "dungeon.ogg", nullptr, nullptr, nullptr}},
+   {"intro", "Intro", {"intro.mp3", "introduction.mp3", "u6_intro.mp3", "intro.ogg", nullptr, nullptr}},
+   {"endgame", "End Credits", {"end.mp3", "unification.mp3", "u6_end.mp3", "end.ogg", "credits.mp3", nullptr}},
+   {nullptr, nullptr, {nullptr}}
+ };
+
+ for (int i = 0; song_mappings[i].group != nullptr; i++) {
+   bool found = false;
+
+   for (int j = 0; song_mappings[i].filenames[j] != nullptr && !found; j++) {
+     build_path(music_dir, song_mappings[i].filenames[j], filename);
+
+     song = new SongMP3(mixer->getMixer());
+     if (loadSong(song, filename.c_str(), song_mappings[i].title)) {
+       groupAddSong(song_mappings[i].group, song);
+       songs_loaded++;
+       found = true;
+       DEBUG(0, LEVEL_INFORMATIONAL, "MP3: Loaded %s\n", filename.c_str());
+     } else {
+       delete song;
+     }
+   }
+
+   if (!found) {
+     DEBUG(0, LEVEL_DEBUGGING, "MP3: Could not find %s\n", song_mappings[i].title);
+   }
+ }
+
+ if (songs_loaded == 0) {
+   DEBUG(0, LEVEL_WARNING, "MP3: No music files found in %s\n", music_dir.c_str());
+   DEBUG(0, LEVEL_WARNING, "MP3: Download from https://www.grandgent.com/tom/ultima/\n");
+   return false;
+ }
+
+ DEBUG(0, LEVEL_INFORMATIONAL, "MP3: Loaded %d songs\n", songs_loaded);
  return true;
 }
 
@@ -580,6 +829,94 @@ void SoundManager::musicPlay(const char *filename, uint16 song_num)
 	if(!music_enabled || !audio_enabled)
 		return;
 
+	// For MP3 mode, try to find corresponding MP3 file
+	if (current_music_style == MUSIC_STYLE_MP3) {
+		// Map .m files to MP3 equivalents
+		std::string base_name = filename;
+		size_t dot_pos = base_name.rfind('.');
+		if (dot_pos != std::string::npos) {
+			base_name = base_name.substr(0, dot_pos);
+		}
+		// Convert to lowercase
+		std::transform(base_name.begin(), base_name.end(), base_name.begin(), ::tolower);
+
+		// Get music directory
+		std::string music_dir;
+		std::string config_key = config_get_game_key(m_Config);
+		config_key.append("/music_dir");
+		m_Config->value(config_key, music_dir, "");
+		if (music_dir.empty()) {
+			std::string game_dir;
+			config_key = config_get_game_key(m_Config);
+			config_key.append("/gamedir");
+			m_Config->value(config_key, game_dir, "");
+			build_path(game_dir, "music", music_dir);
+		}
+
+		// Map .m filenames to possible MP3 filenames (supports multiple naming conventions)
+		// Dor-Lomin: opening.mp3, introduction.mp3, createcharacter.mp3, ultimatheme.mp3, etc.
+		// Nuvie: bootup.mp3, intro.mp3, create.mp3, ultima.mp3, etc.
+		struct FileMapping {
+			const char *m_file;
+			const char *mp3_names[4];
+		};
+		static const FileMapping file_mappings[] = {
+			{"bootup", {"opening.mp3", "bootup.mp3", nullptr, nullptr}},
+			{"intro", {"introduction.mp3", "intro.mp3", nullptr, nullptr}},
+			{"create", {"createcharacter.mp3", "create.mp3", nullptr, nullptr}},
+			{"ultima", {"ultimatheme.mp3", "ultima.mp3", nullptr, nullptr}},
+			{"brit", {"rulebritannia.mp3", "brit.mp3", nullptr, nullptr}},
+			{"forest", {"wanderer.mp3", "forest.mp3", nullptr, nullptr}},
+			{"stones", {"stones.mp3", nullptr, nullptr, nullptr}},
+			{"engage", {"engagement-melee.mp3", "engage.mp3", nullptr, nullptr}},
+			{"hornpipe", {"capnjohnhornpipe.mp3", "hornpipe.mp3", nullptr, nullptr}},
+			{"gargoyle", {"gargoyles.mp3", "gargoyle.mp3", nullptr, nullptr}},
+			{"dungeon", {"dungeon.mp3", nullptr, nullptr, nullptr}},
+			{"end", {"unification.mp3", "end.mp3", nullptr, nullptr}},
+			{nullptr, {nullptr}}
+		};
+
+		// Try to find matching MP3 file
+		for (int i = 0; file_mappings[i].m_file != nullptr; i++) {
+			if (base_name == file_mappings[i].m_file) {
+				for (int j = 0; file_mappings[i].mp3_names[j] != nullptr; j++) {
+					std::string mp3_path;
+					build_path(music_dir, file_mappings[i].mp3_names[j], mp3_path);
+
+					SongMP3 *mp3_song = new SongMP3(mixer->getMixer());
+					if (mp3_song->Init(mp3_path.c_str())) {
+						DEBUG(0, LEVEL_INFORMATIONAL, "Playing MP3: %s\n", mp3_path.c_str());
+						musicStop();
+						m_pCurrentSong = mp3_song;
+						m_CurrentGroup = "";
+						m_pCurrentSong->Play();
+						m_pCurrentSong->SetVolume(music_volume);
+						return;
+					}
+					delete mp3_song;
+				}
+				break;
+			}
+		}
+
+		// Fallback: try direct filename match
+		std::string mp3_path;
+		build_path(music_dir, base_name + ".mp3", mp3_path);
+		SongMP3 *mp3_song = new SongMP3(mixer->getMixer());
+		if (mp3_song->Init(mp3_path.c_str())) {
+			DEBUG(0, LEVEL_INFORMATIONAL, "Playing MP3: %s\n", mp3_path.c_str());
+			musicStop();
+			m_pCurrentSong = mp3_song;
+			m_CurrentGroup = "";
+			m_pCurrentSong->Play();
+			m_pCurrentSong->SetVolume(music_volume);
+			return;
+		}
+		delete mp3_song;
+		DEBUG(0, LEVEL_DEBUGGING, "MP3 not found for %s, falling back to AdLib\n", filename);
+	}
+
+	// Default: use AdLib
 	config_get_path(m_Config, filename, path);
 	SongAdPlug *song = new SongAdPlug(mixer->getMixer(), opl);
 	song->Init(path.c_str(), song_num);

@@ -287,6 +287,7 @@
     <ClCompile Include="..\sound\mixer\decoder\PCSpeaker.cpp" />
     <ClCompile Include="..\sound\mixer\decoder\PCSpeakerStream.cpp" />
     <ClCompile Include="..\sound\mixer\decoder\U6AdPlugDecoderStream.cpp" />
+    <ClCompile Include="..\sound\mixer\decoder\MP3AudioStream.cpp" />
     <ClCompile Include="..\sound\mixer\decoder\wave\adpcm.cpp" />
     <ClCompile Include="..\sound\mixer\decoder\wave\raw.cpp" />
     <ClCompile Include="..\sound\mixer\decoder\wave\stdiostream.cpp" />
@@ -302,6 +303,7 @@
     <ClCompile Include="..\sound\PCSpeakerSfxManager.cpp" />
     <ClCompile Include="..\sound\Song.cpp" />
     <ClCompile Include="..\sound\SongAdPlug.cpp" />
+    <ClCompile Include="..\sound\SongMP3.cpp" />
     <ClCompile Include="..\sound\SoundManager.cpp" />
     <ClCompile Include="..\sound\TownsSfxManager.cpp" />
     <ClCompile Include="..\Text.cpp" />
@@ -505,6 +507,7 @@
     <ClInclude Include="..\sound\mixer\decoder\PCSpeaker.h" />
     <ClInclude Include="..\sound\mixer\decoder\PCSpeakerStream.h" />
     <ClInclude Include="..\sound\mixer\decoder\U6AdPlugDecoderStream.h" />
+    <ClInclude Include="..\sound\mixer\decoder\MP3AudioStream.h" />
     <ClInclude Include="..\sound\mixer\decoder\wave\adpcm.h" />
     <ClInclude Include="..\sound\mixer\decoder\wave\endian.h" />
     <ClInclude Include="..\sound\mixer\decoder\wave\list.h" />
@@ -529,6 +532,7 @@
     <ClInclude Include="..\sound\SfxManager.h" />
     <ClInclude Include="..\sound\Song.h" />
     <ClInclude Include="..\sound\SongAdPlug.h" />
+    <ClInclude Include="..\sound\SongMP3.h" />
     <ClInclude Include="..\sound\Sound.h" />
     <ClInclude Include="..\sound\SoundManager.h" />
     <ClInclude Include="..\sound\TownsSfxManager.h" />

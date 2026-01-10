@@ -1171,7 +1171,6 @@ init_korean()
 mouse_cursor_set_pointer(0)
 mouse_cursor_visible(false)
 load_images("intro_1.shp")
-music_play("bootup.m")
 --[ [
 canvas_set_palette("palettes.int", 0)
 canvas_set_update_interval(25)

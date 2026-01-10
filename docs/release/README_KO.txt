@@ -37,6 +37,7 @@ Nuvie 엔진을 기반으로 제작되었습니다.
 - 울티마 6 정품 게임 파일
   (GOG.com 등에서 구매 가능: https://www.gog.com/game/ultima_6)
 - Windows 10/11
+- (선택) MT-32 녹음 MP3 음악 파일 (고음질 배경음악용)
 
 
 ■ 설치 방법
@@ -62,6 +63,44 @@ nuvie.cfg 파일을 편집하여 설정을 변경할 수 있습니다.
 
 한글 모드 끄기:
 <korean_mode>false</korean_mode>
+
+
+■ MP3 음악 설정 (선택사항)
+--------------------------------------------------------------------------------
+울티마 6 원본은 AdLib/FM 음악을 사용하지만, MT-32로 녹음된 고음질 MP3 음악을
+사용할 수 있습니다.
+
+[MP3 음악 다운로드]
+Dor-Lomin MT-32 Archive에서 무료로 다운로드할 수 있습니다:
+https://github.com/Dor-Lomin/MT-32-Music-Archive
+
+필요한 파일 (Ultima VI 폴더):
+- opening.mp3 (시작화면)
+- introduction.mp3 (인트로)
+- createcharacter.mp3 (캐릭터 생성)
+- ultimatheme.mp3 (울티마 테마)
+- rulebritannia.mp3 (룰 브리타니아)
+- wanderer.mp3 (필드 음악)
+- stones.mp3 (스톤즈)
+- engagement-melee.mp3 (전투)
+- capnjohnhornpipe.mp3 (배)
+- gargoyles.mp3 (가고일)
+- dungeon.mp3 (던전)
+- unification.mp3 (엔딩)
+
+[설치 방법]
+1. 게임 폴더 아래에 "music" 폴더를 만듭니다.
+2. MP3 파일들을 music 폴더에 복사합니다.
+3. nuvie.cfg에서 다음과 같이 설정합니다:
+
+<ultima6>
+  <music>mp3</music>
+  <music_dir>ULTIMA6/music</music_dir>
+</ultima6>
+
+[참고]
+- MP3 파일이 없거나 찾을 수 없는 곡은 자동으로 AdLib으로 재생됩니다.
+- OGG, WAV 형식도 지원됩니다.
 
 
 ■ 조작법
