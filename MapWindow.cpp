@@ -2572,19 +2572,8 @@ void MapWindow::drag_perform_drop(int x, int y, int message, void *data)
     Event *event = game->get_event();
     uint16 map_width = map->get_width(cur_level);
 
-    // Scale input coordinates to match widget coordinates (Korean 4x mode)
-    SDL_Surface *sdl_surface = screen->get_sdl_surface();
-    int logical_w = screen->get_width();
-    int coord_scale = (logical_w > 0) ? (sdl_surface->w / logical_w) : 1;
-    if (coord_scale < 1) coord_scale = 1;
-    x *= coord_scale;
-    y *= coord_scale;
-
-    // Calculate tile size based on Korean 4x mode
-    FontManager *font_manager = game->get_font_manager();
-    bool use_4x = font_manager && font_manager->is_korean_enabled() &&
-                  font_manager->get_korean_font() && game->is_original_plus();
-    int tile_size = use_4x ? 64 : 16;
+    // Use map_tile_scale for tile size (same as mouseToWorldCoords)
+    int tile_size = 16 * map_tile_scale;
 
     x -= area.x;
     y -= area.y;
@@ -3050,24 +3039,18 @@ void MapWindow::drag_draw(int x, int y, int message, void* data)
 
 	tile = tile_manager->get_tile(obj_manager->get_obj_tile_num(selected_obj) + selected_obj->frame_n);
 
-	// Get actual SDL surface dimensions (1280x800 in Korean 4x mode)
-	// x, y are from get_mouse_location() in screen->get_width() coords (640x400)
-	// Need to convert to actual surface coords (1280x800)
+	// Use map_tile_scale for consistent tile sizing
+	int tile_size = 16 * map_tile_scale;
+	int half_tile = 8 * map_tile_scale;
+
+	// Calculate position for dragged tile (centered on mouse)
+	int nx = x - half_tile;
+	int ny = y - half_tile;
+
+	// Get screen dimensions for clamping
 	SDL_Surface *sdl_surface = screen->get_sdl_surface();
 	int screen_w = sdl_surface->w;
 	int screen_h = sdl_surface->h;
-	int logical_w = screen->get_width();
-	int coord_scale = (logical_w > 0) ? (screen_w / logical_w) : 1;  // 1280/640=2
-	if (coord_scale < 1) coord_scale = 1;
-	int tile_scale = screen_w / 320;  // For tile size: 1280/320=4
-	if (tile_scale < 1) tile_scale = 1;
-
-	int tile_size = 16 * tile_scale;
-	int half_tile = 8 * tile_scale;
-
-	// Convert from logical coords to surface coords
-	int nx = x * coord_scale - half_tile;
-	int ny = y * coord_scale - half_tile;
 
 	// Clamp to screen bounds
 	if (nx + tile_size >= screen_w)
@@ -3080,9 +3063,9 @@ void MapWindow::drag_draw(int x, int y, int message, void* data)
 	else if (ny < 0)
 		ny = 0;
 
-	if (tile_scale >= 4)
+	if (map_tile_scale >= 4)
 		screen->blit4x(nx, ny, tile->data, 8, 16, 16, 16, true);
-	else if (tile_scale >= 2)
+	else if (map_tile_scale >= 2)
 		screen->blit2x(nx, ny, tile->data, 8, 16, 16, 16, true);
 	else
 		screen->blit(nx, ny, tile->data, 8, 16, 16, 16, true);
