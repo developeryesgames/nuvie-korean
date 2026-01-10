@@ -27,6 +27,7 @@ private:
 
     // Translation maps for different text types
     std::map<uint16, std::string> look_translations;    // Item descriptions by index
+    std::map<std::string, std::string> item_names;      // Item names (English -> Korean)
     std::map<std::string, std::string> npc_names;       // NPC names
     std::map<std::string, std::string> keywords;        // Conversation keywords
 

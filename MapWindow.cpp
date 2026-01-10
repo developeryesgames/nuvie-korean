@@ -2997,11 +2997,8 @@ void MapWindow::mouseToWorldCoords (int mx, int my, int &wx, int &wy)
 	int x = mx - area.x;
 	int y = my - area.y;
 
-    // Check for Korean 4x mode
-    FontManager *font_manager = Game::get_game()->get_font_manager();
-    bool use_4x = font_manager && font_manager->is_korean_enabled() &&
-                  font_manager->get_korean_font() && Game::get_game()->is_original_plus();
-    int tile_size = use_4x ? 64 : 16;
+    // Use map_tile_scale for tile size (16 * 1/2/4 = 16/32/64 pixels)
+    int tile_size = 16 * map_tile_scale;
 
     int	map_width = map->get_width(cur_level);
 

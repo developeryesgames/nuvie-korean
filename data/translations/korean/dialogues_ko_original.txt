@@ -107,6 +107,10 @@
 5|"'Tis in the west wing of the castle, just south of mine own chambers."|
 5|"'Twill serve thee well in thy travels if thou dost learn to master its powers."|
 5|"Ah, 'tis thee indeed, $P. Here is the key to my castle."|
+5|"Ah, 'tis thee indeed, $P. Take this key."|
+5|"It will unlock the gatehouse by the southern entrance to the castle."|
+5|"Then you can use the lever inside to raise the portcullis, and the crank will lower the drawbridge."|
+5|"The same key will also let you into the sewers under the castle."*|
 5|"Ah, thou hast heard of my little friend?"|
 5|"All our efforts thus far have availed us naught."|
 5|"Ask the leaders of each town to tell thee of that.|

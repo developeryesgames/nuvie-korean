@@ -14,13 +14,25 @@
 #include <sstream>
 #include <algorithm>
 #include <set>
+#include <cctype>
+#include <vector>
 
 #include "nuvieDefs.h"
+
 #include "Configuration.h"
 #include "GUI.h"
 #include "U6misc.h"
 #include "Console.h"
+
 #include "KoreanTranslation.h"
+
+// Helper function to convert string to lowercase
+static std::string toLowercase(const std::string &str)
+{
+    std::string result = str;
+    std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+    return result;
+}
 
 KoreanTranslation::KoreanTranslation(Configuration *cfg)
 {
@@ -128,6 +140,7 @@ bool KoreanTranslation::loadLookTranslations(const std::string &filename)
     }
 
     look_translations.clear();
+    item_names.clear();
     std::string line;
     int loaded = 0;
 
@@ -147,7 +160,7 @@ bool KoreanTranslation::loadLookTranslations(const std::string &filename)
             continue;
 
         std::string index_str = line.substr(0, pos1);
-        // Skip English text (we use index for lookup)
+        std::string english_text = line.substr(pos1 + 1, pos2 - pos1 - 1);
         std::string korean_text = line.substr(pos2 + 1);
 
         uint16 index = (uint16)atoi(index_str.c_str());
@@ -155,12 +168,17 @@ bool KoreanTranslation::loadLookTranslations(const std::string &filename)
         if (!korean_text.empty())
         {
             look_translations[index] = korean_text;
+            // Also add to item_names for name-based lookup
+            if (!english_text.empty())
+            {
+                item_names[english_text] = korean_text;
+            }
             loaded++;
         }
     }
 
     file.close();
-    DEBUG(0, LEVEL_INFORMATIONAL, "KoreanTranslation: Loaded %d look translations\n", loaded);
+    DEBUG(0, LEVEL_INFORMATIONAL, "KoreanTranslation: Loaded %d look translations, %d item names\n", loaded, (int)item_names.size());
     return loaded > 0;
 }
 
@@ -366,6 +384,28 @@ std::string KoreanTranslation::translate(const std::string &english_text)
     if (it != npc_names.end())
     {
         return it->second;
+    }
+
+    // Check item names (from look_items_ko.txt)
+    it = item_names.find(english_text);
+    if (it != item_names.end())
+    {
+        DEBUG(0, LEVEL_DEBUGGING, "KoreanTranslation::translate: '%s' -> '%s' (exact)\n",
+              english_text.c_str(), it->second.c_str());
+        return it->second;
+    }
+
+    // Also try case-insensitive match for item names
+    std::string lower_text = toLowercase(english_text);
+    for (std::map<std::string, std::string>::iterator iter = item_names.begin();
+         iter != item_names.end(); ++iter)
+    {
+        if (toLowercase(iter->first) == lower_text)
+        {
+            DEBUG(0, LEVEL_DEBUGGING, "KoreanTranslation::translate: '%s' -> '%s' (case-insensitive)\n",
+                  english_text.c_str(), iter->second.c_str());
+            return iter->second;
+        }
     }
 
     return english_text;
@@ -607,11 +647,94 @@ bool KoreanTranslation::loadDialogueTranslations(const std::string &filename)
 
         if (!english_text.empty())
         {
-            dialogue_translations[npc_num][english_text] = korean_text;
+            // Store with lowercase key for case-insensitive matching
+            std::string lower_key = toLowercase(english_text);
+            dialogue_translations[npc_num][lower_key] = korean_text;
+
             // Also store normalized version for multiline matching
-            std::string normalized = normalizeDialogueText(english_text);
-            if (normalized != english_text && !normalized.empty())
+            std::string normalized = toLowercase(normalizeDialogueText(english_text));
+            if (normalized != lower_key && !normalized.empty())
                 dialogue_translations[npc_num][normalized] = korean_text;
+
+            // Also store version with all quotes removed (for fuzzy matching)
+            std::string no_quotes_key;
+            for (size_t i = 0; i < english_text.size(); i++)
+            {
+                if (english_text[i] != '"' && english_text[i] != '\'')
+                    no_quotes_key += english_text[i];
+            }
+            std::string lower_no_quotes = toLowercase(no_quotes_key);
+            if (lower_no_quotes != lower_key && !lower_no_quotes.empty())
+                dialogue_translations[npc_num][lower_no_quotes] = korean_text;
+
+            // If this contains compound text with \n*\n or *, also register individual parts
+            // This allows both combined and split forms to work
+            if (english_text.find("\n*\n") != std::string::npos ||
+                english_text.find("\"*\"") != std::string::npos ||
+                english_text.find("\n\n*") != std::string::npos)
+            {
+                // Split by various * patterns and register each part
+                std::string eng_remaining = english_text;
+                std::string kor_remaining = korean_text;
+
+                // Try to split both english and korean the same way
+                std::vector<std::string> eng_parts, kor_parts;
+
+                // Split english by \n*\n or "*" patterns
+                size_t split_pos;
+                while ((split_pos = eng_remaining.find("\"\n*\n\"")) != std::string::npos ||
+                       (split_pos = eng_remaining.find("\"*\"")) != std::string::npos ||
+                       (split_pos = eng_remaining.find("\"\n\n*\"")) != std::string::npos)
+                {
+                    std::string part = eng_remaining.substr(0, split_pos + 1); // include closing quote
+                    eng_parts.push_back(part);
+                    // Find next quote
+                    size_t next_quote = eng_remaining.find('"', split_pos + 1);
+                    if (next_quote != std::string::npos)
+                        eng_remaining = eng_remaining.substr(next_quote);
+                    else
+                        break;
+                }
+                if (!eng_remaining.empty())
+                    eng_parts.push_back(eng_remaining);
+
+                // Split korean the same way
+                while ((split_pos = kor_remaining.find("\"\n*\n\"")) != std::string::npos ||
+                       (split_pos = kor_remaining.find("\"*\"")) != std::string::npos ||
+                       (split_pos = kor_remaining.find("\"\n\n*\"")) != std::string::npos)
+                {
+                    std::string part = kor_remaining.substr(0, split_pos + 1);
+                    kor_parts.push_back(part);
+                    size_t next_quote = kor_remaining.find('"', split_pos + 1);
+                    if (next_quote != std::string::npos)
+                        kor_remaining = kor_remaining.substr(next_quote);
+                    else
+                        break;
+                }
+                if (!kor_remaining.empty())
+                    kor_parts.push_back(kor_remaining);
+
+                // Register individual parts if counts match
+                if (eng_parts.size() == kor_parts.size() && eng_parts.size() > 1)
+                {
+                    for (size_t i = 0; i < eng_parts.size(); i++)
+                    {
+                        std::string eng_part = eng_parts[i];
+                        std::string kor_part = kor_parts[i];
+                        // Trim
+                        while (!eng_part.empty() && (eng_part[0] == ' ' || eng_part[0] == '\n'))
+                            eng_part.erase(0, 1);
+                        while (!eng_part.empty() && (eng_part.back() == ' ' || eng_part.back() == '\n' || eng_part.back() == '*'))
+                            eng_part.pop_back();
+                        if (!eng_part.empty())
+                        {
+                            std::string part_key = toLowercase(eng_part);
+                            dialogue_translations[npc_num][part_key] = kor_part;
+                        }
+                    }
+                }
+            }
+
             loaded++;
         }
     }
@@ -636,44 +759,70 @@ std::string KoreanTranslation::lookupSingleDialogue(uint16 npc_num, const std::s
     // Trim whitespace and trailing * (used as continuation marker in scripts)
     while (!trimmed.empty() && (trimmed[0] == ' ' || trimmed[0] == '\n' || trimmed[0] == '\r'))
         trimmed.erase(0, 1);
-    while (!trimmed.empty() && (trimmed.back() == ' ' || trimmed.back() == '\n' || trimmed.back() == '\r' || trimmed.back() == '*' || trimmed.back() == '\''))
+    while (!trimmed.empty() && (trimmed.back() == ' ' || trimmed.back() == '\n' || trimmed.back() == '\r' || trimmed.back() == '*'))
         trimmed.pop_back();
-    // Strip leading single quote if present
-    if (!trimmed.empty() && trimmed[0] == '\'')
-        trimmed.erase(0, 1);
+    // Note: Don't strip leading single quote - it may be part of the text (e.g., 'Abyss')
 
     if (trimmed.empty())
         return "";
 
+    // Remove outer double quotes
     std::string no_quotes = trimmed;
     if (!no_quotes.empty() && no_quotes[0] == '"')
         no_quotes.erase(0, 1);
     if (!no_quotes.empty() && no_quotes.back() == '"')
         no_quotes.pop_back();
 
+    // Create version with ALL quotes removed (for fuzzy matching)
+    std::string no_all_quotes;
+    for (size_t i = 0; i < trimmed.size(); i++)
+    {
+        if (trimmed[i] != '"' && trimmed[i] != '\'')
+            no_all_quotes += trimmed[i];
+    }
+
     std::map<uint16, std::map<std::string, std::string> >::iterator npc_it = dialogue_translations.find(npc_num);
     if (npc_it != dialogue_translations.end())
     {
-        std::map<std::string, std::string>::iterator it = npc_it->second.find(trimmed);
+        // Convert to lowercase for case-insensitive matching
+        std::string lower_trimmed = toLowercase(trimmed);
+        std::string lower_no_quotes = toLowercase(no_quotes);
+        std::string lower_no_all_quotes = toLowercase(no_all_quotes);
+
+        std::map<std::string, std::string>::iterator it = npc_it->second.find(lower_trimmed);
         if (it != npc_it->second.end())
             return it->second;
 
-        it = npc_it->second.find(no_quotes);
+        it = npc_it->second.find(lower_no_quotes);
         if (it != npc_it->second.end())
             return it->second;
 
-        std::string with_quotes = "\"" + trimmed + "\"";
+        std::string with_quotes = "\"" + lower_trimmed + "\"";
         it = npc_it->second.find(with_quotes);
         if (it != npc_it->second.end())
             return it->second;
 
-        with_quotes = "\"" + no_quotes + "\"";
+        with_quotes = "\"" + lower_no_quotes + "\"";
         it = npc_it->second.find(with_quotes);
+        if (it != npc_it->second.end())
+            return it->second;
+
+        // Try with trailing quote removed (for cases like text ending with "")
+        if (!lower_trimmed.empty() && lower_trimmed.back() == '"')
+        {
+            std::string without_trailing_quote = lower_trimmed.substr(0, lower_trimmed.length() - 1);
+            it = npc_it->second.find(without_trailing_quote);
+            if (it != npc_it->second.end())
+                return it->second;
+        }
+
+        // Try with ALL quotes removed (fuzzy match for 'Path' vs Path etc)
+        it = npc_it->second.find(lower_no_all_quotes);
         if (it != npc_it->second.end())
             return it->second;
 
         // Try normalized version for multiline texts
-        std::string normalized = normalizeDialogueText(trimmed);
+        std::string normalized = toLowercase(normalizeDialogueText(trimmed));
         it = npc_it->second.find(normalized);
         if (it != npc_it->second.end())
             return it->second;
@@ -690,74 +839,185 @@ std::string KoreanTranslation::getDialogueTranslation(uint16 npc_num, const std:
     // Check if this contains multiple dialogues separated by * or newlines
     // Pattern: "text1" * "text2" or "text1"\n"text2"
     std::string trimmed = english_text;
-    while (!trimmed.empty() && (trimmed[0] == ' ' || trimmed[0] == '\n' || trimmed[0] == '\r'))
+    // Remove leading whitespace, newlines, and * (but NOT single quotes - they may be part of text like 'Path')
+    while (!trimmed.empty() && (trimmed[0] == ' ' || trimmed[0] == '\n' || trimmed[0] == '\r' || trimmed[0] == '*'))
         trimmed.erase(0, 1);
-    while (!trimmed.empty() && (trimmed.back() == ' ' || trimmed.back() == '\n' || trimmed.back() == '\r'))
+    // Special case: if text starts with '' (double single-quote), remove one (orphan from previous line)
+    if (trimmed.length() >= 2 && trimmed[0] == '\'' && trimmed[1] == '\'')
+        trimmed.erase(0, 1);
+    // Remove trailing whitespace, newlines, *, and stray quotes (both single and double)
+    // The pattern "text."\n*\n"' leaves orphan quotes after the dialogue ends
+    while (!trimmed.empty() && (trimmed.back() == ' ' || trimmed.back() == '\n' || trimmed.back() == '\r' || trimmed.back() == '*' || trimmed.back() == '\'' || trimmed.back() == '"'))
         trimmed.pop_back();
-
-    // Check for compound dialogue pattern: contains "* or *" pattern (separator between quoted texts)
-    bool is_compound = false;
-    size_t star_pos = trimmed.find("\"*");
-    if (star_pos == std::string::npos)
-        star_pos = trimmed.find("\" *");
-    if (star_pos == std::string::npos)
-        star_pos = trimmed.find("\"\n*");
-    if (star_pos == std::string::npos)
-        star_pos = trimmed.find("\"\n\"");
-    if (star_pos != std::string::npos && star_pos > 0)
-        is_compound = true;
-
-    if (is_compound)
+    // Now re-add the closing quote if we stripped it from actual dialogue
+    // Dialogue should end with ." or !" or ?" or .'" - if last char is now one of these, add quote back
+    // Also handle .' pattern (e.g., 'Bitter Kate.'")
+    if (!trimmed.empty())
     {
-        // First try to match the entire compound text as-is
-        std::string full_result = lookupSingleDialogue(npc_num, trimmed);
-        if (!full_result.empty())
-            return full_result;
-
-        // Split and translate each part
-        std::string result;
-        std::string current;
-        bool in_quote = false;
-
-        for (size_t i = 0; i < trimmed.length(); i++)
+        char last = trimmed.back();
+        if (last == '.' || last == '!' || last == '?' || last == ',')
+            trimmed += '"';
+        else if (last == '\'' && trimmed.length() >= 2)
         {
-            char c = trimmed[i];
-            if (c == '"')
-            {
-                current += c;
-                if (in_quote)
-                {
-                    // End of quoted text - try to translate
-                    std::string trans = lookupSingleDialogue(npc_num, current);
-                    if (!trans.empty())
-                    {
-                        if (!result.empty()) result += "\n";
-                        result += trans;
-                    }
-                    else
-                    {
-                        if (!result.empty()) result += "\n";
-                        result += current;
-                    }
-                    current.clear();
-                }
-                in_quote = !in_quote;
-            }
-            else if (in_quote)
-            {
-                current += c;
-            }
-            // Skip * and whitespace between quotes
+            // Check if it's .' pattern (quote inside dialogue ending with period)
+            char second_last = trimmed[trimmed.length() - 2];
+            if (second_last == '.' || second_last == '!' || second_last == '?')
+                trimmed += '"';
         }
-
-        if (!result.empty())
-            return result;
     }
 
-    // Single dialogue - try direct lookup
+    // Try direct lookup first (for complete text)
     std::string result = lookupSingleDialogue(npc_num, trimmed);
     if (!result.empty())
         return result;
+
+    // Check if this is a compound dialogue with multiple parts separated by *
+    // Try multiple patterns: "text1"*"text2", "text1"\n*\n"text2", or narrative text.*\n\ntext2.*
+
+    // Pattern 1: Quoted dialogue "text1"*"text2"
+    size_t star_pos = trimmed.find("\"*\"");
+    if (star_pos == std::string::npos)
+        star_pos = trimmed.find("\"\n*\n\"");
+    if (star_pos == std::string::npos)
+        star_pos = trimmed.find("\" *\n\"");
+    if (star_pos == std::string::npos)
+        star_pos = trimmed.find("\"\n* \"");
+
+    if (star_pos != std::string::npos)
+    {
+        // Found compound quoted dialogue - split and translate each part
+        std::string part1 = trimmed.substr(0, star_pos + 1); // Include closing quote
+        size_t part2_start = trimmed.find('"', star_pos + 1);
+        if (part2_start != std::string::npos)
+        {
+            std::string part2 = trimmed.substr(part2_start);
+
+            std::string trans1 = lookupSingleDialogue(npc_num, part1);
+            std::string trans2 = lookupSingleDialogue(npc_num, part2);
+
+            if (!trans1.empty() && !trans2.empty())
+                return trans1 + "\n*\n" + trans2;
+            if (!trans1.empty())
+                return trans1 + "\n*\n" + part2;
+            if (!trans2.empty())
+                return part1 + "\n*\n" + trans2;
+        }
+    }
+
+    // Pattern 2: Narrative text with separators like .\n\n* or *\n\n or .\n*\n
+    // Examples: "She dances.*\n\nIt's beautiful." or "Text.\n\n*More text." or "'Rogue'.\n*\nThe"
+    if (trimmed.find("*\n") != std::string::npos || trimmed.find(".*") != std::string::npos ||
+        trimmed.find("\n\n*") != std::string::npos || trimmed.find("\n*") != std::string::npos ||
+        trimmed.find(".\n*\n") != std::string::npos)
+    {
+        std::vector<std::string> parts;
+        std::string remaining = trimmed;
+
+        // Split by various patterns: .\n\n*, *\n\n, .\n*, *\n
+        while (!remaining.empty())
+        {
+            // Try multiple separator patterns in order of specificity
+            size_t sep_pos = std::string::npos;
+            size_t sep_len = 0;
+            size_t part_end_offset = 0; // How much to include in part before separator
+
+            // Pattern: .\n\n* (sentence end, then continuation)
+            size_t pos = remaining.find(".\n\n*");
+            if (pos != std::string::npos && (sep_pos == std::string::npos || pos < sep_pos))
+            {
+                sep_pos = pos;
+                sep_len = 4; // .\n\n*
+                part_end_offset = 1; // Include the .
+            }
+
+            // Pattern: *\n\n (continuation marker at end)
+            pos = remaining.find("*\n\n");
+            if (pos != std::string::npos && (sep_pos == std::string::npos || pos < sep_pos))
+            {
+                sep_pos = pos;
+                sep_len = 3;
+                part_end_offset = 0;
+            }
+
+            // Pattern: .\n*\n (sentence end, newline, star, newline)
+            pos = remaining.find(".\n*\n");
+            if (pos != std::string::npos && (sep_pos == std::string::npos || pos < sep_pos))
+            {
+                sep_pos = pos;
+                sep_len = 4; // .\n*\n
+                part_end_offset = 1; // Include the .
+            }
+
+            // Pattern: .\n*
+            pos = remaining.find(".\n*");
+            if (pos != std::string::npos && (sep_pos == std::string::npos || pos < sep_pos))
+            {
+                sep_pos = pos;
+                sep_len = 3;
+                part_end_offset = 1;
+            }
+
+            // Pattern: *\n
+            pos = remaining.find("*\n");
+            if (pos != std::string::npos && (sep_pos == std::string::npos || pos < sep_pos))
+            {
+                sep_pos = pos;
+                sep_len = 2;
+                part_end_offset = 0;
+            }
+
+            if (sep_pos != std::string::npos)
+            {
+                std::string part = remaining.substr(0, sep_pos + part_end_offset);
+                // Remove trailing * if present
+                while (!part.empty() && part.back() == '*')
+                    part.pop_back();
+                if (!part.empty())
+                    parts.push_back(part);
+                remaining = remaining.substr(sep_pos + sep_len);
+                // Remove leading whitespace and * from next part
+                while (!remaining.empty() && (remaining[0] == ' ' || remaining[0] == '\n' || remaining[0] == '*'))
+                    remaining.erase(0, 1);
+            }
+            else
+            {
+                // No more separators - add remaining as last part
+                // Remove trailing * if present
+                while (!remaining.empty() && remaining.back() == '*')
+                    remaining.pop_back();
+                if (!remaining.empty())
+                    parts.push_back(remaining);
+                break;
+            }
+        }
+
+        if (parts.size() > 1)
+        {
+            std::string combined_result;
+            bool any_translated = false;
+
+            for (size_t i = 0; i < parts.size(); i++)
+            {
+                std::string trans = lookupSingleDialogue(npc_num, parts[i]);
+                if (!trans.empty())
+                {
+                    any_translated = true;
+                    if (!combined_result.empty())
+                        combined_result += "*\n\n";
+                    combined_result += trans;
+                }
+                else
+                {
+                    if (!combined_result.empty())
+                        combined_result += "*\n\n";
+                    combined_result += parts[i];
+                }
+            }
+
+            if (any_translated)
+                return combined_result;
+        }
+    }
 
     // Log untranslated text
     static std::set<std::string> logged_texts;

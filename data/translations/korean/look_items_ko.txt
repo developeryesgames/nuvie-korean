@@ -1818,4 +1818,4 @@
 2044|Nothing|아무것도 없음
 2045|Nothing|아무것도 없음
 2046|Nothing|아무것도 없음
-2047|Nothing|아무것도 없음
+2047|Nothing|아무것도 없음999|2-Hnd Sword|양손 검

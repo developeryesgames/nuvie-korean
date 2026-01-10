@@ -1255,7 +1255,8 @@ bool U6UseCode::use_orb(Obj *obj, UseCodeEvent ev)
 
  if(!mapcoord_ref)
   {
-   game->get_event()->get_target(MapCoord(x,y,z), "Where: ");
+   KoreanTranslation *kt = game->get_korean_translation();
+   game->get_event()->get_target(MapCoord(x,y,z), (kt && kt->isEnabled()) ? "어디로: " : "Where: ");
    game->get_event()->request_input(this, obj);
    return false; // no prompt
   }
@@ -1862,7 +1863,7 @@ bool U6UseCode::use_potion(Obj *obj, UseCodeEvent ev)
     {
         if(!items.actor2_ref && !items.obj_ref && !items.mapcoord_ref)
         {
-            game->get_event()->get_target(items.actor_ref->get_location(), "On whom: ");
+            game->get_event()->get_target(items.actor_ref->get_location(), use_ko ? "누구에게: " : "On whom: ");
             game->get_event()->request_input(this, obj);
         }
         else if(!items.actor2_ref) // no selection

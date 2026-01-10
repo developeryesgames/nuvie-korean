@@ -289,7 +289,7 @@ Farmer Krill|농부 크릴
 
 # Thieves - 도둑
 Mole|두더지
-Sionnach|시오나흐
+Sionnach|셔낙
 Mandrake|맨드레이크
 Sinjen|신젠
 Phoenix|피닉스

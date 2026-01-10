@@ -431,6 +431,88 @@ void ConverseInterpret::do_text()
         korean_text.replace(pos, replace_len, korean_time);
       }
 
+      // Handle $Y with particles first, then plain $Y
+      {
+        std::string y_value = korean->translate(get_ystr());
+        // $Y(이)가 - 10 bytes
+        const char* y_iga_pattern = "$Y(\xEC\x9D\xB4)\xEA\xB0\x80";
+        while ((pos = korean_text.find(y_iga_pattern)) != std::string::npos) {
+          korean_text.replace(pos, 10, y_value + KoreanTranslation::getParticle_iga(y_value));
+        }
+        // $Y(은)는 - 10 bytes
+        const char* y_eunneun_pattern = "$Y(\xEC\x9D\x80)\xEB\x8A\x94";
+        while ((pos = korean_text.find(y_eunneun_pattern)) != std::string::npos) {
+          korean_text.replace(pos, 10, y_value + KoreanTranslation::getParticle_eunneun(y_value));
+        }
+        // $Y(을)를 - 10 bytes
+        const char* y_eulreul_pattern = "$Y(\xEC\x9D\x84)\xEB\xA5\xBC";
+        while ((pos = korean_text.find(y_eulreul_pattern)) != std::string::npos) {
+          korean_text.replace(pos, 10, y_value + KoreanTranslation::getParticle_eulreul(y_value));
+        }
+        // Plain $Y
+        while ((pos = korean_text.find("$Y")) != std::string::npos)
+          korean_text.replace(pos, 2, y_value);
+      }
+
+      // Handle #N variables (numeric values like #0, #1, #2, etc.)
+      for (int var_num = 0; var_num <= 9; var_num++) {
+        char var_pattern[3];
+        snprintf(var_pattern, 3, "#%d", var_num);
+        while ((pos = korean_text.find(var_pattern)) != std::string::npos) {
+          char intval[16];
+          snprintf(intval, 16, "%u", converse->get_var(var_num));
+          korean_text.replace(pos, 2, intval);
+        }
+      }
+
+      // Handle $0-$9 string variables with particles first, then plain $0-$9
+      for (int var_num = 0; var_num <= 9; var_num++) {
+        std::string svar_value = converse->get_svar(var_num);
+
+        // Try to translate item/actor names for $0-$9 variables
+        if (!svar_value.empty()) {
+          Game *game = Game::get_game();
+          KoreanTranslation *kt = game ? game->get_korean_translation() : NULL;
+          if (kt && kt->isEnabled()) {
+            std::string translated = kt->translate(svar_value);
+            if (translated != svar_value) {
+              svar_value = translated;
+            }
+          }
+        }
+
+        char var_char = '0' + var_num;
+
+        // $N(을)를 - 10 bytes: $N(2) + (을)를(8)
+        char eulreul_pattern[12];
+        snprintf(eulreul_pattern, 12, "$%c(\xEC\x9D\x84)\xEB\xA5\xBC", var_char);
+        while ((pos = korean_text.find(eulreul_pattern)) != std::string::npos) {
+          korean_text.replace(pos, 10, svar_value + KoreanTranslation::getParticle_eulreul(svar_value));
+        }
+
+        // $N(은)는 - 10 bytes
+        char eunneun_pattern[12];
+        snprintf(eunneun_pattern, 12, "$%c(\xEC\x9D\x80)\xEB\x8A\x94", var_char);
+        while ((pos = korean_text.find(eunneun_pattern)) != std::string::npos) {
+          korean_text.replace(pos, 10, svar_value + KoreanTranslation::getParticle_eunneun(svar_value));
+        }
+
+        // $N(이)가 - 10 bytes
+        char iga_pattern[12];
+        snprintf(iga_pattern, 12, "$%c(\xEC\x9D\xB4)\xEA\xB0\x80", var_char);
+        while ((pos = korean_text.find(iga_pattern)) != std::string::npos) {
+          korean_text.replace(pos, 10, svar_value + KoreanTranslation::getParticle_iga(svar_value));
+        }
+
+        // Plain $N
+        char var_pattern[3];
+        snprintf(var_pattern, 3, "$%c", var_char);
+        while ((pos = korean_text.find(var_pattern)) != std::string::npos) {
+          korean_text.replace(pos, 2, svar_value);
+        }
+      }
+
+
       converse->print(korean_text.c_str());
       return;
     }

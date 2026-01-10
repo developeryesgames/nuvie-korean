@@ -859,7 +859,14 @@ TimedRest::~TimedRest()
         			hp_diff = 2;
 
         		actor->set_hp(actor->get_hp() + NUVIE_RAND()%(hp_diff/2) + hp_diff/2);
-        		scroll->display_fmt_string("%s has healed.\n", actor->get_name());
+        		KoreanTranslation *korean = Game::get_game()->get_korean_translation();
+        		if(korean && korean->isEnabled()) {
+        			std::string actor_name = korean->translate(actor->get_name());
+        			std::string particle = KoreanTranslation::getParticle_iga(actor_name);
+        			scroll->display_fmt_string("%s%s 치유되었다.\n", actor_name.c_str(), particle.c_str());
+        		} else {
+        			scroll->display_fmt_string("%s has healed.\n", actor->get_name());
+        		}
         	}
 
         }

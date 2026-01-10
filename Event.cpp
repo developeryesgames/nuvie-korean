@@ -2809,15 +2809,13 @@ bool Event::drop_count(uint16 qty) {
   scroll->display_string("\n");
 
   if (drop_qty != 0) {
+    KoreanTranslation *korean = game->get_korean_translation();
+    bool use_korean = korean && korean->isEnabled();
     if (drop_x == -1)
-      get_target("Location:");
+      get_target(use_korean ? "위치:" : "Location:");
     else // h4x0r3d by SB-X... eventually integrate MapWindow dragndrop better with this drop-action
     {
-      KoreanTranslation *korean = game->get_korean_translation();
-      if (korean && korean->isEnabled())
-        scroll->display_string("위치:");
-      else
-        scroll->display_string("Location:");
+      scroll->display_string(use_korean ? "위치:" : "Location:");
       perform_drop(); // use already selected target: drop_x,drop_y
     }
   } else
