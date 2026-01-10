@@ -403,10 +403,25 @@ GUI_status InventoryWidget::MouseDown(int x, int y, int button)
 {
  Event *event = Game::get_game()->get_event();
  CommandBar *command_bar = Game::get_game()->get_command_bar();
+
+ // Scale input coordinates to match widget coordinates (Korean 4x mode)
+ SDL_Surface *sdl_surface = screen->get_sdl_surface();
+ int logical_w = screen->get_width();
+ int coord_scale = (logical_w > 0) ? (sdl_surface->w / logical_w) : 1;
+ if (coord_scale < 1) coord_scale = 1;
+ x *= coord_scale;
+ y *= coord_scale;
+
+ // Check for Korean 4x mode for hit test sizes
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ int hit_scale = use_4x ? 4 : 1;
+
  x -= area.x;
  y -= area.y;
 
- if( y < 17)
+ if( y < 17 * hit_scale)
     return GUI_PASS;
 
  Obj *obj = get_obj_at_location(x,y);
@@ -530,13 +545,27 @@ GUI_status InventoryWidget::MouseUp(int x,int y,int button)
 
  CommandBar *command_bar = Game::get_game()->get_command_bar();
 
+ // Scale input coordinates to match widget coordinates (Korean 4x mode)
+ SDL_Surface *sdl_surface = screen->get_sdl_surface();
+ int logical_w = screen->get_width();
+ int coord_scale = (logical_w > 0) ? (sdl_surface->w / logical_w) : 1;
+ if (coord_scale < 1) coord_scale = 1;
+ x *= coord_scale;
+ y *= coord_scale;
+
+ // Check for Korean 4x mode for hit test sizes
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ int hit_scale = use_4x ? 4 : 1;
+
  if(button == USE_BUTTON || (button == ACTION_BUTTON
     && command_bar->get_selected_action() > 0)) // Exclude attack mode too
    {
     x -= area.x;
     y -= area.y;
-    if(x >= icon_x && x <= icon_x + 15 && // hit top icon either actor or container
-       y >= 0 && y <= 15)
+    if(x >= icon_x && x <= icon_x + 15 * hit_scale && // hit top icon either actor or container
+       y >= 0 && y <= 15 * hit_scale)
       {
 		Event *event = Game::get_game()->get_event();
 
@@ -786,23 +815,46 @@ void InventoryWidget::drag_draw(int x, int y, int message, void* data)
 	if (!selected_obj)
 		return;
 
-	tile = tile_manager->get_tile(obj_manager->get_obj_tile_num (selected_obj) + selected_obj->frame_n);
+	tile = tile_manager->get_tile(obj_manager->get_obj_tile_num(selected_obj) + selected_obj->frame_n);
 
-	int	nx = x - 8;
-	int	ny = y - 8;
+	// Get actual SDL surface dimensions (1280x800 in Korean 4x mode)
+	// x, y are from get_mouse_location() in screen->get_width() coords (640x400)
+	// Need to convert to actual surface coords (1280x800)
+	SDL_Surface *sdl_surface = screen->get_sdl_surface();
+	int screen_w = sdl_surface->w;
+	int screen_h = sdl_surface->h;
+	int logical_w = screen->get_width();
+	int coord_scale = (logical_w > 0) ? (screen_w / logical_w) : 1;  // 1280/640=2
+	if (coord_scale < 1) coord_scale = 1;
+	int tile_scale = screen_w / 320;  // For tile size: 1280/320=4
+	if (tile_scale < 1) tile_scale = 1;
 
-	if (nx + 16 >= screen->get_width())
-		nx = screen->get_width()-17;
+	int tile_size = 16 * tile_scale;
+	int half_tile = 8 * tile_scale;
+
+	// Convert from logical coords to surface coords
+	int nx = x * coord_scale - half_tile;
+	int ny = y * coord_scale - half_tile;
+
+	// Clamp to screen bounds
+	if (nx + tile_size >= screen_w)
+		nx = screen_w - tile_size - 1;
 	else if (nx < 0)
 		nx = 0;
 
-	if (ny + 16 >= screen->get_height())
-		ny = screen->get_height()-17;
+	if (ny + tile_size >= screen_h)
+		ny = screen_h - tile_size - 1;
 	else if (ny < 0)
 		ny = 0;
 
-	screen->blit(nx, ny, tile->data, 8, 16, 16, 16, true);
-	screen->update(nx, ny, 16, 16);
+	if (tile_scale >= 4)
+		screen->blit4x(nx, ny, tile->data, 8, 16, 16, 16, true);
+	else if (tile_scale >= 2)
+		screen->blit2x(nx, ny, tile->data, 8, 16, 16, 16, true);
+	else
+		screen->blit(nx, ny, tile->data, 8, 16, 16, 16, true);
+
+	screen->update(nx, ny, tile_size, tile_size);
 }
 
 void InventoryWidget::try_click()

@@ -41,6 +41,7 @@
 
 #include "InventoryFont.h"
 #include "ViewManager.h"
+#include "FontManager.h"
 
 #define USE_BUTTON 1 /* FIXME: put this in a common location */
 #define ACTION_BUTTON 3
@@ -217,6 +218,15 @@ GUI_status ContainerWidget::MouseDown(int x, int y, int button)
 {
  //Event *event = Game::get_game()->get_event();
  //MsgScroll *scroll = Game::get_game()->get_scroll();
+
+ // Scale input coordinates to match widget coordinates (Korean 4x mode)
+ SDL_Surface *sdl_surface = screen->get_sdl_surface();
+ int logical_w = screen->get_width();
+ int coord_scale = (logical_w > 0) ? (sdl_surface->w / logical_w) : 1;
+ if (coord_scale < 1) coord_scale = 1;
+ x *= coord_scale;
+ y *= coord_scale;
+
  x -= area.x;
  y -= area.y;
 
@@ -241,7 +251,13 @@ inline uint16 ContainerWidget::get_list_position(int x, int y)
 {
  uint16 list_pos;
 
- list_pos = (y / 16) * cols + x / 16;
+ // Check for Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ int tile_size = use_4x ? 64 : 16;
+
+ list_pos = (y / tile_size) * cols + x / tile_size;
  list_pos += row_offset * cols;
 
  return list_pos;
@@ -283,6 +299,14 @@ Obj *ContainerWidget::get_obj_at_location(int x, int y)
 // change container, ready/unready object, activate arrows
 GUI_status ContainerWidget::MouseUp(int x,int y,int button)
 {
+ // Scale input coordinates to match widget coordinates (Korean 4x mode)
+ SDL_Surface *sdl_surface = screen->get_sdl_surface();
+ int logical_w = screen->get_width();
+ int coord_scale = (logical_w > 0) ? (sdl_surface->w / logical_w) : 1;
+ if (coord_scale < 1) coord_scale = 1;
+ x *= coord_scale;
+ y *= coord_scale;
+
  if(button == USE_BUTTON)
  {
 	 x -= area.x;
@@ -519,23 +543,46 @@ void ContainerWidget::drag_draw(int x, int y, int message, void* data)
 	if (!selected_obj)
 		return;
 
-	tile = tile_manager->get_tile(obj_manager->get_obj_tile_num (selected_obj) + selected_obj->frame_n);
+	tile = tile_manager->get_tile(obj_manager->get_obj_tile_num(selected_obj) + selected_obj->frame_n);
 
-	int	nx = x - 8;
-	int	ny = y - 8;
+	// Get actual SDL surface dimensions (1280x800 in Korean 4x mode)
+	// x, y are from get_mouse_location() in screen->get_width() coords (640x400)
+	// Need to convert to actual surface coords (1280x800)
+	SDL_Surface *sdl_surface = screen->get_sdl_surface();
+	int screen_w = sdl_surface->w;
+	int screen_h = sdl_surface->h;
+	int logical_w = screen->get_width();
+	int coord_scale = (logical_w > 0) ? (screen_w / logical_w) : 1;  // 1280/640=2
+	if (coord_scale < 1) coord_scale = 1;
+	int tile_scale = screen_w / 320;  // For tile size: 1280/320=4
+	if (tile_scale < 1) tile_scale = 1;
 
-	if (nx + 16 >= screen->get_width())
-		nx = screen->get_width()-17;
+	int tile_size = 16 * tile_scale;
+	int half_tile = 8 * tile_scale;
+
+	// Convert from logical coords to surface coords
+	int nx = x * coord_scale - half_tile;
+	int ny = y * coord_scale - half_tile;
+
+	// Clamp to screen bounds
+	if (nx + tile_size >= screen_w)
+		nx = screen_w - tile_size - 1;
 	else if (nx < 0)
 		nx = 0;
 
-	if (ny + 16 >= screen->get_height())
-		ny = screen->get_height()-17;
+	if (ny + tile_size >= screen_h)
+		ny = screen_h - tile_size - 1;
 	else if (ny < 0)
 		ny = 0;
 
-	screen->blit(nx, ny, tile->data, 8, 16, 16, 16, true);
-	screen->update(nx, ny, 16, 16);
+	if (tile_scale >= 4)
+		screen->blit4x(nx, ny, tile->data, 8, 16, 16, 16, true);
+	else if (tile_scale >= 2)
+		screen->blit2x(nx, ny, tile->data, 8, 16, 16, 16, true);
+	else
+		screen->blit(nx, ny, tile->data, 8, 16, 16, 16, true);
+
+	screen->update(nx, ny, tile_size, tile_size);
 }
 
 

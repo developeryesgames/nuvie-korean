@@ -164,8 +164,7 @@ bool MP3AudioStream::loadWav(const std::string &filename) {
 
 int MP3AudioStream::readBuffer(sint16 *buffer, const int numSamples) {
     if (!_audioData || _endOfData) {
-        memset(buffer, 0, numSamples * sizeof(sint16));
-        return numSamples;
+        return 0;  // Return 0 to signal EOF for LoopingAudioStream
     }
 
     int samplesRemaining = _audioLength - _position;
@@ -185,13 +184,13 @@ int MP3AudioStream::readBuffer(sint16 *buffer, const int numSamples) {
         _position += samplesToCopy;
     }
 
-    // Fill remaining with silence
-    if (samplesToCopy < numSamples) {
-        memset(buffer + samplesToCopy, 0, (numSamples - samplesToCopy) * sizeof(sint16));
+    // Mark end of data when we've read everything
+    if (_position >= _audioLength) {
         _endOfData = true;
     }
 
-    return numSamples;
+    // Return actual samples read (LoopingAudioStream uses this to detect EOF)
+    return samplesToCopy;
 }
 
 bool MP3AudioStream::rewind() {

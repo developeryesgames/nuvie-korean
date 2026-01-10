@@ -2460,11 +2460,25 @@ bool MapWindow::drag_accept_drop(int x, int y, int message, void *data)
  DEBUG(0,LEVEL_DEBUGGING,"MapWindow::drag_accept_drop()\n");
  uint16 map_width;
 
+ // Scale input coordinates to match widget coordinates (Korean 4x mode)
+ SDL_Surface *sdl_surface = screen->get_sdl_surface();
+ int logical_w = screen->get_width();
+ int coord_scale = (logical_w > 0) ? (sdl_surface->w / logical_w) : 1;
+ if (coord_scale < 1) coord_scale = 1;
+ x *= coord_scale;
+ y *= coord_scale;
+
  x -= area.x;
  y -= area.y;
 
- x /= 16;
- y /= 16;
+ // Calculate tile size based on Korean 4x mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ int tile_size = use_4x ? 64 : 16;
+
+ x /= tile_size;
+ y /= tile_size;
 
  GUI::get_gui()->force_full_redraw();
 
@@ -2558,13 +2572,27 @@ void MapWindow::drag_perform_drop(int x, int y, int message, void *data)
     Event *event = game->get_event();
     uint16 map_width = map->get_width(cur_level);
 
+    // Scale input coordinates to match widget coordinates (Korean 4x mode)
+    SDL_Surface *sdl_surface = screen->get_sdl_surface();
+    int logical_w = screen->get_width();
+    int coord_scale = (logical_w > 0) ? (sdl_surface->w / logical_w) : 1;
+    if (coord_scale < 1) coord_scale = 1;
+    x *= coord_scale;
+    y *= coord_scale;
+
+    // Calculate tile size based on Korean 4x mode
+    FontManager *font_manager = game->get_font_manager();
+    bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+                  font_manager->get_korean_font() && game->is_original_plus();
+    int tile_size = use_4x ? 64 : 16;
+
     x -= area.x;
     y -= area.y;
 
     if(message == GUI_DRAG_OBJ)
     {
-        x = (cur_x + x / 16) % map_width;
-        y = (cur_y + y / 16) % map_width;
+        x = (cur_x + x / tile_size) % map_width;
+        y = (cur_y + y / tile_size) % map_width;
         Obj *obj = (Obj *)data;
 
         if(obj->obj_n == OBJ_U6_LOCK_PICK && game_type == NUVIE_GAME_U6)
@@ -2592,9 +2620,16 @@ void MapWindow::drag_perform_drop(int x, int y, int message, void *data)
             }
             CanDropOrMoveMsg can_drop; // so we can skip quantity prompt
             if((can_drop = can_drop_or_move_obj(x, y, actor_manager->get_player(), obj)) != MSG_SUCCESS) {
-                game->get_scroll()->display_string("Drop-");
-                game->get_scroll()->display_string(obj_manager->look_obj(obj));
-                game->get_scroll()->display_string("\n\nlocation:\n\n");
+                KoreanTranslation *korean = game->get_korean_translation();
+                if(korean && korean->isEnabled()) {
+                    game->get_scroll()->display_string("버리기-");
+                    game->get_scroll()->display_string(obj_manager->look_obj(obj));
+                    game->get_scroll()->display_string("\n\n위치:\n\n");
+                } else {
+                    game->get_scroll()->display_string("Drop-");
+                    game->get_scroll()->display_string(obj_manager->look_obj(obj));
+                    game->get_scroll()->display_string("\n\nlocation:\n\n");
+                }
                 display_can_drop_or_move_msg(can_drop, "");
                 game->get_scroll()->message("\n");
                 return;
@@ -3013,23 +3048,46 @@ void MapWindow::drag_draw(int x, int y, int message, void* data)
 	if (!selected_obj)
 		return;
 
-	tile = tile_manager->get_tile(obj_manager->get_obj_tile_num (selected_obj) + selected_obj->frame_n);
+	tile = tile_manager->get_tile(obj_manager->get_obj_tile_num(selected_obj) + selected_obj->frame_n);
 
-	int	nx = x - 8;
-	int	ny = y - 8;
+	// Get actual SDL surface dimensions (1280x800 in Korean 4x mode)
+	// x, y are from get_mouse_location() in screen->get_width() coords (640x400)
+	// Need to convert to actual surface coords (1280x800)
+	SDL_Surface *sdl_surface = screen->get_sdl_surface();
+	int screen_w = sdl_surface->w;
+	int screen_h = sdl_surface->h;
+	int logical_w = screen->get_width();
+	int coord_scale = (logical_w > 0) ? (screen_w / logical_w) : 1;  // 1280/640=2
+	if (coord_scale < 1) coord_scale = 1;
+	int tile_scale = screen_w / 320;  // For tile size: 1280/320=4
+	if (tile_scale < 1) tile_scale = 1;
 
-	if (nx + 16 >= screen->get_width())
-		nx = screen->get_width()-17;
+	int tile_size = 16 * tile_scale;
+	int half_tile = 8 * tile_scale;
+
+	// Convert from logical coords to surface coords
+	int nx = x * coord_scale - half_tile;
+	int ny = y * coord_scale - half_tile;
+
+	// Clamp to screen bounds
+	if (nx + tile_size >= screen_w)
+		nx = screen_w - tile_size - 1;
 	else if (nx < 0)
 		nx = 0;
 
-	if (ny + 16 >= screen->get_height())
-		ny = screen->get_height()-17;
+	if (ny + tile_size >= screen_h)
+		ny = screen_h - tile_size - 1;
 	else if (ny < 0)
 		ny = 0;
 
-	screen->blit(nx, ny, tile->data, 8, 16, 16, 16, true);
-	screen->update(nx, ny, 16, 16);
+	if (tile_scale >= 4)
+		screen->blit4x(nx, ny, tile->data, 8, 16, 16, 16, true);
+	else if (tile_scale >= 2)
+		screen->blit2x(nx, ny, tile->data, 8, 16, 16, 16, true);
+	else
+		screen->blit(nx, ny, tile->data, 8, 16, 16, 16, true);
+
+	screen->update(nx, ny, tile_size, tile_size);
 }
 
 
