@@ -46,7 +46,7 @@
 #include "KoreanTranslation.h"
 
 #define VD_WIDTH 311
-#define VD_HEIGHT 171 // add or subtract 13 if you add/remove a row
+#define VD_HEIGHT 184 // add or subtract 13 if you add/remove a row
 
 // Helper to get translated text for VideoDialog
 static std::string get_vd_text(const char *english_text) {
@@ -327,6 +327,19 @@ bool VideoDialog::init() {
 	if (menu_scale > 1) { dither_button->SetTextScale(menu_scale); dither_button->ChangeTextButton(-1,-1,-1,-1,dither_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(dither_button);
 	button_index[last_index+=1] = dither_button;
+// map_tile_scale (needs reset)
+	txt = get_vd_text("Map tile scale:");
+	widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, txt.c_str(), gui->get_font());
+	if (menu_scale > 1) ((GUI_Text*)widget)->SetTextScale(menu_scale);
+	AddWidget(widget);
+	const char* const map_tile_scale_text[] = { "2", "3", "4" };
+	int current_map_tile_scale;
+	config->value("config/video/map_tile_scale", current_map_tile_scale, 4);
+	int map_tile_scale_index = (current_map_tile_scale >= 2 && current_map_tile_scale <= 4) ? current_map_tile_scale - 2 : 2; // default to 4 (index 2)
+	map_tile_scale_button = new GUI_TextToggleButton(this, colX[4], buttonY += row_h, yesno_width, height, map_tile_scale_text, 3, map_tile_scale_index, font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	if (menu_scale > 1) { map_tile_scale_button->SetTextScale(menu_scale); map_tile_scale_button->ChangeTextButton(-1,-1,-1,-1,map_tile_scale_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
+	AddWidget(map_tile_scale_button);
+	button_index[last_index+=1] = map_tile_scale_button;
 // cancel/save buttons
 	std::string cancel_txt = get_vd_text("Cancel");
 	std::string save_txt = get_vd_text("Save");
@@ -539,6 +552,9 @@ GUI_status VideoDialog::callback(uint16 msg, GUI_CallBack *caller, void *data) {
 		else
 			dither_char = "ega";
 		config->set("config/general/dither_mode", dither_char);
+	// map_tile_scale
+		int map_tile_scale = map_tile_scale_button->GetSelection() + 2; // 0->2, 1->3, 2->4
+		config->set("config/video/map_tile_scale", map_tile_scale);
 
 		config->write();
 		close_dialog();
