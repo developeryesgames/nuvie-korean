@@ -25,6 +25,10 @@
 
 #include "GUI_text.h"
 #include "GUI_font.h"
+#include "Game.h"
+#include "FontManager.h"
+#include "KoreanFont.h"
+#include "Screen.h"
 #include <stdlib.h>
 
 GUI_Text:: GUI_Text(int x, int y, Uint8 r, Uint8 g, Uint8 b, GUI_Font *gui_font, uint16 line_length)
@@ -35,6 +39,7 @@ GUI_Text:: GUI_Text(int x, int y, Uint8 r, Uint8 g, Uint8 b, GUI_Font *gui_font,
  B = b;
  text = NULL;
  max_width = line_length;
+ text_scale = 1;
 
  font = gui_font;
 }
@@ -50,6 +55,7 @@ GUI_Text:: GUI_Text(int x, int y, Uint8 r, Uint8 g, Uint8 b, const char *str, GU
  B = b;
  text = NULL;
  max_width = line_length;
+ text_scale = 1;
 
  font = gui_font;
 
@@ -80,9 +86,32 @@ GUI_Text::~GUI_Text()
 void
 GUI_Text:: Display(bool full_redraw)
 {
+ // Check if Korean mode is enabled and text contains Korean characters
+ Game *game = Game::get_game();
+ FontManager *fm = game ? game->get_font_manager() : NULL;
+
+ if (fm && fm->is_korean_enabled() && text_scale > 1) {
+   // Use Korean font for scaled text in Korean mode
+   KoreanFont *korean_font = fm->get_korean_font();
+   if (korean_font) {
+     Screen *screen = game->get_screen();
+     // Use black color (0) for menu text
+     uint8 color = 0;
+     // Korean font is 16px, use scale 1 for menu (text_scale 3 means menu mode)
+     uint8 font_scale = 1;
+
+     korean_font->drawStringUTF8(screen, text, area.x, area.y, color, 0, font_scale);
+     DisplayChildren();
+     return;
+   }
+ }
+
  font->SetTransparency(1);
  font->SetColoring(R,G,B);
- font->TextOut(surface,area.x,area.y,text,max_width);
+ if (text_scale > 1)
+   font->TextOutScaled(surface, area.x, area.y, text, text_scale);
+ else
+   font->TextOut(surface,area.x,area.y,text,max_width);
 
  DisplayChildren();
 }

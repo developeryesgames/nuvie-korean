@@ -19,10 +19,88 @@ Quick load|빠른 불러오기
 # Common UI
 Yes|예
 No|아니오
+yes|예
+no|아니오
 Cancel|취소
 OK|확인
 Done|완료
 Exit|종료
+Save|저장
+Load|불러오기
+
+# SaveDialog
+New Save.|새 저장
+Original Game Save|원본 게임 저장
+Load/Save|불러오기/저장
+
+# YesNoDialog / Quit
+Do you want to Quit|종료하시겠습니까?
+Do you really want to quit?|정말로 종료하시겠습니까?
+
+# VideoDialog
+Fullscreen:|전체화면:
+Non-square pixels:|비정방 픽셀:
+2x mode:|2x 모드:
+Lighting (needs restart):|조명 (재시작 필요):
+Scaler:|스케일러:
+Show roofs:|지붕 표시:
+Use new actor dolls:|새 캐릭터 인형:
+Use tile lighting:|타일 조명:
+Requires restart:|재시작 필요:
+Lighting:|조명:
+Custom tiles:|커스텀 타일:
+Game style:|게임 스타일:
+Video graphics:|비디오 그래픽:
+
+# InputDialog
+Interface:|인터페이스:
+Dragging enabled:|드래그 활성화:
+Direction selects target:|방향키로 대상 선택:
+Look on left_click:|좌클릭 살펴보기:
+Walk with left button:|좌버튼 걷기:
+Enable doubleclick:|더블클릭 활성화:
+Allow free balloon movement:|열기구 자유이동:
+Doubleclick opens containers:|더블클릭 컨테이너 열기:
+Use new command bar:|새 명령바 사용:
+Party view targeting:|파티뷰 타겟팅:
+
+# AudioDialog
+Audio:|오디오:
+Enable music:|음악:
+Music volume:|음악 볼륨:
+Combat changes music:|전투 음악 변경:
+Vehicle changes music:|이동수단 음악 변경:
+Conversations stop music:|대화시 음악 중지:
+Stop music on group change:|그룹 변경시 음악 중지:
+Enable sfx:|효과음:
+Sfx volume:|효과음 볼륨:
+Enable speech:|음성:
+
+# GameplayDialog
+Party formation:|파티 대형:
+Look shows private property:|살펴보기 시 소유물 표시:
+Use text gump:|텍스트 창 사용:
+Converse gump:|대화 창:
+Converse gump has solid bg:|대화 창 단색 배경:
+The following require a restart:|재시작 필요:
+Startup game:|시작 게임:
+Skip intro:|인트로 생략:
+Show console:|콘솔 표시:
+Use original cursors:|원본 커서 사용:
+
+# CheatsDialog
+Cheats:|치트:
+Show eggs:|에그 표시:
+Enable hackmove:|핵무브 활성화:
+Anyone will join:|누구나 참가:
+Minimum brightness:|최소 밝기:
+
+# JoystickDialog
+Enable joystick:|조이스틱 활성화:
+Joystick device:|조이스틱 장치:
+Analog deadzone:|아날로그 데드존:
+Action button:|액션 버튼:
+Cancel button:|취소 버튼:
 
 # Inventory
 Inventory|인벤토리
@@ -896,6 +974,17 @@ nothing|아무것도
 \nBlocked!\n|\n막힘!\n
 \nFailed\n|\n실패\n
 \nNot possible\n|\n불가능\n
+
+# ESC Menu (GameMenuDialog)
+Load/Save Game|불러오기/저장
+Video Options|비디오 옵션
+Audio Options|오디오 옵션
+Input Options|입력 옵션
+Joystick Options|조이스틱 옵션
+Gameplay Options|게임플레이 옵션
+Cheats|치트
+Back to Game|게임으로 돌아가기
+Quit|종료
 
 # Magic spell messages (individual spells)
  is paralyzed.\n| 마비됨.\n

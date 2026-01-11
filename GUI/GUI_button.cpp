@@ -29,6 +29,10 @@
 #include "nuvieDefs.h"
 #include "GUI_button.h"
 #include "GUI_loadimage.h"
+#include "Game.h"
+#include "FontManager.h"
+#include "KoreanFont.h"
+#include "Screen.h"
 
 
 /* the check marks bitmap */
@@ -55,6 +59,7 @@ GUI_Button:: GUI_Button(void *data, int x, int y, SDL_Surface *image,
 	is_checkable=0;
 	checked=0;
 	is_highlighted = false;
+	text_scale = 1;
 }
 
 GUI_Button:: GUI_Button(void *data, int x, int y, int w, int h,
@@ -76,6 +81,7 @@ GUI_Button:: GUI_Button(void *data, int x, int y, int w, int h,
 	is_checkable=0;
 	checked=0;
 	is_highlighted = false;
+	text_scale = 1;
 }
 
 GUI_Button::GUI_Button(void *data, int x, int y, int w, int h, const char *text,
@@ -103,6 +109,9 @@ GUI_Button::GUI_Button(void *data, int x, int y, int w, int h, const char *text,
   is_checkable=is_checkbutton;
   checked=0;
   is_highlighted = false;
+  text_scale = 1;
+  button_text = text ? text : "";
+  button_alignment = alignment;
 /*
   if (is_checkable &&(checkmarks==NULL))
   {
@@ -143,6 +152,17 @@ void GUI_Button::ChangeTextButton(int x, int y, int w, int h, const char* text, 
   if (h>=0)
     area.h=h;
 
+  // Store text and alignment for Korean mode rendering
+  if (text) {
+    button_text = text;
+    button_alignment = alignment;
+  }
+
+  // Check if Korean mode - create button without text, render text in Display()
+  Game *game = Game::get_game();
+  FontManager *fm = game ? game->get_font_manager() : NULL;
+  bool korean_mode = fm && fm->is_korean_enabled() && text_scale > 1;
+
   if (freebutton)
   {
     if (button)
@@ -151,13 +171,13 @@ void GUI_Button::ChangeTextButton(int x, int y, int w, int h, const char* text, 
       SDL_FreeSurface(button2);
     if (flatbutton)
     {
-      button=CreateTextButtonImage(BUTTON2D_UP,text,alignment);
-      button2=CreateTextButtonImage(BUTTON2D_DOWN,text,alignment);
+      button=CreateTextButtonImage(BUTTON2D_UP, korean_mode ? "" : text, alignment);
+      button2=CreateTextButtonImage(BUTTON2D_DOWN, korean_mode ? "" : text, alignment);
     }
     else
     {
-      button=CreateTextButtonImage(BUTTON3D_UP,text,alignment);
-      button2=CreateTextButtonImage(BUTTON3D_DOWN,text,alignment);
+      button=CreateTextButtonImage(BUTTON3D_UP, korean_mode ? "" : text, alignment);
+      button2=CreateTextButtonImage(BUTTON3D_DOWN, korean_mode ? "" : text, alignment);
     }
   }
 }
@@ -174,6 +194,45 @@ void GUI_Button:: Display(bool full_redraw)
 	  else
 	    SDL_BlitSurface(button,NULL,surface,&dest);
 	}
+
+	// Korean mode: render text using KoreanFont
+	Game *game = Game::get_game();
+	FontManager *fm = game ? game->get_font_manager() : NULL;
+	if (fm && fm->is_korean_enabled() && text_scale > 1 && !button_text.empty()) {
+	  KoreanFont *korean_font = fm->get_korean_font();
+	  if (korean_font) {
+	    Screen *screen = game->get_screen();
+	    uint8 color = 0; // black text
+	    uint8 font_scale = 1; // Korean font is 16px
+
+	    // Calculate text position
+	    uint16 text_width = korean_font->getStringWidthUTF8(button_text.c_str(), font_scale);
+	    uint16 text_height = korean_font->getCharHeightScaled(font_scale);
+	    int tx = area.x;
+	    int ty = area.y + (area.h - text_height) / 2;
+
+	    switch (button_alignment) {
+	    case BUTTON_TEXTALIGN_LEFT:
+	      tx = area.x + 4 + (is_checkable * 16);
+	      break;
+	    case BUTTON_TEXTALIGN_CENTER:
+	      tx = area.x + (area.w - text_width) / 2;
+	      break;
+	    case BUTTON_TEXTALIGN_RIGHT:
+	      tx = area.x + area.w - 5 - text_width;
+	      break;
+	    }
+
+	    // Offset for pressed state
+	    if ((pressed[0] == 1 || is_highlighted) && !flatbutton) {
+	      tx += 1;
+	      ty += 1;
+	    }
+
+	    korean_font->drawStringUTF8(screen, button_text.c_str(), tx, ty, color, 0, font_scale);
+	  }
+	}
+
 	if (is_checkable)
 	{
 /*
@@ -326,16 +385,23 @@ SDL_Surface* GUI_Button::CreateTextButtonImage(int style, const char *text, int 
   buttonFont->SetColoring(0,0,0);
   buttonFont->SetTransparency(1);
   buttonFont->TextExtent(text,&tw,&th);
-  if (tw>(area.w-(4+is_checkable*16)))
+
+  // Apply text scaling to dimensions
+  int scaled_tw = tw * text_scale;
+  int scaled_th = th * text_scale;
+
+  if (scaled_tw>(area.w-(4+is_checkable*16)))
   {
-    int n = (area.w-(4+is_checkable*16))/buttonFont->CharWidth();
+    int n = (area.w-(4+is_checkable*16))/(buttonFont->CharWidth() * text_scale);
     duptext = new char[n+1];
     strncpy(duptext, text, n);
     duptext[n] = 0;
     text = duptext;
     buttonFont->TextExtent(text,&tw,&th);
+    scaled_tw = tw * text_scale;
+    scaled_th = th * text_scale;
   }
-  if (th>(area.h-4))
+  if (scaled_th>(area.h-4))
   {
     text = "";
   }
@@ -345,13 +411,13 @@ SDL_Surface* GUI_Button::CreateTextButtonImage(int style, const char *text, int 
     tx=4+(is_checkable*16);
     break;
   case BUTTON_TEXTALIGN_CENTER:
-    tx=(area.w-tw) >> 1;
+    tx=(area.w-scaled_tw) >> 1;
     break;
   case BUTTON_TEXTALIGN_RIGHT:
-    tx=area.w-5-tw;
+    tx=area.w-5-scaled_tw;
     break;
   }
-  ty=(area.h-th) >> 1;
+  ty=(area.h-scaled_th) >> 1;
 
   switch (style)
   {
@@ -374,19 +440,28 @@ SDL_Surface* GUI_Button::CreateTextButtonImage(int style, const char *text, int 
     fillrect.x=2; fillrect.y=2;
     fillrect.w=area.w-4; fillrect.h=area.h-4;
     SDL_FillRect(img,&fillrect,color3);
-    buttonFont->TextOut(img,tx,ty,text);
+    if (text_scale > 1)
+      buttonFont->TextOutScaled(img,tx,ty,text,text_scale);
+    else
+      buttonFont->TextOut(img,tx,ty,text);
     break;
   case BUTTON3D_DOWN:
     fillrect.x=0; fillrect.y=0;
     fillrect.w=area.w; fillrect.h=area.h;
     SDL_FillRect(img,&fillrect,color3);
-    buttonFont->TextOut(img,tx+1,ty+1,text);
+    if (text_scale > 1)
+      buttonFont->TextOutScaled(img,tx+1,ty+1,text,text_scale);
+    else
+      buttonFont->TextOut(img,tx+1,ty+1,text);
     break;
   case BUTTON2D_UP:
     fillrect.x=0; fillrect.y=0;
     fillrect.w=area.w; fillrect.h=area.h;
     SDL_FillRect(img,&fillrect,color3);
-    buttonFont->TextOut(img,tx,ty,text);
+    if (text_scale > 1)
+      buttonFont->TextOutScaled(img,tx,ty,text,text_scale);
+    else
+      buttonFont->TextOut(img,tx,ty,text);
     break;
   case BUTTON2D_DOWN:
     fillrect.x=0; fillrect.y=0;
@@ -394,7 +469,10 @@ SDL_Surface* GUI_Button::CreateTextButtonImage(int style, const char *text, int 
     SDL_FillRect(img,&fillrect,color4);
     buttonFont->SetTransparency(0);
     buttonFont->SetColoring(BI1_R,BI1_G,BI1_B,BI2_R,BI2_G,BI2_B);
-    buttonFont->TextOut(img,tx,ty,text);
+    if (text_scale > 1)
+      buttonFont->TextOutScaled(img,tx,ty,text,text_scale);
+    else
+      buttonFont->TextOut(img,tx,ty,text);
     break;
   }
 

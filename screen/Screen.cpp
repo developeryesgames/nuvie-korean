@@ -1243,6 +1243,138 @@ bool Screen::blit4x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16
  return true;
 }
 
+// 4x scaled blit with per-pixel alpha blending
+// src_buf contains palette indices (0xff = transparent)
+// alpha_buf contains opacity values (0-255) for each pixel
+bool Screen::blit4xWithAlpha(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, unsigned char *alpha_buf, uint16 src_bpp, uint16 src_w, uint16 src_h, uint16 src_pitch)
+{
+ // Bounds check with clipping
+ sint32 screen_width = surface->w;
+ sint32 screen_height = surface->h;
+ uint16 src_x_off = 0, src_y_off = 0;
+ uint16 orig_pitch = src_pitch;
+
+ // Clip left edge
+ if(dest_x < 0) {
+   sint32 skip = (-dest_x + 3) / 4;
+   if((sint32)skip >= (sint32)src_w) return false;
+   src_x_off = skip;
+   src_w -= skip;
+   dest_x = 0;
+ }
+ // Clip top edge
+ if(dest_y < 0) {
+   sint32 skip = (-dest_y + 3) / 4;
+   if((sint32)skip >= (sint32)src_h) return false;
+   src_y_off = skip;
+   src_h -= skip;
+   dest_y = 0;
+ }
+ // Clip right edge
+ if(dest_x + (sint32)(src_w * 4) > screen_width) {
+   sint32 new_w = (screen_width - dest_x) / 4;
+   if(new_w <= 0) return false;
+   src_w = new_w;
+ }
+ // Clip bottom edge
+ if(dest_y + (sint32)(src_h * 4) > screen_height) {
+   sint32 new_h = (screen_height - dest_y) / 4;
+   if(new_h <= 0) return false;
+   src_h = new_h;
+ }
+
+ // Adjust source buffer pointers for clipping
+ src_buf += src_y_off * orig_pitch + src_x_off;
+ alpha_buf += src_y_off * orig_pitch + src_x_off;
+
+ if(surface->bits_per_pixel == 16)
+ {
+   uint16 *pixels = (uint16 *)surface->pixels;
+   pixels += dest_y * surface->w + dest_x;
+   uint32 row_stride = surface->w;
+
+   for(uint16 i = 0; i < src_h; i++)
+   {
+     for(uint16 j = 0; j < src_w; j++)
+     {
+       uint8 alpha = alpha_buf[i * orig_pitch + j];
+       if(alpha > 0)  // Skip fully transparent pixels
+       {
+         uint16 fg_color = (uint16)surface->colour32[src_buf[i * orig_pitch + j]];
+         uint32 base = j * 4;
+
+         // Write 4x4 block with blending
+         for(int row = 0; row < 4; row++)
+         {
+           uint16 *row_ptr = pixels + row * row_stride + base;
+           if(alpha >= 255)
+           {
+             // Fully opaque - no blending needed
+             row_ptr[0] = fg_color;
+             row_ptr[1] = fg_color;
+             row_ptr[2] = fg_color;
+             row_ptr[3] = fg_color;
+           }
+           else
+           {
+             // Alpha blending
+             row_ptr[0] = blendpixel16(row_ptr[0], fg_color, alpha);
+             row_ptr[1] = blendpixel16(row_ptr[1], fg_color, alpha);
+             row_ptr[2] = blendpixel16(row_ptr[2], fg_color, alpha);
+             row_ptr[3] = blendpixel16(row_ptr[3], fg_color, alpha);
+           }
+         }
+       }
+     }
+     pixels += row_stride * 4; // Skip 4 rows
+   }
+ }
+ else // 32-bit
+ {
+   uint32 *pixels = (uint32 *)surface->pixels;
+   pixels += dest_y * surface->w + dest_x;
+   uint32 row_stride = surface->w;
+
+   for(uint16 i = 0; i < src_h; i++)
+   {
+     for(uint16 j = 0; j < src_w; j++)
+     {
+       uint8 alpha = alpha_buf[i * orig_pitch + j];
+       if(alpha > 0)  // Skip fully transparent pixels
+       {
+         uint32 fg_color = surface->colour32[src_buf[i * orig_pitch + j]];
+         uint32 base = j * 4;
+
+         // Write 4x4 block with blending
+         for(int row = 0; row < 4; row++)
+         {
+           uint32 *row_ptr = pixels + row * row_stride + base;
+           if(alpha >= 255)
+           {
+             // Fully opaque - no blending needed
+             row_ptr[0] = fg_color;
+             row_ptr[1] = fg_color;
+             row_ptr[2] = fg_color;
+             row_ptr[3] = fg_color;
+           }
+           else
+           {
+             // Alpha blending
+             row_ptr[0] = blendpixel32(row_ptr[0], fg_color, alpha);
+             row_ptr[1] = blendpixel32(row_ptr[1], fg_color, alpha);
+             row_ptr[2] = blendpixel32(row_ptr[2], fg_color, alpha);
+             row_ptr[3] = blendpixel32(row_ptr[3], fg_color, alpha);
+           }
+         }
+       }
+     }
+     pixels += row_stride * 4; // Skip 4 rows
+   }
+ }
+
+ return true;
+}
+
 inline uint16 Screen::blendpixel16(uint16 p, uint16 p1, uint8 opacity)
 {
 	return ( ( (uint8)(( (float)(( p1 & surface->Rmask ) >> surface->Rshift)) * (float)(opacity)/255.0f) + (uint8)(( (float)(( p & surface->Rmask ) >> surface->Rshift)) * (float)(255-opacity)/255.0f) ) << surface->Rshift ) | //R
@@ -2741,6 +2873,66 @@ unsigned char *Screen::copy_area32(SDL_Rect *area, uint16 down_scale)
      ptr += 3;
     }
   }
+
+ return dst_pixels;
+}
+
+// Point sampling (nearest neighbor) version - takes every Nth pixel without averaging
+unsigned char *Screen::copy_area_point(SDL_Rect *area, uint16 down_scale)
+{
+ SDL_PixelFormat *fmt;
+ SDL_Surface *main_surface = get_sdl_surface();
+ unsigned char *dst_pixels = NULL;
+ unsigned char *ptr;
+ uint16 x, y;
+
+ dst_pixels = new unsigned char[((area->w / down_scale) * (area->h / down_scale)) * 3];
+ ptr = dst_pixels;
+
+ fmt = main_surface->format;
+
+ if(surface->bits_per_pixel == 16)
+ {
+   uint16 *src_pixels;
+   for(y = 0; y < area->h; y += down_scale)
+   {
+     for(x = 0; x < area->w; x += down_scale)
+     {
+       src_pixels = (uint16 *)main_surface->pixels;
+       src_pixels += ((area->y + y) * surface->w + (area->x + x));
+
+       uint32 r = (*src_pixels & fmt->Rmask) >> fmt->Rshift << fmt->Rloss;
+       uint32 g = (*src_pixels & fmt->Gmask) >> fmt->Gshift << fmt->Gloss;
+       uint32 b = (*src_pixels & fmt->Bmask) >> fmt->Bshift << fmt->Bloss;
+
+       ptr[0] = (uint8)r;
+       ptr[1] = (uint8)g;
+       ptr[2] = (uint8)b;
+       ptr += 3;
+     }
+   }
+ }
+ else // 32-bit
+ {
+   uint32 *src_pixels;
+   for(y = 0; y < area->h; y += down_scale)
+   {
+     for(x = 0; x < area->w; x += down_scale)
+     {
+       src_pixels = (uint32 *)main_surface->pixels;
+       src_pixels += ((area->y + y) * surface->w + (area->x + x));
+
+       uint32 r = (*src_pixels & fmt->Rmask) >> fmt->Rshift << fmt->Rloss;
+       uint32 g = (*src_pixels & fmt->Gmask) >> fmt->Gshift << fmt->Gloss;
+       uint32 b = (*src_pixels & fmt->Bmask) >> fmt->Bshift << fmt->Bloss;
+
+       ptr[0] = (uint8)r;
+       ptr[1] = (uint8)g;
+       ptr[2] = (uint8)b;
+       ptr += 3;
+     }
+   }
+ }
 
  return dst_pixels;
 }

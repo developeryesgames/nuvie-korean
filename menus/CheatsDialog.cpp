@@ -38,46 +38,81 @@
 #include "MapWindow.h"
 #include "Configuration.h"
 #include "Keys.h"
+#include "FontManager.h"
+#include "KoreanTranslation.h"
 
 #define CD_WIDTH 212
 #define CD_HEIGHT 101
 
+static int get_menu_scale() {
+	FontManager *fm = Game::get_game()->get_font_manager();
+	if (fm && fm->is_korean_enabled() && Game::get_game()->is_original_plus())
+		return 3;
+	return 1;
+}
+
 CheatsDialog::CheatsDialog(GUI_CallBack *callback)
-          : GUI_Dialog(Game::get_game()->get_game_x_offset() + (Game::get_game()->get_game_width() - CD_WIDTH)/2,
-                       Game::get_game()->get_game_y_offset() + (Game::get_game()->get_game_height() - CD_HEIGHT)/2,
-                       CD_WIDTH, CD_HEIGHT, 244, 216, 131, GUI_DIALOG_UNMOVABLE) {
+          : GUI_Dialog(Game::get_game()->get_game_x_offset() + (Game::get_game()->get_game_width() - CD_WIDTH * get_menu_scale())/2,
+                       Game::get_game()->get_game_y_offset() + (Game::get_game()->get_game_height() - CD_HEIGHT * get_menu_scale())/2,
+                       CD_WIDTH * get_menu_scale(), CD_HEIGHT * get_menu_scale(), 244, 216, 131, GUI_DIALOG_UNMOVABLE) {
 	callback_object = callback;
 	init();
 	grab_focus();
 }
 
+// Helper to get translated text
+static std::string get_translated_text(const char *english_text) {
+	KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+	if (kt && kt->isEnabled()) {
+		std::string t = kt->getUIText(english_text);
+		if (!t.empty()) return t;
+	}
+	return english_text;
+}
+
 bool CheatsDialog::init() {
-	int textY[] = { 11, 24, 37, 50, 63 };
-	int buttonY[] = { 9, 22, 35, 48, 61, 80 };
-	int colX[] = { 9, 163 };
-	int height = 12;
+	int scale = get_menu_scale();
+	int textY[] = { 11*scale, 24*scale, 37*scale, 50*scale, 63*scale };
+	int buttonY[] = { 9*scale, 22*scale, 35*scale, 48*scale, 61*scale, 80*scale };
+	int colX[] = { 9*scale, 163*scale };
+	int height = 12*scale;
 	b_index_num = -1;
 	last_index = 0;
 	GUI_Widget *widget;
 	GUI *gui = GUI::get_gui();
 
-	widget = (GUI_Widget *) new GUI_Text(colX[0], textY[0], 0, 0, 0, "Cheats:", gui->get_font());
+	std::string txt;
+	txt = get_translated_text("Cheats:");
+	widget = (GUI_Widget *) new GUI_Text(colX[0], textY[0], 0, 0, 0, txt.c_str(), gui->get_font());
+	if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
 	AddWidget(widget);
-	widget = (GUI_Widget *) new GUI_Text(colX[0], textY[1], 0, 0, 0, "Show eggs:", gui->get_font());
+	txt = get_translated_text("Show eggs:");
+	widget = (GUI_Widget *) new GUI_Text(colX[0], textY[1], 0, 0, 0, txt.c_str(), gui->get_font());
+	if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
 	AddWidget(widget);
-	widget = (GUI_Widget *) new GUI_Text(colX[0], textY[2], 0, 0, 0, "Enable hackmove:", gui->get_font());
+	txt = get_translated_text("Enable hackmove:");
+	widget = (GUI_Widget *) new GUI_Text(colX[0], textY[2], 0, 0, 0, txt.c_str(), gui->get_font());
+	if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
 	AddWidget(widget);
-	widget = (GUI_Widget *) new GUI_Text(colX[0], textY[3], 0, 0, 0, "Anyone will join:", gui->get_font());
-	AddWidget(widget); 
-	widget = (GUI_Widget *) new GUI_Text(colX[0], textY[4], 0, 0, 0, "Minimum brightness:", gui->get_font());
+	txt = get_translated_text("Anyone will join:");
+	widget = (GUI_Widget *) new GUI_Text(colX[0], textY[3], 0, 0, 0, txt.c_str(), gui->get_font());
+	if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
+	AddWidget(widget);
+	txt = get_translated_text("Minimum brightness:");
+	widget = (GUI_Widget *) new GUI_Text(colX[0], textY[4], 0, 0, 0, txt.c_str(), gui->get_font());
+	if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
 	AddWidget(widget);
 
 	bool party_all_the_time;
 	Game *game = Game::get_game();
 	Configuration *config = game->get_config();
 	config->value("config/cheats/party_all_the_time", party_all_the_time);
-	const char* const enabled_text[] = { "Disabled", "Enabled" };
-	const char* const yesno_text[] = { "no", "yes" };
+	std::string disabled_txt = get_translated_text("Disabled");
+	std::string enabled_txt = get_translated_text("Enabled");
+	const char* enabled_text[] = { disabled_txt.c_str(), enabled_txt.c_str() };
+	std::string no_txt = get_translated_text("no");
+	std::string yes_txt = get_translated_text("yes");
+	const char* yesno_text[] = { no_txt.c_str(), yes_txt.c_str() };
 	char buff[4];
 	int brightness_selection;
 	int num_of_brightness = 8;
@@ -94,31 +129,40 @@ bool CheatsDialog::init() {
 	}
 	const char* const brightness_text[] = { "0", "20", "40", "60", "80", "100", "120", "255", buff };
 
-	cheat_button = new GUI_TextToggleButton(this, colX[1] - 30, buttonY[0], 70, height, enabled_text, 2, game->are_cheats_enabled(), gui->get_font(), BUTTON_TEXTALIGN_CENTER, this, 0);
-	AddWidget(cheat_button); 
+	cheat_button = new GUI_TextToggleButton(this, colX[1] - 30*scale, buttonY[0], 70*scale, height, enabled_text, 2, game->are_cheats_enabled(), gui->get_font(), BUTTON_TEXTALIGN_CENTER, this, 0);
+	if (scale > 1) { cheat_button->SetTextScale(scale); cheat_button->ChangeTextButton(-1,-1,-1,-1,cheat_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
+	AddWidget(cheat_button);
 	button_index[last_index] = cheat_button;
 
-	egg_button = new GUI_TextToggleButton(this, colX[1], buttonY[1], 40, height, yesno_text, 2, game->get_obj_manager()->is_showing_eggs(), gui->get_font(), BUTTON_TEXTALIGN_CENTER, this, 0);
-	AddWidget(egg_button); 
+	egg_button = new GUI_TextToggleButton(this, colX[1], buttonY[1], 40*scale, height, yesno_text, 2, game->get_obj_manager()->is_showing_eggs(), gui->get_font(), BUTTON_TEXTALIGN_CENTER, this, 0);
+	if (scale > 1) { egg_button->SetTextScale(scale); egg_button->ChangeTextButton(-1,-1,-1,-1,egg_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
+	AddWidget(egg_button);
 	button_index[last_index+=1] = egg_button;
 
-	hackmove_button = new GUI_TextToggleButton(this, colX[1], buttonY[2], 40, height, yesno_text, 2, game->using_hackmove(), gui->get_font(), BUTTON_TEXTALIGN_CENTER, this, 0);
+	hackmove_button = new GUI_TextToggleButton(this, colX[1], buttonY[2], 40*scale, height, yesno_text, 2, game->using_hackmove(), gui->get_font(), BUTTON_TEXTALIGN_CENTER, this, 0);
+	if (scale > 1) { hackmove_button->SetTextScale(scale); hackmove_button->ChangeTextButton(-1,-1,-1,-1,hackmove_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(hackmove_button);
 	button_index[last_index+=1] = hackmove_button;
 
-	party_button = new GUI_TextToggleButton(this, colX[1], buttonY[3], 40, height, yesno_text, 2, party_all_the_time, gui->get_font(), BUTTON_TEXTALIGN_CENTER, this, 0);
+	party_button = new GUI_TextToggleButton(this, colX[1], buttonY[3], 40*scale, height, yesno_text, 2, party_all_the_time, gui->get_font(), BUTTON_TEXTALIGN_CENTER, this, 0);
+	if (scale > 1) { party_button->SetTextScale(scale); party_button->ChangeTextButton(-1,-1,-1,-1,party_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(party_button);
 	button_index[last_index+=1] = party_button;
 
-	brightness_button = new GUI_TextToggleButton(this, colX[1], buttonY[4], 40, height, brightness_text, num_of_brightness, brightness_selection,  gui->get_font(), BUTTON_TEXTALIGN_CENTER, this, 0);
+	brightness_button = new GUI_TextToggleButton(this, colX[1], buttonY[4], 40*scale, height, brightness_text, num_of_brightness, brightness_selection,  gui->get_font(), BUTTON_TEXTALIGN_CENTER, this, 0);
+	if (scale > 1) { brightness_button->SetTextScale(scale); brightness_button->ChangeTextButton(-1,-1,-1,-1,brightness_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(brightness_button);
 	button_index[last_index+=1] = brightness_button;
 
-	cancel_button = new GUI_Button(this, 50, buttonY[5], 54, height, "Cancel", gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	std::string cancel_txt = get_translated_text("Cancel");
+	cancel_button = new GUI_Button(this, 50*scale, buttonY[5], 54*scale, height, cancel_txt.c_str(), gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	if (scale > 1) { cancel_button->SetTextScale(scale); cancel_button->ChangeTextButton(-1,-1,-1,-1,cancel_txt.c_str(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(cancel_button);
 	button_index[last_index+=1] = cancel_button;
 
-	save_button = new GUI_Button(this, 121, buttonY[5], 40, height, "Save", gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	std::string save_txt = get_translated_text("Save");
+	save_button = new GUI_Button(this, 121*scale, buttonY[5], 40*scale, height, save_txt.c_str(), gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	if (scale > 1) { save_button->SetTextScale(scale); save_button->ChangeTextButton(-1,-1,-1,-1,save_txt.c_str(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(save_button);
 	button_index[last_index+=1] = save_button;
 

@@ -595,9 +595,18 @@ GUI_status InventoryWidget::MouseUp(int x,int y,int button)
       }
 	if(Game::get_game()->get_game_type() == NUVIE_GAME_U6)
 	{
-		if(HitRect(x,y,arrow_rects[0])) //up arrow hit rect
+		// Scale arrow hit rects for Korean 4x mode
+		SDL_Rect up_rect, down_rect;
+		if(use_4x) {
+			up_rect = {0, 16*4, 8*4, 8*4};
+			down_rect = {0, (3*16+8)*4, 8*4, 8*4};
+		} else {
+			up_rect = arrow_rects[0];
+			down_rect = arrow_rects[1];
+		}
+		if(HitRect(x,y,up_rect)) //up arrow hit rect
 			up_arrow();
-		else if(HitRect(x,y,arrow_rects[1])) //down arrow hit rect
+		else if(HitRect(x,y,down_rect)) //down arrow hit rect
 			down_arrow();
 	}
 

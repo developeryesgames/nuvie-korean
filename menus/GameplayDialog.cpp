@@ -39,14 +39,34 @@
 #include "Configuration.h"
 #include "Background.h"
 #include "Keys.h"
+#include "FontManager.h"
+#include "KoreanTranslation.h"
 
 #define GD_WIDTH 274
 #define GD_HEIGHT 179
 
+static int get_menu_scale() {
+	FontManager *fm = Game::get_game()->get_font_manager();
+	if (fm && fm->is_korean_enabled() && Game::get_game()->is_original_plus())
+		return 3;
+	return 1;
+}
+
+// Helper for translated text
+static std::string get_gd_text(const char* english) {
+	FontManager *fm = Game::get_game()->get_font_manager();
+	KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+	if (fm && fm->is_korean_enabled() && kt) {
+		std::string korean = kt->getUIText(english);
+		if (!korean.empty()) return korean;
+	}
+	return std::string(english);
+}
+
 GameplayDialog::GameplayDialog(GUI_CallBack *callback)
-          : GUI_Dialog(Game::get_game()->get_game_x_offset() + (Game::get_game()->get_game_width() - GD_WIDTH)/2,
-                       Game::get_game()->get_game_y_offset() + (Game::get_game()->get_game_height() - GD_HEIGHT)/2,
-                       GD_WIDTH, GD_HEIGHT, 244, 216, 131, GUI_DIALOG_UNMOVABLE) {
+          : GUI_Dialog(Game::get_game()->get_game_x_offset() + (Game::get_game()->get_game_width() - GD_WIDTH * get_menu_scale())/2,
+                       Game::get_game()->get_game_y_offset() + (Game::get_game()->get_game_height() - GD_HEIGHT * get_menu_scale())/2,
+                       GD_WIDTH * get_menu_scale(), GD_HEIGHT * get_menu_scale(), 244, 216, 131, GUI_DIALOG_UNMOVABLE) {
 	callback_object = callback;
 	init();
 	grab_focus();
@@ -75,13 +95,14 @@ int get_selected_game_index(const std::string configvalue)
 }
 
 bool GameplayDialog::init() {
-	int height = 12;
-	int yesno_width = 32;
-	const int selected_game_width = 120;
-	int colX[] = { 9, 40, 233 };
-	int buttonY = 9;
-	uint8 textY = 11;
-	uint8 row_h = 13;
+	int scale = get_menu_scale();
+	int height = 12 * scale;
+	int yesno_width = 32 * scale;
+	const int selected_game_width = 120 * scale;
+	int colX[] = { 9*scale, 9*scale, 233*scale };  // All labels at same X for Korean
+	int buttonY = 9 * scale;
+	int textY = 11 * scale;  // Changed to int to prevent overflow
+	int row_h = 13 * scale;
 	b_index_num = -1;
 	last_index = 0;
 
@@ -95,6 +116,20 @@ bool GameplayDialog::init() {
 	const char* const selected_game_text[] = {"Menu Select", "Ultima VI", "Savage Empire", "Martian Dreams"};
 	const char* const converse_style_text[] = {"Default", "U7 Style", "WOU Style"};
 
+	// Get translated texts
+	std::string txt_formation = get_gd_text("Party formation:");
+	std::string txt_stealing = get_gd_text("Look shows private property:");
+	std::string txt_textgump = get_gd_text("Use text gump:");
+	std::string txt_converse = get_gd_text("Converse gump:");
+	std::string txt_solidbg = get_gd_text("Converse gump has solid bg:");
+	std::string txt_restart = get_gd_text("The following require a restart:");
+	std::string txt_startup = get_gd_text("Startup game:");
+	std::string txt_skip = get_gd_text("Skip intro:");
+	std::string txt_console = get_gd_text("Show console:");
+	std::string txt_cursor = get_gd_text("Use original cursors:");
+	std::string txt_cancel = get_gd_text("Cancel");
+	std::string txt_save = get_gd_text("Save");
+
   std::string selected_game;
   config->value("config/loadgame", selected_game, "");
 
@@ -105,17 +140,21 @@ bool GameplayDialog::init() {
 	config->value("config/general/show_console", show_console, false);
 	config->value("config/general/enable_cursors", use_original_cursor, false);
 // party formation
-	widget = (GUI_Widget *) new GUI_Text(colX[0], textY, 0, 0, 0, "Party formation:", font);
+	widget = (GUI_Widget *) new GUI_Text(colX[0], textY, 0, 0, 0, txt_formation.c_str(), font);
+	if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
 	AddWidget(widget);
-	formation_button = new GUI_TextToggleButton(this, 197, buttonY, 68, height, formation_text, 4, game->get_party()->get_formation(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	formation_button = new GUI_TextToggleButton(this, 197*scale, buttonY, 68*scale, height, formation_text, 4, game->get_party()->get_formation(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	if (scale > 1) { formation_button->SetTextScale(scale); formation_button->ChangeTextButton(-1,-1,-1,-1,formation_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(formation_button);
 	button_index[last_index] = formation_button;
 	if(is_u6) {
 // show stealing
-		widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, "Look shows private property:", font);
+		widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, txt_stealing.c_str(), font);
+		if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
 		AddWidget(widget);
 		config->value("config/ultima6/show_stealing", show_stealing, false);
 		stealing_button = new GUI_TextToggleButton(this, colX[2], buttonY += row_h, yesno_width, height, yesno_text, 2, show_stealing, font, BUTTON_TEXTALIGN_CENTER, this, 0);
+		if (scale > 1) { stealing_button->SetTextScale(scale); stealing_button->ChangeTextButton(-1,-1,-1,-1,stealing_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 		AddWidget(stealing_button);
 		button_index[last_index+=1] = stealing_button;
 	} else {
@@ -123,15 +162,19 @@ bool GameplayDialog::init() {
 	}
 	if(!Game::get_game()->is_new_style()) {
 // Use text gump
-		widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, "Use text gump:", font);
+		widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, txt_textgump.c_str(), font);
+		if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
 		AddWidget(widget);
 		text_gump_button = new GUI_TextToggleButton(this, colX[2], buttonY += row_h, yesno_width, height, yesno_text, 2, game->is_using_text_gumps(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
+		if (scale > 1) { text_gump_button->SetTextScale(scale); text_gump_button->ChangeTextButton(-1,-1,-1,-1,text_gump_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 		AddWidget(text_gump_button);
 		button_index[last_index+=1] = text_gump_button;
 // use converse gump
-		widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, "Converse gump:", font);
+		widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, txt_converse.c_str(), font);
+		if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
 		AddWidget(widget);
-		converse_gump_button = new GUI_TextToggleButton(this, 187, buttonY += row_h, 78, height, converse_style_text, 3, get_converse_gump_type_from_config(config), font, BUTTON_TEXTALIGN_CENTER, this, 0);
+		converse_gump_button = new GUI_TextToggleButton(this, 187*scale, buttonY += row_h, 78*scale, height, converse_style_text, 3, get_converse_gump_type_from_config(config), font, BUTTON_TEXTALIGN_CENTER, this, 0);
+		if (scale > 1) { converse_gump_button->SetTextScale(scale); converse_gump_button->ChangeTextButton(-1,-1,-1,-1,converse_gump_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 		AddWidget(converse_gump_button);
 		old_converse_gump_type = game->get_converse_gump_type();
 		button_index[last_index+=1] = converse_gump_button;
@@ -141,10 +184,12 @@ bool GameplayDialog::init() {
 	}
 	if(!game->is_forcing_solid_converse_bg()) {
 // converse solid bg
-		widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, "Converse gump has solid bg:", font);
+		widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, txt_solidbg.c_str(), font);
+		if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
 		AddWidget(widget);
 		config->value(key + "/converse_solid_bg", solid_bg, false); // need to check cfg since converse_gump may be NULL
 		converse_solid_bg_button = new GUI_TextToggleButton(this, colX[2], buttonY += row_h, yesno_width, height, yesno_text, 2, solid_bg, font, BUTTON_TEXTALIGN_CENTER, this, 0);
+		if (scale > 1) { converse_solid_bg_button->SetTextScale(scale); converse_solid_bg_button->ChangeTextButton(-1,-1,-1,-1,converse_solid_bg_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 		AddWidget(converse_solid_bg_button);
 		button_index[last_index+=1] = converse_solid_bg_button;
 	} else
@@ -152,37 +197,48 @@ bool GameplayDialog::init() {
 
 
 // following require restart
-	widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h*2, 0, 0, 0, "The following require a restart:", font);
+	widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h*2, 0, 0, 0, txt_restart.c_str(), font);
+	if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
 	AddWidget(widget);
 // game select
-  widget = (GUI_Widget *) new GUI_Text(colX[1], textY += row_h, 0, 0, 0, "Startup game:", font);
+  widget = (GUI_Widget *) new GUI_Text(colX[1], textY += row_h, 0, 0, 0, txt_startup.c_str(), font);
+  if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
   AddWidget(widget);
-  startup_game_button = new GUI_TextToggleButton(this, 145, buttonY += row_h*3, selected_game_width, height, selected_game_text, 4, get_selected_game_index(selected_game),  font, BUTTON_TEXTALIGN_CENTER, this, 0);
+  startup_game_button = new GUI_TextToggleButton(this, 145*scale, buttonY += row_h*3, selected_game_width, height, selected_game_text, 4, get_selected_game_index(selected_game),  font, BUTTON_TEXTALIGN_CENTER, this, 0);
+  if (scale > 1) { startup_game_button->SetTextScale(scale); startup_game_button->ChangeTextButton(-1,-1,-1,-1,startup_game_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
   AddWidget(startup_game_button);
   button_index[last_index+=1] = startup_game_button;
 // skip intro
-	widget = (GUI_Widget *) new GUI_Text(colX[1], textY += row_h, 0, 0, 0, "Skip intro:", font);
+	widget = (GUI_Widget *) new GUI_Text(colX[1], textY += row_h, 0, 0, 0, txt_skip.c_str(), font);
+	if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
 	AddWidget(widget);
 	skip_intro_button = new GUI_TextToggleButton(this, colX[2], buttonY += row_h, yesno_width, height, yesno_text, 2, skip_intro,  font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	if (scale > 1) { skip_intro_button->SetTextScale(scale); skip_intro_button->ChangeTextButton(-1,-1,-1,-1,skip_intro_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(skip_intro_button);
 	button_index[last_index+=1] = skip_intro_button;
 // show console
-	widget = (GUI_Widget *) new GUI_Text(colX[1], textY += row_h, 0, 0, 0, "Show console:", font);
+	widget = (GUI_Widget *) new GUI_Text(colX[1], textY += row_h, 0, 0, 0, txt_console.c_str(), font);
+	if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
 	AddWidget(widget);
 	show_console_button = new GUI_TextToggleButton(this, colX[2], buttonY += row_h, yesno_width, height, yesno_text, 2, show_console, font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	if (scale > 1) { show_console_button->SetTextScale(scale); show_console_button->ChangeTextButton(-1,-1,-1,-1,show_console_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(show_console_button);
 	button_index[last_index+=1] = show_console_button;
 // original cursor
-	widget = (GUI_Widget *) new GUI_Text(colX[1], textY += row_h, 0, 0, 0, "Use original cursors:", font);
+	widget = (GUI_Widget *) new GUI_Text(colX[1], textY += row_h, 0, 0, 0, txt_cursor.c_str(), font);
+	if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
 	AddWidget(widget);
 	cursor_button = new GUI_TextToggleButton(this, colX[2], buttonY += row_h, yesno_width, height, yesno_text, 2, use_original_cursor, font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	if (scale > 1) { cursor_button->SetTextScale(scale); cursor_button->ChangeTextButton(-1,-1,-1,-1,cursor_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(cursor_button);
 	button_index[last_index+=1] = cursor_button;
 
-	cancel_button = new GUI_Button(this, 77, GD_HEIGHT - 20, 54, height, "Cancel", font, BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	cancel_button = new GUI_Button(this, 77*scale, GD_HEIGHT*scale - 20*scale, 54*scale, height, txt_cancel.c_str(), font, BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	if (scale > 1) { cancel_button->SetTextScale(scale); cancel_button->ChangeTextButton(-1,-1,-1,-1,txt_cancel.c_str(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(cancel_button);
 	button_index[last_index+=1] = cancel_button;
-	save_button = new GUI_Button(this, 158, GD_HEIGHT - 20, 40, height, "Save", font, BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	save_button = new GUI_Button(this, 158*scale, GD_HEIGHT*scale - 20*scale, 40*scale, height, txt_save.c_str(), font, BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	if (scale > 1) { save_button->SetTextScale(scale); save_button->ChangeTextButton(-1,-1,-1,-1,txt_save.c_str(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(save_button);
 	button_index[last_index+=1] = save_button;
 

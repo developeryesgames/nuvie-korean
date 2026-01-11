@@ -3256,13 +3256,32 @@ void MapWindow::create_thumbnail()
 {
  SDL_Rect src_rect;
 
- src_rect.w = MAPWINDOW_THUMBNAIL_SIZE * MAPWINDOW_THUMBNAIL_SCALE;
+ // In Korean 4x mode, use 4x scale instead of 3x
+ int thumb_scale = MAPWINDOW_THUMBNAIL_SCALE;
+ int screen_scale = 1;  // multiplier for screen coordinates
+ bool use_point_sampling = false;
+ if (Game::get_game()->is_original_plus()) {
+   FontManager *fm = Game::get_game()->get_font_manager();
+   if (fm && fm->is_korean_enabled()) {
+     thumb_scale = 4;
+     screen_scale = 4;  // 4x scaled screen
+     use_point_sampling = true;  // Use point sampling for clean pixel art
+   }
+ }
+
+ src_rect.w = MAPWINDOW_THUMBNAIL_SIZE * thumb_scale;
  src_rect.h = src_rect.w;
 
- src_rect.x = area.x + win_width * 8 - (src_rect.w/2);  // area.x + (win_width * 16) / 2 - 120 / 2
- src_rect.y = area.y + win_height * 8 - (src_rect.h/2); // area.y + (win_height * 16) / 2 - 120 / 2
+ // Center position calculation - multiply by screen_scale for scaled screens
+ int center_x = area.x + win_width * 8 * screen_scale;
+ int center_y = area.y + win_height * 8 * screen_scale;
+ src_rect.x = center_x - (src_rect.w / 2);
+ src_rect.y = center_y - (src_rect.h / 2);
 
- thumbnail = screen->copy_area(&src_rect, MAPWINDOW_THUMBNAIL_SCALE); //scale down x3
+ if (use_point_sampling)
+   thumbnail = screen->copy_area_point(&src_rect, thumb_scale);
+ else
+   thumbnail = screen->copy_area(&src_rect, thumb_scale);
 
  new_thumbnail = false;
 }

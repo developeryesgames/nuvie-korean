@@ -31,7 +31,11 @@ class GUI;
 class GUI_CallBack;
 class GUI_TextInput;
 
-#define NUVIE_SAVESLOT_HEIGHT 52
+#define NUVIE_SAVESLOT_HEIGHT_BASE 52
+
+// get_saveslot_height() returns scaled height for Korean mode
+int get_saveslot_height();
+int get_saveslot_scale();
 
 // Callback message types
 

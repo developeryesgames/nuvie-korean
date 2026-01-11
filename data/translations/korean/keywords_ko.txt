@@ -696,7 +696,7 @@
 투명|invi
 투셰|touc
 튜닉|tuni
-트린직|trin
+트린식|trin
 특이점|sing
 티모시|timo
 파렌|fare

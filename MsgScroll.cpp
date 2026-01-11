@@ -1435,7 +1435,7 @@ void MsgScroll::Display(bool full_redraw)
  else
   {
    if(use_korean)
-     clearCursor(area.x + left_margin + cursor_x + 8, area.y + cursor_y * font_height + 8);
+     clearCursor(area.x + left_margin + cursor_x + 8, area.y + cursor_y * font_height + 4);
    else
      clearCursor(area.x + 8 * cursor_x, area.y + cursor_y * 8);
   }
@@ -1463,7 +1463,7 @@ void MsgScroll::Display(bool full_redraw)
    }
 
    if(use_korean)
-     drawCursor(area.x + left_margin + cursor_x + composing_width + 8, area.y + cursor_y * font_height + 8);
+     drawCursor(area.x + left_margin + cursor_x + composing_width + 8, area.y + cursor_y * font_height + 4);
    else
      drawCursor(area.x + left_margin + 8 * cursor_x, area.y + cursor_y * 8);
  }
@@ -1510,8 +1510,8 @@ void MsgScroll::clearCursor(uint16 x, uint16 y)
  FontManager *font_manager = Game::get_game()->get_font_manager();
  KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
  bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
- // Korean font: 16x16 native (scale 1), Original: 8x8
- uint16 clear_size = use_korean ? 16 : 8;
+ // Korean mode: 24x24 cursor (8x8 scaled 3x), Original: 8x8
+ uint16 clear_size = use_korean ? 24 : 8;
  screen->fill(bg_color, x, y, clear_size, clear_size);
 }
 
@@ -1524,9 +1524,9 @@ void MsgScroll::drawCursor(uint16 x, uint16 y)
  KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
  bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
  // Korean mode: MsgScroll area is 4x scaled, so use 4x for control chars too
- // Korean font: 16x16 native, Original U6 font: 8x8 scaled to 32x32 (4x) in Korean mode
- uint16 cursor_size = use_korean ? 16 : 8;
- uint8 korean_scale = use_korean ? 2 : 1; // 2x scale for 8x8 U6 font (16x16 cursor in Korean mode)
+ // Korean font: 16x16 native, Original U6 font: 8x8 scaled to 24x24 (3x) in Korean mode
+ uint16 cursor_size = use_korean ? 24 : 8;
+ uint8 korean_scale = use_korean ? 3 : 1; // 3x scale for 8x8 U6 font (24x24 cursor in Korean mode)
 
  if(input_char != 0) { // show letter selected by arrow keys
     // For input_char, draw at text position (without cursor offset)

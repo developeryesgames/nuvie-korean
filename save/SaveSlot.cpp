@@ -41,9 +41,21 @@
 #include "SaveManager.h"
 #include "SaveDialog.h"
 #include "GUI_Scroller.h"
+#include "FontManager.h"
+#include "KoreanTranslation.h"
 
+int get_saveslot_scale() {
+	FontManager *fm = Game::get_game()->get_font_manager();
+	if (fm && fm->is_korean_enabled() && Game::get_game()->is_original_plus())
+		return 3;
+	return 1;
+}
 
-SaveSlot::SaveSlot(GUI_CallBack *callback, GUI_Color bg_color) : GUI_Widget(NULL, 0, 0, 266, NUVIE_SAVESLOT_HEIGHT)
+int get_saveslot_height() {
+	return NUVIE_SAVESLOT_HEIGHT_BASE * get_saveslot_scale();
+}
+
+SaveSlot::SaveSlot(GUI_CallBack *callback, GUI_Color bg_color) : GUI_Widget(NULL, 0, 0, 266 * get_saveslot_scale(), get_saveslot_height())
 {
  callback_object = callback;
  background_color = bg_color;
@@ -75,16 +87,34 @@ bool SaveSlot::init(const char *directory, std::string *file)
    filename.assign(""); //empty save slot.
    if(directory != NULL)
    {
-     save_description.assign("Original Game Save");
+     KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+     if (kt && kt->isEnabled()) {
+       std::string translated = kt->getUIText("Original Game Save");
+       save_description.assign(translated.empty() ? "Original Game Save" : translated);
+     } else {
+       save_description.assign("Original Game Save");
+     }
    }
    else
    {
-     save_description.assign("New Save.");
+     KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+     if (kt && kt->isEnabled()) {
+       std::string translated = kt->getUIText("New Save.");
+       save_description.assign(translated.empty() ? "New Save." : translated);
+     } else {
+       save_description.assign("New Save.");
+     }
      new_save = true;
    }
   }
 
- textinput_widget = new GUI_TextInput(MAPWINDOW_THUMBNAIL_SIZE + 2, 2, 255, 255, 255, (char *)save_description.c_str(), gui->get_font(),26,2, this);
+ int scale = get_saveslot_scale();
+ int thumb_offset = MAPWINDOW_THUMBNAIL_SIZE * scale + 2 * scale;
+ textinput_widget = new GUI_TextInput(thumb_offset, 2 * scale, 255, 255, 255, (char *)save_description.c_str(), gui->get_font(),26,2, this);
+ if (scale > 1) {
+   textinput_widget->SetTextScale(scale);
+   textinput_widget->UpdateAreaSize();
+ }
  AddWidget((GUI_Widget *)textinput_widget);
 
  return true;
@@ -98,9 +128,10 @@ bool SaveSlot::load_info(const char *directory)
  GUI_Widget *widget;
  GUI *gui = GUI::get_gui();
  std::string full_path;
- char buf[30];
- char gender;
+ char buf[64];  // Increased buffer for Korean UTF-8 text
  uint8 i;
+ int scale = get_saveslot_scale();
+ int thumb_offset = MAPWINDOW_THUMBNAIL_SIZE * scale + 2 * scale;
 
  savegame = new SaveGame(Game::get_game()->get_config());
 
@@ -119,38 +150,54 @@ bool SaveSlot::load_info(const char *directory)
 
  thumbnail = SDL_ConvertSurface(header->thumbnail, header->thumbnail->format, SDL_SWSURFACE);
 
- if(header->player_gender == 0)
-   gender = 'm';
+ // Check for Korean mode
+ KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+ bool use_korean = kt && kt->isEnabled();
+
+ if(use_korean)
+ {
+   const char *gender_str = (header->player_gender == 0) ? "(남)" : "(여)";
+   sprintf(buf, "%s %s", header->player_name.c_str(), gender_str);
+ }
  else
-   gender = 'f';
+ {
+   char gender = (header->player_gender == 0) ? 'm' : 'f';
+   sprintf(buf, "%s (%c)", header->player_name.c_str(), gender);
+   if(strlen(buf) < 17)
+   {
+     for(i=strlen(buf);i < 17; i++)
+       buf[i] = ' ';
+     buf[17] = '\0';
+   }
+   strcat(buf, " Day:");
+ }
 
- sprintf(buf, "%s (%c)",header->player_name.c_str(),gender);
- if(strlen(buf) < 17)
-  {
-   for(i=strlen(buf);i < 17; i++)
-    buf[i] = ' ';
-
-   buf[17] = '\0';
-  }
-
- strcat(buf, " Day:");
-
- widget = (GUI_Widget *) new GUI_Text(MAPWINDOW_THUMBNAIL_SIZE + 2, 20, 200, 200, 200, buf, gui->get_font()); //evil const cast lets remove this
+ widget = (GUI_Widget *) new GUI_Text(thumb_offset, 20 * scale, 200, 200, 200, buf, gui->get_font()); //evil const cast lets remove this
+ if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
  AddWidget(widget);
 
- sprintf(buf, "Lvl:%d %3d/%3d/%3d  XP:%d", header->level, header->str, header->dex, header->intelligence, header->exp);
- 
- widget = (GUI_Widget *) new GUI_Text(MAPWINDOW_THUMBNAIL_SIZE + 2, 29, 200, 200, 200, buf, gui->get_font()); //evil const cast lets remove this
+ if(use_korean)
+   sprintf(buf, "레벨:%d 힘%d/민%d/지%d 경험:%d", header->level, header->str, header->dex, header->intelligence, header->exp);
+ else
+   sprintf(buf, "Lvl:%d %3d/%3d/%3d  XP:%d", header->level, header->str, header->dex, header->intelligence, header->exp);
+
+ widget = (GUI_Widget *) new GUI_Text(thumb_offset, 29 * scale, 200, 200, 200, buf, gui->get_font()); //evil const cast lets remove this
+ if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
  AddWidget(widget);
 
 
- sprintf(buf, "%s (%d save", (char *)filename.c_str(), header->num_saves);
- if(header->num_saves > 1)
-   strcat(buf, "s");
- 
- strcat(buf, ")");
- 
- widget = (GUI_Widget *) new GUI_Text(MAPWINDOW_THUMBNAIL_SIZE + 2, 38, 200, 200, 200, buf, gui->get_font());
+ if(use_korean)
+   sprintf(buf, "%s (%d회 저장)", (char *)filename.c_str(), header->num_saves);
+ else
+ {
+   sprintf(buf, "%s (%d save", (char *)filename.c_str(), header->num_saves);
+   if(header->num_saves > 1)
+     strcat(buf, "s");
+   strcat(buf, ")");
+ }
+
+ widget = (GUI_Widget *) new GUI_Text(thumb_offset, 38 * scale, 200, 200, 200, buf, gui->get_font());
+ if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
  AddWidget(widget);
 
  delete savegame;
@@ -171,6 +218,12 @@ void SaveSlot::deselect()
 
 std::string SaveSlot::get_save_description()
 {
+	// In Korean mode, use UTF-8 text
+	FontManager *fm = Game::get_game()->get_font_manager();
+	if (fm && fm->is_korean_enabled() && Game::get_game()->is_original_plus())
+	{
+		return textinput_widget->get_utf8_text();
+	}
 	return std::string(textinput_widget->get_text());
 }
 
@@ -187,15 +240,30 @@ void SaveSlot::Display(bool full_redraw)
  SDL_Rect destrect = area;
  if(selected)
    {
-    GUI *gui = GUI::get_gui();
-    SDL_FillRect(surface, &framerect, gui->get_selected_color()->sdl_color);
+    int scale = get_saveslot_scale();
+    if (scale > 1) {
+      // Lighter blue for Korean mode
+      Uint32 light_blue = SDL_MapRGB(surface->format, 100, 140, 200);
+      SDL_FillRect(surface, &framerect, light_blue);
+    } else {
+      GUI *gui = GUI::get_gui();
+      SDL_FillRect(surface, &framerect, gui->get_selected_color()->sdl_color);
+    }
    }
  else
    SDL_FillRect(surface, &framerect, background_color.sdl_color);
 
  if(thumbnail)
    {
-    SDL_BlitSurface(thumbnail, NULL, surface, &destrect);
+    int scale = get_saveslot_scale();
+    if (scale > 1) {
+      // Scale thumbnail to match Korean mode scaling
+      SDL_Rect src_rect = {0, 0, (Uint16)thumbnail->w, (Uint16)thumbnail->h};
+      SDL_Rect dst_rect = {area.x, area.y, (Uint16)(thumbnail->w * scale), (Uint16)(thumbnail->h * scale)};
+      SDL_BlitScaled(thumbnail, &src_rect, surface, &dst_rect);
+    } else {
+      SDL_BlitSurface(thumbnail, NULL, surface, &destrect);
+    }
    }
 
  DisplayChildren();

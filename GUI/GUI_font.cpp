@@ -185,3 +185,79 @@ uint16 GUI_Font::get_center(const char *text, uint16 width)
 	else
 		return 0;
 }
+
+/* put the text onto the given surface with scaling */
+void GUI_Font::TextOutScaled(SDL_Surface* context, int x, int y, const char* text, int scale)
+{
+  if (scale <= 1) {
+    TextOut(context, x, y, text);
+    return;
+  }
+
+  int i = 0;
+  int j = 0;
+  Uint8 ch;
+
+  int scaled_charw = charw * scale;
+  int scaled_charh = (charh - 1) * scale;
+
+  // Lock fontStore to read pixels directly
+  SDL_LockSurface(fontStore);
+  SDL_LockSurface(context);
+
+  while ((ch = text[i]))
+  {
+    int src_x = (ch % 16) * charw;
+    int src_y = (ch / 16) * charh;
+
+    int dest_base_x;
+    if (w_data) {
+      dest_base_x = x;
+      x += w_data[ch] * scale;
+    } else {
+      dest_base_x = x + (j * scaled_charw);
+    }
+    int dest_base_y = y;
+
+    // For each pixel in the source character
+    for (int py = 0; py < charh - 1; py++) {
+      for (int px = 0; px < charw; px++) {
+        // Read source pixel from fontStore (8-bit paletted)
+        Uint8 *src_ptr = (Uint8*)fontStore->pixels + (src_y + py) * fontStore->pitch + (src_x + px);
+        Uint8 palette_idx = *src_ptr;
+
+        if (palette_idx == 0) continue; // Skip transparent pixels
+
+        // Get color from palette
+        SDL_Color col = fontStore->format->palette->colors[palette_idx];
+        Uint32 pixel = SDL_MapRGB(context->format, col.r, col.g, col.b);
+
+        // Draw scaled pixel to context
+        for (int sy = 0; sy < scale; sy++) {
+          for (int sx = 0; sx < scale; sx++) {
+            int dest_x = dest_base_x + px * scale + sx;
+            int dest_y = dest_base_y + py * scale + sy;
+
+            // Bounds check
+            if (dest_x < 0 || dest_x >= context->w || dest_y < 0 || dest_y >= context->h)
+              continue;
+
+            if (context->format->BytesPerPixel == 2) {
+              Uint16 *dest_ptr = (Uint16*)((Uint8*)context->pixels + dest_y * context->pitch + dest_x * 2);
+              *dest_ptr = (Uint16)pixel;
+            } else if (context->format->BytesPerPixel == 4) {
+              Uint32 *dest_ptr = (Uint32*)((Uint8*)context->pixels + dest_y * context->pitch + dest_x * 4);
+              *dest_ptr = pixel;
+            }
+          }
+        }
+      }
+    }
+
+    i++;
+    j++;
+  }
+
+  SDL_UnlockSurface(context);
+  SDL_UnlockSurface(fontStore);
+}

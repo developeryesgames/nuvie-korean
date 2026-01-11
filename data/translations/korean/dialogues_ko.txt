@@ -269,7 +269,7 @@
 8|"As for the other runes - they are no longer together, as they were when the @Codex was recovered."|"다른 룬들에 관해서라면... @코덱스(Codex) 를 회수했을 때처럼 더 이상 한데 모여 있지 않다오."
 8|"Since then, they have become scattered throughout the land. Each was sent to a town near its shrine."|"그 후로 룬들은 온 땅에 흩어지게 되었소. 각 룬은 해당 성소 근처의 마을로 보내졌지."
 8|"If thou dost ask the lords of each of these towns, they should be able to tell thee more."|"그대가 이 마을들의 영주들에게 묻는다면 그들이 더 많은 것을 알려줄 수 있을 것이오."
-8|"The towns are Moonglow, Jhelom, Yew, Minoc, Trinsic, Skara Brae, and New Magincia."|"해당 마을들은 문글로우, 젤롬, 유, 미녹, 트린직, 스카라 브레이, 그리고 뉴 마진시아라오."
+8|"The towns are Moonglow, Jhelom, Yew, Minoc, Trinsic, Skara Brae, and New Magincia."|"해당 마을들은 문글로우, 젤롬, 유, 미녹, 트린식, 스카라 브레이, 그리고 뉴 마진시아라오."
 8|Tholden bows deeply.|톨든이 깊이 고개를 숙인다.
 8|Tholden goes down on one knee and kisses your hand.|톨든이 한쪽 무릎을 굽히고 당신의 손에 입을 맞춘다.
 
@@ -757,7 +757,7 @@
 21|"Let's see now." He counts them off on his fingers.|"어디 보자." 그가 손가락을 꼽으며 세어 본다.
 21|"Lord British appointed lords to rule the eight @cities."|"로드 브리티시께서 여덟 @도시(cities) 를 통치할 영주들을 임명하셨지."
 21|"Magical little things."|"신기하고 작은 것들이지."
-21|"Minoc, Trinsic, Jhelom, Yew, Skara Brae, Britain, Moonglow..."|"미녹, 트린직, 젤롬, 유, 스카라 브레이, 브리튼, 문글로우..."
+21|"Minoc, Trinsic, Jhelom, Yew, Skara Brae, Britain, Moonglow..."|"미녹, 트린식, 젤롬, 유, 스카라 브레이, 브리튼, 문글로우..."
 21|"Probably out till all hours, collecting @runes and such."|"아마 밤늦게까지 돌아다니며 @룬(runes) 같은 것들을 수집하고 있겠지."
 21|"Probably spell something out if you put 'em all on a necklace."|"그것들을 다 모아서 목걸이로 만들면 무슨 글자가 완성될지도 몰라."
 21|"Something to do with the @shrines, I think."|"내 생각엔 @성소(shrines) 들과 관련이 있는 것 같아."
@@ -1126,7 +1126,7 @@
 31|"@Travel is much easier these days."|"요즘은 @여행(Travel) 이 훨씬 쉬워졌답니다."
 31|"A true gentleman if ever I saw one."|"제가 본 사람 중 진정한 신사였어요."
 31|"Be sure to have a look at our paintings while you're here. And come again soon..."|"여기 계시는 동안 저희 그림들도 꼭 감상해 보세요. 그리고 조만간 또 오시고요..."
-31|"We're expecting some unicorn horns, and a Klein bottle from Trinsic."|"곧 유니콘의 뿔이랑 트린직에서 오는 클라인의 병이 들어올 예정이거든요."
+31|"We're expecting some unicorn horns, and a Klein bottle from Trinsic."|"곧 유니콘의 뿔이랑 트린식에서 오는 클라인의 병이 들어올 예정이거든요."
 31|"He also established the @conservatory that shares the building with the museum."|"또한 박물관과 건물을 같이 쓰는 @음악학교(conservatory) 도 세우셨죠."
 31|"The @roads that span the realm are his doing as well."|"이 왕국에 뻗어 있는 @도로(roads) 들도 전부 그분이 하신 일이고요."
 31|"Hello and welcome, $G!"|"안녕하세요, 환영합니다, $G!"
@@ -1999,7 +1999,7 @@
 49|"The Mantra of Valour bringeth great cheer."|"용기의 만트라는 큰 기쁨을 가져다준다오."
 49|"The other sneaks into town and puts the plant into the trough of a horse."|"다른 한 명은 마을에 몰래 들어가 말 구유에 그 식물을 넣었지."
 49|"The owner, Immanuelle, doesn't know what to do."|"주인인 이매뉴얼은 어쩔 줄을 몰라 했소."
-49|"Two gypsies come to Trinsic, hungry as usual."|"두 집시가 평소처럼 배가 고픈 채로 트린직에 왔소."
+49|"Two gypsies come to Trinsic, hungry as usual."|"두 집시가 평소처럼 배가 고픈 채로 트린식에 왔소."
 49|"Unless it be immediately removed, the rest shall catch the same fatal disease.'"|"당장 치우지 않으면, 나머지 말들도 똑같은 치명적인 병에 걸릴 거요.'"
 49|"Well met, $G $Z. Let me tell ye a @tale."|"반갑소, $G $Z. @이야기(tale) 하나 들려주겠소."
 49|"Well, it used to be a ghost town."|"음, 거긴 원래 유령 마을이었지."
@@ -3115,7 +3115,7 @@
 75|a shifty-eyed man with a strange smile. He smells of rancid grease and cooking smoke.|묘한 미소를 지으며 눈을 번뜩이는 남자다. 고약한 기름 찌든 내와 음식 연기 냄새가 난다.
 75|"'A golden orb on a crystal sea, in a box sans hinges, lid, or key.'"|"'수정 바다 위의 황금 보석, 경첩도 뚜껑도 열쇠도 없는 상자 속에 들었네.'"
 75|"As first mate to Captain Hawkins himself! His real name is Alastor Gordon."|"호킨스 선장의 일등 항해사였소! 그의 진짜 이름은 알래스터 고든(Alastor Gordon)이라오."
-75|"Before Lord Whitsaber came to Trinsic to be our mayor, he had another job..."|"휘트세이버 경이 우리 트린직의 시장으로 오시기 전에는, 다른 일을 하셨지..."
+75|"Before Lord Whitsaber came to Trinsic to be our mayor, he had another job..."|"휘트세이버 경이 우리 트린식의 시장으로 오시기 전에는, 다른 일을 하셨지..."
 75|"Bye."|"잘 가쇼."
 75|"He especially likes my recipe for fish in a white wine @sauce."|"시장님은 특히 내 화이트 와인 @소스(sauce) 를 곁들인 생선 요리를 좋아하신다오."
 75|"Hello there, $G."|"안녕하쇼, $G."
@@ -3151,7 +3151,7 @@
 76|"All right! If thou wouldst but promise to keep my secret, I'll give thee the map!"\n\n"Agreed?"|"좋소! 내 비밀을 지켜주겠다고 약속만 한다면, 지도를 드리겠소!"\n\n"동의하겠소?"
 76|"And dost thou know why not?"|"왜 아닌지 아시오?"
 76|"And surely, if any took the rune, they would do the honorable thing and return it afterwards!"|"그리고 분명히, 누가 룬을 가져갔다면 나중에 정직하게 돌려줄 것이오!"
-76|"Because Trinsic is the Town of Honor!"|"트린직은 명예의 도시이기 때문이오!"
+76|"Because Trinsic is the Town of Honor!"|"트린식은 명예의 도시이기 때문이오!"
 76|"But what more can I do? I cannot change the past!"|"하지만 내가 더 뭘 할 수 있겠소? 과거를 바꿀 수는 없지 않소!"
 76|"By giving you the map, do I not prove that I have changed my ways?"|"그대에게 지도를 줌으로써, 내가 내 방식을 바꿨다는 걸 증명하는 게 아니겠소?"
 76|"Did he say I was once a @pirate?"|"그가 내가 예전에 @해적(pirate) 이었다고 말하던가요?"
@@ -3161,7 +3161,7 @@
 76|"Goodbye, Avatar! Thou hast my thanks!"|"안녕히 가시오, 아바타! 고맙소!"
 76|"Have pity, Avatar, and keep my secret!"|"아바타여, 부디 자비를 베풀어 내 비밀을 지켜주시오!"
 76|"I am Lord Whitsaber, mayor of this honorable town!"|"나는 이 명예로운 마을의 시장인 휘트세이버(Whitsaber) 경이오!"
-76|"I am entrusted with an honor above all others-that of governing Trinsic, the Town of @Honor!"|"나는 무엇보다 고귀한 명예인 @명예(Honor) 의 도시 트린직을 다스리는 임무를 맡고 있소!"
+76|"I am entrusted with an honor above all others-that of governing Trinsic, the Town of @Honor!"|"나는 무엇보다 고귀한 명예인 @명예(Honor) 의 도시 트린식을 다스리는 임무를 맡고 있소!"
 76|"I beg thy pardon, Avatar?"|"뭐라고 하셨소, 아바타?"
 76|"I gave you the map. What more do you want?"|"지도를 드렸지 않소. 더 바라는 게 무엇이오?"
 76|"I have changed since those dark days, truly I have!"|"나는 그 어두운 시절 이후로 바뀌었소, 정말로 말이오!"
@@ -3254,7 +3254,7 @@
 79|"I have to make @weapons to help fight the gargoyles!"|"가고일들에 대항해 싸울 수 있게 @무기(weapons) 들을 만들어야 해요!"
 79|"Interested?"|"관심 있으세요?"
 79|"My name's Brandon, $G, and I'm honored to meet thee!"|"제 이름은 브랜든(Brandon)입니다, $G. 만나 뵙게 되어 영광이에요!"
-79|"Now I @supply arms to all Trinsic!"|"이제 저는 트린직 전역에 무기를 @공급(supply) 한답니다!"
+79|"Now I @supply arms to all Trinsic!"|"이제 저는 트린식 전역에 무기를 @공급(supply) 한답니다!"
 79|"Oh, I'm not important like you. I'm just a weaponsmith--and only a @journeyman at that."|"오, 저는 당신처럼 중요한 사람이 아니에요. 그저 무기 제작자일 뿐이죠--그것도 이제 막 견습을 마친 @직인(journeyman) 일 뿐인걸요."
 79|"Perhaps some other time, then."|"그럼 다음에 뵙죠."
 79|"Perhaps something else then?"|"그럼 다른 물건은 어떠세요?"
@@ -4713,7 +4713,7 @@
 110|He takes the book and gives|그는 책을 받고 건네준다
 110|"Have you got a copy of Snilwit's that you'd be willing to sell?"|"혹시 팔 만한 스닐윗(Snilwit)의 책을 가지고 있소?"
 110|"Here you are." $N gives $Y the $1.|"여기 있소." $N이 $Y에게 $1(을)를 준다.
-110|"I chose @Paws for my tavern because it's right on the King's Way, midway between @Britain and @Trinsic."|"내가 주점을 위해 @포즈(Paws) 를 선택한 이유는 이곳이 @브리튼(Britain) 과 @트린직(Trinsic) 의 중간인 '국왕의 길' 바로 옆에 있기 때문이지."
+110|"I chose @Paws for my tavern because it's right on the King's Way, midway between @Britain and @Trinsic."|"내가 주점을 위해 @포즈(Paws) 를 선택한 이유는 이곳이 @브리튼(Britain) 과 @트린식(Trinsic) 의 중간인 '국왕의 길' 바로 옆에 있기 때문이지."
 110|"There's no better travelled spot in all Britannia, and that makes for good business."|"브리타니아 전체에서 이보다 더 통행량이 많은 곳은 없으니, 장사하기에 제격이라오."
 110|"I guess you can call yourself king of anything, if nobody comes along to dispute it..."|"아무도 이의를 제기하지 않는다면, 뭐든 자칭 왕이라 부를 수 있겠지..."
 110|"I like the name of the town too, of course!"|"물론 나도 이 마을의 이름이 마음에 든다오!" (역주: Paws-발바닥)
@@ -5047,7 +5047,7 @@
 116|"Ol' Hawknose set out for the Dry Land, to kill the daemon that is said to live there."|"늙은 호크노즈는 거기 산다는 데몬을 죽이려고 건조 지대로 떠났지."
 116|"Old Ybarra said he was headed for the dungeon Shame, looking for more treasure."|"늙은 이바라(Ybarra)는 보물을 더 찾으려고 '쉐임(Shame)' 던전으로 향한다고 했어."
 116|"Right here in my pocket!" He grins wickedly.|"바로 여기 내 주머니에 있지!" 그가 사악하게 웃는다.
-116|"Sandy, the ship's cook, went to Trinsic with the first mate."|"배의 요리사였던 샌디(Sandy)는 일등 항해사와 함께 트린직으로 갔어."
+116|"Sandy, the ship's cook, went to Trinsic with the first mate."|"배의 요리사였던 샌디(Sandy)는 일등 항해사와 함께 트린식으로 갔어."
 116|"So I'll tell you where the ninth piece of the map is if you promise to bring me the cloak."|"자네가 내게 망토를 가져다주겠다고 약속하면, 아홉 번째 지도 조각이 어디 있는지 알려주지."
 116|"So, have ye found the eight pieces of the map yet?"|"그래, 지도 조각 여덟 개는 다 찾았나?"
 116|"Splitting up the map was my idea - that way nobody could doublecross the others."|"지도를 찢어 나누는 건 내 아이디어였어 - 그래야 아무도 다른 동료를 배신할 수 없을 테니까."
@@ -6136,7 +6136,7 @@
 146|"He smiles. "I see you're not much of a believer in death."|그가 미소 짓는다. "죽음을 별로 믿지 않으시는 모양이군요."
 146|"But next time you're dead you should try staying that way. You might like it..."|"하지만 다음번에 죽게 되면 그대로 머물러보도록 하십시오. 꽤 마음에 드실지도 모르니까요..."
 146|"Help yourself."|"마음껏 드십시오."
-146|"I am Glen D'Arc, of the @Trinsic D'Arcs."|"나는 @트린직(Trinsic) 다르크 가문의 글렌 다르크라고 하오."
+146|"I am Glen D'Arc, of the @Trinsic D'Arcs."|"나는 @트린식(Trinsic) 다르크 가문의 글렌 다르크라고 하오."
 146|"I had to move away... Too @sunny."|"이사를 해야만 했소... 너무 @햇살(sunny) 이 따가워서 말이오."
 146|"I much prefer moonlight. It's more natural and healthy."|"나는 달빛을 훨씬 선호하오. 더 자연스럽고 건강에 좋지."
 146|"I prepare the @bodies of the departed for their eternal @rest." He pauses to pop a grape into his mouth.|"나는 떠나간 이들의 @육체(bodies) 가 영원한 @안식(rest) 에 들 수 있도록 준비해준다오." 그가 말을 멈추고 입안에 포도 한 알을 쏙 넣는다.
@@ -6197,7 +6197,7 @@
 147|"There are few things as relaxing as embroidering and sitting by the ocean, listening to the surf."|"바닷가에 앉아 파도 소리를 들으며 자수를 놓는 것만큼 편안한 일도 없죠."
 147|"There's always a bit of fish or gull's eggs to eat, with lobster once in a while."|"먹을 물고기나 갈매기 알은 항상 있고, 가끔은 로브스터도 있거든요."
 147|"They say he went down in a storm. He was a @pirate."|"사람들 말로는 그가 폭풍우 속에 가라앉았대요. 그는 @해적(pirate) 이었거든요."
-147|"They travel the road between Britain and Trinsic."|"그들은 브리튼과 트린직 사이의 길을 따라 여행해요."
+147|"They travel the road between Britain and Trinsic."|"그들은 브리튼과 트린식 사이의 길을 따라 여행해요."
 147|"Though he was not a bad husband, I'll always remember him as something of a scoundrel."|"나쁜 남편은 아니었지만, 전 항상 그이를 어딘가 건달 같은 사람으로 기억할 거예요."
 147|"When I need some money for food and such, I work as a @seamstress."|"음식값 같은 게 필요할 땐 @재봉사(seamstress) 로 일한답니다."
 147|"Yes--some gypsies are trustworthy, but others are scoundrels!"|"네--어떤 집시들은 믿을 만하지만, 어떤 놈들은 아주 악당이라니까요!"
@@ -6508,7 +6508,7 @@
 155|"Just as I was returning with some guards, I saw the monsters throwing my friends' dead bodies onto a fire."|"경비병들과 함께 돌아왔을 때, 괴물들이 내 친구들의 시신을 불속으로 던져 넣는 것을 보았소."
 155|"Large, clumsy brutes they were. They should have been easy to dispatch..."|"크고 둔한 짐승들이었소. 해치우기 쉬웠을 텐데..."
 155|"Monsters with eyes like coals and skin like rock."|"숯 같은 눈과 바위 같은 피부를 가진 괴물들이었소."
-155|"Sir Caradon of Trinsic, at thy service."|"트린직의 카라돈(Caradon) 경이라고 하오, 잘 부탁하오."
+155|"Sir Caradon of Trinsic, at thy service."|"트린식의 카라돈(Caradon) 경이라고 하오, 잘 부탁하오."
 155|"Then the gargoyles looked up at us and fell over, both @dead."|"그러더니 가고일들이 우리를 올려다보고는 쓰러졌소, 둘 다 @죽은(dead) 채로 말이오."
 155|"There I was, with ten companions. Outside the Shrine of Honesty stood two gargoyles."|"나는 열 명의 동료와 함께 거기 있었소. 정직의 성소 밖에는 두 마리의 가고일이 서 있었지."
 155|"Yes, just like that: all of a sudden!"|"그렇소, 정말 그렇게 갑자기 말이오!"
@@ -8273,7 +8273,7 @@
 6|"Hast thou gone to the Lycaeum and shown Mariah the book? 'Tis most important."\n*\n"There is naught else I can help thee with at this time."|"라이케움에 가서 @마리아(Mariah) 에게 그 책을 보여주었소? 그것은 매우 중요한 일이오."\n*\n"지금 당장은 더 이상 그대에게 도움을 줄 수 있는 것이 없소."
 8|"All the little details of governing, all the paperwork falls on my shoulders."\n*\n"Someone must do it, and yet I miss the days when I was a carefree adventurer."|"통치에 관한 모든 세세한 사항들과 서류 작업들이 나의 어깨에 지워져 있소."\n*\n"누군가는 이 일을 해야 하지만, 가끔은 걱정 없던 모험가 시절이 그립기도 하오."
 8|"I am Tholden von Bazillius, Chancellor to Lord @British."\n*\n"In my younger days, I was known as 'The @Werecat of the Wine Cellar'..."|"나는 로드 @브리티시(British) 의 재상인 톨든 폰 바질리우스라고 하오."\n*\n"젊은 시절 나는 '와인 창고의 @인묘(Werecat)'로 불렸었지..."
-8|"The rune and mantra of Compassion are in the keeping of the bards at the @Conservatory."\n*\n"I entrusted them with the rune due to their compassionate nature."\n*\n"As for the other runes - they are no longer together, as they were when the @Codex was recovered."\n*\n"Since then, they have become scattered throughout the land. Each was sent to a town near its shrine."\n*\n"If thou dost ask the lords of each of these towns, they should be able to tell thee more."\n*\n"The towns are Moonglow, Jhelom, Yew, Minoc, Trinsic, Skara Brae, and New Magincia."|"자애의 룬과 만트라는 @음악 학교(Conservatory) 의 음유시인들이 보관하고 있소."\n*\n"그들의 자비로운 성품 때문에 그들에게 룬을 맡겼다오."\n*\n"다른 룬들에 관해서라면... @코덱스(Codex) 를 회수했을 때처럼 더 이상 한데 모여 있지 않다오."\n*\n"그 후로 룬들은 온 땅에 흩어지게 되었소. 각 룬은 해당 성소 근처의 마을로 보내졌지."\n*\n"그대가 이 마을들의 영주들에게 묻는다면 그들이 더 많은 것을 알려줄 수 있을 것이오."\n*\n"해당 마을들은 문글로우, 젤롬, 유, 미녹, 트린직, 스카라 브레이, 그리고 뉴 마진시아라오."
+8|"The rune and mantra of Compassion are in the keeping of the bards at the @Conservatory."\n*\n"I entrusted them with the rune due to their compassionate nature."\n*\n"As for the other runes - they are no longer together, as they were when the @Codex was recovered."\n*\n"Since then, they have become scattered throughout the land. Each was sent to a town near its shrine."\n*\n"If thou dost ask the lords of each of these towns, they should be able to tell thee more."\n*\n"The towns are Moonglow, Jhelom, Yew, Minoc, Trinsic, Skara Brae, and New Magincia."|"자애의 룬과 만트라는 @음악 학교(Conservatory) 의 음유시인들이 보관하고 있소."\n*\n"그들의 자비로운 성품 때문에 그들에게 룬을 맡겼다오."\n*\n"다른 룬들에 관해서라면... @코덱스(Codex) 를 회수했을 때처럼 더 이상 한데 모여 있지 않다오."\n*\n"그 후로 룬들은 온 땅에 흩어지게 되었소. 각 룬은 해당 성소 근처의 마을로 보내졌지."\n*\n"그대가 이 마을들의 영주들에게 묻는다면 그들이 더 많은 것을 알려줄 수 있을 것이오."\n*\n"해당 마을들은 문글로우, 젤롬, 유, 미녹, 트린식, 스카라 브레이, 그리고 뉴 마진시아라오."
 9|"All right. Now I can hear my bedtime stories again!"\n*\n"I'll leave my stuff with you in case you need it."|"좋아요. 이제 다시 잠자리 이야기를 들을 수 있겠네요!"\n*\n"혹시 필요하실지 모르니 제 짐은 당신께 맡겨둘게요."
 10|"But I will give you this @hint that may lead you to it..."\n*\n"Search the @chest in @Nystul's room."|"하지만 당신을 그곳으로 인도해 줄 이 @힌트(hint) 를 주겠소..."\n*\n"@니스툴(Nystul) 의 방에 있는 @상자(chest) 를 찾아보시오."
 10|"To @jape, to jeer, to prance, to frolic! To keep this place unmelancholic!"\n*\n"I practice @tomfoolery for Lord @British - or anyone else who passes too close."|"@농담(jape) 하고, 조롱하고, 활보하고, 즐겁게 뛰노세! 이곳에 우울함이 발붙이지 못하게 하세!"\n*\n"나는 로드 @브리티시(British) 께, 또는 너무 가까이 지나가는 누구에게나 @바보짓(tomfoolery) 을 선보이오."
@@ -8301,7 +8301,7 @@
 30|"Of course, I'm sure you only carry @gold crowns with you, being as important as you are."\n*\nShe reaches over and squeezes your shoulder affectionately.|"물론, 당신처럼 중요한 분은 @금화(gold) 크라운만 가지고 다니시겠죠."\n*\n그녀가 손을 뻗어 당신의 어깨를 다정하게 꽉 쥔다.
 30|You notice she was staring at you with a dreamy look in her eyes.\n*\n"Oh, I'm sorry, I wasn't listening. I was just|그녀가 멍한 눈빛으로 당신을 바라보고 있는 것을 눈치챈다.\n*\n"아, 미안해요, 못 들었어요. 전 그냥
 30|noticing how strong and handsome you are..."\n*\nShe looks away and sighs.|당신이 얼마나 강하고 잘생겼는지 넋을 놓고 보고 있었거든요..."\n*\n그녀는 시선을 돌리며 한숨을 내쉰다.
-31|"Be sure to have a look at our paintings while you're here. And come again soon..."\n*\n"We're expecting some unicorn horns, and a Klein bottle from Trinsic."|"여기 계시는 동안 저희 그림들도 꼭 감상해 보세요. 그리고 조만간 또 오시고요..."\n*\n"곧 유니콘의 뿔이랑 트린직에서 오는 클라인의 병이 들어올 예정이거든요."
+31|"Be sure to have a look at our paintings while you're here. And come again soon..."\n*\n"We're expecting some unicorn horns, and a Klein bottle from Trinsic."|"여기 계시는 동안 저희 그림들도 꼭 감상해 보세요. 그리고 조만간 또 오시고요..."\n*\n"곧 유니콘의 뿔이랑 트린식에서 오는 클라인의 병이 들어올 예정이거든요."
 31|"He also established the @conservatory that shares the building with the museum."\n*\n"The @roads that span the realm are his doing as well."|"또한 박물관과 건물을 같이 쓰는 @음악 학교(conservatory) 도 세우셨죠."\n*\n"이 왕국에 뻗어 있는 @도로(roads) 들도 전부 그분이 하신 일이고요."
 31|"I can't tell you much about that. Lord British donated it to the museum, but I can't get him to talk about it."\n*\n"From what little he's said, I think it's an artifact from his home world."|"그거에 대해선 해드릴 말이 별로 없어요. 로드 브리티시께서 박물관에 기증하셨지만, 그분께서는 그 이야기는 잘 안 하시려 하거든요."\n*\n"그분이 아주 조금 말씀하신 걸로 미루어 보아, 아마 그분의 고향 세계에서 온 유물인 것 같아요."
 31|"Someone named '@Gertan' donated all those parts."\n*\n"I think he said something about a dragon named 'Freitag'."|"@거탄(Gertan) 이라는 분이 그 부품들을 모두 기증했어요."\n*\n"아마 '프라이탁(Freitag)'이라는 이름의 용에 대해 뭐라고 하셨던 것 같은데."
@@ -8360,7 +8360,7 @@
 110|"Are you friends of that deadbeat? He owes me for more drinks than I care to think about."\n*\n"The only reason I give him food and drink is because he can't sing with his mouth full!"|"그 빈털터리의 친구요? 생각하기도 싫을 만큼 외상값이 많이 밀려 있다오."\n*\n"내가 그에게 먹을 것과 마실 것을 주는 유일한 이유는, 입안이 꽉 차 있으면 노래를 부를 수 없기 때문이지!"
 110|"Don't get the two gypsy bands mixed up... Taynith travels with @Zoltan."\n*\n"The other group are a bunch of pickpockets and scallawags..."|"두 집시 무리를 혼동하지 마시오... 테이니스는 @졸탄(Zoltan) 과 함께 다닌다오."\n*\n"다른 무리는 소매치기와 건달들 집단이지..."
 110|"Great! This is the definitive reference on boardgames."\n*\nHe takes the book and gives|"멋지구료! 이것은 보드게임에 관한 결정적인 참고서로군."\n*\n그는 책을 받고 건네준다
-110|"I chose @Paws for my tavern because it's right on the King's Way, midway between @Britain and @Trinsic."\n*\n"There's no better travelled spot in all Britannia, and that makes for good business."|"내가 주점을 위해 @포즈(Paws) 를 선택한 이유는 이곳이 @브리튼(Britain) 과 @트린직(Trinsic) 의 중간인 '국왕의 길' 바로 옆에 있기 때문이지."\n*\n"브리타니아 전체에서 이보다 더 통행량이 많은 곳은 없으니, 장사하기에 제격이라오."
+110|"I chose @Paws for my tavern because it's right on the King's Way, midway between @Britain and @Trinsic."\n*\n"There's no better travelled spot in all Britannia, and that makes for good business."|"내가 주점을 위해 @포즈(Paws) 를 선택한 이유는 이곳이 @브리튼(Britain) 과 @트린식(Trinsic) 의 중간인 '국왕의 길' 바로 옆에 있기 때문이지."\n*\n"브리타니아 전체에서 이보다 더 통행량이 많은 곳은 없으니, 장사하기에 제격이라오."
 110|"I won!"\n*\n"Don't take it too hard... I've had a lot of practice."\n*|"내가 이겼소!"\n*\n"너무 상심 마시오... 난 연습을 아주 많이 했으니까."\n*
 110|"If only I had a copy of Snilwit's Big @Book of Boardgame Strategy..."\n*\n"Then I could find some really fine games to teach everyone."|"나에게 스닐윗의 보드게임 전략 @대백과(Book) 사본만 있었더라면..."\n*\n"모두에게 가르쳐줄 정말 멋진 게임들을 더 많이 찾아낼 수 있었을 텐데."
 110|"If you aren't thirsty, you could always get some to give to the cats."\n*\n"It's the quickest way to get on their good side."|"목마르지 않다면, 고양이들에게 줄 우유를 좀 사 가도 좋소."\n*\n"고양이들의 환심을 사는 가장 빠른 방법이지."

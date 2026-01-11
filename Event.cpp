@@ -2514,13 +2514,20 @@ void Event::quitDialog() {
     uint16 x_off = game->get_game_x_offset();
     uint16 y_off = game->get_game_y_offset();
 
-    x_off += (game->get_game_width() - 170) / 2;
-    y_off += (game->get_game_height() - 80) / 2;
+    int menu_scale = 1;
+    FontManager *fm = game->get_font_manager();
+    if (fm && fm->is_korean_enabled() && game->is_original_plus())
+        menu_scale = 3;
+
+    int dlg_w = 170 * menu_scale;
+    int dlg_h = 80 * menu_scale;
+    x_off += (game->get_game_width() - dlg_w) / 2;
+    y_off += (game->get_game_height() - dlg_h) / 2;
     quit_dialog = (GUI_Widget *) new GUI_YesNoDialog(gui,
                                                      x_off,
                                                      y_off,
-                                                     170,
-                                                     80,
+                                                     dlg_w,
+                                                     dlg_h,
                                                      "Do you want to Quit",
                                                      (GUI_CallBack *) this,
                                                      (GUI_CallBack *) this);

@@ -39,20 +39,28 @@
 #include "Keys.h"
 #include "Event.h"
 #include "Console.h"
+#include "FontManager.h"
+#include "KoreanTranslation.h"
 
 #define CURSOR_HIDDEN 0
 #define CURSOR_AT_TOP 1
 #define CURSOR_AT_SLOTS 2
 
 #define NUVIE_SAVE_SCROLLER_ROWS   3
-#define NUVIE_SAVE_SCROLLER_HEIGHT NUVIE_SAVE_SCROLLER_ROWS * NUVIE_SAVESLOT_HEIGHT
 #define SD_WIDTH 320
 #define SD_HEIGHT 200
 
+static int get_menu_scale() {
+	FontManager *fm = Game::get_game()->get_font_manager();
+	if (fm && fm->is_korean_enabled() && Game::get_game()->is_original_plus())
+		return 3;
+	return 1;
+}
+
 SaveDialog::SaveDialog(GUI_CallBack *callback)
-          : GUI_Dialog(Game::get_game()->get_game_x_offset() + (Game::get_game()->get_game_width() - SD_WIDTH)/2,
-                       Game::get_game()->get_game_y_offset() + (Game::get_game()->get_game_height() - SD_HEIGHT)/2,
-                       SD_WIDTH, SD_HEIGHT, 244, 216, 131, GUI_DIALOG_UNMOVABLE)
+          : GUI_Dialog(Game::get_game()->get_game_x_offset() + (Game::get_game()->get_game_width() - SD_WIDTH * get_menu_scale())/2,
+                       Game::get_game()->get_game_y_offset() + (Game::get_game()->get_game_height() - SD_HEIGHT * get_menu_scale())/2,
+                       SD_WIDTH * get_menu_scale(), SD_HEIGHT * get_menu_scale(), 244, 216, 131, GUI_DIALOG_UNMOVABLE)
 {
  callback_object = callback;
  selected_slot = NULL;
@@ -70,11 +78,13 @@ SaveDialog::SaveDialog(GUI_CallBack *callback)
 
 bool SaveDialog::init(const char *save_directory, const char *search_prefix)
 {
+ int scale = get_menu_scale();
  uint32 num_saves, i;
  NuvieFileList filelist;
  std::string *filename;
  GUI_Widget *widget;
  GUI *gui = GUI::get_gui();
+ GUI_Font *font = gui->get_font();
  GUI_Color bg_color = GUI_Color(162,144,87);
  GUI_Color bg_color1 = GUI_Color(147,131,74);
  GUI_Color *color_ptr;
@@ -85,8 +95,19 @@ bool SaveDialog::init(const char *save_directory, const char *search_prefix)
    return false;
  }
 
- scroller = new GUI_Scroller(20,26, 280, NUVIE_SAVE_SCROLLER_HEIGHT, 135,119,76, NUVIE_SAVESLOT_HEIGHT );
- widget = (GUI_Widget *) new GUI_Text(20, 12, 0, 0, 0, "Load/Save", gui->get_font());
+ int slot_height = get_saveslot_height();
+ int scroller_height = NUVIE_SAVE_SCROLLER_ROWS * slot_height;
+ scroller = new GUI_Scroller(20*scale,26*scale, 280*scale, scroller_height, 135,119,76, slot_height);
+
+ // Get translated text
+ KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+ std::string load_save_text = "Load/Save";
+ if (kt && kt->isEnabled()) {
+   std::string translated = kt->getUIText("Load/Save");
+   if (!translated.empty()) load_save_text = translated;
+ }
+ widget = (GUI_Widget *) new GUI_Text(20*scale, 12*scale, 0, 0, 0, load_save_text.c_str(), font);
+ if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
  AddWidget(widget);
 
  num_saves = filelist.get_num_files();
@@ -141,13 +162,27 @@ bool SaveDialog::init(const char *save_directory, const char *search_prefix)
 */
  AddWidget(scroller);
 
- load_button = new GUI_Button(this, 105, 8, 40, 16, "Load", gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+ // Get translated button texts
+ std::string load_text = "Load", save_text = "Save", cancel_text = "Cancel";
+ if (kt && kt->isEnabled()) {
+   std::string t = kt->getUIText("Load");
+   if (!t.empty()) load_text = t;
+   t = kt->getUIText("Save");
+   if (!t.empty()) save_text = t;
+   t = kt->getUIText("Cancel");
+   if (!t.empty()) cancel_text = t;
+ }
+
+ load_button = new GUI_Button(this, 105*scale, 8*scale, 40*scale, 16*scale, load_text.c_str(), font, BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+ if (scale > 1) { load_button->SetTextScale(scale); load_button->ChangeTextButton(-1,-1,-1,-1,load_text.c_str(),BUTTON_TEXTALIGN_CENTER); }
  AddWidget(load_button);
 
- save_button = new GUI_Button(this, 175, 8, 40, 16, "Save", gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+ save_button = new GUI_Button(this, 175*scale, 8*scale, 40*scale, 16*scale, save_text.c_str(), font, BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+ if (scale > 1) { save_button->SetTextScale(scale); save_button->ChangeTextButton(-1,-1,-1,-1,save_text.c_str(),BUTTON_TEXTALIGN_CENTER); }
  AddWidget(save_button);
 
- cancel_button = new GUI_Button(this, 245, 8, 55, 16, "Cancel", gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0); //154
+ cancel_button = new GUI_Button(this, 245*scale, 8*scale, 55*scale, 16*scale, cancel_text.c_str(), font, BUTTON_TEXTALIGN_CENTER, 0, this, 0); //154
+ if (scale > 1) { cancel_button->SetTextScale(scale); cancel_button->ChangeTextButton(-1,-1,-1,-1,cancel_text.c_str(),BUTTON_TEXTALIGN_CENTER); }
  AddWidget(cancel_button);
 
  filelist.close();
@@ -176,14 +211,15 @@ void SaveDialog::Display(bool full_redraw)
 
 void SaveDialog::set_cursor_pos(uint8 index_num)
 {
+	int scale = get_menu_scale();
 	switch(index_num) {
-		case 0: cursor_x = 117; cursor_y = 8; break;
-		case 1: cursor_x = 188; cursor_y = 8; break;
-		case 2: cursor_x = 264; cursor_y = 8; break;
-		case 3: cursor_x = 146; cursor_y = 26; break;
-		case 4: cursor_x = 146; cursor_y = 78; break;
+		case 0: cursor_x = 117*scale; cursor_y = 8*scale; break;
+		case 1: cursor_x = 188*scale; cursor_y = 8*scale; break;
+		case 2: cursor_x = 264*scale; cursor_y = 8*scale; break;
+		case 3: cursor_x = 146*scale; cursor_y = 26*scale; break;
+		case 4: cursor_x = 146*scale; cursor_y = 78*scale; break;
 		default:
-		case 5: cursor_x = 146; cursor_y = 130; break;
+		case 5: cursor_x = 146*scale; cursor_y = 130*scale; break;
 	}
 		cursor_x += area.x; cursor_y += area.y;
 }

@@ -29,6 +29,7 @@
 
 #include "GUI_widget.h"
 #include "GUI_font.h"
+#include <string>
 
 class GUI_CallBack;
 
@@ -132,6 +133,17 @@ protected:
 	int is_checkable;
 	int checked;
 	bool is_highlighted;
+
+	/* Text scaling for Korean mode */
+	int text_scale;
+
+	/* Text storage for Korean mode rendering */
+	std::string button_text;
+	int button_alignment;
+
+public:
+	void SetTextScale(int scale) { text_scale = scale; }
+	int GetTextScale() { return text_scale; }
 };
 
 #endif /* _GUI_button_h */

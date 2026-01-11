@@ -9,7 +9,12 @@ print("\n")
 
 hit_anim(actor.x, actor.y)
 actor.paralyzed = true
-print(korean_translate(actor.name)..korean_translate(" is paralyzed.\n"))
+local k_name = korean_translate(actor.name)
+if is_korean_mode() then
+	print(k_name..korean_get_particle(k_name, "iga").." 마비되었다.\n")
+else
+	print(actor.name.." is paralyzed.\n")
+end
 
 if actor.in_party == true then
 	party_update_leader()

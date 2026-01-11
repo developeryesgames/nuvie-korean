@@ -43,6 +43,9 @@ KoreanFont::KoreanFont()
 
     num_chars = 0;
     offset = 0;
+
+    // Anti-aliasing disabled by default
+    enable_antialiasing = false;
 }
 
 KoreanFont::~KoreanFont()
@@ -306,9 +309,9 @@ uint16 KoreanFont::getStringWidthUTF8(const char *str, uint8 scale)
 
         uint16 index = getCharIndex(codepoint);
         uint16 char_width;
-        if (index < total_chars && char_widths && char_widths[index] != cell_width)
+        if (index < total_chars && char_widths)
         {
-            // Use custom width from .dat file
+            // Use width from .dat file
             char_width = char_widths[index];
         }
         else
@@ -429,9 +432,9 @@ uint16 KoreanFont::drawCharUnicode(Screen *screen, uint32 codepoint, uint16 x, u
     // Return character width (scaled)
     // For 32x32 font, use 75% of cell width for Korean, half for ASCII
     uint16 width;
-    if (char_widths && index < total_chars && char_widths[index] != cell_width)
+    if (char_widths && index < total_chars)
     {
-        // Use custom width from .dat file
+        // Use width from .dat file
         width = char_widths[index];
     }
     else

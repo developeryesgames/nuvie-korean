@@ -1822,19 +1822,34 @@ void Actor::display_condition()
 
     if(hp < get_maxhp()/4) // 25%
     {
-        scroll->display_string(use_korean ? " 위독!\n" : " critical!\n");
+        if(use_korean)
+            scroll->display_string((KoreanTranslation::getParticle_iga(name) + " 치명타!\n").c_str());
+        else
+            scroll->display_string(" critical!\n");
     }
     else
     {
-        // Output full condition string for proper translation
-        // MsgScroll will translate "heavily wounded.\n" etc to Korean
-        scroll->display_string(" ");
-        if(hp < get_maxhp()/2) // 50%
-            scroll->display_string("heavily wounded.\n");
-        else if(hp < get_maxhp()/1.33) // 75%
-            scroll->display_string("lightly wounded.\n");
+        if(use_korean)
+        {
+            std::string particle = KoreanTranslation::getParticle_iga(name);
+            if(hp < get_maxhp()/2) // 50%
+                scroll->display_string((particle + " 중상을 입었다.\n").c_str());
+            else if(hp < get_maxhp()/1.33) // 75%
+                scroll->display_string((particle + " 경상을 입었다.\n").c_str());
+            else
+                scroll->display_string((particle + " 경미한 상처를 입었다.\n").c_str());
+        }
         else
-            scroll->display_string("barely wounded.\n");
+        {
+            // Output full condition string for proper translation
+            scroll->display_string(" ");
+            if(hp < get_maxhp()/2) // 50%
+                scroll->display_string("heavily wounded.\n");
+            else if(hp < get_maxhp()/1.33) // 75%
+                scroll->display_string("lightly wounded.\n");
+            else
+                scroll->display_string("barely wounded.\n");
+        }
     }
 }
 
@@ -1853,7 +1868,10 @@ void Actor::hit(uint8 dmg, bool force_hit)
  if(dmg == 0)
    {
     scroll->display_string(actor_name.c_str());
-    scroll->display_string(use_korean ? " 스침!\n" : " grazed!\n");
+    if(use_korean)
+        scroll->display_string((KoreanTranslation::getParticle_iga(actor_name) + " 스침!\n").c_str());
+    else
+        scroll->display_string(" grazed!\n");
    }
  else if(dmg > total_armor_class || force_hit)
    {
@@ -1865,7 +1883,10 @@ void Actor::hit(uint8 dmg, bool force_hit)
        if(hp == 0)
          {
           scroll->display_string(actor_name.c_str());
-          scroll->display_string(use_korean ? " 사망!\n" : " killed!\n");
+          if(use_korean)
+              scroll->display_string((KoreanTranslation::getParticle_iga(actor_name) + " 사망!\n").c_str());
+          else
+              scroll->display_string(" killed!\n");
          }
        else
          {

@@ -35,6 +35,8 @@
 #include "CheatsDialog.h"
 #include "Event.h"
 #include "Keys.h"
+#include "FontManager.h"
+#include "KoreanTranslation.h"
 
 #define GMD_WIDTH 150
 
@@ -46,55 +48,95 @@
 #define GMD_HEIGHT 122
 #endif
 
+// Get scale factor for Korean mode
+static int get_menu_scale() {
+	FontManager *fm = Game::get_game()->get_font_manager();
+	if (fm && fm->is_korean_enabled() && Game::get_game()->is_original_plus())
+		return 3;  // 3x scale for Korean mode
+	return 1;
+}
+
+// Helper for translated menu text - returns std::string to avoid pointer issues
+static std::string get_menu_text(const char* english) {
+	FontManager *fm = Game::get_game()->get_font_manager();
+	KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+	if (fm && fm->is_korean_enabled() && kt) {
+		std::string korean = kt->getUIText(english);
+		if (!korean.empty()) return korean;
+	}
+	return std::string(english);
+}
+
 GameMenuDialog::GameMenuDialog(GUI_CallBack *callback)
-          : GUI_Dialog(Game::get_game()->get_game_x_offset() + (Game::get_game()->get_game_width() - GMD_WIDTH)/2,
-                       Game::get_game()->get_game_y_offset() + (Game::get_game()->get_game_height() - GMD_HEIGHT)/2,
-                       GMD_WIDTH, GMD_HEIGHT, 244, 216, 131, GUI_DIALOG_UNMOVABLE) {
+          : GUI_Dialog(Game::get_game()->get_game_x_offset() + (Game::get_game()->get_game_width() - GMD_WIDTH * get_menu_scale())/2,
+                       Game::get_game()->get_game_y_offset() + (Game::get_game()->get_game_height() - GMD_HEIGHT * get_menu_scale())/2,
+                       GMD_WIDTH * get_menu_scale(), GMD_HEIGHT * get_menu_scale(), 244, 216, 131, GUI_DIALOG_UNMOVABLE) {
 	callback_object = callback;
 	init();
 	grab_focus();
 }
 
 bool GameMenuDialog::init() {
-	int width = 132;
-	int height = 12;
-	int buttonX = 9;
-	uint8 buttonY = 9;
-	uint8 row_h = 13;
+	int scale = get_menu_scale();
+	int width = 132 * scale;
+	int height = 12 * scale;
+	int buttonX = 9 * scale;
+	int buttonY = 9 * scale;
+	int row_h = 13 * scale;
 	b_index_num = -1;
 	last_index = 0;
 	GUI *gui = GUI::get_gui();
 
-	saveLoad_button = new GUI_Button(this, buttonX, buttonY, width, height, "Load/Save Game", gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
-	AddWidget(saveLoad_button); 
+	// Store translated texts locally to avoid pointer issues
+	std::string txt_saveload = get_menu_text("Load/Save Game");
+	std::string txt_video = get_menu_text("Video Options");
+	std::string txt_audio = get_menu_text("Audio Options");
+	std::string txt_input = get_menu_text("Input Options");
+	std::string txt_joystick = get_menu_text("Joystick Options");
+	std::string txt_gameplay = get_menu_text("Gameplay Options");
+	std::string txt_cheats = get_menu_text("Cheats");
+	std::string txt_back = get_menu_text("Back to Game");
+	std::string txt_quit = get_menu_text("Quit");
+
+	saveLoad_button = new GUI_Button(this, buttonX, buttonY, width, height, txt_saveload.c_str(), gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	if (scale > 1) { saveLoad_button->SetTextScale(scale); saveLoad_button->ChangeTextButton(-1,-1,-1,-1,txt_saveload.c_str(),BUTTON_TEXTALIGN_CENTER); }
+	AddWidget(saveLoad_button);
 	button_index[last_index] = saveLoad_button;
-	video_button = new GUI_Button(this, buttonX, buttonY += row_h, width, height, "Video Options", gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	video_button = new GUI_Button(this, buttonX, buttonY += row_h, width, height, txt_video.c_str(), gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	if (scale > 1) { video_button->SetTextScale(scale); video_button->ChangeTextButton(-1,-1,-1,-1,txt_video.c_str(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(video_button);
 	button_index[last_index+=1] = video_button;
-	audio_button = new GUI_Button(this, buttonX, buttonY += row_h, width, height, "Audio Options", gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	audio_button = new GUI_Button(this, buttonX, buttonY += row_h, width, height, txt_audio.c_str(), gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	if (scale > 1) { audio_button->SetTextScale(scale); audio_button->ChangeTextButton(-1,-1,-1,-1,txt_audio.c_str(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(audio_button);
 	button_index[last_index+=1] = audio_button;
-	input_button = new GUI_Button(this, buttonX, buttonY += row_h, width, height, "Input Options", gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	input_button = new GUI_Button(this, buttonX, buttonY += row_h, width, height, txt_input.c_str(), gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	if (scale > 1) { input_button->SetTextScale(scale); input_button->ChangeTextButton(-1,-1,-1,-1,txt_input.c_str(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(input_button);
 	button_index[last_index+=1] = input_button;
 #ifdef HAVE_JOYSTICK_SUPPORT
-	joystick_button = new GUI_Button(this, buttonX, buttonY += row_h, width, height, "Joystick Options", gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	joystick_button = new GUI_Button(this, buttonX, buttonY += row_h, width, height, txt_joystick.c_str(), gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	if (scale > 1) { joystick_button->SetTextScale(scale); joystick_button->ChangeTextButton(-1,-1,-1,-1,txt_joystick.c_str(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(joystick_button);
 	button_index[last_index+=1] = joystick_button;
 #endif
-	gameplay_button = new GUI_Button(this, buttonX, buttonY += row_h, width, height, "Gameplay Options", gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	gameplay_button = new GUI_Button(this, buttonX, buttonY += row_h, width, height, txt_gameplay.c_str(), gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	if (scale > 1) { gameplay_button->SetTextScale(scale); gameplay_button->ChangeTextButton(-1,-1,-1,-1,txt_gameplay.c_str(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(gameplay_button);
 	button_index[last_index+=1] = gameplay_button;
-	cheats_button = new GUI_Button(this, buttonX, buttonY += row_h, width, height, "Cheats", gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	cheats_button = new GUI_Button(this, buttonX, buttonY += row_h, width, height, txt_cheats.c_str(), gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	if (scale > 1) { cheats_button->SetTextScale(scale); cheats_button->ChangeTextButton(-1,-1,-1,-1,txt_cheats.c_str(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(cheats_button);
 	button_index[last_index+=1] = cheats_button;
-	continue_button = new GUI_Button(this, buttonX, buttonY += row_h, width, height, "Back to Game", gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	continue_button = new GUI_Button(this, buttonX, buttonY += row_h, width, height, txt_back.c_str(), gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	if (scale > 1) { continue_button->SetTextScale(scale); continue_button->ChangeTextButton(-1,-1,-1,-1,txt_back.c_str(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(continue_button);
 	button_index[last_index += 1] = cheats_button;
-	quit_button = new GUI_Button(this, buttonX, buttonY += row_h, width, height, "Quit", gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	quit_button = new GUI_Button(this, buttonX, buttonY += row_h, width, height, txt_quit.c_str(), gui->get_font(), BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	if (scale > 1) { quit_button->SetTextScale(scale); quit_button->ChangeTextButton(-1,-1,-1,-1,txt_quit.c_str(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(quit_button);
 	button_index[last_index+=1] = quit_button;
- 
+
 	return true;
 }
 

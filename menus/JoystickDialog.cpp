@@ -34,29 +34,38 @@
 #include "JoystickDialog.h"
 #include "Configuration.h"
 #include "Keys.h"
+#include "FontManager.h"
 //#include <math.h>
 
 #define JD_WIDTH 244
 #define JD_HEIGHT 127
 
+static int get_menu_scale() {
+	FontManager *fm = Game::get_game()->get_font_manager();
+	if (fm && fm->is_korean_enabled() && Game::get_game()->is_original_plus())
+		return 3;
+	return 1;
+}
+
 JoystickDialog::JoystickDialog(GUI_CallBack *callback)
-          : GUI_Dialog(Game::get_game()->get_game_x_offset() + (Game::get_game()->get_game_width() - JD_WIDTH)/2,
-                       Game::get_game()->get_game_y_offset() + (Game::get_game()->get_game_height() - JD_HEIGHT)/2,
-                       JD_WIDTH, JD_HEIGHT, 244, 216, 131, GUI_DIALOG_UNMOVABLE) {
+          : GUI_Dialog(Game::get_game()->get_game_x_offset() + (Game::get_game()->get_game_width() - JD_WIDTH * get_menu_scale())/2,
+                       Game::get_game()->get_game_y_offset() + (Game::get_game()->get_game_height() - JD_HEIGHT * get_menu_scale())/2,
+                       JD_WIDTH * get_menu_scale(), JD_HEIGHT * get_menu_scale(), 244, 216, 131, GUI_DIALOG_UNMOVABLE) {
 	callback_object = callback;
 	init();
 	grab_focus();
 }
 
 bool JoystickDialog::init() {
-	int height = 12;
-	int buttonX[] = { 128, 142, 183};
-	int textX[] = { 9, 115, 170 };
-	int textY = 11;
-	int buttonY = 9;
-	uint8 sub_h = 4;
-	uint8 row_h = 13;
-	uint8 axis_w = 40;
+	int scale = get_menu_scale();
+	int height = 12 * scale;
+	int buttonX[] = { 128*scale, 142*scale, 183*scale};
+	int textX[] = { 9*scale, 115*scale, 170*scale };
+	int textY = 11 * scale;
+	int buttonY = 9 * scale;
+	uint8 sub_h = 4 * scale;
+	uint8 row_h = 13 * scale;
+	uint8 axis_w = 40 * scale;
 	b_index_num = -1;
 	last_index = 0;
 //	uint8 yesno_width = 32;
@@ -91,17 +100,21 @@ bool JoystickDialog::init() {
 
 // enable_button
 	widget = (GUI_Widget *) new GUI_Text(textX[0], textY, 0, 0, 0, "Enable joystick:", font);
+	if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
 	AddWidget(widget);
 	const char* const enabled_text[] = { "Joystick 0", "Joystick 1", "Joystick 2", "joystick 3", "Disabled", enable_buff };
-	enable_button = new GUI_TextToggleButton(this, buttonX[1], buttonY, 93, height, enabled_text, enable_selection == 5 ? 6 : 5, enable_selection, font, BUTTON_TEXTALIGN_CENTER, this, 0);
-	AddWidget(enable_button); 
+	enable_button = new GUI_TextToggleButton(this, buttonX[1], buttonY, 93*scale, height, enabled_text, enable_selection == 5 ? 6 : 5, enable_selection, font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	if (scale > 1) { enable_button->SetTextScale(scale); enable_button->ChangeTextButton(-1,-1,-1,-1,"Joystick 0",BUTTON_TEXTALIGN_CENTER); }
+	AddWidget(enable_button);
 	button_index[last_index] = enable_button;
 // hat_repeating_b
 	widget = (GUI_Widget *) new GUI_Text(textX[0], textY += row_h, 0, 0, 0, "Repeat when held:", font);
+	if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
 	AddWidget(widget);
 	const char* const hat_repeating_text[] = { "axes pair 1", "hat" };
-	hat_repeating_b = new GUI_TextToggleButton(this, buttonX[1], buttonY += row_h, 93, height, hat_repeating_text, 2, kb->is_hat_repeating(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
-	AddWidget(hat_repeating_b); 
+	hat_repeating_b = new GUI_TextToggleButton(this, buttonX[1], buttonY += row_h, 93*scale, height, hat_repeating_text, 2, kb->is_hat_repeating(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	if (scale > 1) { hat_repeating_b->SetTextScale(scale); hat_repeating_b->ChangeTextButton(-1,-1,-1,-1,"axes pair 1",BUTTON_TEXTALIGN_CENTER); }
+	AddWidget(hat_repeating_b);
 	button_index[last_index+= 1] = hat_repeating_b;
 // Axes Pairs
 	int str_i = 0; // used in loop
@@ -110,9 +123,11 @@ bool JoystickDialog::init() {
 	for(int i=0; i < 8; i++) {
 		if(i%2 == 0) { // pairs text
 			widget = (GUI_Widget *) new GUI_Text(textX[0], textY += row_h, 0, 0, 0, axes_str[str_i++], font);
+			if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
 			AddWidget(widget);
 		} // x and y text
 		widget = (GUI_Widget *) new GUI_Text(i%2 ? textX[2] : textX[1], textY += i%2 ? 0 : sub_h, 0, 0, 0, i%2 ? "Y:" : "X:", font);
+		if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
 		AddWidget(widget);
 	// x and y  button
 		uint8 index = get_axis_index(kb->get_axis(i));
@@ -125,11 +140,13 @@ bool JoystickDialog::init() {
 		button_index[last_index+= 1] = axes_index[i];
 	}
 // cancel_button
-	cancel_button = new GUI_Button(this, 59, JD_HEIGHT - 20, 54, height, "Cancel", font, BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	cancel_button = new GUI_Button(this, 59*scale, JD_HEIGHT*scale - 20*scale, 54*scale, height, "Cancel", font, BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	if (scale > 1) { cancel_button->SetTextScale(scale); cancel_button->ChangeTextButton(-1,-1,-1,-1,"Cancel",BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(cancel_button);
 	button_index[last_index += 1] = cancel_button;
 // save_button
-	save_button = new GUI_Button(this, 124, JD_HEIGHT - 20, 60, height, "Save", font, BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	save_button = new GUI_Button(this, 124*scale, JD_HEIGHT*scale - 20*scale, 60*scale, height, "Save", font, BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	if (scale > 1) { save_button->SetTextScale(scale); save_button->ChangeTextButton(-1,-1,-1,-1,"Save",BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(save_button);
 	button_index[last_index += 1] = save_button;
 

@@ -25,8 +25,10 @@
  */
 
 #include "GUI_text.h"
+#include <string>
 
 class GUI_Font;
+class KoreanFont;
 
 
 #define TEXTINPUT_CB_TEXT_READY 0x1
@@ -43,6 +45,12 @@ class GUI_TextInput : public GUI_Text
  Uint32 cursor_color;
  Uint32 selected_bgcolor;
 
+ // Korean input support
+ std::string composing_text;  // IME composition text (Korean input preview)
+ std::string utf8_text;       // UTF-8 text buffer for Korean
+ bool use_korean;
+ uint16 korean_cursor_x;      // Cached cursor x position for Korean mode
+
  public:
 
  GUI_TextInput(int x, int y, Uint8 r, Uint8 g, Uint8 b,
@@ -50,16 +58,22 @@ class GUI_TextInput : public GUI_Text
  ~GUI_TextInput();
 
  void release_focus();
+ void grab_focus();
 
  GUI_status MouseUp(int x, int y, int button);
  GUI_status KeyDown(SDL_Keysym key);
+ GUI_status TextInput(const char *text);
+ GUI_status TextEditing(const char *text, int start, int length);
 
  void add_char(char c);
+ void add_utf8_char(const char *utf8_char);
  void remove_char();
  void set_text(const char *new_text);
  char *get_text() { return text; }
+ std::string get_utf8_text();
 void SetDisplay(Screen *s);
 void display_cursor();
+void UpdateAreaSize(); // Update area size after SetTextScale
 
 	/* Show the widget  */
 	virtual void Display(bool full_redraw);

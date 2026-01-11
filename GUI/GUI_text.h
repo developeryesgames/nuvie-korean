@@ -35,11 +35,16 @@ protected:
 	char *text;
 	GUI_Font *font;
     uint16 max_width; //max line width. No limit if set to 0
+    int text_scale; // text scaling for Korean mode
 
 public:
 GUI_Text(int x, int y, Uint8 r, Uint8 g, Uint8 b, GUI_Font *gui_font, uint16 line_length);
 GUI_Text(int x, int y, Uint8 r, Uint8 g, Uint8 b, const char *str, GUI_Font *gui_font, uint16 line_length=0);
 ~GUI_Text();
+
+	/* Set text scale for Korean mode */
+	void SetTextScale(int scale) { text_scale = scale; }
+	int GetTextScale() { return text_scale; }
 
 	/* Show the widget  */
 	virtual void Display(bool full_redraw);

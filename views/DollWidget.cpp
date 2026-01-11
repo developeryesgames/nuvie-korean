@@ -310,13 +310,29 @@ void DollWidget::Display(bool full_redraw)
 inline void DollWidget::display_new_doll()
 {
 	if(doll_bg) {
-		SDL_Rect dst;
-		dst = area;
-		dst.w = 33;
-		dst.h = 33;
-		dst.x += 15;
-		dst.y += 15;
-		SDL_BlitSurface(doll_bg, NULL, surface, &dst);
+		// Check for Korean 4x mode
+		FontManager *font_manager = Game::get_game()->get_font_manager();
+		bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+		              font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+
+		if(use_4x) {
+			// Scale 4x for Korean mode
+			int scale = 4;
+			SDL_Rect dst;
+			dst.x = area.x + 15 * scale;
+			dst.y = area.y + 15 * scale;
+			dst.w = 33 * scale;
+			dst.h = 33 * scale;
+			SDL_BlitScaled(doll_bg, NULL, surface, &dst);
+		} else {
+			SDL_Rect dst;
+			dst = area;
+			dst.w = 33;
+			dst.h = 33;
+			dst.x += 15;
+			dst.y += 15;
+			SDL_BlitSurface(doll_bg, NULL, surface, &dst);
+		}
 	}
 }
 

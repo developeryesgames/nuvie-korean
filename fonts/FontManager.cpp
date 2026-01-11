@@ -269,6 +269,15 @@ bool FontManager::initKoreanFont()
     return false;
   }
 
+  // Check if anti-aliasing is enabled in config
+  std::string aa_enabled_str;
+  config->value("config/language/korean_antialiasing", aa_enabled_str, "no");
+  if(aa_enabled_str == "yes")
+  {
+    korean_font->setAntialiasing(true);
+    ConsoleAddInfo("FontManager: Korean font anti-aliasing enabled");
+  }
+
   korean_enabled = true;
   ConsoleAddInfo("FontManager: Korean font loaded successfully! korean_enabled=true");
   DEBUG(0, LEVEL_INFORMATIONAL, "Korean font loaded successfully\n");

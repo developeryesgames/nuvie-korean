@@ -90,3 +90,8 @@ int GUI_TextToggleButton::GetSelection() const
 {
 	return selection;
 }
+
+const char* GUI_TextToggleButton::GetCurrentText() const
+{
+	return texts[selection];
+}

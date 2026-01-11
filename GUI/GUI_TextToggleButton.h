@@ -43,6 +43,7 @@ public:
 	~GUI_TextToggleButton();
 
 	virtual int GetSelection() const;
+	virtual const char* GetCurrentText() const;
 
 	virtual GUI_status MouseUp(int x, int y, int button);
 	virtual GUI_status Activate_button(int x = 0,int y = 0,int button = 1);

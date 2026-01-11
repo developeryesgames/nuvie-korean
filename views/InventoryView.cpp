@@ -365,22 +365,24 @@ void InventoryView::display_inventory_weights()
  KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
  bool use_4x = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
 
- snprintf(string,9,"E:%u/%us", equip_weight,strength);
  if(use_4x) {
-   korean_font->drawStringUTF8(screen, string, area.x, area.y + 72 * 4, 0x48, 0, 1);
- } else {
-   font->drawString(screen, string, area.x, area.y+72);
- }
+   // Korean mode: "장착:" and "소지:"
+   char ko_string[32];
+   snprintf(ko_string, 32, "장착:%u/%us", equip_weight, strength);
+   korean_font->drawStringUTF8(screen, ko_string, area.x, area.y + 72 * 4, 0x48, 0, 1);
 
- snprintf(string,9,"I:%u/%us", inv_weight,strength*2);
- if(Game::get_game()->get_game_type() == NUVIE_GAME_U6) {
-   if(use_4x) {
-     korean_font->drawStringUTF8(screen, string, area.x + (4*16+8) * 4, area.y + 72 * 4, 0x48, 0, 1);
-   } else {
-     font->drawString(screen, string, area.x+4*16+8, area.y+72);
-   }
+   snprintf(ko_string, 32, "소지:%u/%us", inv_weight, strength*2);
+   korean_font->drawStringUTF8(screen, ko_string, area.x + (4*16+8) * 4, area.y + 72 * 4, 0x48, 0, 1);
  } else {
-   font->drawString(screen, string, area.x, area.y+80);
+   snprintf(string,9,"E:%u/%us", equip_weight,strength);
+   font->drawString(screen, string, area.x, area.y+72);
+
+   snprintf(string,9,"I:%u/%us", inv_weight,strength*2);
+   if(Game::get_game()->get_game_type() == NUVIE_GAME_U6) {
+     font->drawString(screen, string, area.x+4*16+8, area.y+72);
+   } else {
+     font->drawString(screen, string, area.x, area.y+80);
+   }
  }
 }
 
@@ -430,8 +432,13 @@ void InventoryView::display_combat_mode()
  }
  else {
    if(use_4x) {
-     // 4x mode: draw combat mode text with Korean font
-     korean_font->drawStringUTF8(screen, combat_mode_tbl_ko[index], area.x + 5*16*4, area.y + 88*4, 0x48, 0, 1);
+     // 4x mode: draw combat mode text with Korean font, centered in the triangle area
+     // Triangle area is from 5*16*4 (320) to end of area, center the text
+     uint16 text_width = korean_font->getStringWidthUTF8(combat_mode_tbl_ko[index], 1);
+     int combat_area_start = 5 * 16 * 4;  // 320px
+     int combat_area_width = area.w - combat_area_start;  // remaining width
+     int text_x = area.x + combat_area_start + (combat_area_width - text_width) / 2;
+     korean_font->drawStringUTF8(screen, combat_mode_tbl_ko[index], text_x, area.y + 88*4, 0x48, 0, 1);
    } else {
      font->drawString(screen, combat_mode_tbl[index], area.x+5*16, area.y+88);
    }

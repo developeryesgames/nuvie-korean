@@ -42,14 +42,33 @@
 #include "ViewManager.h"
 #include "InventoryView.h"
 #include "Keys.h"
+#include "FontManager.h"
+#include "KoreanTranslation.h"
 
 #define VD_WIDTH 311
 #define VD_HEIGHT 171 // add or subtract 13 if you add/remove a row
 
+// Helper to get translated text for VideoDialog
+static std::string get_vd_text(const char *english_text) {
+	KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+	if (kt && kt->isEnabled()) {
+		std::string t = kt->getUIText(english_text);
+		if (!t.empty()) return t;
+	}
+	return english_text;
+}
+
+static int get_menu_scale() {
+	FontManager *fm = Game::get_game()->get_font_manager();
+	if (fm && fm->is_korean_enabled() && Game::get_game()->is_original_plus())
+		return 3;
+	return 1;
+}
+
 VideoDialog::VideoDialog(GUI_CallBack *callback)
-          : GUI_Dialog(Game::get_game()->get_game_x_offset() + (Game::get_game()->get_game_width() - VD_WIDTH)/2,
-                       Game::get_game()->get_game_y_offset() + (Game::get_game()->get_game_height() - VD_HEIGHT)/2,
-                       VD_WIDTH, VD_HEIGHT, 244, 216, 131, GUI_DIALOG_UNMOVABLE) {
+          : GUI_Dialog(Game::get_game()->get_game_x_offset() + (Game::get_game()->get_game_width() - VD_WIDTH * get_menu_scale())/2,
+                       Game::get_game()->get_game_y_offset() + (Game::get_game()->get_game_height() - VD_HEIGHT * get_menu_scale())/2,
+                       VD_WIDTH * get_menu_scale(), VD_HEIGHT * get_menu_scale(), 244, 216, 131, GUI_DIALOG_UNMOVABLE) {
 	callback_object = callback;
 	non_square_pixels_button = NULL;
 	init();
@@ -57,12 +76,13 @@ VideoDialog::VideoDialog(GUI_CallBack *callback)
 }
 
 bool VideoDialog::init() {
-	int colX[] = { 9, 29, 63, 232, 270};
-	int height = 12;
-	int yesno_width = 32;
-	int buttonY = 9;
-	uint8 textY = 11;
-	uint8 row_h = 13;
+	int menu_scale = get_menu_scale();
+	int colX[] = { 9*menu_scale, 29*menu_scale, 63*menu_scale, 232*menu_scale, 270*menu_scale};
+	int height = 12 * menu_scale;
+	int yesno_width = 32 * menu_scale;
+	int buttonY = 9 * menu_scale;
+	int textY = 11 * menu_scale;  // Changed from uint8 to int to prevent overflow
+	int row_h = 13 * menu_scale;  // Changed from uint8 to int
 	last_index = 0;;
 	b_index_num = -1;
 	bool no_fullscreen = false; // no compatible fullscreen setting found
@@ -184,18 +204,29 @@ bool VideoDialog::init() {
 	bool first_index = true;
 #if SCALER_AND_SCALE_CANNOT_BE_CHANGED
 // fullscreen_toggle
+	// Get translated yes/no texts
+	std::string no_txt = get_vd_text("no");
+	std::string yes_txt = get_vd_text("yes");
+	const char* tr_yesno_text[] = { no_txt.c_str(), yes_txt.c_str() };
+
 	if(!no_fullscreen || screen->is_fullscreen())
 	{
-		widget = (GUI_Widget *) new GUI_Text(colX[0], textY, 0, 0, 0, "Fullscreen:", gui->get_font());
+		std::string txt = get_vd_text("Fullscreen:");
+		widget = (GUI_Widget *) new GUI_Text(colX[0], textY, 0, 0, 0, txt.c_str(), gui->get_font());
+		if (menu_scale > 1) ((GUI_Text*)widget)->SetTextScale(menu_scale);
 		AddWidget(widget);
 
-		fullscreen_button = new GUI_TextToggleButton(this, colX[4], buttonY, yesno_width, height, yesno_text, 2, screen->is_fullscreen(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
+		fullscreen_button = new GUI_TextToggleButton(this, colX[4], buttonY, yesno_width, height, tr_yesno_text, 2, screen->is_fullscreen(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
+		if (menu_scale > 1) { fullscreen_button->SetTextScale(menu_scale); fullscreen_button->ChangeTextButton(-1,-1,-1,-1,fullscreen_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 		AddWidget(fullscreen_button);
 		button_index[last_index] = fullscreen_button;
 
-		widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, "Non-square pixels:", gui->get_font());
+		txt = get_vd_text("Non-square pixels:");
+		widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, txt.c_str(), gui->get_font());
+		if (menu_scale > 1) ((GUI_Text*)widget)->SetTextScale(menu_scale);
 		AddWidget(widget);
-		non_square_pixels_button = new GUI_TextToggleButton(this, colX[4], buttonY += row_h, yesno_width, height, yesno_text, 2, screen->is_non_square_pixels(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
+		non_square_pixels_button = new GUI_TextToggleButton(this, colX[4], buttonY += row_h, yesno_width, height, tr_yesno_text, 2, screen->is_non_square_pixels(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
+		if (menu_scale > 1) { non_square_pixels_button->SetTextScale(menu_scale); non_square_pixels_button->ChangeTextButton(-1,-1,-1,-1,non_square_pixels_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 		AddWidget(non_square_pixels_button);
 		button_index[last_index += 1] = non_square_pixels_button;
 
@@ -208,43 +239,59 @@ bool VideoDialog::init() {
 	Configuration *config = Game::get_game()->get_config();
 
 // show roofs
-	widget = (GUI_Widget *) new GUI_Text(colX[0], textY += first_index ? 0 : row_h, 0, 0, 0, "Show roofs:", gui->get_font());
+	std::string txt = get_vd_text("Show roofs:");
+	widget = (GUI_Widget *) new GUI_Text(colX[0], textY += first_index ? 0 : row_h, 0, 0, 0, txt.c_str(), gui->get_font());
+	if (menu_scale > 1) ((GUI_Text*)widget)->SetTextScale(menu_scale);
 	AddWidget(widget);
-	roof_button = new GUI_TextToggleButton(this, colX[4], buttonY += first_index ? 0 : row_h, yesno_width, height, yesno_text, 2, game->is_roof_mode(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	roof_button = new GUI_TextToggleButton(this, colX[4], buttonY += first_index ? 0 : row_h, yesno_width, height, tr_yesno_text, 2, game->is_roof_mode(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	if (menu_scale > 1) { roof_button->SetTextScale(menu_scale); roof_button->ChangeTextButton(-1,-1,-1,-1,roof_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(roof_button);
 	button_index[(last_index += first_index ? 0 : 1)] = roof_button;
 // use_new_dolls
 	if(game->is_new_style()) {
 		doll_button = NULL; old_use_new_dolls = true;
 	} else {
-		widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, "Use new actor dolls:", gui->get_font());
+		txt = get_vd_text("Use new actor dolls:");
+		widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, txt.c_str(), gui->get_font());
+		if (menu_scale > 1) ((GUI_Text*)widget)->SetTextScale(menu_scale);
 		AddWidget(widget);
 		bool use_new_dolls;
 		config->value(config_get_game_key(config) + "/use_new_dolls", use_new_dolls, false);
 		old_use_new_dolls = use_new_dolls;
-		doll_button = new GUI_TextToggleButton(this, colX[4], buttonY += row_h, yesno_width, height, yesno_text, 2, use_new_dolls, font, BUTTON_TEXTALIGN_CENTER, this, 0);
+		doll_button = new GUI_TextToggleButton(this, colX[4], buttonY += row_h, yesno_width, height, tr_yesno_text, 2, use_new_dolls, font, BUTTON_TEXTALIGN_CENTER, this, 0);
+		if (menu_scale > 1) { doll_button->SetTextScale(menu_scale); doll_button->ChangeTextButton(-1,-1,-1,-1,doll_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 		AddWidget(doll_button);
 		button_index[last_index+=1] = doll_button;
 	}
 // tile_lighting_b
-	widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, "Use lighting data from map tiles:", gui->get_font());
+	txt = get_vd_text("Use tile lighting:");
+	widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, txt.c_str(), gui->get_font());
+	if (menu_scale > 1) ((GUI_Text*)widget)->SetTextScale(menu_scale);
 	AddWidget(widget);
 	old_use_tile_lighting = game->get_map_window()->using_map_tile_lighting;
-	tile_lighting_b = new GUI_TextToggleButton(this, colX[4], buttonY += row_h, yesno_width, height, yesno_text, 2, old_use_tile_lighting, font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	tile_lighting_b = new GUI_TextToggleButton(this, colX[4], buttonY += row_h, yesno_width, height, tr_yesno_text, 2, old_use_tile_lighting, font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	if (menu_scale > 1) { tile_lighting_b->SetTextScale(menu_scale); tile_lighting_b->ChangeTextButton(-1,-1,-1,-1,tile_lighting_b->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(tile_lighting_b);
 	button_index[last_index+=1] = tile_lighting_b;
 // needs restart text
-	widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h*2, 0, 0, 0, "The following require a restart:", gui->get_font());
+	txt = get_vd_text("Requires restart:");
+	widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h*2, 0, 0, 0, txt.c_str(), gui->get_font());
+	if (menu_scale > 1) ((GUI_Text*)widget)->SetTextScale(menu_scale);
 	AddWidget(widget);
 // lighting (needs reset)
-	widget = (GUI_Widget *) new GUI_Text(colX[1], textY += row_h, 0, 0, 0, "Lighting mode:", gui->get_font());
+	txt = get_vd_text("Lighting:");
+	widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, txt.c_str(), gui->get_font());
+	if (menu_scale > 1) ((GUI_Text*)widget)->SetTextScale(menu_scale);
 	AddWidget(widget);
 	const char* const lighting_text[] = { "none", "smooth", "original" };
-	lighting_button = new GUI_TextToggleButton(this, colX[3], buttonY += row_h*3, 70, height, lighting_text, 3, screen->get_old_lighting_style(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	lighting_button = new GUI_TextToggleButton(this, colX[3], buttonY += row_h*3, 70*menu_scale, height, lighting_text, 3, screen->get_old_lighting_style(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	if (menu_scale > 1) { lighting_button->SetTextScale(menu_scale); lighting_button->ChangeTextButton(-1,-1,-1,-1,lighting_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(lighting_button);
 	button_index[last_index+=1] = lighting_button;
 // sprites (needs reset)
-	widget = (GUI_Widget *) new GUI_Text(colX[1], textY += row_h, 0, 0, 0, "Use custom actor tiles:", gui->get_font());
+	txt = get_vd_text("Custom tiles:");
+	widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, txt.c_str(), gui->get_font());
+	if (menu_scale > 1) ((GUI_Text*)widget)->SetTextScale(menu_scale);
 	AddWidget(widget);
 	const char* const sprite_text[] = { "no", "yes", "default" };
 	std::string custom_tile_str;
@@ -252,32 +299,43 @@ bool VideoDialog::init() {
 	config->value(config_get_game_key(config) +"/custom_actor_tiles", custom_tile_str, "default");
 	if(custom_tile_str == "default")
 		custom_tiles = 2;
-	else 
+	else
 		custom_tiles = custom_tile_str == "yes" ? 1 : 0;
-	sprites_b = new GUI_TextToggleButton(this, colX[3], buttonY += row_h, 70, height, sprite_text, 3, custom_tiles, font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	sprites_b = new GUI_TextToggleButton(this, colX[3], buttonY += row_h, 70*menu_scale, height, sprite_text, 3, custom_tiles, font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	if (menu_scale > 1) { sprites_b->SetTextScale(menu_scale); sprites_b->ChangeTextButton(-1,-1,-1,-1,sprites_b->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(sprites_b);
 	button_index[last_index+=1] = sprites_b;
 // game_style (needs reset)
 	const char *game_style_text[4];
 	game_style_text[0] = "original style"; game_style_text[1] = "new style"; game_style_text[2] = "original+";
 	game_style_text[3] = "original+ full map";
-	widget = (GUI_Widget *) new GUI_Text(colX[1], textY += row_h, 0, 0, 0, "Game style:", gui->get_font());
+	txt = get_vd_text("Game style:");
+	widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, txt.c_str(), gui->get_font());
+	if (menu_scale > 1) ((GUI_Text*)widget)->SetTextScale(menu_scale);
 	AddWidget(widget);
-	game_style_button = new GUI_TextToggleButton(this, colX[3] - 84, buttonY += row_h, 154, height, game_style_text, 4, game->get_game_style(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	game_style_button = new GUI_TextToggleButton(this, colX[3] - 84*menu_scale, buttonY += row_h, 154*menu_scale, height, game_style_text, 4, game->get_game_style(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	if (menu_scale > 1) { game_style_button->SetTextScale(menu_scale); game_style_button->ChangeTextButton(-1,-1,-1,-1,game_style_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(game_style_button);
 	button_index[last_index+=1] = game_style_button;
 // dithering (needs reset)
-	widget = (GUI_Widget *) new GUI_Text(colX[1], textY += row_h, 0, 0, 0, "Old video graphics:", gui->get_font());
+	txt = get_vd_text("Video graphics:");
+	widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, txt.c_str(), gui->get_font());
+	if (menu_scale > 1) ((GUI_Text*)widget)->SetTextScale(menu_scale);
 	AddWidget(widget);
 	const char* const dither_text[] = { "no", "CGA", "EGA" };
 	dither_button = new GUI_TextToggleButton(this, colX[4], buttonY += row_h, yesno_width, height, dither_text, 3, game->get_dither()->get_mode(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	if (menu_scale > 1) { dither_button->SetTextScale(menu_scale); dither_button->ChangeTextButton(-1,-1,-1,-1,dither_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(dither_button);
 	button_index[last_index+=1] = dither_button;
 // cancel/save buttons
-	cancel_button = new GUI_Button(this, 95, VD_HEIGHT - 20, 54, height, "Cancel", font, BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	std::string cancel_txt = get_vd_text("Cancel");
+	std::string save_txt = get_vd_text("Save");
+	cancel_button = new GUI_Button(this, 95*menu_scale, VD_HEIGHT*menu_scale - 20*menu_scale, 54*menu_scale, height, cancel_txt.c_str(), font, BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	if (menu_scale > 1) { cancel_button->SetTextScale(menu_scale); cancel_button->ChangeTextButton(-1,-1,-1,-1,cancel_txt.c_str(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(cancel_button);
 	button_index[last_index+=1] = cancel_button;
-	save_button = new GUI_Button(this, 170, VD_HEIGHT - 20, 40, height, "Save", font, BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	save_button = new GUI_Button(this, 170*menu_scale, VD_HEIGHT*menu_scale - 20*menu_scale, 40*menu_scale, height, save_txt.c_str(), font, BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	if (menu_scale > 1) { save_button->SetTextScale(menu_scale); save_button->ChangeTextButton(-1,-1,-1,-1,save_txt.c_str(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(save_button);
 	button_index[last_index+=1] = save_button;
 

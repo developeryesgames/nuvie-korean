@@ -26,7 +26,12 @@
 #include "GUI_TextInput.h"
 #include "GUI_font.h"
 #include "Keys.h"
+#include "Game.h"
+#include "FontManager.h"
+#include "KoreanFont.h"
+#include "Screen.h"
 #include <stdlib.h>
+#include <cstring>
 
 GUI_TextInput:: GUI_TextInput(int x, int y, Uint8 r, Uint8 g, Uint8 b, char *str,
                               GUI_Font *gui_font, uint16 width, uint16 height, GUI_CallBack *callback)
@@ -37,6 +42,10 @@ GUI_TextInput:: GUI_TextInput(int x, int y, Uint8 r, Uint8 g, Uint8 b, char *str
  cursor_color = 0;
  selected_bgcolor = 0;
 
+ // Check for Korean mode
+ FontManager *fm = Game::get_game()->get_font_manager();
+ use_korean = fm && fm->is_korean_enabled() && Game::get_game()->is_original_plus();
+
  text = (char *)malloc(max_width * max_height + 1);
 
  if(text == NULL)
@@ -46,12 +55,20 @@ GUI_TextInput:: GUI_TextInput(int x, int y, Uint8 r, Uint8 g, Uint8 b, char *str
   }
 
  strncpy(text, str, max_width * max_height);
+ text[max_width * max_height] = '\0';
+
+ // Initialize UTF-8 buffer for Korean
+ if(use_korean) {
+   utf8_text = str;
+   korean_cursor_x = 0;
+ }
 
  pos = strlen(text);
  length = pos;
 
- area.w = max_width * font->CharWidth();
- area.h = max_height * font->CharHeight();
+ int scale = text_scale > 1 ? text_scale : 1;
+ area.w = max_width * font->CharWidth() * scale;
+ area.h = max_height * font->CharHeight() * scale;
 }
 
 GUI_TextInput::~GUI_TextInput()
@@ -62,14 +79,19 @@ GUI_TextInput::~GUI_TextInput()
 void GUI_TextInput::release_focus()
 {
  GUI_Widget::release_focus();
- 
-// SDL_EnableUNICODE(0); //disable unicode.
+ composing_text.clear();
+ SDL_StopTextInput();
+}
+
+void GUI_TextInput::grab_focus()
+{
+ GUI_Widget::grab_focus();
+ composing_text.clear();
+ SDL_StartTextInput();
 }
 
 GUI_status GUI_TextInput::MouseUp(int x, int y, int button)
 {
-// if(button == SDL_BUTTON_WHEELUP || button == SDL_BUTTON_WHEELDOWN)
-//   return GUI_PASS;
  //release focus if we click outside the text box.
  if(focused && !HitRect(x, y))
    release_focus();
@@ -78,7 +100,6 @@ GUI_status GUI_TextInput::MouseUp(int x, int y, int button)
    if(!focused)
      {
       grab_focus();
-// FIXME SDL2     SDL_EnableUNICODE(1); //turn on unicode processing.
      }
   }
 
@@ -88,12 +109,13 @@ GUI_status GUI_TextInput::MouseUp(int x, int y, int button)
 GUI_status GUI_TextInput::KeyDown(SDL_Keysym key)
 {
  char ascii = get_ascii_char_from_keysym(key);
+ bool is_printable = isprint(ascii);
 
  if(!focused)
    return GUI_PASS;
 
 
- if(!isprint(ascii) && key.sym != SDLK_BACKSPACE)
+ if(!is_printable && key.sym != SDLK_BACKSPACE)
  {
     KeyBinder *keybinder = Game::get_game()->get_keybinder();
     ActionType a = keybinder->get_ActionType(key);
@@ -121,9 +143,26 @@ GUI_status GUI_TextInput::KeyDown(SDL_Keysym key)
     case SDLK_CAPSLOCK : break;
 
     case SDLK_KP_ENTER:
-    case SDLK_RETURN : if(callback_object)
-                         callback_object->callback(TEXTINPUT_CB_TEXT_READY, this, text);
-    case SDLK_ESCAPE : release_focus(); break;
+    case SDLK_RETURN :
+                       // Finalize any composing text before submitting
+                       if(!composing_text.empty())
+                       {
+                         add_utf8_char(composing_text.c_str());
+                         composing_text.clear();
+                       }
+                       if(callback_object)
+                         callback_object->callback(TEXTINPUT_CB_TEXT_READY, this, use_korean ? (void*)utf8_text.c_str() : (void*)text);
+                       release_focus();
+                       break;
+
+    case SDLK_ESCAPE :
+                       // Clear composing text on escape
+                       if(!composing_text.empty())
+                       {
+                         composing_text.clear();
+                       }
+                       release_focus();
+                       break;
 
     case SDLK_HOME : pos = 0; break;
     case SDLK_END  : pos = length; break;
@@ -145,10 +184,34 @@ GUI_status GUI_TextInput::KeyDown(SDL_Keysym key)
                             }
                           break;
 
-    case SDLK_BACKSPACE : remove_char(); break; //delete the character to the left of the cursor
+    case SDLK_BACKSPACE :
+                          // If composing, clear composing text first
+                          if(!composing_text.empty())
+                          {
+                            composing_text.clear();
+                          }
+                          else if(use_korean)
+                          {
+                            // Remove last UTF-8 character from utf8_text
+                            if(!utf8_text.empty())
+                            {
+                              // Find start of last UTF-8 character
+                              size_t i = utf8_text.length() - 1;
+                              while(i > 0 && (utf8_text[i] & 0xC0) == 0x80)
+                                i--;
+                              utf8_text.erase(i);
+                            }
+                          }
+                          else
+                          {
+                            remove_char(); //delete the character to the left of the cursor
+                          }
+                          break;
 
     case SDLK_UP :
     case SDLK_KP_8 :
+                    // Disable up/down cycling in Korean mode
+                    if(use_korean) break;
                     if(pos == length)
                     {
                         if(length+1 > max_width * max_height)
@@ -172,7 +235,10 @@ GUI_status GUI_TextInput::KeyDown(SDL_Keysym key)
                     break;
 
     case SDLK_KP_2 :
-    case SDLK_DOWN : if(pos == length)
+    case SDLK_DOWN :
+                     // Disable up/down cycling in Korean mode
+                     if(use_korean) break;
+                     if(pos == length)
                      {
                          if(length+1 > max_width * max_height)
                              break;
@@ -200,8 +266,12 @@ GUI_status GUI_TextInput::KeyDown(SDL_Keysym key)
                      break;
 
     default :
-              if(isprint(ascii))
-                  add_char(ascii); break;
+              // In Korean mode, let TextInput() handle printable characters
+              if(use_korean && is_printable)
+                return GUI_YUM;
+              if(is_printable)
+                  add_char(ascii);
+              break;
    }
 
 
@@ -267,6 +337,13 @@ void GUI_TextInput::SetDisplay(Screen *s)
     selected_bgcolor = SDL_MapRGB(surface->format, 0x5a, 0x6e, 0x91);
 }
 
+void GUI_TextInput::UpdateAreaSize()
+{
+ int scale = text_scale > 1 ? text_scale : 1;
+ area.w = max_width * font->CharWidth() * scale;
+ area.h = max_height * font->CharHeight() * scale;
+}
+
 
 /* Show the widget  */
 void GUI_TextInput:: Display(bool full_redraw)
@@ -278,6 +355,58 @@ void GUI_TextInput:: Display(bool full_redraw)
     r = area;
     SDL_FillRect(surface, &r, selected_bgcolor);
    }
+
+ // In Korean mode, draw UTF-8 text using KoreanFont
+ if(use_korean)
+ {
+   FontManager *fm = Game::get_game()->get_font_manager();
+   KoreanFont *korean_font = fm ? fm->get_korean_font() : NULL;
+   Screen *scr = Game::get_game()->get_screen();
+
+   if(korean_font && scr)
+   {
+     // Use scale 1 for KoreanFont - it has its own internal scaling
+     uint8 font_scale = 1;
+     uint16 draw_x = area.x;
+     uint16 draw_y = area.y;
+
+     // Use white color (0x0F) for save slot text
+     uint8 font_color = 0x0F;
+
+     // Draw the UTF-8 text (includes both ASCII and Korean)
+     // Use drawStringUTF8 return value for accurate width
+     uint16 text_width = 0;
+     if(!utf8_text.empty())
+     {
+       text_width = korean_font->drawStringUTF8(scr, utf8_text.c_str(), draw_x, draw_y, font_color, 0, font_scale);
+       draw_x += text_width;
+     }
+
+     // Draw composing text with underline
+     uint16 composing_width = 0;
+     if(!composing_text.empty() && focused)
+     {
+       composing_width = korean_font->drawStringUTF8(scr, composing_text.c_str(),
+                                  draw_x, draw_y, font_color, 0, font_scale);
+
+       // Draw underline under composing text
+       SDL_Rect underline;
+       underline.x = draw_x;
+       underline.y = draw_y + korean_font->getCharHeight() - 1;
+       underline.w = composing_width;
+       underline.h = 1;
+       SDL_FillRect(surface, &underline, cursor_color);
+     }
+
+     // Cache cursor x position for display_cursor()
+     korean_cursor_x = area.x + text_width + composing_width;
+
+     if(focused)
+       display_cursor();
+
+     return;
+   }
+ }
 
  GUI_Text::Display(full_redraw);
 
@@ -295,15 +424,75 @@ void GUI_TextInput::display_cursor()
  x = pos % max_width;
  y = pos / max_width;
 
- cw = font->CharWidth();
- ch = font->CharHeight();
+ int scale = text_scale > 1 ? text_scale : 1;
+ cw = font->CharWidth() * scale;
+ ch = font->CharHeight() * scale;
 
  r.x = area.x + x * cw;
  r.y = area.y + y * ch;
- r.w = 1;
+ r.w = scale;
  r.h = ch;
+
+ // In Korean mode, use cached cursor position from Display()
+ if(use_korean)
+ {
+   FontManager *fm = Game::get_game()->get_font_manager();
+   KoreanFont *korean_font = fm ? fm->get_korean_font() : NULL;
+   if(korean_font)
+   {
+     r.x = korean_cursor_x;
+     r.y = area.y;  // Always at top row for single-line input
+     r.w = 2;  // Slightly wider cursor for visibility
+     r.h = korean_font->getCharHeight();
+   }
+ }
 
  SDL_FillRect(surface, &r, cursor_color);
 
  return;
+}
+
+GUI_status GUI_TextInput::TextInput(const char *input_text)
+{
+ if(!focused || input_text == NULL || input_text[0] == '\0')
+   return GUI_PASS;
+
+ // Clear composing text since we got a finalized character
+ composing_text.clear();
+
+ // Add the UTF-8 text
+ add_utf8_char(input_text);
+
+ return GUI_YUM;
+}
+
+GUI_status GUI_TextInput::TextEditing(const char *input_text, int start, int len)
+{
+ if(!focused)
+   return GUI_PASS;
+
+ // Store the composing text for display
+ // This is the text being composed by the IME (e.g., Korean "ㄱ" before becoming "그")
+ std::string new_composing = (input_text != NULL) ? input_text : "";
+
+ if(composing_text != new_composing)
+ {
+   composing_text = new_composing;
+ }
+
+ return GUI_YUM;
+}
+
+void GUI_TextInput::add_utf8_char(const char *utf8_char)
+{
+ if(utf8_char == NULL || utf8_char[0] == '\0')
+   return;
+
+ // Add to UTF-8 buffer (used in Korean mode)
+ utf8_text += utf8_char;
+}
+
+std::string GUI_TextInput::get_utf8_text()
+{
+ return utf8_text;
 }

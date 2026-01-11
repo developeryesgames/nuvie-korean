@@ -111,6 +111,7 @@ class Screen
    bool blit2x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16 src_bpp, uint16 src_w, uint16 src_h, uint16 src_pitch, bool trans=false, SDL_Rect *clip_rect=NULL);
    bool blit3x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16 src_bpp, uint16 src_w, uint16 src_h, uint16 src_pitch, bool trans=false, SDL_Rect *clip_rect=NULL);
    bool blit4x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16 src_bpp, uint16 src_w, uint16 src_h, uint16 src_pitch, bool trans=false, SDL_Rect *clip_rect=NULL);
+   bool blit4xWithAlpha(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, unsigned char *alpha_buf, uint16 src_bpp, uint16 src_w, uint16 src_h, uint16 src_pitch);
    void blitbitmap(uint16 dest_x, uint16 dest_y, const unsigned char *src_buf, uint16 src_w, uint16 src_h, uint8 fg_color, uint8 bg_color);
    void blitbitmap4x(uint16 dest_x, uint16 dest_y, const unsigned char *src_buf, uint16 src_w, uint16 src_h, uint8 fg_color, uint8 bg_color);
 
@@ -136,6 +137,7 @@ class Screen
 
    unsigned char *copy_area(SDL_Rect *area = NULL, unsigned char *buf = NULL);
    unsigned char *copy_area(SDL_Rect *area, uint16 down_scale);
+   unsigned char *copy_area_point(SDL_Rect *area, uint16 down_scale); // Point sampling (nearest neighbor)
 
    void restore_area(unsigned char *pixels, SDL_Rect *area = NULL, unsigned char *target = NULL, SDL_Rect *target_area = NULL, bool free_src = true);
 

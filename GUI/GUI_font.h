@@ -46,6 +46,9 @@ public:
   /* put the text onto the given surface using the preset mode and colors */
   virtual void TextOut(SDL_Surface *context, int x, int y, const char* text, int line_wrap=0);
 
+  /* put the text onto the given surface with scaling */
+  virtual void TextOutScaled(SDL_Surface *context, int x, int y, const char* text, int scale);
+
   /* yields pixel width and height of a string when printed with this font */
   void TextExtent(const char *text, int *w, int *h, int line_wrap=0);
 

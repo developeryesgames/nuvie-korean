@@ -47,6 +47,9 @@ private:
     // Transparent color key
     uint8 transparent_r, transparent_g, transparent_b;
 
+    // Anti-aliasing option
+    bool enable_antialiasing;
+
 public:
     KoreanFont();
     ~KoreanFont();
@@ -84,6 +87,10 @@ public:
 
     // Check if this font supports a character
     bool hasChar(uint32 codepoint);
+
+    // Anti-aliasing control
+    void setAntialiasing(bool enable) { enable_antialiasing = enable; }
+    bool isAntialiasingEnabled() const { return enable_antialiasing; }
 };
 
 #endif /* __KoreanFont_h__ */
