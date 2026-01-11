@@ -39,6 +39,7 @@
 #include "MapWindow.h"
 #include "Script.h"
 #include "MsgScroll.h"
+#include "KoreanTranslation.h"
 
 static const int obj_egg_table[5] = {0,   // NUVIE_GAME_NONE
                                      335, // NUVIE_GAME_U6
@@ -1181,7 +1182,8 @@ bool ObjManager::obj_is_damaging(Obj *obj, Actor *actor)
 		if(actor)
 		{
 			MsgScroll *scroll = Game::get_game()->get_scroll();
-			scroll->display_string("\n\nNot possible\n");
+			KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+			scroll->display_string((kt && kt->isEnabled()) ? "\n\n불가능\n" : "\n\nNot possible\n");
 			Game::get_game()->get_script()->call_actor_tile_dmg(actor, tile->tile_num);
 			actor->display_condition(); // indicate that object hurt the player
 			scroll->display_string("\n");

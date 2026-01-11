@@ -3263,8 +3263,8 @@ void MapWindow::create_thumbnail()
  if (Game::get_game()->is_original_plus()) {
    FontManager *fm = Game::get_game()->get_font_manager();
    if (fm && fm->is_korean_enabled()) {
-     thumb_scale = 4;
-     screen_scale = 4;  // 4x scaled screen
+     int map_tile_scale = 4; Game::get_game()->get_config()->value("config/video/map_tile_scale", map_tile_scale, 4); thumb_scale = map_tile_scale;
+     screen_scale = map_tile_scale;  // 4x scaled screen
      use_point_sampling = true;  // Use point sampling for clean pixel art
    }
  }

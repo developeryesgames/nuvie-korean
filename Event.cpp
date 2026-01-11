@@ -1318,11 +1318,11 @@ bool Event::pushTo(Obj *obj, Actor *actor) {
       else
         scroll->display_string("\nOnly spells can go into the spellbook.\n\n");
     } else if (game->get_game_type() == NUVIE_GAME_U6 && !obj->container)
-      scroll->display_string("\nnot a container\n\n");
+      scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "\n용기가 아닙니다\n\n" : "\nnot a container\n\n");
     else if (game->get_game_type() == NUVIE_GAME_U6)
-      scroll->display_string("\nNot possible!\n\n");
+      scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "\n불가능!\n\n" : "\nNot possible!\n\n");
     else
-      scroll->display_string("\nYou can't do that!\n\n");
+      scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "\n그렇게 할 수 없음!\n\n" : "\nYou can't do that!\n\n");
   }
 
   scroll->display_prompt();
@@ -1355,7 +1355,7 @@ bool Event::pushTo(sint16 rel_x, sint16 rel_y, bool push_from) {
 
   if (push_actor) {
     if (!push_actor->can_be_moved() || push_actor->get_tile_type() != ACTOR_ST) {
-      scroll->display_string("Not possible\n\n");
+      scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "불가능\n\n" : "Not possible\n\n");
       scroll->display_prompt();
       endAction();
       return false;
@@ -2842,7 +2842,7 @@ bool Event::perform_drop() {
     return false;
   if (drop_x == -1 || drop_y == -1) {
     if (input.loc == NULL) {
-      scroll->display_string("Not possible\n");
+      scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "불가능\n" : "Not possible\n");
       endAction(true);
       return false;
     }

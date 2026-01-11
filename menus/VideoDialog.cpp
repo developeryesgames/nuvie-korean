@@ -46,7 +46,7 @@
 #include "KoreanTranslation.h"
 
 #define VD_WIDTH 311
-#define VD_HEIGHT 184 // add or subtract 13 if you add/remove a row
+#define VD_HEIGHT 197 // add or subtract 13 if you add/remove a row
 
 // Helper to get translated text for VideoDialog
 static std::string get_vd_text(const char *english_text) {

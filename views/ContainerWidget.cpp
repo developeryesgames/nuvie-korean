@@ -42,6 +42,7 @@
 #include "InventoryFont.h"
 #include "ViewManager.h"
 #include "FontManager.h"
+#include "KoreanTranslation.h"
 
 #define USE_BUTTON 1 /* FIXME: put this in a common location */
 #define ACTION_BUTTON 3
@@ -457,7 +458,8 @@ bool ContainerWidget::drag_accept_drop(int x, int y, int message, void *data)
     }
     if(!obj_manager->can_get_obj(obj))
     {
-        Game::get_game()->get_scroll()->message("Not possible.\n\n");
+        KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+        Game::get_game()->get_scroll()->message((kt && kt->isEnabled()) ? "불가능.\n\n" : "Not possible.\n\n");
         return false;
     }
     Actor *grabber = actor;
@@ -466,14 +468,16 @@ bool ContainerWidget::drag_accept_drop(int x, int y, int message, void *data)
     if(container_obj && !container_obj->is_in_inventory()
        && !Game::get_game()->get_map_window()->can_get_obj(grabber, container_obj))
     {
-        Game::get_game()->get_scroll()->message("\n\nblocked\n\n");
+        KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+        Game::get_game()->get_scroll()->message((kt && kt->isEnabled()) ? "\n\n막힘\n\n" : "\n\nblocked\n\n");
         return false;
     }
     if(!obj->is_in_inventory() && !obj->is_readied())
     {
         if(!Game::get_game()->get_map_window()->can_get_obj(grabber, obj))
         {
-            Game::get_game()->get_scroll()->message("\n\nblocked\n\n");
+            KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+            Game::get_game()->get_scroll()->message((kt && kt->isEnabled()) ? "\n\n막힘\n\n" : "\n\nblocked\n\n");
             return false;
         }
         if(obj_manager->obj_is_damaging(obj, Game::get_game()->get_player()->get_actor()))
