@@ -1,6 +1,8 @@
 #include <cstring>
 #include "nuvieDefs.h"
 #include "Game.h"
+#include "Configuration.h"
+#include "FontManager.h"
 
 #include "Actor.h"
 #include "Map.h"
@@ -1207,6 +1209,15 @@ bool FadeEffect::pixelated_fade_core(uint32 pixels_to_check, sint16 fade_to)
     uint16 fade_height = fade_from ? fade_from->h : overlay->h-fade_y;
     uint8 color = fade_to;
 
+    // Get pixel block size for Korean scaled mode
+    int pixel_scale = 1;
+    if (Game::get_game()->is_original_plus()) {
+        FontManager *fm = Game::get_game()->get_font_manager();
+        if (fm && fm->is_korean_enabled()) {
+            Game::get_game()->get_config()->value("config/video/map_tile_scale", pixel_scale, 4);
+        }
+    }
+
     if(fade_to == -1 && fade_from == NULL)
     {
       return false;
@@ -1214,22 +1225,34 @@ bool FadeEffect::pixelated_fade_core(uint32 pixels_to_check, sint16 fade_to)
 
     while(p < pixels_to_check)
     {
-        uint16 x = uint16(float(NUVIE_RAND())*(fade_width-1)/NUVIE_RAND_MAX) + fade_x,
-               y = uint16(float(NUVIE_RAND())*(fade_height-1)/NUVIE_RAND_MAX) + fade_y;
-        if(x >= overlay->w) x = overlay->w-1; // prevent overflow if fade_from is too big
-        if(y >= overlay->h) y = overlay->h-1;
+        // Align x, y to pixel_scale grid
+        uint16 x = uint16(float(NUVIE_RAND())*(fade_width/pixel_scale-1)/NUVIE_RAND_MAX) * pixel_scale + fade_x,
+               y = uint16(float(NUVIE_RAND())*(fade_height/pixel_scale-1)/NUVIE_RAND_MAX) * pixel_scale + fade_y;
+        if(x >= overlay->w) x = (overlay->w-1) / pixel_scale * pixel_scale;
+        if(y >= overlay->h) y = (overlay->h-1) / pixel_scale * pixel_scale;
         rnum = y*overlay->w + x;
-//ERIC        rnum = y*overlay->pitch + x;
-				
+
         if(fade_to == -1) // get color from "fade_from"
         {
-            x -= fade_x; y -= fade_y;
-            color = from_pixels[y*fade_from->w + x];
+            uint16 fx = x - fade_x, fy = y - fade_y;
+            color = from_pixels[fy*fade_from->w + fx];
         }
         if(pixels[rnum] != color)
         {
-            pixels[rnum] = color;
-            ++colored, ++colored_total; // another pixel was set
+            // Fill a pixel_scale x pixel_scale block
+            for(int by = 0; by < pixel_scale && (y + by) < overlay->h; by++) {
+                for(int bx = 0; bx < pixel_scale && (x + bx) < overlay->w; bx++) {
+                    uint32 block_idx = (y + by) * overlay->w + (x + bx);
+                    if(fade_to == -1 && fade_from) {
+                        uint16 fx = (x - fade_x) + bx, fy = (y - fade_y) + by;
+                        if(fx < fade_from->w && fy < fade_from->h)
+                            pixels[block_idx] = from_pixels[fy*fade_from->w + fx];
+                    } else {
+                        pixels[block_idx] = color;
+                    }
+                }
+            }
+            ++colored, ++colored_total; // another pixel block was set
         }
         ++p;
     }
