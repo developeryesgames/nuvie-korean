@@ -204,6 +204,9 @@ void AnimManager::drawTile(Tile *tile, uint16 x, uint16 y)
     if(scale == 4)
         viewsurf->blit4x(mapwindow_x_offset+x*4, mapwindow_y_offset+y*4, tile->data, 8, 16, 16, 16,
                          tile->transparent, &viewport);
+    else if(scale == 3)
+        viewsurf->blit3x(mapwindow_x_offset+x*3, mapwindow_y_offset+y*3, tile->data, 8, 16, 16, 16,
+                         tile->transparent, &viewport);
     else if(scale == 2)
         viewsurf->blit2x(mapwindow_x_offset+x*2, mapwindow_y_offset+y*2, tile->data, 8, 16, 16, 16,
                          tile->transparent, &viewport);

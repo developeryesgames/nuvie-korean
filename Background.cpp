@@ -166,9 +166,11 @@ void Background::Display(bool full_redraw)
                 screen->blit(panel_x, y_off, panel_ptr, 8, panel_width, bg_h, bg_w, true);
             } else if(use_ui_scale) {
                 // Scale the full paper background so the map can use a proper frame.
-                if(ui_scale == 4)
+                if(ui_scale >= 4)
                     screen->blit4x(x_off, y_off, background->get_data(), 8, bg_w, bg_h, bg_w, false);
-                else if(ui_scale == 2)
+                else if(ui_scale == 3)
+                    screen->blit3x(x_off, y_off, background->get_data(), 8, bg_w, bg_h, bg_w, false);
+                else if(ui_scale >= 2)
                     screen->blit2x(x_off, y_off, background->get_data(), 8, bg_w, bg_h, bg_w, false);
                 else
                     screen->blit(x_off, y_off, background->get_data(), 8, bg_w, bg_h, bg_w, true);

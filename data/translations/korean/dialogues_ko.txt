@@ -2277,7 +2277,7 @@
 56|t|개
 56|u|개
 
-57|a huge, dark-skinned man with a close-set face.|얼굴 윤곽이 뚜렷하고 어두운 피부를 가진 거구의 남자다.
+57|a huge, dark-skined man with a close-set face.|얼굴 윤곽이 뚜렷하고 어두운 피부를 가진 거구의 남자다.
 57|"|"
 57|"$1 cost too much for you, $Y!"|"$1 비싸다, $Y!"
 57|"$1 is too heavy for you, $Y!"|"$1 무겁다, $Y!"
@@ -3536,6 +3536,8 @@
 83|His eyes light up "He is one of the friendliest people in this hamlet."|그의 눈이 반짝인다. "그는 이 마을에서 가장 친절한 사람 중 하나라오."
 83|Speaking again, his voice is a whisper. "They found her body along the @coast south of here."|다시 말을 시작하자 그의 목소리는 속삭임이 된다. "사람들은 여기 남쪽 @해안(coast) 을 따라 그녀의 시신을 찾아냈소."
 83|s|들
+83|You sleep in a comfortable bed...|편안한 침대에서 잠이 듭니다...
+83|You wake rested and eat a large breakfast.|개운하게 깨어나 푸짐한 아침 식사를 합니다.
 
 84|a tiny little man with wild eyes.|눈이 번뜩이는 아주 작은 체구의 남자다.
 84|"'Course my path takes me right by @Gideon's garden."|"당연히 내 길은 @기드온(Gideon) 의 정원을 바로 지나간다네."

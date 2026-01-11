@@ -65,10 +65,11 @@ void GUI_DragManager::drop(GUI_DragArea *drag_target, int x, int y)
  if(is_out_of_range)
  {
    MsgScroll *scroll = Game::get_game()->get_scroll();
-   { KoreanTranslation *k = Game::get_game()->get_korean_translation();
-   scroll->display_string((k && k->isEnabled()) ? "이동-" : "Move-"); }
+   KoreanTranslation *k = Game::get_game()->get_korean_translation();
+   bool use_korean = (k && k->isEnabled());
+   scroll->display_string(use_korean ? "이동-" : "Move-");
    scroll->display_string(Game::get_game()->get_obj_manager()->look_obj((Obj*)data)); // getting obj name
-   scroll->message(".\n\nOut of range!\n\n");
+   scroll->message(use_korean ? ".\n\n범위를 벗어났습니다!\n\n" : ".\n\nOut of range!\n\n");
    drag_source->drag_drop_failed(x,y,message,data);
  }
  else if(drag_target->drag_accept_drop(x,y,message,data))

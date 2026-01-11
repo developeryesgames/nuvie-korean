@@ -209,6 +209,8 @@ set(SOURCE_FILES
     fonts/U6Font.h
     fonts/WOUFont.cpp
     fonts/WOUFont.h
+    fonts/KoreanFont.cpp
+    fonts/KoreanFont.h
     GUI/GUI.cpp
     GUI/GUI.h
     GUI/GUI_area.cpp
@@ -653,7 +655,9 @@ set(SOURCE_FILES
     TimedEvent.h
     U6objects.h
     Weather.cpp
-    Weather.h)
+    Weather.h
+    KoreanTranslation.cpp
+    KoreanTranslation.h)
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     list(APPEND SOURCE_FILES msvc/dirent.cpp msvc/dirent.h)

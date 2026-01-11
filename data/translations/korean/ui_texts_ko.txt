@@ -459,8 +459,9 @@ what?|무엇?
 nothing|아무것도 없음
 nothing\!|아무것도 없음\!
 nothing.|아무것도 없음.
-On what: |무엇에: 
-On Whom: |누구에게: 
+On what: |무엇에:
+On What: |무엇에:
+On Whom: |누구에게:
 Searching here, you find |수색하니  
 
 # System Messages

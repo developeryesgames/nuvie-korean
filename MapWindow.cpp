@@ -1135,6 +1135,8 @@ void MapWindow::Display(bool full_redraw)
             tile = tile_manager->get_anim_base_tile(map_ptr[j]);
             if(map_tile_scale == 4)
               screen->blit4x(draw_x,draw_y,(unsigned char *)tile->data,8,16,16,16,tile->transparent,&clip_rect);
+            else if(map_tile_scale == 3)
+              screen->blit3x(draw_x,draw_y,(unsigned char *)tile->data,8,16,16,16,tile->transparent,&clip_rect);
             else if(map_tile_scale == 2)
               screen->blit2x(draw_x,draw_y,(unsigned char *)tile->data,8,16,16,16,tile->transparent,&clip_rect);
             else
@@ -1144,6 +1146,8 @@ void MapWindow::Display(bool full_redraw)
          tile = tile_manager->get_tile(map_ptr[j]);
          if(map_tile_scale == 4)
            screen->blit4x(draw_x,draw_y,(unsigned char *)tile->data,8,16,16,16,tile->transparent,&clip_rect);
+         else if(map_tile_scale == 3)
+           screen->blit3x(draw_x,draw_y,(unsigned char *)tile->data,8,16,16,16,tile->transparent,&clip_rect);
          else if(map_tile_scale == 2)
            screen->blit2x(draw_x,draw_y,(unsigned char *)tile->data,8,16,16,16,tile->transparent,&clip_rect);
          else
@@ -1179,6 +1183,8 @@ void MapWindow::Display(bool full_redraw)
    sint16 cy = area.y + cursor_y * tile_size;
    if(map_tile_scale == 4)
      screen->blit4x(cx,cy,(unsigned char *)cursor_tile->data,8,16,16,16,true,&clip_rect);
+   else if(map_tile_scale == 3)
+     screen->blit3x(cx,cy,(unsigned char *)cursor_tile->data,8,16,16,16,true,&clip_rect);
    else if(map_tile_scale == 2)
      screen->blit2x(cx,cy,(unsigned char *)cursor_tile->data,8,16,16,16,true,&clip_rect);
    else
@@ -1191,6 +1197,8 @@ void MapWindow::Display(bool full_redraw)
    sint16 cy = area.y + cursor_y * tile_size;
    if(map_tile_scale == 4)
      screen->blit4x(cx,cy,(unsigned char *)use_tile->data,8,16,16,16,true,&clip_rect);
+   else if(map_tile_scale == 3)
+     screen->blit3x(cx,cy,(unsigned char *)use_tile->data,8,16,16,16,true,&clip_rect);
    else if(map_tile_scale == 2)
      screen->blit2x(cx,cy,(unsigned char *)use_tile->data,8,16,16,16,true,&clip_rect);
    else
@@ -1551,6 +1559,8 @@ inline void MapWindow::drawTopTile(Tile *tile, uint16 x, uint16 y, bool toptile)
        {
         if(map_tile_scale == 4)
           screen->blit4x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+        else if(map_tile_scale == 3)
+          screen->blit3x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
         else if(map_tile_scale == 2)
           screen->blit2x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
         else
@@ -1563,6 +1573,8 @@ inline void MapWindow::drawTopTile(Tile *tile, uint16 x, uint16 y, bool toptile)
        {
         if(map_tile_scale == 4)
           screen->blit4x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+        else if(map_tile_scale == 3)
+          screen->blit3x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
         else if(map_tile_scale == 2)
           screen->blit2x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
         else
@@ -1615,6 +1627,8 @@ void MapWindow::drawPaperBackground()
 
  if(draw_scale == 4)
    screen->blit4x(x_off, y_off, ptr, 8, bg_w, bg_h, bg_w, false);
+ else if(draw_scale == 3)
+   screen->blit3x(x_off, y_off, ptr, 8, bg_w, bg_h, bg_w, false);
  else if(draw_scale == 2)
    screen->blit2x(x_off, y_off, ptr, 8, bg_w, bg_h, bg_w, false);
  else
@@ -1719,6 +1733,8 @@ void MapWindow::drawPaperFrame()
  unsigned char *buf = frame_buf.data();
  if(draw_scale == 4)
    screen->blit4x(x_off, y_off, buf, 8, bg_w, bg_h, bg_w, true);
+ else if(draw_scale == 3)
+   screen->blit3x(x_off, y_off, buf, 8, bg_w, bg_h, bg_w, true);
  else if(draw_scale == 2)
    screen->blit2x(x_off, y_off, buf, 8, bg_w, bg_h, bg_w, true);
  else
@@ -2395,12 +2411,14 @@ CanDropOrMoveMsg MapWindow::can_drop_or_move_obj(uint16 x, uint16 y, Actor *acto
 
 void MapWindow::display_can_drop_or_move_msg(CanDropOrMoveMsg msg, string msg_text)
 {
+	KoreanTranslation *kt = game->get_korean_translation();
+	bool use_korean = (kt && kt->isEnabled());
 	if(msg == MSG_NOT_POSSIBLE)
-		msg_text += "Not possible\n";
+		msg_text += use_korean ? "불가능\n" : "Not possible\n";
 	else if(msg == MSG_BLOCKED)
-		msg_text += "Blocked\n";
+		msg_text += use_korean ? "막혀 있음\n" : "Blocked\n";
 	else if(msg == MSG_OUT_OF_RANGE)
-		msg_text += "Out of range\n";
+		msg_text += use_korean ? "범위를 벗어났습니다\n" : "Out of range\n";
 /*	else if(msg == MSG_NO_TILE) // shouldn't be needed now that blacked out areas are checked first
 		msg_text += "ERROR: No tile. Report me\n";*/
 	game->get_scroll()->display_string(msg_text);
@@ -3065,6 +3083,8 @@ void MapWindow::drag_draw(int x, int y, int message, void* data)
 
 	if (map_tile_scale >= 4)
 		screen->blit4x(nx, ny, tile->data, 8, 16, 16, 16, true);
+	else if (map_tile_scale == 3)
+		screen->blit3x(nx, ny, tile->data, 8, 16, 16, 16, true);
 	else if (map_tile_scale >= 2)
 		screen->blit2x(nx, ny, tile->data, 8, 16, 16, 16, true);
 	else

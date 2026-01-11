@@ -1465,14 +1465,17 @@ bool U6UseCode::use_shovel(Obj *obj, UseCodeEvent ev)
     dig_at.x += from.x;
     dig_at.y += from.y;
     dig_at.z = from.z;
+    KoreanTranslation *kt = game->get_korean_translation();
+    bool use_korean = (kt && kt->isEnabled());
+
     if(!dig_at.is_visible())
     {
-        scroll->display_string("Not on screen.\n");
+        scroll->display_string(use_korean ? "화면에 보이지 않음.\n" : "Not on screen.\n");
         return true; //  display prompt
     }
     else if(!from.is_visible() && from.distance(dig_at) > 5)
     {
-        scroll->display_string("Out of range.\n");
+        scroll->display_string(use_korean ? "범위를 벗어났습니다.\n" : "Out of range.\n");
         return true; //  display prompt
     }
     else if(game->get_map_window()->get_interface() != INTERFACE_IGNORE_BLOCK)

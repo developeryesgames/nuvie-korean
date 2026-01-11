@@ -188,6 +188,10 @@ bool Cursor::display(sint32 px, sint32 py)
 
     if(cursor_scale >= 4) {
         screen->blit4x((uint16)px, (uint16)py, ptr->shapedat, 8, ptr->w, ptr->h, ptr->w, true, NULL);
+    } else if(cursor_scale == 3) {
+        screen->blit3x((uint16)px, (uint16)py, ptr->shapedat, 8, ptr->w, ptr->h, ptr->w, true, NULL);
+    } else if(cursor_scale >= 2) {
+        screen->blit2x((uint16)px, (uint16)py, ptr->shapedat, 8, ptr->w, ptr->h, ptr->w, true, NULL);
     } else {
         screen->blit((uint16)px, (uint16)py, ptr->shapedat, 8, ptr->w, ptr->h, ptr->w, true);
     }

@@ -577,6 +577,8 @@ void ContainerWidget::drag_draw(int x, int y, int message, void* data)
 
 	if (tile_scale >= 4)
 		screen->blit4x(nx, ny, tile->data, 8, 16, 16, 16, true);
+	else if (tile_scale == 3)
+		screen->blit3x(nx, ny, tile->data, 8, 16, 16, 16, true);
 	else if (tile_scale >= 2)
 		screen->blit2x(nx, ny, tile->data, 8, 16, 16, 16, true);
 	else

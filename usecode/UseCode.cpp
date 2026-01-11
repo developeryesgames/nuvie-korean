@@ -32,6 +32,7 @@
 #include "Script.h"
 #include "Event.h"
 #include "FontManager.h"
+#include "KoreanTranslation.h"
 UseCode::UseCode(Game *g, Configuration *cfg)
 {
  game = g;
@@ -315,17 +316,20 @@ bool UseCode::out_of_use_range(Obj *obj, bool check_enemies)
     MapCoord player_loc = player->get_actor()->get_location();
     MapCoord obj_loc = MapCoord(obj->x, obj->y, obj->z);
 
+    KoreanTranslation *kt = game->get_korean_translation();
+    bool use_korean = (kt && kt->isEnabled());
+
     if(!check_enemies)
     {
         if(player_loc.distance(obj_loc) > 1
            && game->get_map_window()->get_interface() == INTERFACE_NORMAL)
         {
-            scroll->display_string("\nOut of range.\n");
+            scroll->display_string(use_korean ? "\n범위를 벗어났습니다.\n" : "\nOut of range.\n");
             return true;
         }
         else if(!game->get_map_window()->can_get_obj(player->get_actor(), obj))
         {
-            scroll->display_string("\nBlocked.\n");
+            scroll->display_string(use_korean ? "\n막혀 있음.\n" : "\nBlocked.\n");
             return true;
         }
         else
@@ -337,7 +341,7 @@ bool UseCode::out_of_use_range(Obj *obj, bool check_enemies)
 
         if((enemies = player->get_actor()->find_enemies()))
         {
-            scroll->display_string("\nOut of range.\n");
+            scroll->display_string(use_korean ? "\n범위를 벗어났습니다.\n" : "\nOut of range.\n");
             delete enemies;
             return true;
         }

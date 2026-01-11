@@ -851,8 +851,10 @@ void Player::attack(MapCoord target, Actor *target_actor)
 	   }
    }
  }
- else
-   scroll->display_string("\nOut of range!\n");
+ else {
+   KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+   scroll->display_string((kt && kt->isEnabled()) ? "\n범위를 벗어났습니다!\n" : "\nOut of range!\n");
+ }
 
  //actor_manager->startActors(); // end player turn
  return;

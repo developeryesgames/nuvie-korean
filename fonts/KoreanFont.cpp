@@ -418,6 +418,8 @@ uint16 KoreanFont::drawCharUnicode(Screen *screen, uint32 codepoint, uint16 x, u
     // Blit using appropriate scale function
     if (scale >= 4) {
         screen->blit4x(x, y, buf, 8, cell_width, cell_height, cell_width, true, NULL);
+    } else if (scale == 3) {
+        screen->blit3x(x, y, buf, 8, cell_width, cell_height, cell_width, true, NULL);
     } else if (scale >= 2) {
         screen->blit2x(x, y, buf, 8, cell_width, cell_height, cell_width, true);
     } else {

@@ -810,6 +810,212 @@ bool Screen::blit2x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16
  return true;
 }
 
+// 3x scaled blit - each source pixel becomes a 3x3 block
+bool Screen::blit3x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16 src_bpp, uint16 src_w, uint16 src_h, uint16 src_pitch, bool trans, SDL_Rect *clip_rect)
+{
+ uint16 src_x = 0;
+ uint16 src_y = 0;
+
+ // Destination dimensions are 3x source
+ uint16 dest_w = src_w * 3;
+ uint16 dest_h = src_h * 3;
+
+ // clip to screen.
+ if(dest_x >= width || dest_y >= height)
+   return false;
+
+ if(dest_x < 0)
+   {
+    if(dest_x + dest_w <= 0)
+      return false;
+    else
+      {
+       sint32 skip = (-dest_x + 2) / 3;
+       src_buf += skip;
+       src_w -= skip;
+       dest_w = src_w * 3;
+       dest_x = dest_x + skip * 3;
+      }
+   }
+
+ if(dest_y < 0)
+   {
+    if(dest_y + dest_h <= 0)
+      return false;
+    else
+      {
+       sint32 skip = (-dest_y + 2) / 3;
+       src_buf += src_pitch * skip;
+       src_h -= skip;
+       dest_h = src_h * 3;
+       dest_y = dest_y + skip * 3;
+      }
+   }
+
+ if(dest_x + dest_w > width)
+   {
+    src_w = (width - dest_x) / 3;
+    dest_w = src_w * 3;
+   }
+
+ if(dest_y + dest_h > height)
+   {
+    src_h = (height - dest_y) / 3;
+    dest_h = src_h * 3;
+   }
+
+ //clip to rect if required.
+ if(clip_rect)
+  {
+   if(dest_x + dest_w < clip_rect->x || dest_y + dest_h < clip_rect->y)
+     return false;
+
+   if(clip_rect->x > dest_x)
+      {
+       sint32 skip = (clip_rect->x - dest_x + 2) / 3;
+       src_x = skip;
+       src_w -= skip;
+       dest_x = clip_rect->x;
+       dest_w = src_w * 3;
+      }
+
+   if(clip_rect->y > dest_y)
+     {
+      sint32 skip = (clip_rect->y - dest_y + 2) / 3;
+      src_y = skip;
+      src_h -= skip;
+      dest_y = clip_rect->y;
+      dest_h = src_h * 3;
+     }
+
+   if(dest_x + dest_w > clip_rect->x + clip_rect->w)
+     {
+      if(clip_rect->x + clip_rect->w - dest_x <= 0)
+        return false;
+      src_w = (clip_rect->x + clip_rect->w - dest_x) / 3;
+      dest_w = src_w * 3;
+     }
+
+   if(dest_y + dest_h > clip_rect->y + clip_rect->h)
+     {
+      if(clip_rect->y + clip_rect->h - dest_y <= 0)
+        return false;
+      src_h = (clip_rect->y + clip_rect->h - dest_y) / 3;
+      dest_h = src_h * 3;
+     }
+
+   src_buf += src_y * src_pitch + src_x;
+  }
+
+ // Perform 3x scaled blit
+ if(surface->bits_per_pixel == 16)
+ {
+   uint16 *pixels = (uint16 *)surface->pixels;
+   pixels += dest_y * surface->w + dest_x;
+
+   if(trans)
+   {
+     for(uint16 i = 0; i < src_h; i++)
+     {
+       for(uint16 j = 0; j < src_w; j++)
+       {
+         if(src_buf[j] != 0xff)
+         {
+           uint16 color = (uint16)surface->colour32[src_buf[j]];
+           // Write 3x3 block
+           pixels[j*3] = color;
+           pixels[j*3 + 1] = color;
+           pixels[j*3 + 2] = color;
+           pixels[surface->w + j*3] = color;
+           pixels[surface->w + j*3 + 1] = color;
+           pixels[surface->w + j*3 + 2] = color;
+           pixels[surface->w*2 + j*3] = color;
+           pixels[surface->w*2 + j*3 + 1] = color;
+           pixels[surface->w*2 + j*3 + 2] = color;
+         }
+       }
+       src_buf += src_pitch;
+       pixels += surface->w * 3; // Skip 3 rows
+     }
+   }
+   else
+   {
+     for(uint16 i = 0; i < src_h; i++)
+     {
+       for(uint16 j = 0; j < src_w; j++)
+       {
+         uint16 color = (uint16)surface->colour32[src_buf[j]];
+         pixels[j*3] = color;
+         pixels[j*3 + 1] = color;
+         pixels[j*3 + 2] = color;
+         pixels[surface->w + j*3] = color;
+         pixels[surface->w + j*3 + 1] = color;
+         pixels[surface->w + j*3 + 2] = color;
+         pixels[surface->w*2 + j*3] = color;
+         pixels[surface->w*2 + j*3 + 1] = color;
+         pixels[surface->w*2 + j*3 + 2] = color;
+       }
+       src_buf += src_pitch;
+       pixels += surface->w * 3;
+     }
+   }
+ }
+ else // 32-bit
+ {
+   uint32 *pixels = (uint32 *)surface->pixels;
+   pixels += dest_y * surface->w + dest_x;
+
+   if(trans)
+   {
+     for(uint16 i = 0; i < src_h; i++)
+     {
+       for(uint16 j = 0; j < src_w; j++)
+       {
+         if(src_buf[j] != 0xff)
+         {
+           uint32 color = surface->colour32[src_buf[j]];
+           // Write 3x3 block
+           pixels[j*3] = color;
+           pixels[j*3 + 1] = color;
+           pixels[j*3 + 2] = color;
+           pixels[surface->w + j*3] = color;
+           pixels[surface->w + j*3 + 1] = color;
+           pixels[surface->w + j*3 + 2] = color;
+           pixels[surface->w*2 + j*3] = color;
+           pixels[surface->w*2 + j*3 + 1] = color;
+           pixels[surface->w*2 + j*3 + 2] = color;
+         }
+       }
+       src_buf += src_pitch;
+       pixels += surface->w * 3;
+     }
+   }
+   else
+   {
+     for(uint16 i = 0; i < src_h; i++)
+     {
+       for(uint16 j = 0; j < src_w; j++)
+       {
+         uint32 color = surface->colour32[src_buf[j]];
+         pixels[j*3] = color;
+         pixels[j*3 + 1] = color;
+         pixels[j*3 + 2] = color;
+         pixels[surface->w + j*3] = color;
+         pixels[surface->w + j*3 + 1] = color;
+         pixels[surface->w + j*3 + 2] = color;
+         pixels[surface->w*2 + j*3] = color;
+         pixels[surface->w*2 + j*3 + 1] = color;
+         pixels[surface->w*2 + j*3 + 2] = color;
+       }
+       src_buf += src_pitch;
+       pixels += surface->w * 3;
+     }
+   }
+ }
+
+ return true;
+}
+
 // 4x scaled blit - each source pixel becomes a 4x4 block
 bool Screen::blit4x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16 src_bpp, uint16 src_w, uint16 src_h, uint16 src_pitch, bool trans, SDL_Rect *clip_rect)
 {
@@ -1449,6 +1655,14 @@ void Screen::clearalphamap8( uint16 x, uint16 y, uint16 w, uint16 h, uint8 opaci
 		break;
 	}
 
+    // Get tile_scale for SMOOTH lighting pixel calculations
+    uint8 tile_scale = 1;
+    Game *game = Game::get_game();
+    if(game && game->get_map_window()) {
+        tile_scale = game->get_map_window()->get_map_tile_scale();
+    }
+    uint16 tile_pixels = 16 * tile_scale;
+
     if( shading_data == NULL )
     {
         shading_rect.x = x;
@@ -1460,8 +1674,8 @@ void Screen::clearalphamap8( uint16 x, uint16 y, uint16 w, uint16 h, uint8 opaci
         }
         else // LIGHTING_STYLE_SMOOTH
         {
-        	shading_rect.w = (w + (SHADING_BORDER * 2)) * 16 + 8;
-        	shading_rect.h = (h + (SHADING_BORDER * 2)) * 16 + 8;
+        	shading_rect.w = (w + (SHADING_BORDER * 2)) * tile_pixels + (tile_pixels / 2);
+        	shading_rect.h = (h + (SHADING_BORDER * 2)) * tile_pixels + (tile_pixels / 2);
         }
         shading_data = (unsigned char*)malloc(sizeof(char)*shading_rect.w*shading_rect.h);
         if( shading_data == NULL )
@@ -1488,7 +1702,7 @@ void Screen::clearalphamap8( uint16 x, uint16 y, uint16 w, uint16 h, uint8 opaci
     if( lighting_style == LIGHTING_STYLE_ORIGINAL )
         drawalphamap8globe( (shading_rect.w-1 + x_off/16)/2 - SHADING_BORDER, (shading_rect.h-1)/2 - SHADING_BORDER, opacity/20 + 4); //range 4 - 10
     else if( lighting_style == LIGHTING_STYLE_SMOOTH )
-        drawalphamap8globe( (((shading_rect.w-8 + x_off)/16)-1)/2 - SHADING_BORDER, (((shading_rect.h-8)/16)-1)/2 - SHADING_BORDER, party_light_source ? 5 : 4 );
+        drawalphamap8globe( (((shading_rect.w-(tile_pixels/2) + x_off)/tile_pixels)-1)/2 - SHADING_BORDER, (((shading_rect.h-(tile_pixels/2))/tile_pixels)-1)/2 - SHADING_BORDER, party_light_source ? 5 : 4 );
 }
 
 void Screen::buildalphamap8()
@@ -1572,21 +1786,37 @@ void Screen::drawalphamap8globe( sint16 x, sint16 y, uint16 r )
 			}
         return;
     }
-    x = (x+SHADING_BORDER)*16 + 8;
-    y = (y+SHADING_BORDER)*16 + 8;
+
+    // Get tile_scale for SMOOTH lighting pixel calculations
+    uint8 tile_scale = 1;
+    Game *game = Game::get_game();
+    if(game && game->get_map_window()) {
+        tile_scale = game->get_map_window()->get_map_tile_scale();
+    }
+    uint16 tile_pixels = 16 * tile_scale;
+
+    x = (x+SHADING_BORDER)*tile_pixels + (tile_pixels / 2);
+    y = (y+SHADING_BORDER)*tile_pixels + (tile_pixels / 2);
 
     //Draw using "smooth" lighting
     //The x and y are relative to (0,0) of the mapwindow itself, and are absolute coordinates, so are i and j
     r--;
-    for(i=-globeradius_2[r];i<globeradius_2[r];i++)
-        for(j=-globeradius_2[r];j<globeradius_2[r];j++)
+
+    // Scale the globe radius by tile_scale
+    sint16 scaled_radius = globeradius_2[r] * tile_scale;
+
+    for(i=-scaled_radius;i<scaled_radius;i++)
+        for(j=-scaled_radius;j<scaled_radius;j++)
         {
             if( (y+i)-1 < 0 ||
                 (x+j)-1 < 0 ||
                 (y+i)+1 > shading_rect.h ||
                 (x+j)+1 > shading_rect.w )
                 continue;
-            shading_data[(y+i)*shading_rect.w+(x+j)] = MIN( shading_data[(y+i)*shading_rect.w+(x+j)] + shading_globe[r][(i+globeradius_2[r])*globeradius[r]+(j+globeradius_2[r])], 255 );
+            // Sample from the original globe using scaled coordinates
+            sint16 src_i = i / tile_scale;
+            sint16 src_j = j / tile_scale;
+            shading_data[(y+i)*shading_rect.w+(x+j)] = MIN( shading_data[(y+i)*shading_rect.w+(x+j)] + shading_globe[r][(src_i+globeradius_2[r])*globeradius[r]+(src_j+globeradius_2[r])], 255 );
         }
 }
 
@@ -1605,25 +1835,26 @@ void Screen::blitalphamap8(sint16 x, sint16 y, SDL_Rect *clip_rect)
     uint16 i,j;
     Game *game = Game::get_game();
 
-    // Check for Korean 4x mode (safe check)
-    bool use_4x = false;
-    FontManager *font_manager = game ? game->get_font_manager() : NULL;
-    if(font_manager && font_manager->is_korean_enabled() && 
-       font_manager->get_korean_font() && game->is_original_plus()) {
-        use_4x = true;
+    // Get map_tile_scale from MapWindow
+    uint8 tile_scale = 1;
+    if(game && game->get_map_window()) {
+        tile_scale = game->get_map_window()->get_map_tile_scale();
     }
 
     if( lighting_style == LIGHTING_STYLE_ORIGINAL )
     {
-
         for( j = SHADING_BORDER; j < shading_rect.h-SHADING_BORDER; j++ )
         {
             for( i = SHADING_BORDER; i < shading_rect.w-SHADING_BORDER; i++ )
             {
                 if( shading_data[j*shading_rect.w+i] < 4 )
                 {
-                    if(use_4x)
+                    if(tile_scale == 4)
                         blit4x(x+(i-SHADING_BORDER)*64,y+(j-SHADING_BORDER)*64,shading_tile[shading_data[j*shading_rect.w+i]],8,16,16,16,true,game->get_map_window()->get_clip_rect());
+                    else if(tile_scale == 3)
+                        blit3x(x+(i-SHADING_BORDER)*48,y+(j-SHADING_BORDER)*48,shading_tile[shading_data[j*shading_rect.w+i]],8,16,16,16,true,game->get_map_window()->get_clip_rect());
+                    else if(tile_scale == 2)
+                        blit2x(x+(i-SHADING_BORDER)*32,y+(j-SHADING_BORDER)*32,shading_tile[shading_data[j*shading_rect.w+i]],8,16,16,16,true,game->get_map_window()->get_clip_rect());
                     else
                         blit(x+(i-SHADING_BORDER)*16,y+(j-SHADING_BORDER)*16,shading_tile[shading_data[j*shading_rect.w+i]],8,16,16,16,true,game->get_map_window()->get_clip_rect());
                 }
@@ -1632,11 +1863,12 @@ void Screen::blitalphamap8(sint16 x, sint16 y, SDL_Rect *clip_rect)
         return;
     }
 
-    uint16 src_w = shading_rect.w - (SHADING_BORDER*2*16);
-    uint16 src_h = shading_rect.h - (SHADING_BORDER*2*16);
+    uint16 tile_pixels = 16 * tile_scale;
+    uint16 src_w = shading_rect.w - (SHADING_BORDER*2*tile_pixels);
+    uint16 src_h = shading_rect.h - (SHADING_BORDER*2*tile_pixels);
 
-    uint16 src_x = SHADING_BORDER*16;
-    uint16 src_y = SHADING_BORDER*16;
+    uint16 src_x = SHADING_BORDER*tile_pixels;
+    uint16 src_y = SHADING_BORDER*tile_pixels;
 
     uint8 *src_buf = shading_data;
 

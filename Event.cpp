@@ -864,13 +864,13 @@ bool Event::perform_get(Obj *obj, Obj *container_obj, Actor *actor) {
       if (game->using_hackmove())
         can_perform_get = true;
       else if (!map_window->can_get_obj(actor, obj)) {
-        scroll->display_string("\n\nCan't reach it.");
+        scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "\n\n닿을 수 없음." : "\n\nCan't reach it.");
       } else if (obj->is_on_map()) {
         MapCoord target(obj->x, obj->y, obj->z);
         if (!game->get_script()->call_is_ranged_select(GET)
             && player->get_actor()->get_location().distance(target) > 1
             && map_window->get_interface() == INTERFACE_NORMAL) {
-          scroll->display_string("\n\nOut of range!");
+          scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "\n\n범위를 벗어났습니다!" : "\n\nOut of range!");
         } else if (obj_manager->obj_is_damaging(obj, actor)) {
           return false;
         } else {
@@ -962,11 +962,11 @@ bool Event::use(Obj *obj) {
   scroll->display_string("\n");
 
   if (!usecode->has_usecode(obj)) {
-    scroll->display_string("\nNot usable\n");
+    scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "\n사용할 수 없음\n" : "\nNot usable\n");
     DEBUG(0, LEVEL_DEBUGGING, "Object %d:%d\n", obj->obj_n, obj->frame_n);
   } else if (!obj->is_in_inventory() && map_window->get_interface() == INTERFACE_NORMAL
       && !game->get_script()->call_is_ranged_select(USE) && player->get_actor()->get_location().distance(target) > 1) {
-    scroll->display_string("\nOut of range!\n");
+    scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "\n범위를 벗어났습니다!\n" : "\nOut of range!\n");
     DEBUG(0, LEVEL_DEBUGGING, "distance to object: %d\n", player->get_actor()->get_location().distance(target));
   } else if (!player->in_party_mode() && obj->is_in_inventory() && !obj->get_actor_holding_obj()->is_onscreen()) {
     scroll->display_string("\nNot on screen.\n");
@@ -1002,10 +1002,10 @@ bool Event::use(Actor *actor, uint16 x, uint16 y) {
 
     if (player_loc.distance(target) > 1
         && map_window->get_interface() == INTERFACE_NORMAL) {
-      scroll->display_string("\nOut of range!\n");
+      scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "\n범위를 벗어났습니다!\n" : "\nOut of range!\n");
       DEBUG(0, LEVEL_DEBUGGING, "distance to object: %d\n", player_loc.distance(target));
     } else if (!can_get_to_actor(actor, x, y))
-      scroll->display_string("\nBlocked.\n");
+      scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "\n막혀 있음.\n" : "\nBlocked.\n");
     else {
       display_prompt = usecode->use_obj(obj, player->get_actor());
       player->subtract_movement_points(5);
@@ -3857,9 +3857,9 @@ bool Event::can_move_obj_between_actors(Obj *obj,
         if (game->get_script()->call_actor_get_obj(target_actor, obj))
           return true;
       } else
-        scroll->display_string("\n\nOut of range!");
+        scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "\n\n범위를 벗어났습니다!" : "\n\nOut of range!");
     } else
-      scroll->display_string("\n\nBlocked!"); // original said Out of Range!
+      scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "\n\n막혀 있음!" : "\n\nBlocked!"); // original said Out of Range!
   } else
     scroll->display_string("\n\nnobody.");
 

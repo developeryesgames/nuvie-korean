@@ -121,6 +121,8 @@ uint16 U6Font::drawCharScaled(Screen *screen, uint8 char_num, uint16 x, uint16 y
 
  if(scale >= 4)
    screen->blit4x(x,y,buf,8,8,8,8,true,NULL);
+ else if(scale == 3)
+   screen->blit3x(x,y,buf,8,8,8,8,true,NULL);
  else if(scale >= 2)
    screen->blit2x(x,y,buf,8,8,8,8,true,NULL);
  else
