@@ -200,7 +200,7 @@ MapWindow::MapWindow(Configuration *cfg, Map *m): GUI_Widget(NULL, 0, 0, 0, 0)
  bool smooth_val = false;
  config->value("config/video/smooth_movement", smooth_val, false);
  smooth_movement = smooth_val;
- smooth_move_duration = 300; // 300ms for testing (slower smooth movement)
+ smooth_move_duration = 125; // Match player walk delay (125ms = 8 steps per second)
  last_smooth_update_time = 0;
 
  // Smooth scrolling initialization

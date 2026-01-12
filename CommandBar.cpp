@@ -465,23 +465,24 @@ void CommandBar::Display(bool full_redraw)
                 screen->clear(area.x + 2, area.y, area.w -2, area.h - 16, NULL);
             else {
                 // 4x mode: redraw paper background for text area to avoid text overlap
+                // Text is drawn at area.y - 12, so we need to clear from there
                 Background *bg = game->get_background();
                 if(bg && bg->get_bg_shape()) {
                     unsigned char *bg_data = bg->get_bg_shape()->get_data();
                     uint16 bg_w = bg->get_bg_w();
                     uint16 bg_h = 200; // paper.bmp is 320x200
                     if(bg_data && bg_w > 0) {
-                        // Source: row 171-178 of paper.bmp, only the text area (skip left/right borders)
-                        // CommandBar text area at 4x: starts at 8*4=32 from left edge of paper, width ~152*4=608
-                        // area.x is relative to game offset, paper starts at offset
-                        uint16 src_y = 171;
-                        uint16 src_h = 8;
+                        // Source: row 168-178 of paper.bmp (3 pixels earlier to cover text at y-12)
+                        // CommandBar text area at 4x: starts at 8*4=32 from left edge of paper
+                        uint16 src_y = 168; // 171 - 3 (to cover area.y - 12 at 4x scale)
+                        uint16 src_h = 11;  // 8 + 3
                         uint16 src_x = 8; // skip left 8px border in paper.bmp
                         uint16 src_w = 152; // text area width (skip right panel)
                         if(src_y + src_h <= bg_h && src_x + src_w <= bg_w) {
                             unsigned char *src_ptr = bg_data + (src_y * bg_w) + src_x;
                             uint16 dest_x = game->get_game_x_offset() + (src_x * 4);
-                            screen->blit4x(dest_x, area.y, src_ptr, 8, src_w, src_h, bg_w, true);
+                            uint16 dest_y = area.y - 12; // start from where text is drawn
+                            screen->blit4x(dest_x, dest_y, src_ptr, 8, src_w, src_h, bg_w, true);
                         }
                     }
                 }
