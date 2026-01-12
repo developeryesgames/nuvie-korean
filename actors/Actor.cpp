@@ -575,16 +575,13 @@ bool Actor::move(uint16 new_x, uint16 new_y, uint8 new_z, ActorMoveFlags flags)
     return false; // blocked by actor
    }
 
- // Start smooth movement for actors when smooth movement is enabled
- // Skip smooth movement for wrap-around moves (map boundary crossing)
- MapWindow *map_window = game->get_map_window();
- uint16 target_x = WRAPPED_COORD(new_x,new_z);
- uint16 target_y = WRAPPED_COORD(new_y,new_z);
- bool is_wrap_move = (abs((int)target_x - (int)x) > 1) || (abs((int)target_y - (int)y) > 1);
- if(map_window && map_window->is_smooth_movement_enabled() && !force_move && !is_wrap_move)
- {
-    start_smooth_move(x, y, target_x, target_y);
- }
+ // Note: NPC smooth movement disabled for now - focus on map smooth scrolling first
+ // MapWindow *map_window = game->get_map_window();
+ // bool is_player = (id_n == game->get_player()->get_actor()->id_n);
+ // if(map_window && map_window->is_smooth_movement_enabled() && !force_move && !is_player)
+ //   {
+ //    start_smooth_move(x, y, WRAPPED_COORD(new_x,new_z), WRAPPED_COORD(new_y,new_z));
+ //   }
 
  // move
  x = WRAPPED_COORD(new_x,new_z); // FIXME: this is probably needed because PathFinder is not wrapping coords

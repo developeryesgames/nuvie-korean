@@ -879,19 +879,6 @@ void MapWindow::update_smooth_movement()
         }
     }
 
-    // Update smooth movement for all actors
-    if(smooth_movement && actor_manager)
-    {
-        for(uint16 i = 0; i < ACTORMANAGER_MAX_ACTORS; i++)
-        {
-            Actor *actor = actor_manager->get_actor(i);
-            if(actor && actor->is_smooth_moving())
-            {
-                actor->update_smooth_move(current_time, smooth_move_duration);
-            }
-        }
-    }
-
     last_smooth_update_time = current_time;
 }
 
@@ -1403,42 +1390,31 @@ inline void MapWindow::drawActor(Actor *actor)
                     rtile->data[x] = 0x9;
         }
 
-        // Use smooth visual coordinates if actor is in smooth movement
-        if(actor->is_smooth_moving() && smooth_movement)
+        uint16 wrapped_x = WRAP_VIEWP(cur_x,actor->x,map_width);
+        if(rtile != 0)
         {
-            Tile *draw_tile = rtile ? rtile : tile;
-            drawTileAtWorldPixel(draw_tile, actor->get_visual_x(), actor->get_visual_y());
-            if(rtile)
-                delete rtile;
+            drawNewTile(rtile, wrapped_x,actor->y-cur_y, false);
+            drawNewTile(rtile, wrapped_x,actor->y-cur_y, true);
+            delete rtile;
         }
         else
         {
-            uint16 wrapped_x = WRAP_VIEWP(cur_x,actor->x,map_width);
-            if(rtile != 0)
+            drawTile(tile, wrapped_x,actor->y-cur_y, false);
+            drawTile(tile, wrapped_x,actor->y-cur_y, true);
+            if(game->get_clock()->get_timer(GAMECLOCK_TIMER_U6_INFRAVISION) != 0)
             {
-                drawNewTile(rtile, wrapped_x,actor->y-cur_y, false);
-                drawNewTile(rtile, wrapped_x,actor->y-cur_y, true);
-                delete rtile;
-            }
-            else
-            {
-                drawTile(tile, wrapped_x,actor->y-cur_y, false);
-                drawTile(tile, wrapped_x,actor->y-cur_y, true);
-                if(game->get_clock()->get_timer(GAMECLOCK_TIMER_U6_INFRAVISION) != 0)
-                {
-                    std::list<Obj *> *surrounding_objs = actor->get_surrounding_obj_list();
+                std::list<Obj *> *surrounding_objs = actor->get_surrounding_obj_list();
 
-                    if(surrounding_objs)
+                if(surrounding_objs)
+                {
+                    std::list<Obj *>::iterator obj_iter;
+                    for(obj_iter = surrounding_objs->begin(); obj_iter != surrounding_objs->end(); obj_iter++)
                     {
-                        std::list<Obj *>::iterator obj_iter;
-                        for(obj_iter = surrounding_objs->begin(); obj_iter != surrounding_objs->end(); obj_iter++)
-                        {
-                            Obj *obj = *obj_iter;
-                            Tile *t = tile_manager->get_original_tile(obj_manager->get_obj_tile_num(obj->obj_n)+obj->frame_n);
-                            uint16 wrapped_obj_x = WRAP_VIEWP(cur_x,obj->x,map_width);
-                            drawTile(t,wrapped_obj_x, obj->y - cur_y, false);
-                            drawTile(t,wrapped_obj_x, obj->y - cur_y, true); // doesn't seem needed but will do it anyway (for now)
-                        }
+                        Obj *obj = *obj_iter;
+                        Tile *t = tile_manager->get_original_tile(obj_manager->get_obj_tile_num(obj->obj_n)+obj->frame_n);
+                        uint16 wrapped_obj_x = WRAP_VIEWP(cur_x,obj->x,map_width);
+                        drawTile(t,wrapped_obj_x, obj->y - cur_y, false);
+                        drawTile(t,wrapped_obj_x, obj->y - cur_y, true); // doesn't seem needed but will do it anyway (for now)
                     }
                 }
             }
@@ -1687,49 +1663,6 @@ inline void MapWindow::drawTopTile(Tile *tile, uint16 x, uint16 y, bool toptile)
         else
           screen->blit(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
        }
-    }
-}
-
-// Draw a tile at world pixel coordinates (for smooth actor movement)
-inline void MapWindow::drawTileAtWorldPixel(Tile *tile, float world_px, float world_py)
-{
-    // Convert world pixel to screen pixel
-    // world_px is in original 16x16 pixel units
-    float screen_rel_x = world_px - (cur_x * 16.0f) - cur_x_add;
-    float screen_rel_y = world_py - (cur_y * 16.0f) - cur_y_add;
-
-    // Apply smooth scroll offset
-    if(smooth_scrolling)
-    {
-        screen_rel_x += scroll_offset_x;
-        screen_rel_y += scroll_offset_y;
-    }
-
-    sint16 draw_x = area.x + (sint16)(screen_rel_x * map_tile_scale);
-    sint16 draw_y = area.y + (sint16)(screen_rel_y * map_tile_scale);
-
-    // Draw both bottom and top tile layers
-    if(!tile->toptile)
-    {
-        if(map_tile_scale == 4)
-            screen->blit4x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-        else if(map_tile_scale == 3)
-            screen->blit3x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-        else if(map_tile_scale == 2)
-            screen->blit2x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-        else
-            screen->blit(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-    }
-    if(tile->toptile)
-    {
-        if(map_tile_scale == 4)
-            screen->blit4x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-        else if(map_tile_scale == 3)
-            screen->blit3x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-        else if(map_tile_scale == 2)
-            screen->blit2x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-        else
-            screen->blit(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
     }
 }
 

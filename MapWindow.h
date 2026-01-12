@@ -311,7 +311,6 @@ protected:
  inline void drawNewTile(Tile *tile, uint16 x, uint16 y, bool toptile);
  void drawBorder();
  inline void drawTopTile(Tile *tile, uint16 x, uint16 y, bool toptile);
- inline void drawTileAtWorldPixel(Tile *tile, float world_px, float world_py);
  inline void drawActor(Actor *actor);
  void drawRoofs();
  void drawGrid();
