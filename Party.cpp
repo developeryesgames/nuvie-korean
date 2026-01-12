@@ -991,6 +991,8 @@ bool Party::can_rest(std::string &err_str)
 		err_str = korean ? "-야외에서만 가능!" : "-Only in the wilderness!";
 	else if((enemies = pActor->find_enemies()))
 	{
+		// Original U6: Simple "Not while foes are near!" message for rest
+		// (Shamino direction warning is only for egg spawning, not rest)
 		if(korean)
 			err_str = "-적이 근처에 있음!";
 		else if(Game::get_game()->get_game_type() == NUVIE_GAME_MD)

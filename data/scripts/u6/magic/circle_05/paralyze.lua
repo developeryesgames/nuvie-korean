@@ -10,7 +10,7 @@ print("\n")
 hit_anim(actor.x, actor.y)
 actor.paralyzed = true
 local k_name = korean_translate(actor.name)
-if is_korean_mode() then
+if is_korean_enabled() then
 	print(k_name..korean_get_particle(k_name, "iga").." 마비되었다.\n")
 else
 	print(actor.name.." is paralyzed.\n")

@@ -38,6 +38,12 @@
 #include "Party.h"
 #include "U6WorkTypes.h"
 #include "U6objects.h" //needed for silver serpent exception
+#include "MsgScroll.h"
+#include "FontManager.h"
+#include "Player.h"
+
+// Shamino warning flag for off-screen enemy spawning (original U6 behavior)
+static bool shamino_spawn_warned = false;
 
 /* ALWAYS means the time is unset, is unknown, or day and night are both set */
 typedef enum
@@ -188,7 +194,8 @@ bool EggManager::spawn_egg(Obj *egg, uint8 hatch_probability)
  uint16 qty;
  uint8 hour = Game::get_game()->get_clock()->get_hour();
  uint8 alignment = egg->quality % 10;
- 
+ bool spawned_hostile = false; // Track if hostile actor spawned
+
     // check time that the egg will hach
     egg_hatch_time period = EGG_HATCH_TIME(egg->quality);
     if( period==EGG_HATCH_ALWAYS
@@ -242,6 +249,9 @@ bool EggManager::spawn_egg(Obj *egg, uint8 hatch_probability)
 						if(hatch_probability > egg->qty)
 							break; // chance to stop spawning actors
 					}
+					// Track hostile actor spawn (EVIL=2, CHAOTIC=4)
+					if(alignment == ACTOR_ALIGNMENT_EVIL || alignment == ACTOR_ALIGNMENT_CHAOTIC)
+						spawned_hostile = true;
 				  }
 				  else
 					{ /* spawn temp object */
@@ -258,10 +268,71 @@ bool EggManager::spawn_egg(Obj *egg, uint8 hatch_probability)
 					}
                  }
                }
+
+             // Original U6: Shamino warns when hostile actors spawn off-screen
+             if(gametype == NUVIE_GAME_U6 && spawned_hostile && !shamino_spawn_warned)
+             {
+               Party *party = Game::get_game()->get_party();
+               Actor *player = Game::get_game()->get_player()->get_actor();
+               if(party && player && party->contains_actor(3)) // Shamino is NPC #3
+               {
+                 Actor *shamino = actor_manager->get_actor(3);
+                 if(shamino && shamino->is_alive())
+                 {
+                   sint16 shamino_dx = abs((sint16)shamino->get_x() - (sint16)player->get_x());
+                   sint16 shamino_dy = abs((sint16)shamino->get_y() - (sint16)player->get_y());
+                   if(shamino_dx + shamino_dy < 6) // Shamino close enough to Avatar (Manhattan distance)
+                   {
+                     MsgScroll *scroll = Game::get_game()->get_scroll();
+                     // Original: 75% chance (OSI_rand(0,3) returns non-zero)
+                     if(scroll && NUVIE_RAND() % 4 != 0)
+                     {
+                       sint16 rel_x = (sint16)egg->x - (sint16)player->get_x();
+                       sint16 rel_y = (sint16)egg->y - (sint16)player->get_y();
+                       FontManager *fm = Game::get_game()->get_font_manager();
+                       bool korean = fm && fm->is_korean_enabled();
+
+                       if(korean) {
+                         const char *korean_dir;
+                         if(rel_x == 0 && rel_y < 0) korean_dir = "북";
+                         else if(rel_x > 0 && rel_y < 0) korean_dir = "북동";
+                         else if(rel_x > 0 && rel_y == 0) korean_dir = "동";
+                         else if(rel_x > 0 && rel_y > 0) korean_dir = "남동";
+                         else if(rel_x == 0 && rel_y > 0) korean_dir = "남";
+                         else if(rel_x < 0 && rel_y > 0) korean_dir = "남서";
+                         else if(rel_x < 0 && rel_y == 0) korean_dir = "서";
+                         else if(rel_x < 0 && rel_y < 0) korean_dir = "북서";
+                         else korean_dir = "";
+                         scroll->display_string(std::string("\n샤미노: \"") + korean_dir + "쪽에서 뭔가 들려!\"\n");
+                       } else {
+                         const char *dir_names[] = {"North", "Northeast", "East", "Southeast", "South", "Southwest", "West", "Northwest"};
+                         int dir_idx = 0;
+                         if(rel_x == 0 && rel_y < 0) dir_idx = 0;
+                         else if(rel_x > 0 && rel_y < 0) dir_idx = 1;
+                         else if(rel_x > 0 && rel_y == 0) dir_idx = 2;
+                         else if(rel_x > 0 && rel_y > 0) dir_idx = 3;
+                         else if(rel_x == 0 && rel_y > 0) dir_idx = 4;
+                         else if(rel_x < 0 && rel_y > 0) dir_idx = 5;
+                         else if(rel_x < 0 && rel_y == 0) dir_idx = 6;
+                         else if(rel_x < 0 && rel_y < 0) dir_idx = 7;
+                         scroll->display_string(std::string("\nShamino says, \"I hear something to the ") + dir_names[dir_idx] + "!\"\n");
+                       }
+                     }
+                     shamino_spawn_warned = true; // Set flag - won't warn again until reset
+                   }
+                 }
+               }
+             }
              return true;
             }
     }
  return false;
+}
+
+// Reset Shamino spawn warning flag (called when no enemies remain)
+void EggManager::reset_shamino_warning()
+{
+  shamino_spawn_warned = false;
 }
 
 uint8 EggManager::get_worktype(Obj *embryo)

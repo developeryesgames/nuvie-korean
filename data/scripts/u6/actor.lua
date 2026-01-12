@@ -356,7 +356,7 @@ function actor_tile_dmg(actor, map_tile)
 					if str < random(1, 0x1e) then
 						actor.paralyzed = true
 						local k_name = korean_translate(actor.name)
-						if is_korean_mode() then
+						if is_korean_enabled() then
 							print("`"..k_name..korean_get_particle(k_name, "iga").." 거미줄에 갇혔다!\n")
 						else
 							print("`"..actor.name.." is stuck in a web!\n")
@@ -370,7 +370,7 @@ function actor_tile_dmg(actor, map_tile)
 					if (actor_type == nil or actor_type[19] == 0) and actor.poisoned == false then --19 immune to poison
 						actor.poisoned = true
 						local k_name = korean_translate(actor.name)
-						if is_korean_mode() then
+						if is_korean_enabled() then
 							print(k_name..korean_get_particle(k_name, "iga").." 중독되었다!\n")
 						else
 							print(actor.name.." poisoned!\n")
@@ -916,7 +916,7 @@ function acid_slug_dissolve_item(target_actor)
 		play_sfx(SFX_SLUG_DISSOLVE, true)
 		local k_actor = korean_translate(target_actor.name)
 		local k_obj = korean_translate(obj.name)
-		if is_korean_mode() then
+		if is_korean_enabled() then
 			-- 슬러그가 [캐릭터]의 [아이템]을 녹였다!
 			print("슬러그가 "..k_actor.."의 "..k_obj..korean_get_particle(k_obj, "eulreul").." 녹였다!\n")
 		else
@@ -944,7 +944,7 @@ function gremlin_steal_item(target_actor)
 	if obj ~= nil then
 		play_sfx(SFX_FAILURE, true)
 		local k_name = korean_translate(target_actor.name)
-		if is_korean_mode() then
+		if is_korean_enabled() then
 			print("`"..k_name..korean_get_particle(k_name, "iga").." 털렸다!\n")
 		else
 			print("`"..target_actor.name.." has been robbed!\n")
@@ -993,7 +993,7 @@ function actor_take_hit(attacker, defender, max_dmg)
       attacker.exp = attacker.exp + exp_gained
    else
       local k_name = korean_translate(defender.name)
-      if is_korean_mode() then
+      if is_korean_enabled() then
          print("`"..k_name..korean_get_particle(k_name, "iga").." 스침!\n")
       else
          print("`"..defender.name.." grazed.\n")
@@ -1017,7 +1017,7 @@ function actor_take_hit(attacker, defender, max_dmg)
          if attacker_obj_n == 0x165 then --corpser
          	play_sfx(SFX_CORPSER_DRAGGED_UNDER, true)
             local k_name = korean_translate(defender.name)
-            if is_korean_mode() then
+            if is_korean_enabled() then
                print("`"..k_name..korean_get_particle(k_name, "iga").." 끌려갔다!\n")
             else
                print("`"..defender.name.." dragged under!\n")
@@ -1040,7 +1040,7 @@ function actor_take_hit(attacker, defender, max_dmg)
          if actor_type ~= nil and actor_type[15] == 1 and math.random(0, 3) == 0 and defender.actor_num ~= 0 then --actor is poisonous, don't poison vehicles.
          	defender.poisoned = true
          	local k_name = korean_translate(defender.name)
-         	if is_korean_mode() then
+         	if is_korean_enabled() then
          	   print("`"..k_name..korean_get_particle(k_name, "iga").." 중독되었다!\n")
          	else
          	   print("`"..defender.name.." poisoned!\n")
@@ -1052,7 +1052,7 @@ function actor_take_hit(attacker, defender, max_dmg)
          end
       else
          local k_name = korean_translate(defender.name)
-         if is_korean_mode() then
+         if is_korean_enabled() then
             print("`"..k_name..korean_get_particle(k_name, "iga").." 사망!\n")
          else
             print("`"..defender.name.." killed!\n")
@@ -1160,7 +1160,7 @@ function actor_hit(defender, max_dmg, attacker, no_hit_anim)
 				and (defender_obj_n ~= 0x62 or defender.frame_n ~= 3) then --don't attack open chests
 				if defender.qty <= max_dmg then
 					local k_name = korean_translate(defender.name)
-					if is_korean_mode() then
+					if is_korean_enabled() then
 						print("\n`"..k_name..korean_get_particle(k_name, "iga").." 부서졌다!\n")
 					else
 						print("\n`"..defender.name.." broken!\n")
@@ -1207,7 +1207,7 @@ function actor_hit_msg(actor)
 
 	local s
 	local actor_name = korean_translate(actor.name)
-	local korean_mode = is_korean_mode()
+	local korean_mode = is_korean_enabled()
 
 	if di < 4 then
 		if korean_mode then
@@ -1508,14 +1508,14 @@ function actor_attack(attacker, target_x, target_y, target_z, weapon, foe)
 
       if weapon_quality == 0x50 and spell_retcode == 0xfe then
          local k_name = korean_translate(foe.name)
-         if is_korean_mode() then
+         if is_korean_enabled() then
             print("`"..k_name..korean_get_particle(k_name, "iga").." 매혹되었다.\n")
          else
             print("`"..foe.name.." is charmed.\n")
          end
       elseif weapon_quality == 0x45 and spell_retcode == 0 then
          local k_name = korean_translate(foe.name)
-         if is_korean_mode() then
+         if is_korean_enabled() then
             print("`"..k_name..korean_get_particle(k_name, "iga").." 마비되었다.\n")
          else
             print("`"..foe.name.." is paralyzed.\n")
@@ -2089,7 +2089,7 @@ function advance_time(num_turns)
 						if obj_name ~= nil then
 							Actor.inv_remove_obj(actor, obj)
 							local k_obj = korean_translate(obj_name)
-							if is_korean_mode() then
+							if is_korean_enabled() then
 								print(k_obj..korean_get_particle(k_obj, "iga").." 사라졌다!\n")
 							else
 								print("A "..obj_name.." has vanished!\n")
@@ -2217,7 +2217,7 @@ function actor_corpser_regurgitation(actor)
    if val < actor_str_adj(actor) then
       play_sfx(SFX_CORPSER_REGURGITATE, true)
       local k_name = korean_translate(actor.name)
-      if is_korean_mode() then
+      if is_korean_enabled() then
          print("`"..k_name..korean_get_particle(k_name, "iga").." 뱉어져 나왔다!\n")
       else
          print("`"..actor.name.." regurgitated!\n")
@@ -2272,7 +2272,7 @@ function actor_yell_for_help(attacking_actor, defending_actor, dmg)
       if attacking_actor.wt == WT_PLAYER and actor_base ~= nil then
          if actor_base[7] ~= 0 and dmg > 0 then  --[7] == can_talk
             local k_name = korean_translate(defending_actor.name)
-            if is_korean_mode() then
+            if is_korean_enabled() then
                print("`"..k_name..korean_get_particle(k_name, "iga").." 도움을 요청한다!\n")
             else
                print("`"..defending_actor.name.." yells for help!\n")
@@ -3656,7 +3656,7 @@ function spell_charm_actor(attacker, foe)
 		foe.align = attacker.align
 		hit_anim(foe.x, foe.y)
 		local k_name = korean_translate(foe.name)
-		if is_korean_mode() then
+		if is_korean_enabled() then
 			print("\n"..k_name..korean_get_particle(k_name, "iga").." 매혹되었다.\n")
 		else
 			print("\n"..foe.name.." is charmed.\n")

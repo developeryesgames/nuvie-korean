@@ -69,6 +69,7 @@ class EggManager
  std::list<Egg *> *get_egg_list() { return &egg_list; };
  bool is_spawning_actors(){ return !not_spawning_actors; }
  void set_spawning_actors(bool spawning) { not_spawning_actors = !spawning; }
+ void reset_shamino_warning(); // Reset Shamino spawn warning flag
 
  protected:
  

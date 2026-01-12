@@ -42,6 +42,7 @@
 #include "Weather.h"
 #include "Script.h"
 #include "Player.h"
+#include "EggManager.h"
 
 #define PLAYER_BASE_MOVEMENT_COST 5
 
@@ -526,6 +527,21 @@ void Player::moveRelative(sint16 rel_x, sint16 rel_y, bool mouse_movement)
       actor->get_location(&x, &y, &z); //update location in case we have moved.
     }
 
+    // U6: Reset Shamino spawn warning when no enemies remain (original behavior)
+    if(game_type == NUVIE_GAME_U6 && movementStatus != BLOCKED)
+    {
+      ActorList *enemies = actor->find_enemies();
+      if(enemies)
+      {
+        if(enemies->empty())
+        {
+          // No enemies - reset Shamino spawn warning flag
+          Game::get_game()->get_obj_manager()->get_egg_manager()->reset_shamino_warning();
+        }
+        delete enemies;
+      }
+    }
+
     // update world around player
     actor_manager->updateActors(x, y, z);
     obj_manager->update(x, y, z); // remove temporary objs, hatch eggs
@@ -547,6 +563,8 @@ void Player::try_open_door(uint16 x, uint16 y, uint8 z)
 // teleport-type move
 void Player::move(sint16 new_x, sint16 new_y, uint8 new_level, bool teleport)
 {
+   // Reset Shamino spawn warning on teleport/level change
+   Game::get_game()->get_obj_manager()->get_egg_manager()->reset_shamino_warning();
    if(actor->move(new_x, new_y, new_level, ACTOR_FORCE_MOVE))
    {
     //map_window->centerMapOnActor(actor);
@@ -601,6 +619,20 @@ void Player::pass()
    {
 	 moveRelative(0, 0);
 	 //return;
+   }
+ }
+
+ // U6: Reset Shamino spawn warning when no enemies remain on pass
+ if(game_type == NUVIE_GAME_U6)
+ {
+   ActorList *enemies = actor->find_enemies();
+   if(enemies)
+   {
+     if(enemies->empty())
+     {
+       Game::get_game()->get_obj_manager()->get_egg_manager()->reset_shamino_warning();
+     }
+     delete enemies;
    }
  }
 
