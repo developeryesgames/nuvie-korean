@@ -197,8 +197,8 @@ MapWindow::MapWindow(Configuration *cfg, Map *m): GUI_Widget(NULL, 0, 0, 0, 0)
  map_tile_scale = (uint8)scale_val;
 
  // Smooth movement option (SNES-style smooth scrolling)
- bool smooth_val = false;
- config->value("config/video/smooth_movement", smooth_val, false);
+ bool smooth_val = true;
+ config->value("config/video/smooth_movement", smooth_val, true);
  smooth_movement = smooth_val;
  smooth_move_duration = 125; // Match player walk delay (125ms = 8 steps per second)
  last_smooth_update_time = 0;

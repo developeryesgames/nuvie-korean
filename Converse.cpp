@@ -635,7 +635,14 @@ bool Converse::override_input()
 {
     bool overide_cheat = Game::get_game()->are_cheats_enabled() && party_all_the_time;
     if(in_str.empty())
-        in_str = "bye";
+    {
+        // Use Korean keyword if Korean mode is enabled
+        KoreanTranslation *korean = Game::get_game()->get_korean_translation();
+        if(korean && korean->isEnabled())
+            in_str = "잘가";
+        else
+            in_str = "bye";
+    }
     else if(in_str == "look")
     {
         KoreanTranslation *korean = Game::get_game()->get_korean_translation();

@@ -196,6 +196,7 @@
 말|spee
 말고기|hors
 말굽|hors
+마필|hors
 말씀|word
 망각|obli
 망치|hamm
@@ -450,6 +451,7 @@
 어머니|moth
 언니|sist
 언어|lang
+언어를|spea
 업무|busi
 에너지|ener
 에일|ale
@@ -841,3 +843,18 @@
 패배|lose
 평화|peac
 푸른|blue
+
+# 중복 방지용 키워드 (tale/talk/cellar/chat/task/duties/forest/snake/boat/jape/joke/sing/road)
+설화|tale
+대화|talk
+저장고|cell
+수다|chat
+할일|task
+직무|duti
+삼림|fore
+독사|snak
+보트|boat
+익살|jape
+우스개|joke
+노래하기|sing
+도로|road
