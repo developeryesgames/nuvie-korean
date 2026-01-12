@@ -1211,11 +1211,9 @@ bool FadeEffect::pixelated_fade_core(uint32 pixels_to_check, sint16 fade_to)
 
     // Get pixel block size for Korean scaled mode
     int pixel_scale = 1;
-    if (Game::get_game()->is_original_plus()) {
-        FontManager *fm = Game::get_game()->get_font_manager();
-        if (fm && fm->is_korean_enabled()) {
-            Game::get_game()->get_config()->value("config/video/map_tile_scale", pixel_scale, 4);
-        }
+    FontManager *fm = Game::get_game()->get_font_manager();
+    if (fm && fm->is_korean_enabled()) {
+        Game::get_game()->get_config()->value("config/video/map_tile_scale", pixel_scale, 4);
     }
 
     if(fade_to == -1 && fade_from == NULL)

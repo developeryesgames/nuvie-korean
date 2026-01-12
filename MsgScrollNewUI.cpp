@@ -45,8 +45,16 @@ MsgScrollNewUI::MsgScrollNewUI(Configuration *cfg, Screen *s)
 {
  drop_target = false; //we don't participate in drag and drop.
 
- font_normal = Game::get_game()->get_font_manager()->get_conv_font();
- font_garg = Game::get_game()->get_font_manager()->get_conv_garg_font();
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+
+ // Use Korean font if enabled, otherwise use conv font
+ if(font_manager->is_korean_enabled()) {
+   font_normal = font_manager->get_font(0); // Korean font
+   font_garg = font_manager->get_font(0);   // Korean font for gargoyle too
+ } else {
+   font_normal = font_manager->get_conv_font();
+   font_garg = font_manager->get_conv_garg_font();
+ }
 
  init(cfg, font_normal);
 

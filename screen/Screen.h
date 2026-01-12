@@ -114,6 +114,7 @@ class Screen
    bool blit4xWithAlpha(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, unsigned char *alpha_buf, uint16 src_bpp, uint16 src_w, uint16 src_h, uint16 src_pitch);
    void blitbitmap(uint16 dest_x, uint16 dest_y, const unsigned char *src_buf, uint16 src_w, uint16 src_h, uint8 fg_color, uint8 bg_color);
    void blitbitmap4x(uint16 dest_x, uint16 dest_y, const unsigned char *src_buf, uint16 src_w, uint16 src_h, uint8 fg_color, uint8 bg_color);
+   bool blitSurface3x(sint32 dest_x, sint32 dest_y, SDL_Surface *src_surface, SDL_Rect *src_rect = NULL, uint32 transparent_color = 0, bool use_transparency = false);
 
    void buildalphamap8();
    void clearalphamap8( uint16 x, uint16 y, uint16 w, uint16 h, uint8 opacity, bool party_light_source);

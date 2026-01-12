@@ -49,16 +49,21 @@ View::~View()
 
 bool View::init(uint16 x, uint16 y, Font *f, Party *p, TileManager *tm, ObjManager *om)
 {
- // Check for Korean 4x mode
+ // Check for Korean scaling mode (original_plus uses 4x, new_style uses 3x)
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_korean_4x = font_manager && font_manager->is_korean_enabled() && font_manager->get_korean_font();
+ bool korean_enabled = font_manager && font_manager->is_korean_enabled();
+ int scale = 1;
+ if(korean_enabled && Game::get_game()->is_original_plus())
+   scale = 4;
+ else if(korean_enabled && Game::get_game()->is_new_style())
+   scale = 3;
 
  if(Game::get_game()->get_game_type()==NUVIE_GAME_U6)
  {
-   if(use_korean_4x && Game::get_game()->is_original_plus())
+   if(scale > 1)
    {
-     // 4x scaled dimensions - x,y are already scaled by ViewManager
-     GUI_Widget::Init(NULL, x, y, 136 * 4, 96 * 4);
+     // Scaled dimensions - x,y are already scaled by ViewManager
+     GUI_Widget::Init(NULL, x, y, 136 * scale, 96 * scale);
    }
    else
    {
@@ -231,17 +236,42 @@ GUI_status View::callback(uint16 msg, GUI_CallBack *caller, void *data)
 
 GUI_Button *View::loadButton(std::string dir, std::string name, uint16 x, uint16 y)
 {
+	return loadButton(dir, name, x, y, 1);
+}
+
+GUI_Button *View::loadButton(std::string dir, std::string name, uint16 x, uint16 y, int scale)
+{
 	GUI_Button *button;
 	std::string imagefile;
-		std::string path;
+	std::string path;
 
-		SDL_Surface *image, *image1;
-		build_path(dir, name + "_btn_up.bmp", imagefile);
-			image = SDL_LoadBMP(imagefile.c_str());
-			build_path(dir, name + "_btn_down.bmp", imagefile);
-			image1 = SDL_LoadBMP(imagefile.c_str());
+	SDL_Surface *image, *image1;
+	build_path(dir, name + "_btn_up.bmp", imagefile);
+	image = SDL_LoadBMP(imagefile.c_str());
+	build_path(dir, name + "_btn_down.bmp", imagefile);
+	image1 = SDL_LoadBMP(imagefile.c_str());
 
-			button = new GUI_Button(NULL, x, y, image, image1, this);
-			this->AddWidget(button);
+	// Scale button position
+	uint16 scaled_x = x * scale;
+	uint16 scaled_y = y * scale;
+
+	// Scale button images if scale > 1
+	if(scale > 1 && image && image1)
+	{
+		SDL_Surface *scaled_image = SDL_CreateRGBSurface(0, image->w * scale, image->h * scale, 32, 0, 0, 0, 0);
+		SDL_Surface *scaled_image1 = SDL_CreateRGBSurface(0, image1->w * scale, image1->h * scale, 32, 0, 0, 0, 0);
+		if(scaled_image && scaled_image1)
+		{
+			SDL_BlitScaled(image, NULL, scaled_image, NULL);
+			SDL_BlitScaled(image1, NULL, scaled_image1, NULL);
+			SDL_FreeSurface(image);
+			SDL_FreeSurface(image1);
+			image = scaled_image;
+			image1 = scaled_image1;
+		}
+	}
+
+	button = new GUI_Button(NULL, scaled_x, scaled_y, image, image1, this);
+	this->AddWidget(button);
 	return button;
 }

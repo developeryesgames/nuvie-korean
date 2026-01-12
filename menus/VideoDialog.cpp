@@ -60,8 +60,8 @@ static std::string get_vd_text(const char *english_text) {
 
 static int get_menu_scale() {
 	FontManager *fm = Game::get_game()->get_font_manager();
-	if (fm && fm->is_korean_enabled() && Game::get_game()->is_original_plus())
-		return 3;
+	if (fm && fm->is_korean_enabled())
+		return 3;  // 3x scale for Korean mode
 	return 1;
 }
 
@@ -305,18 +305,6 @@ bool VideoDialog::init() {
 	if (menu_scale > 1) { sprites_b->SetTextScale(menu_scale); sprites_b->ChangeTextButton(-1,-1,-1,-1,sprites_b->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(sprites_b);
 	button_index[last_index+=1] = sprites_b;
-// game_style (needs reset)
-	const char *game_style_text[4];
-	game_style_text[0] = "original style"; game_style_text[1] = "new style"; game_style_text[2] = "original+";
-	game_style_text[3] = "original+ full map";
-	txt = get_vd_text("Game style:");
-	widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, txt.c_str(), gui->get_font());
-	if (menu_scale > 1) ((GUI_Text*)widget)->SetTextScale(menu_scale);
-	AddWidget(widget);
-	game_style_button = new GUI_TextToggleButton(this, colX[3] - 84*menu_scale, buttonY += row_h, 154*menu_scale, height, game_style_text, 4, game->get_game_style(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
-	if (menu_scale > 1) { game_style_button->SetTextScale(menu_scale); game_style_button->ChangeTextButton(-1,-1,-1,-1,game_style_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
-	AddWidget(game_style_button);
-	button_index[last_index+=1] = game_style_button;
 // dithering (needs reset)
 	txt = get_vd_text("Video graphics:");
 	widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, txt.c_str(), gui->get_font());
@@ -537,11 +525,8 @@ GUI_status VideoDialog::callback(uint16 msg, GUI_CallBack *caller, void *data) {
 		else
 			sprite_char = sprites_b->GetSelection() ? "yes" : "no";
 		config->set(config_get_game_key(config) + "/custom_actor_tiles", sprite_char);
-	// game_style
-		const char *game_style_text[4];
-		game_style_text[0] = "original"; game_style_text[1] = "new"; game_style_text[2] = "original+";
-		game_style_text[3] = "original+_full_map";
-		config->set("config/video/game_style", game_style_text[game_style_button->GetSelection()]);
+	// game_style - always use original+ for Korean mode
+		config->set("config/video/game_style", "original+");
 	// dither
 		const char *dither_char;
 		uint8 dither = dither_button->GetSelection();

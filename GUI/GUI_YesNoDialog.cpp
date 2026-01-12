@@ -36,8 +36,8 @@
 
 static int get_menu_scale() {
 	FontManager *fm = Game::get_game()->get_font_manager();
-	if (fm && fm->is_korean_enabled() && Game::get_game()->is_original_plus())
-		return 3;
+	if (fm && fm->is_korean_enabled())
+		return 3;  // 3x scale for Korean mode
 	return 1;
 }
 

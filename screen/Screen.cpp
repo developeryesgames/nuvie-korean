@@ -3197,3 +3197,113 @@ void Screen::set_non_square_pixels(bool value) {
     SDL_SetWindowSize(sdlWindow, sw, sh);
 #endif
 }
+
+// Blit SDL_Surface with 3x scaling
+bool Screen::blitSurface3x(sint32 dest_x, sint32 dest_y, SDL_Surface *src_surface, SDL_Rect *src_rect, uint32 transparent_color, bool use_transparency)
+{
+    if (!src_surface) return false;
+
+    SDL_Rect default_rect = {0, 0, (Uint16)src_surface->w, (Uint16)src_surface->h};
+    if (!src_rect) src_rect = &default_rect;
+
+    uint16 src_w = src_rect->w;
+    uint16 src_h = src_rect->h;
+    sint32 src_x_start = src_rect->x;
+    sint32 src_y_start = src_rect->y;
+
+    // Destination dimensions are 3x source
+    uint32 dest_w = (uint32)src_w * 3;
+    uint32 dest_h = (uint32)src_h * 3;
+
+    // Clip to screen
+    uint32 screen_width = surface->w;
+    uint32 screen_height = surface->h;
+
+    if (dest_x >= (sint32)screen_width || dest_y >= (sint32)screen_height)
+        return false;
+    if (dest_x + (sint32)dest_w <= 0 || dest_y + (sint32)dest_h <= 0)
+        return false;
+
+    SDL_LockSurface(src_surface);
+
+    if (surface->bits_per_pixel == 16) {
+        uint16 *pixels = (uint16 *)surface->pixels;
+        for (sint32 sy = 0; sy < src_h; sy++) {
+            for (sint32 sx = 0; sx < src_w; sx++) {
+                // Get source pixel
+                Uint32 pixel;
+                Uint8 *src_ptr = (Uint8 *)src_surface->pixels + (src_y_start + sy) * src_surface->pitch;
+
+                if (src_surface->format->BytesPerPixel == 1) {
+                    Uint8 idx = src_ptr[src_x_start + sx];
+                    if (use_transparency && idx == transparent_color) continue;
+                    SDL_Color col = src_surface->format->palette->colors[idx];
+                    pixel = SDL_MapRGB(sdl_surface->format, col.r, col.g, col.b);
+                } else if (src_surface->format->BytesPerPixel == 2) {
+                    pixel = ((Uint16 *)src_ptr)[src_x_start + sx];
+                    if (use_transparency && pixel == transparent_color) continue;
+                } else if (src_surface->format->BytesPerPixel == 4) {
+                    Uint32 src_pixel = ((Uint32 *)src_ptr)[src_x_start + sx];
+                    if (use_transparency && src_pixel == transparent_color) continue;
+                    Uint8 r, g, b;
+                    SDL_GetRGB(src_pixel, src_surface->format, &r, &g, &b);
+                    pixel = SDL_MapRGB(sdl_surface->format, r, g, b);
+                } else {
+                    continue;
+                }
+
+                // Draw 3x3 block
+                for (int dy = 0; dy < 3; dy++) {
+                    sint32 py = dest_y + sy * 3 + dy;
+                    if (py < 0 || py >= (sint32)screen_height) continue;
+                    for (int dx = 0; dx < 3; dx++) {
+                        sint32 px = dest_x + sx * 3 + dx;
+                        if (px < 0 || px >= (sint32)screen_width) continue;
+                        pixels[py * surface->w + px] = (uint16)pixel;
+                    }
+                }
+            }
+        }
+    } else if (surface->bits_per_pixel == 32) {
+        uint32 *pixels = (uint32 *)surface->pixels;
+        for (sint32 sy = 0; sy < src_h; sy++) {
+            for (sint32 sx = 0; sx < src_w; sx++) {
+                // Get source pixel
+                Uint32 pixel;
+                Uint8 *src_ptr = (Uint8 *)src_surface->pixels + (src_y_start + sy) * src_surface->pitch;
+
+                if (src_surface->format->BytesPerPixel == 1) {
+                    Uint8 idx = src_ptr[src_x_start + sx];
+                    if (use_transparency && idx == transparent_color) continue;
+                    SDL_Color col = src_surface->format->palette->colors[idx];
+                    pixel = SDL_MapRGB(sdl_surface->format, col.r, col.g, col.b);
+                } else if (src_surface->format->BytesPerPixel == 2) {
+                    Uint16 src_pixel = ((Uint16 *)src_ptr)[src_x_start + sx];
+                    if (use_transparency && src_pixel == transparent_color) continue;
+                    Uint8 r, g, b;
+                    SDL_GetRGB(src_pixel, src_surface->format, &r, &g, &b);
+                    pixel = SDL_MapRGB(sdl_surface->format, r, g, b);
+                } else if (src_surface->format->BytesPerPixel == 4) {
+                    pixel = ((Uint32 *)src_ptr)[src_x_start + sx];
+                    if (use_transparency && pixel == transparent_color) continue;
+                } else {
+                    continue;
+                }
+
+                // Draw 3x3 block
+                for (int dy = 0; dy < 3; dy++) {
+                    sint32 py = dest_y + sy * 3 + dy;
+                    if (py < 0 || py >= (sint32)screen_height) continue;
+                    for (int dx = 0; dx < 3; dx++) {
+                        sint32 px = dest_x + sx * 3 + dx;
+                        if (px < 0 || px >= (sint32)screen_width) continue;
+                        pixels[py * surface->w + px] = pixel;
+                    }
+                }
+            }
+        }
+    }
+
+    SDL_UnlockSurface(src_surface);
+    return true;
+}

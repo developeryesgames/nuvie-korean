@@ -71,7 +71,7 @@ bool PartyView::init(void *vm, uint16 x, uint16 y, Font *f, Party *p, Player *pl
 
  // Check for Korean 4x mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_korean_4x = font_manager && font_manager->is_korean_enabled() && font_manager->get_korean_font();
+ bool use_korean_4x = font_manager && font_manager->is_korean_enabled();
 
  // PartyView is 8px wider than other Views, for the arrows
  // ...and 3px taller, for the sky (SB-X)

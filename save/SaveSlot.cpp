@@ -46,8 +46,8 @@
 
 int get_saveslot_scale() {
 	FontManager *fm = Game::get_game()->get_font_manager();
-	if (fm && fm->is_korean_enabled() && Game::get_game()->is_original_plus())
-		return 3;
+	if (fm && fm->is_korean_enabled())
+		return 3;  // 3x scale for Korean mode
 	return 1;
 }
 
@@ -220,7 +220,7 @@ std::string SaveSlot::get_save_description()
 {
 	// In Korean mode, use UTF-8 text
 	FontManager *fm = Game::get_game()->get_font_manager();
-	if (fm && fm->is_korean_enabled() && Game::get_game()->is_original_plus())
+	if (fm && fm->is_korean_enabled())
 	{
 		return textinput_widget->get_utf8_text();
 	}

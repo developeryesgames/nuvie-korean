@@ -355,15 +355,21 @@ void ViewManager::open_doll_view(Actor *actor)
 		DollViewGump *doll = get_doll_view(actor);
 		if(doll == NULL)
 		{
+			// Check for Korean 3x scaling in new_style mode
+			FontManager *font_manager = Game::get_game()->get_font_manager();
+			bool korean_enabled = font_manager && font_manager->is_korean_enabled();
+			int gump_scale = korean_enabled ? 3 : 1;
+
 			uint16 x_off = Game::get_game()->get_game_x_offset();
 			uint16 y_off = Game::get_game()->get_game_y_offset();
 			uint8 num_doll_gumps = doll_gumps.size();
 			doll = new DollViewGump(config);
-			uint16 x = 12 * num_doll_gumps;
-			uint16 y = 12 * num_doll_gumps;
+			uint16 x = 12 * num_doll_gumps * gump_scale;
+			uint16 y = 12 * num_doll_gumps * gump_scale;
 
-			if(y + DOLLVIEWGUMP_HEIGHT > screen->get_height())
-				y = screen->get_height() - DOLLVIEWGUMP_HEIGHT;
+			uint16 scaled_height = DOLLVIEWGUMP_HEIGHT * gump_scale;
+			if(y + scaled_height > screen->get_height())
+				y = screen->get_height() - scaled_height;
 
 			doll->init(Game::get_game()->get_screen(), this, x + x_off, y + y_off, actor, font, party, tile_manager, obj_manager);
 

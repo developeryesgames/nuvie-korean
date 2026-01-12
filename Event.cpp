@@ -2516,8 +2516,8 @@ void Event::quitDialog() {
 
     int menu_scale = 1;
     FontManager *fm = game->get_font_manager();
-    if (fm && fm->is_korean_enabled() && game->is_original_plus())
-        menu_scale = 3;
+    if (fm && fm->is_korean_enabled())
+        menu_scale = 3;  // 3x scale for Korean mode
 
     int dlg_w = 170 * menu_scale;
     int dlg_h = 80 * menu_scale;

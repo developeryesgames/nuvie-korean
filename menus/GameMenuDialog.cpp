@@ -48,10 +48,10 @@
 #define GMD_HEIGHT 122
 #endif
 
-// Get scale factor for Korean mode
+// Get scale factor for Korean mode (same for all game styles)
 static int get_menu_scale() {
 	FontManager *fm = Game::get_game()->get_font_manager();
-	if (fm && fm->is_korean_enabled() && Game::get_game()->is_original_plus())
+	if (fm && fm->is_korean_enabled())
 		return 3;  // 3x scale for Korean mode
 	return 1;
 }
