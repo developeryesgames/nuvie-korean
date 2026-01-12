@@ -829,3 +829,15 @@
 아픈이|sick
 부상|woun
 환자|infl
+
+# 추가 키워드
+기운|spir
+민요|song
+범선|mast
+복수|veng
+삶|life
+순찰|patr
+악마|daem
+패배|lose
+평화|peac
+푸른|blue
