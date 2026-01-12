@@ -46,6 +46,7 @@
 #include "MapWindow.h"
 #include "GUI.h"
 #include "KoreanFont.h"
+#include "Background.h"
 
 using std::string;
 
@@ -460,19 +461,42 @@ void CommandBar::Display(bool full_redraw)
             screen->fill(bg_color, area.x, area.y, area.w, area.h);
         else if(game->is_original_plus_cutoff_map() && area.x != game->get_game_x_offset()) // over null background so clear area where text is displayed
         {
-            if(!use_4x) // 4x mode uses full paper background; don't clear it
+            if(!use_4x) // 1x mode: clear text area
                 screen->clear(area.x + 2, area.y, area.w -2, area.h - 16, NULL);
+            else {
+                // 4x mode: redraw paper background for text area to avoid text overlap
+                Background *bg = game->get_background();
+                if(bg && bg->get_bg_shape()) {
+                    unsigned char *bg_data = bg->get_bg_shape()->get_data();
+                    uint16 bg_w = bg->get_bg_w();
+                    uint16 bg_h = 200; // paper.bmp is 320x200
+                    if(bg_data && bg_w > 0) {
+                        // Source: row 171-178 of paper.bmp, only the text area (skip left/right borders)
+                        // CommandBar text area at 4x: starts at 8*4=32 from left edge of paper, width ~152*4=608
+                        // area.x is relative to game offset, paper starts at offset
+                        uint16 src_y = 171;
+                        uint16 src_h = 8;
+                        uint16 src_x = 8; // skip left 8px border in paper.bmp
+                        uint16 src_w = 152; // text area width (skip right panel)
+                        if(src_y + src_h <= bg_h && src_x + src_w <= bg_w) {
+                            unsigned char *src_ptr = bg_data + (src_y * bg_w) + src_x;
+                            uint16 dest_x = game->get_game_x_offset() + (src_x * 4);
+                            screen->blit4x(dest_x, area.y, src_ptr, 8, src_w, src_h, bg_w, true);
+                        }
+                    }
+                }
+            }
         }
 
         display_information();
 
         if(use_4x) {
-            // 4x scaled icons
+            // 4x scaled icons - moved up 12 pixels (3 original pixels) for better alignment
             for(uint32 i = 0; i < 10; i++)
-                screen->blit4x(area.x + i*64, area.y + 32, icon[i]->data, 8, 16, 16, 16, true, NULL);
+                screen->blit4x(area.x + i*64, area.y + 20, icon[i]->data, 8, 16, 16, 16, true, NULL);
 
             if(selected_action >= 0 && selected_action <= 9)
-                screen->fill(9, area.x + selected_action*64, area.y + 96, 64, 4);
+                screen->fill(9, area.x + selected_action*64, area.y + 84, 64, 4);
         } else {
             // Normal 1x icons
             for(uint32 i = 0; i < 10; i++)
@@ -522,14 +546,14 @@ void CommandBar::display_information()
     uint16 ui_scale = game->get_game_width() / 320;
     if(ui_scale >= 4 && korean_mode) {
         // Use Korean font with proper scaling and center alignment
-        // Offset left (-32px) for better visual balance
+        // Offset left (-32px) for better visual balance, moved up 12 pixels
         KoreanFont *korean_font = fm->get_korean_font();
         if(korean_font) {
             uint16 text_width = korean_font->getStringWidthUTF8(infostring.c_str(), 1);
             uint16 x_pos = area.x + (area.w - text_width) / 2 - 32;
-            korean_font->drawStringUTF8(screen, infostring.c_str(), x_pos, area.y, font_color, font_color, 1);
+            korean_font->drawStringUTF8(screen, infostring.c_str(), x_pos, area.y - 12, font_color, font_color, 1);
         } else {
-            font->drawString(screen, infostring.c_str(), area.x + 32, area.y, font_color, font_color);
+            font->drawString(screen, infostring.c_str(), area.x + 32, area.y - 12, font_color, font_color);
         }
     } else {
         font->drawString(screen, infostring.c_str(), area.x + 8, area.y, font_color, font_color);

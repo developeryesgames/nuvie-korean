@@ -160,20 +160,18 @@ void Background::Display(bool full_redraw)
             }
 
 
-            if(scale > 1) {
+            if(use_ui_scale) {
+                // 4x scale: Draw full background scaled (320x200 -> 1280x800)
+                if(ui_scale >= 4)
+                    screen->blit4x(x_off, y_off, background->get_data(), 8, bg_w, bg_h, bg_w, true);
+                else if(ui_scale == 3)
+                    screen->blit3x(x_off, y_off, background->get_data(), 8, bg_w, bg_h, bg_w, true);
+                else if(ui_scale >= 2)
+                    screen->blit2x(x_off, y_off, background->get_data(), 8, bg_w, bg_h, bg_w, true);
+            } else if(scale > 1) {
                 // Background is already scaled; blit the full panel at native size.
                 unsigned char *panel_ptr = background->get_data() + (bg_w - panel_width);
                 screen->blit(panel_x, y_off, panel_ptr, 8, panel_width, bg_h, bg_w, true);
-            } else if(use_ui_scale) {
-                // Scale the full paper background so the map can use a proper frame.
-                if(ui_scale >= 4)
-                    screen->blit4x(x_off, y_off, background->get_data(), 8, bg_w, bg_h, bg_w, false);
-                else if(ui_scale == 3)
-                    screen->blit3x(x_off, y_off, background->get_data(), 8, bg_w, bg_h, bg_w, false);
-                else if(ui_scale >= 2)
-                    screen->blit2x(x_off, y_off, background->get_data(), 8, bg_w, bg_h, bg_w, false);
-                else
-                    screen->blit(x_off, y_off, background->get_data(), 8, bg_w, bg_h, bg_w, true);
             } else {
                 ptr += (bg_w - main_width);
                 screen->blit(right_bg_x_off, y_off, ptr, 8, main_width, bg_h, bg_w, true);
@@ -187,8 +185,20 @@ void Background::Display(bool full_redraw)
         }
     } else {
         screen->clear(area.x,area.y,area.w,area.h,NULL);
-        if(Game::get_game()->is_orig_style())
+        if(Game::get_game()->is_orig_style()) {
             screen->blit(x_off, y_off, background->get_data(), 8,  bg_w, bg_h, bg_w, true);
+        } else if(Game::get_game()->is_original_plus()) {
+            // Draw full background at 4x scale for original_plus mode
+            uint16 local_ui_scale = Game::get_game()->get_game_width() / 320;
+            if(local_ui_scale >= 4)
+                screen->blit4x(x_off, y_off, background->get_data(), 8, bg_w, bg_h, bg_w, true);
+            else if(local_ui_scale == 3)
+                screen->blit3x(x_off, y_off, background->get_data(), 8, bg_w, bg_h, bg_w, true);
+            else if(local_ui_scale >= 2)
+                screen->blit2x(x_off, y_off, background->get_data(), 8, bg_w, bg_h, bg_w, true);
+            else
+                screen->blit(x_off, y_off, background->get_data(), 8, bg_w, bg_h, bg_w, true);
+        }
     }
     update_display = false;
     screen->update(0,0,area.w,area.h);

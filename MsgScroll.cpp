@@ -1463,7 +1463,7 @@ void MsgScroll::Display(bool full_redraw)
    }
 
    if(use_korean)
-     drawCursor(area.x + left_margin + cursor_x + composing_width + 8, area.y + cursor_y * font_height + 4);
+     drawCursor(area.x + left_margin + cursor_x + composing_width + 4, area.y + cursor_y * font_height + 4);
    else
      drawCursor(area.x + left_margin + 8 * cursor_x, area.y + cursor_y * 8);
  }
@@ -1523,10 +1523,12 @@ void MsgScroll::drawCursor(uint16 x, uint16 y)
  FontManager *font_manager = Game::get_game()->get_font_manager();
  KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
  bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
- // Korean mode: MsgScroll area is 4x scaled, so use 4x for control chars too
- // Korean font: 16x16 native, Original U6 font: 8x8 scaled to 24x24 (3x) in Korean mode
+ // Korean mode: MsgScroll area is 4x scaled, cursor 24x24 (3x scale), shifted right by 8px
+ // Korean font: 32x32 native, Original U6 font: 8x8 scaled to 24x24 (3x) in Korean mode
  uint16 cursor_size = use_korean ? 24 : 8;
  uint8 korean_scale = use_korean ? 3 : 1; // 3x scale for 8x8 U6 font (24x24 cursor in Korean mode)
+ uint16 cursor_x_offset = use_korean ? 8 : 0; // shift cursor right by 8px in Korean mode
+ x += cursor_x_offset;
 
  if(input_char != 0) { // show letter selected by arrow keys
     // For input_char, draw at text position (without cursor offset)

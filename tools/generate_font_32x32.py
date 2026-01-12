@@ -9,9 +9,9 @@ from PIL import Image, ImageDraw, ImageFont
 
 # Configuration
 CELL_SIZE = 32
-CHARS_PER_ROW = 16
+CHARS_PER_ROW = 64  # 64 chars per row to match KoreanFont.cpp
 FONT_SIZE = 28  # Slightly smaller than cell to have padding
-FONT_PATH = "C:/Windows/Fonts/NotoSansKR-VF.ttf"
+FONT_PATH = "../data/fonts/korean/IBMPlexSansKR-Bold.ttf"
 CHARMAP_PATH = "../data/fonts/korean/korean_font_charmap.txt"
 OUTPUT_BMP = "../data/fonts/korean/korean_font_32x32.bmp"
 OUTPUT_DAT = "../data/fonts/korean/korean_font_32x32.dat"

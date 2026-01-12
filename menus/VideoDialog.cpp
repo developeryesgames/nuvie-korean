@@ -46,7 +46,7 @@
 #include "KoreanTranslation.h"
 
 #define VD_WIDTH 311
-#define VD_HEIGHT 197 // add or subtract 13 if you add/remove a row
+#define VD_HEIGHT 210 // add or subtract 13 if you add/remove a row
 
 // Helper to get translated text for VideoDialog
 static std::string get_vd_text(const char *english_text) {
@@ -328,6 +328,17 @@ bool VideoDialog::init() {
 	if (menu_scale > 1) { map_tile_scale_button->SetTextScale(menu_scale); map_tile_scale_button->ChangeTextButton(-1,-1,-1,-1,map_tile_scale_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(map_tile_scale_button);
 	button_index[last_index+=1] = map_tile_scale_button;
+// smooth_movement (SNES-style smooth scrolling)
+	txt = get_vd_text("Smooth movement:");
+	widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, txt.c_str(), gui->get_font());
+	if (menu_scale > 1) ((GUI_Text*)widget)->SetTextScale(menu_scale);
+	AddWidget(widget);
+	bool smooth_movement_val;
+	config->value("config/video/smooth_movement", smooth_movement_val, false);
+	smooth_movement_button = new GUI_TextToggleButton(this, colX[4], buttonY += row_h, yesno_width, height, tr_yesno_text, 2, smooth_movement_val ? 1 : 0, font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	if (menu_scale > 1) { smooth_movement_button->SetTextScale(menu_scale); smooth_movement_button->ChangeTextButton(-1,-1,-1,-1,smooth_movement_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
+	AddWidget(smooth_movement_button);
+	button_index[last_index+=1] = smooth_movement_button;
 // cancel/save buttons
 	std::string cancel_txt = get_vd_text("Cancel");
 	std::string save_txt = get_vd_text("Save");
@@ -540,6 +551,10 @@ GUI_status VideoDialog::callback(uint16 msg, GUI_CallBack *caller, void *data) {
 	// map_tile_scale
 		int map_tile_scale = map_tile_scale_button->GetSelection() + 2; // 0->2, 1->3, 2->4
 		config->set("config/video/map_tile_scale", map_tile_scale);
+	// smooth_movement (can be changed without restart)
+		bool smooth_movement = smooth_movement_button->GetSelection() == 1;
+		config->set("config/video/smooth_movement", smooth_movement ? "yes" : "no");
+		game->get_map_window()->set_smooth_movement(smooth_movement);
 
 		config->write();
 		close_dialog();

@@ -36,8 +36,8 @@ class VideoDialog : public GUI_Dialog {
 		GUI_Button *save_button, *cancel_button, *only2x_button;
 		GUI_TextToggleButton *scale_button, *scale_win_button, *scaler_button, *scaler_win_button,
 		                     *fullscreen_button, *non_square_pixels_button, *roof_button, *lighting_button, *dither_button,
-		                     *doll_button, *tile_lighting_b, *sprites_b, *map_tile_scale_button;
-		GUI_Button *button_index[12]; // add to here when you add a button. Keep buttons in order by height
+		                     *doll_button, *tile_lighting_b, *sprites_b, *map_tile_scale_button, *smooth_movement_button;
+		GUI_Button *button_index[13]; // add to here when you add a button. Keep buttons in order by height
 		void rebuild_buttons(bool init);
 	public:
 		VideoDialog(GUI_CallBack *callback);

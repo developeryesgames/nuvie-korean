@@ -65,6 +65,16 @@ Actor::Actor(Map *m, ObjManager *om, GameClock *c)
  temp_actor = false;
  visible_flag = true;
  met_player = false;
+
+ // Smooth movement initialization
+ visual_x = 0.0f;
+ visual_y = 0.0f;
+ smooth_start_x = 0.0f;
+ smooth_start_y = 0.0f;
+ smooth_end_x = 0.0f;
+ smooth_end_y = 0.0f;
+ smooth_move_start_time = 0;
+ smooth_moving = false;
 // active = false;
 
  worktype = 0;
@@ -565,6 +575,14 @@ bool Actor::move(uint16 new_x, uint16 new_y, uint8 new_z, ActorMoveFlags flags)
     return false; // blocked by actor
    }
 
+ // Note: NPC smooth movement disabled for now - focus on map smooth scrolling first
+ // MapWindow *map_window = game->get_map_window();
+ // bool is_player = (id_n == game->get_player()->get_actor()->id_n);
+ // if(map_window && map_window->is_smooth_movement_enabled() && !force_move && !is_player)
+ //   {
+ //    start_smooth_move(x, y, WRAPPED_COORD(new_x,new_z), WRAPPED_COORD(new_y,new_z));
+ //   }
+
  // move
  x = WRAPPED_COORD(new_x,new_z); // FIXME: this is probably needed because PathFinder is not wrapping coords
  y = WRAPPED_COORD(new_y,new_z);
@@ -597,6 +615,44 @@ bool Actor::move(uint16 new_x, uint16 new_y, uint8 new_z, ActorMoveFlags flags)
  return true;
 }
 
+// Start smooth movement interpolation from one tile to another
+void Actor::start_smooth_move(uint16 from_x, uint16 from_y, uint16 to_x, uint16 to_y)
+{
+    smooth_start_x = (float)(from_x * 16);  // 16 pixels per tile
+    smooth_start_y = (float)(from_y * 16);
+    smooth_end_x = (float)(to_x * 16);
+    smooth_end_y = (float)(to_y * 16);
+    visual_x = smooth_start_x;
+    visual_y = smooth_start_y;
+    smooth_move_start_time = clock->get_ticks();
+    smooth_moving = true;
+}
+
+// Update smooth movement interpolation
+void Actor::update_smooth_move(uint32 current_time, uint32 duration)
+{
+    if (!smooth_moving) return;
+
+    uint32 elapsed = current_time - smooth_move_start_time;
+    float progress = (float)elapsed / (float)duration;
+
+    if (progress >= 1.0f) {
+        finish_smooth_move();
+        return;
+    }
+
+    // Linear interpolation from start to end
+    visual_x = smooth_start_x + (smooth_end_x - smooth_start_x) * progress;
+    visual_y = smooth_start_y + (smooth_end_y - smooth_start_y) * progress;
+}
+
+// Finish smooth movement - snap to target position
+void Actor::finish_smooth_move()
+{
+    visual_x = (float)(x * 16);
+    visual_y = (float)(y * 16);
+    smooth_moving = false;
+}
 
 void Actor::update()
 {

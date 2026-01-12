@@ -1887,7 +1887,8 @@ void ScriptCutscene::Display(bool full_redraw)
 				    if(use_korean && korean_font)
 				    {
 				      // Scale coordinates for 4x mode
-				      int draw_x = x_off + s->x * render_scale;
+					int adjusted_x_off = (x_off < 16) ? 16 : x_off;
+					int draw_x = adjusted_x_off + s->x * render_scale;
 				      int draw_y = y_off + s->y * render_scale;
 
 				      // Right edge for word wrap (screen width minus margin)

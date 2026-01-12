@@ -220,6 +220,16 @@ class Actor
  uint16 y;
  uint16 z;
 
+ // Smooth movement interpolation
+ float visual_x;  // visual position for smooth rendering (in pixels)
+ float visual_y;
+ float smooth_start_x; // starting position in pixels
+ float smooth_start_y;
+ float smooth_end_x;   // ending position in pixels
+ float smooth_end_y;
+ uint32 smooth_move_start_time; // when smooth movement started
+ bool smooth_moving; // currently doing smooth movement interpolation
+
  uint8 worktype;
  MapCoord work_location;
  uint32 move_time; // time (in clock ticks) of last update() (for display)
@@ -331,7 +341,15 @@ class Actor
  uint16 get_x() { return(x); }
  uint16 get_y() { return(y); }
  uint8  get_z() { return(z); }
- 
+
+ // Smooth movement getters
+ float get_visual_x() { return visual_x; }
+ float get_visual_y() { return visual_y; }
+ bool is_smooth_moving() { return smooth_moving; }
+ void start_smooth_move(uint16 from_x, uint16 from_y, uint16 to_x, uint16 to_y);
+ void update_smooth_move(uint32 current_time, uint32 duration);
+ void finish_smooth_move();
+
  uint8 get_strength() { return(strength); }
  uint8 get_dexterity() { return(dex); }
  uint8 get_intelligence() { return(intelligence); }

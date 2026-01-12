@@ -31,8 +31,8 @@ KoreanFont::KoreanFont()
 {
     font_surface = NULL;
     char_widths = NULL;
-    cell_width = 16;   // 32x32 font cells
-    cell_height = 16;
+    cell_width = 32;   // 32x32 font cells
+    cell_height = 32;
     chars_per_row = 64; // 64 chars per row
     total_chars = 0;
 
@@ -325,7 +325,8 @@ uint16 KoreanFont::getStringWidthUTF8(const char *str, uint8 scale)
                 char_width = (cell_width * 3) / 4;
             }
         }
-        width += char_width * scale;
+        // Add extra letter spacing (4 pixels) to match drawCharUnicode
+        width += (char_width + 4) * scale;
     }
 
     return width;
@@ -448,6 +449,8 @@ uint16 KoreanFont::drawCharUnicode(Screen *screen, uint32 codepoint, uint16 x, u
             width = (cell_width * 3) / 4;
         }
     }
+    // Add extra letter spacing (4 pixels)
+    width += 4;
     return width * scale;
 }
 

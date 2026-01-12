@@ -196,6 +196,23 @@ MapWindow::MapWindow(Configuration *cfg, Map *m): GUI_Widget(NULL, 0, 0, 0, 0)
  if(scale_val > 4) scale_val = 4;
  map_tile_scale = (uint8)scale_val;
 
+ // Smooth movement option (SNES-style smooth scrolling)
+ bool smooth_val = false;
+ config->value("config/video/smooth_movement", smooth_val, false);
+ smooth_movement = smooth_val;
+ smooth_move_duration = 300; // 300ms for testing (slower smooth movement)
+ last_smooth_update_time = 0;
+
+ // Smooth scrolling initialization
+ scroll_offset_x = 0.0f;
+ scroll_offset_y = 0.0f;
+ scroll_start_offset_x = 0.0f;
+ scroll_start_offset_y = 0.0f;
+ scroll_target_x = 0.0f;
+ scroll_target_y = 0.0f;
+ scroll_start_time = 0;
+ smooth_scrolling = false;
+
  set_interface();
 }
 
@@ -229,107 +246,108 @@ bool MapWindow::init(TileManager *tm, ObjManager *om, ActorManager *am)
  {
 	 uint16 game_width = game->get_game_width();
 	 uint16 game_height = game->get_game_height();
-	 bool used_paper_layout = false;
+
+	 paper_clip_active = false;
+	 paper_clip_rect.x = 0;
+	 paper_clip_rect.y = 0;
+	 paper_clip_rect.w = 0;
+	 paper_clip_rect.h = 0;
 
 	 if(game->is_original_plus_cutoff_map()) {
+		 map_center_xoff = 0;
 		 uint16 ui_scale = game_width / 320;
-		 if(ui_scale > 1) {
-			 Background *bg = game->get_background();
-			 if(bg) {
-				 U6Shape *shape = bg->get_bg_shape();
-				 if(shape) {
-					 uint16 bg_w = 0, bg_h = 0;
-					 shape->get_size(&bg_w, &bg_h);
-					 if(bg_w > 0 && bg_h > 0) {
-						 uint16 bg_scale = bg_w / 320;
-						 if(bg_scale == 0) bg_scale = 1;
-						 uint16 draw_scale = (bg_scale == 1 && ui_scale > 1) ? ui_scale : 1;
-						 uint16 panel_width = (uint16)(158 * bg_scale);
-						 uint16 edge = (uint16)(6 * bg_scale);
-						 uint16 bottom_edge = (uint16)(29 * bg_scale); // matches CommandBar layout
-						 if(panel_width + edge * 2 < bg_w && edge + bottom_edge < bg_h) {
-							 uint32 hole_w_px = (uint32)(bg_w - panel_width - edge * 2) * draw_scale;
+		 if(ui_scale >= 2) {
+			 // UI is always drawn at ui_scale (e.g., 4x)
+			 // Map tiles may be drawn at different scale (map_tile_scale)
+			 // But the visible area is fixed by UI scale
+			 uint16 edge = 8 * ui_scale;  // 32px at 4x
 
-								 uint32 hole_h_px = (uint32)(bg_h - edge - bottom_edge) * draw_scale;
+			 // Visible area is fixed by UI: 160 * ui_scale (640px at 4x)
+			 uint16 visible_w = 160 * ui_scale;
+			 uint16 visible_h = 160 * ui_scale;
 
-								 if(hole_w_px > 0 && hole_h_px > 0) {
+			 // Calculate how many map tiles fit in the visible area
+			 map_w = visible_w / scaled_tile_size;
+			 map_h = visible_h / scaled_tile_size;
+			 // Ensure odd number for proper centering, and at least cover visible area
+			 if(visible_w % scaled_tile_size != 0) map_w += 1;
+			 if(visible_h % scaled_tile_size != 0) map_h += 1;
+			 if(map_w % 2 == 0) map_w += 1;
+			 if(map_h % 2 == 0) map_h += 1;
 
-									 map_w = (uint16)((hole_w_px + scaled_tile_size - 1) / scaled_tile_size);
-
-									 map_h = (uint16)((hole_h_px + scaled_tile_size - 1) / scaled_tile_size);
-
-									 if(map_w == 0) map_w = 1;
-
-									 if(map_h == 0) map_h = 1;
-
-									 game_width = map_w * scaled_tile_size;
-
-									 game_height = map_h * scaled_tile_size;
-
-									 map_center_xoff = 0;
-
-									 paper_clip_active = true;
-									 paper_clip_rect.x = game->get_game_x_offset() + (edge * draw_scale);
-									 paper_clip_rect.y = game->get_game_y_offset() + (edge * draw_scale);
-									 paper_clip_rect.w = (uint16)hole_w_px;
-									 paper_clip_rect.h = (uint16)hole_h_px;
-
-									 offset_x = paper_clip_rect.x + (sint32)(hole_w_px - game_width) / 2;
-
-							offset_y = paper_clip_rect.y + (sint32)(hole_h_px - game_height) / 2;
-
-							// Align the map origin to tile boundaries relative to the clip to avoid seams.
-							if(scaled_tile_size > 0) {
-								sint32 adj_x = (paper_clip_rect.x - offset_x) % scaled_tile_size;
-								if(adj_x < 0) adj_x += scaled_tile_size;
-								sint32 adj_y = (paper_clip_rect.y - offset_y) % scaled_tile_size;
-								if(adj_y < 0) adj_y += scaled_tile_size;
-								offset_x += adj_x;
-								offset_y += adj_y;
-							}
-
-							used_paper_layout = true;
-
-									 static int map_dbg = 0;
-									 if(map_dbg < 3) {
-										 DEBUG(0, LEVEL_INFORMATIONAL, "MapLayout FIXED: hole_px=%ux%u clip=%ux%u+%u,%u map=%ux%u area=%ux%u off=%d,%d tile=%u\n", hole_w_px, hole_h_px, paper_clip_rect.w, paper_clip_rect.h, paper_clip_rect.x, paper_clip_rect.y, map_w, map_h, game_width, game_height, offset_x, offset_y, scaled_tile_size);
-										 map_dbg++;
-									 }
-
-							 }
-						 }
-					 }
-				 }
+			 // Add extra tiles for smooth scrolling
+			 if(smooth_movement) {
+				 map_w += 2;
+				 map_h += 2;
 			 }
-		 }
-	 }
 
-	 if(!used_paper_layout) {
-		 paper_clip_active = false;
-		 paper_clip_rect.x = 0;
-		 paper_clip_rect.y = 0;
-		 paper_clip_rect.w = 0;
-		 paper_clip_rect.h = 0;
-		 if(game->is_original_plus_cutoff_map()) {
-			 map_center_xoff = 0;
-			 game_width -= border_width; // don't go over border
-		 } else if(game->is_original_plus_full_map()) {
-			 map_center_xoff = (border_width/scaled_tile_size)%scaled_tile_size;
-		 } else { // new style
-			 map_center_xoff = 0;
+			 // Map pixel size
+			 uint16 map_pixel_w = map_w * scaled_tile_size;
+			 uint16 map_pixel_h = map_h * scaled_tile_size;
+
+			 // Position map centered in visible area
+			 offset_x = game->get_game_x_offset() + edge + (sint32)(visible_w - map_pixel_w) / 2;
+			 offset_y = game->get_game_y_offset() + edge + (sint32)(visible_h - map_pixel_h) / 2;
+
+			 // Clip rect = visible map area (fixed by UI scale)
+			 paper_clip_active = true;
+			 paper_clip_rect.x = game->get_game_x_offset() + edge;
+			 paper_clip_rect.y = game->get_game_y_offset() + edge;
+			 paper_clip_rect.w = visible_w;
+			 paper_clip_rect.h = visible_h;
+		 } else {
+			 // 1x scale: original behavior
+			 game_width -= border_width;
+			 map_w = game_width / scaled_tile_size;
+			 map_h = game_height / scaled_tile_size;
+			 if(game_width % scaled_tile_size != 0 || map_w % 2 == 0) {
+				 map_w += 1;
+				 if(map_w % 2 == 0) map_w += 1;
+			 }
+			 if(game_height % scaled_tile_size != 0 || map_h % 2 == 0) {
+				 map_h += 1;
+				 if(map_h % 2 == 0) map_h += 1;
+			 }
+			 if(smooth_movement) {
+				 map_w += 2;
+				 map_h += 2;
+			 }
+			 offset_x -= (map_w * scaled_tile_size - game_width) / 2;
+			 offset_y -= (map_h * scaled_tile_size - game_height) / 2;
 		 }
-		 // Use scaled tile size for calculating number of tiles
+	 } else if(game->is_original_plus_full_map()) {
+		 map_center_xoff = (border_width/scaled_tile_size)%scaled_tile_size;
 		 map_w = game_width/scaled_tile_size;
 		 map_h = game_height/scaled_tile_size;
-		 if(game_width%scaled_tile_size != 0 || map_w%2 == 0) { // not just the right size
+		 if(game_width%scaled_tile_size != 0 || map_w%2 == 0) {
 			 map_w += 1;
-			 if(map_w%2 == 0) // need odd number of tiles to center properly
-				 map_w += 1;
+			 if(map_w%2 == 0) map_w += 1;
 		 }
-		 if(game_height%scaled_tile_size != 0 || map_h%2 == 0) { // not just the right size
+		 if(game_height%scaled_tile_size != 0 || map_h%2 == 0) {
 			 map_h += 1;
-			 if(map_h%2 == 0) // need odd number of tiles to center properly
-				 map_h += 1;
+			 if(map_h%2 == 0) map_h += 1;
+		 }
+		 if(smooth_movement) {
+			 map_w += 2;
+			 map_h += 2;
+		 }
+		 offset_x -= (map_w*scaled_tile_size - game_width)/2;
+		 offset_y -= (map_h*scaled_tile_size - game_height)/2;
+	 } else { // new style
+		 map_center_xoff = 0;
+		 map_w = game_width/scaled_tile_size;
+		 map_h = game_height/scaled_tile_size;
+		 if(game_width%scaled_tile_size != 0 || map_w%2 == 0) {
+			 map_w += 1;
+			 if(map_w%2 == 0) map_w += 1;
+		 }
+		 if(game_height%scaled_tile_size != 0 || map_h%2 == 0) {
+			 map_h += 1;
+			 if(map_h%2 == 0) map_h += 1;
+		 }
+		 if(smooth_movement) {
+			 map_w += 2;
+			 map_h += 2;
 		 }
 		 offset_x -= (map_w*scaled_tile_size - game_width)/2;
 		 offset_y -= (map_h*scaled_tile_size - game_height)/2;
@@ -416,12 +434,13 @@ if(game->is_orig_style())
 }
 else
 {
-	 if(paper_clip_active && game->is_original_plus_cutoff_map())
-	 {
-		 clip_rect = paper_clip_rect;
-	 }
-	 else
-	 {
+	 if(paper_clip_active) {
+		 // 4x scale mode: use paper frame hole dimensions
+		 clip_rect.x = paper_clip_rect.x;
+		 clip_rect.y = paper_clip_rect.y;
+		 clip_rect.w = paper_clip_rect.w;
+		 clip_rect.h = paper_clip_rect.h;
+	 } else {
 		 clip_rect.x = game->get_game_x_offset();
 		 clip_rect.y = game->get_game_y_offset();
 		 if(game->is_original_plus_cutoff_map())
@@ -584,13 +603,65 @@ void MapWindow::centerMap(uint16 x, uint16 y, uint8 z)
 
 void MapWindow::centerMapOnActor(Actor *actor)
 {
- uint16 x;
- uint16 y;
- uint8 z;
+ uint16 ax;
+ uint16 ay;
+ uint8 az;
 
- actor->get_location(&x,&y,&z);
+ actor->get_location(&ax,&ay,&az);
 
- centerMap(x, y, z);
+ // If level changed, reset scroll offsets and don't smooth scroll
+ if(az != cur_level)
+ {
+    scroll_offset_x = 0;
+    scroll_offset_y = 0;
+    smooth_scrolling = false;
+    centerMap(ax, ay, az);
+    return;
+ }
+
+ if(smooth_movement && map_width > 0)
+ {
+    // Calculate where the map should be centered
+    sint16 target_cur_x = ax - ((win_width - 1 - map_center_xoff) / 2);
+    sint16 target_cur_y = ay - ((win_height - 1) / 2);
+
+    // Handle map wrapping for target
+    if(target_cur_x < 0)
+        target_cur_x = map_width + target_cur_x;
+    else
+        target_cur_x %= map_width;
+
+    // Calculate tile offset from current position to target
+    sint16 diff_x = target_cur_x - cur_x;
+    sint16 diff_y = target_cur_y - cur_y;
+
+    // Handle wrapping for diff calculation
+    if(diff_x > (sint16)(map_width / 2))
+        diff_x -= map_width;
+    else if(diff_x < -(sint16)(map_width / 2))
+        diff_x += map_width;
+
+    // If there's movement to do, start smooth scrolling
+    if(diff_x != 0 || diff_y != 0)
+    {
+        // Move map immediately to target, use offset to animate back
+        // Start offset = opposite of movement (so visually we're still at old position)
+        // Then animate offset to 0
+        scroll_start_offset_x = (float)(diff_x * 16);  // positive = moved right, offset left
+        scroll_start_offset_y = (float)(diff_y * 16);
+        scroll_offset_x = scroll_start_offset_x;
+        scroll_offset_y = scroll_start_offset_y;
+        scroll_start_time = game->get_clock()->get_ticks();
+        smooth_scrolling = true;
+
+        // Move the map immediately to the target position
+        moveMap(target_cur_x, target_cur_y, az);
+    }
+ }
+ else
+ {
+    centerMap(ax, ay, az);
+ }
 
  return;
 }
@@ -778,6 +849,38 @@ bool MapWindow::in_window(uint16 x, uint16 y, uint8 z)
              && y >= cur_y && y <= (cur_y + win_height)) );
 }
 
+/* Update smooth movement interpolation.
+ */
+void MapWindow::update_smooth_movement()
+{
+    if(!smooth_movement) return;
+
+    GameClock *clock = game->get_clock();
+    uint32 current_time = clock->get_ticks();
+
+    // Update smooth map scrolling
+    if(smooth_scrolling)
+    {
+        uint32 elapsed = current_time - scroll_start_time;
+        float progress = (float)elapsed / (float)smooth_move_duration;
+
+        if(progress >= 1.0f)
+        {
+            // Finished scrolling
+            scroll_offset_x = 0.0f;
+            scroll_offset_y = 0.0f;
+            smooth_scrolling = false;
+        }
+        else
+        {
+            // Linear interpolation from start offset towards 0
+            scroll_offset_x = scroll_start_offset_x * (1.0f - progress);
+            scroll_offset_y = scroll_start_offset_y * (1.0f - progress);
+        }
+    }
+
+    last_smooth_update_time = current_time;
+}
 
 /* Update player position if walking to mouse cursor. Update map position.
  */
@@ -798,6 +901,12 @@ void MapWindow::update()
     }
 
     anim_manager->update(); // update animations
+
+    // Update smooth movement for all actors
+    if(smooth_movement)
+    {
+        update_smooth_movement();
+    }
 
     if(vel_x || vel_y) // this slides the map
     {
@@ -1061,53 +1170,10 @@ void MapWindow::Display(bool full_redraw)
    createLightOverlay();
  }
 
- if(paper_clip_active)
- {
-   // Force the paper hole clip based on U6 layout (320x200 base) so borders remain visible.
-   uint16 ui_scale = game->get_game_width() / 320;
-   if(ui_scale == 0) ui_scale = 1;
-   uint16 edge_px = (uint16)(6 * ui_scale);
-   uint16 hole_w_px = (uint16)((320 - 158 - 12) * ui_scale);
-   uint16 hole_h_px = (uint16)((200 - 6 - 29) * ui_scale);
-   if(hole_w_px > 0 && hole_h_px > 0) {
-     clip_rect.x = game->get_game_x_offset() + edge_px;
-     clip_rect.y = game->get_game_y_offset() + edge_px;
-     clip_rect.w = hole_w_px;
-     clip_rect.h = hole_h_px;
-   } else {
-     clip_rect = paper_clip_rect;
-   }
-   anim_manager->set_area(clip_rect);
-   static int clip_dbg = 0;
-   if(clip_dbg < 3) {
-     DEBUG(0, LEVEL_INFORMATIONAL, "PaperClip FIXED: clip=%dx%d+%d,%d area=%dx%d+%d,%d win=%ux%u tile=%u ui=%u\n", clip_rect.w, clip_rect.h, clip_rect.x, clip_rect.y, area.w, area.h, area.x, area.y, win_width, win_height, (uint16)(16 * map_tile_scale), ui_scale);
-     clip_dbg++;
-   }
- }
+ // clip_rect is set in init() - matches nuvie_original behavior
 
-
- // In 4x UI scaling, avoid drawing the map under the command bar area.
- if(!paper_clip_active && game->is_original_plus()) {
-   uint16 ui_scale = game->get_game_width() / 320;
-   if(ui_scale > 1) {
-     uint16 y_off = game->get_game_y_offset();
-     uint16 new_h = game->get_game_height();
-     CommandBar *cb = game->get_command_bar();
-     if(cb) {
-       uint16 cb_top = cb->Y();
-       if(cb_top > y_off && cb_top < y_off + game->get_game_height()) {
-         new_h = cb_top - y_off;
-       }
-     }
-     if(new_h < clip_rect.h) {
-       clip_rect.h = new_h;
-       anim_manager->set_area(clip_rect);
-     }
-   }
- }
-
- if(paper_clip_active)
-  drawPaperBackground();
+//  if(paper_clip_active)
+//   drawPaperBackground();
 
 
  //map_ptr = map->get_map_data(cur_level);
@@ -1119,20 +1185,33 @@ void MapWindow::Display(bool full_redraw)
 
   uint8 tile_size = 16 * map_tile_scale;  // Scaled tile size for positioning
 
-  for(i=0;i<win_height;i++)
+  sint16 start_i = 0;
+  sint16 start_j = 0;
+  sint16 end_i = (sint16)win_height;
+  sint16 end_j = (sint16)win_width;
+
+  for(sint16 ti = start_i; ti < end_i; ti++)
   {
-   for(j=0;j<win_width;j++)
+   uint16 *row_ptr = map_ptr + (ti * tmp_map_width);
+   for(sint16 tj = start_j; tj < end_j; tj++)
      {
-      sint16 draw_x = area.x + (j*tile_size), draw_y = area.y + (i*tile_size);
+      sint16 draw_x = area.x + (tj*tile_size), draw_y = area.y + (ti*tile_size);
       draw_x -= cur_x_add * map_tile_scale;
       draw_y -= cur_y_add * map_tile_scale;
-      if(map_ptr[j] == 0)
+      // Apply smooth scroll offset (use floor to avoid gaps from truncation)
+      if(smooth_scrolling)
+      {
+        draw_x += (sint16)floor(scroll_offset_x * map_tile_scale);
+        draw_y += (sint16)floor(scroll_offset_y * map_tile_scale);
+      }
+      uint16 tile_val = row_ptr[tj];
+      if(tile_val == 0)
         screen->clear(draw_x,draw_y,tile_size,tile_size,&clip_rect); //blackout tile.
       else
         {
-         if(map_ptr[j] >= 16 && map_ptr[j] < 48) //lay down the base tile for shoreline tiles
+         if(tile_val >= 16 && tile_val < 48) //lay down the base tile for shoreline tiles
            {
-            tile = tile_manager->get_anim_base_tile(map_ptr[j]);
+            tile = tile_manager->get_anim_base_tile(tile_val);
             if(map_tile_scale == 4)
               screen->blit4x(draw_x,draw_y,(unsigned char *)tile->data,8,16,16,16,tile->transparent,&clip_rect);
             else if(map_tile_scale == 3)
@@ -1143,7 +1222,7 @@ void MapWindow::Display(bool full_redraw)
               screen->blit(draw_x,draw_y,(unsigned char *)tile->data,8,16,16,16,tile->transparent,&clip_rect);
            }
 
-         tile = tile_manager->get_tile(map_ptr[j]);
+         tile = tile_manager->get_tile(tile_val);
          if(map_tile_scale == 4)
            screen->blit4x(draw_x,draw_y,(unsigned char *)tile->data,8,16,16,16,tile->transparent,&clip_rect);
          else if(map_tile_scale == 3)
@@ -1156,8 +1235,6 @@ void MapWindow::Display(bool full_redraw)
         }
 
      }
-   //map_ptr += map_width;
-   map_ptr += tmp_map_width ;//* sizeof(uint16);
   }
 
  drawObjs();
@@ -1227,9 +1304,7 @@ void MapWindow::Display(bool full_redraw)
 	screen->blit(we_x,mousecenter_y*16+area.y,(unsigned char *)wizard_eye_info.eye_tile->data,8,16,16,16,true,&clip_rect);
  }
 
- if(game->is_original_plus())
-	 drawPaperFrame();
- if(game->is_orig_style())
+ if(game->is_original_plus() || game->is_orig_style())
 	 drawBorder();
 
  if(overlay && overlay_level == MAP_OVERLAY_ONTOP)
@@ -1314,6 +1389,7 @@ inline void MapWindow::drawActor(Actor *actor)
                 if(rtile->data[x] == 0x00)
                     rtile->data[x] = 0x9;
         }
+
         uint16 wrapped_x = WRAP_VIEWP(cur_x,actor->x,map_width);
         if(rtile != 0)
         {
@@ -1548,6 +1624,13 @@ inline void MapWindow::drawTopTile(Tile *tile, uint16 x, uint16 y, bool toptile)
  sint16 draw_x = area.x + (x * tile_size) - (cur_x_add * map_tile_scale);
  sint16 draw_y = area.y + (y * tile_size) - (cur_y_add * map_tile_scale);
 
+ // Apply smooth scroll offset
+ if(smooth_scrolling)
+ {
+    draw_x += (sint16)(scroll_offset_x * map_tile_scale);
+    draw_y += (sint16)(scroll_offset_y * map_tile_scale);
+ }
+
 // if(tile->boundary)
 //  {
 //    screen->blit(cursor_tile->data,8,x*16,y*16,16,16,false);
@@ -1583,165 +1666,6 @@ inline void MapWindow::drawTopTile(Tile *tile, uint16 x, uint16 y, bool toptile)
     }
 }
 
-void MapWindow::drawPaperBackground()
-{
- if(game_type != NUVIE_GAME_U6)
-   return;
- if(!game->is_original_plus())
-   return;
- if(!paper_clip_active)
-   return;
-
- uint16 ui_scale = game->get_game_width() / 320;
- if(ui_scale <= 1)
-   return;
-
- Background *bg = game->get_background();
- if(bg == NULL)
-   return;
- U6Shape *shape = bg->get_bg_shape();
- if(shape == NULL)
-   return;
-
- uint16 bg_w = 0, bg_h = 0;
- shape->get_size(&bg_w, &bg_h);
- if(bg_w == 0 || bg_h == 0)
-   return;
-
- uint16 bg_scale = bg_w / 320;
- if(bg_scale == 0)
-   bg_scale = 1;
- uint16 draw_scale = (bg_scale == 1 && ui_scale > 1) ? ui_scale : 1;
- if(draw_scale == 1)
-   return;
-
- uint16 x_off = game->get_game_x_offset();
- uint16 y_off = game->get_game_y_offset();
- unsigned char *ptr = shape->get_data();
-
- static int dbg = 0;
- if(dbg < 3) {
-   DEBUG(0, LEVEL_INFORMATIONAL, "PaperBG: bg=%ux%u draw=%u off=%u,%u clip=%u\n", bg_w, bg_h, draw_scale, x_off, y_off, paper_clip_active ? 1 : 0);
-   dbg++;
- }
-
- if(draw_scale == 4)
-   screen->blit4x(x_off, y_off, ptr, 8, bg_w, bg_h, bg_w, false);
- else if(draw_scale == 3)
-   screen->blit3x(x_off, y_off, ptr, 8, bg_w, bg_h, bg_w, false);
- else if(draw_scale == 2)
-   screen->blit2x(x_off, y_off, ptr, 8, bg_w, bg_h, bg_w, false);
- else
-   screen->blit(x_off, y_off, ptr, 8, bg_w, bg_h, bg_w, true);
-}
-
-void MapWindow::drawPaperFrame()
-{
- if(game_type != NUVIE_GAME_U6)
-   return;
- if(!game->is_original_plus())
-   return;
-
- uint16 ui_scale = game->get_game_width() / 320;
- if(ui_scale <= 1)
-   return;
-
- Background *bg = game->get_background();
- if(bg == NULL)
-   return;
- U6Shape *shape = bg->get_bg_shape();
- if(shape == NULL)
-   return;
-
- uint16 bg_w = 0, bg_h = 0;
- shape->get_size(&bg_w, &bg_h);
- if(bg_w == 0 || bg_h == 0)
-   return;
-
- uint16 bg_scale = bg_w / 320;
- if(bg_scale == 0)
-   bg_scale = 1;
- uint16 draw_scale = (bg_scale == 1 && ui_scale > 1) ? ui_scale : 1;
- if(draw_scale == 1)
-   return;
-
- uint16 panel_width = (uint16)(158 * bg_scale);
- uint16 map_area_w = (bg_w > panel_width) ? (bg_w - panel_width) : 0;
- if(map_area_w == 0)
-   return;
-
- uint16 edge = (uint16)(6 * bg_scale);
- if(edge == 0)
-   edge = 1;
- uint16 bottom_edge = edge;
- CommandBar *cb = game->get_command_bar();
- if(cb) {
-   uint16 cb_top = cb->Y();
-   uint16 paper_bottom = game->get_game_y_offset() + (uint16)(bg_h * draw_scale);
-   if(cb_top > game->get_game_y_offset() && cb_top < paper_bottom) {
-     uint16 bottom_px = paper_bottom - cb_top;
-     bottom_edge = (uint16)(bottom_px / draw_scale);
-   }
- }
- if(bottom_edge < edge)
-   bottom_edge = edge;
- if(edge * 2 > map_area_w || edge + bottom_edge > bg_h)
-   return;
-
- sint32 hole_x = (sint32)edge;
- sint32 hole_y = (sint32)edge;
- sint32 hole_w = (sint32)map_area_w - (sint32)edge * 2;
- sint32 hole_h = (sint32)bg_h - (sint32)edge - (sint32)bottom_edge;
- if(hole_w <= 0 || hole_h <= 0)
-   return;
-
- static std::vector<uint8> frame_buf;
- static uint16 cached_w = 0;
- static uint16 cached_h = 0;
- static sint32 cached_x = -1;
- static sint32 cached_y = -1;
- static sint32 cached_w_hole = -1;
- static sint32 cached_h_hole = -1;
-
- if(cached_w != bg_w || cached_h != bg_h || cached_x != hole_x || cached_y != hole_y ||
-    cached_w_hole != hole_w || cached_h_hole != hole_h) {
-   frame_buf.assign(bg_w * bg_h, 0);
-   unsigned char *data = shape->get_data();
-   for(uint32 i = 0; i < (uint32)bg_w * bg_h; i++)
-     frame_buf[i] = data[i];
-   for(sint32 y = hole_y; y < hole_y + hole_h; y++) {
-     uint32 row = (uint32)y * bg_w + (uint32)hole_x;
-     for(sint32 x = 0; x < hole_w; x++)
-       frame_buf[row + (uint32)x] = 0xff; // transparent key for scaled blits
-   }
-   cached_w = bg_w;
-   cached_h = bg_h;
-   cached_x = hole_x;
-   cached_y = hole_y;
-   cached_w_hole = hole_w;
-   cached_h_hole = hole_h;
-
-   static int dbg = 0;
-   if(dbg < 3) {
-     DEBUG(0, LEVEL_INFORMATIONAL, "PaperFrame: bg=%ux%u scale=%u draw=%u area=%dx%d+%d,%d hole=%dx%d+%d,%d edge=%u bottom=%u\n", bg_w, bg_h, bg_scale, draw_scale, area.w, area.h, area.x, area.y, hole_w, hole_h, hole_x, hole_y, edge, bottom_edge);
-     dbg++;
-   }
- }
-
- uint16 x_off = game->get_game_x_offset();
- uint16 y_off = game->get_game_y_offset();
- unsigned char *buf = frame_buf.data();
- if(draw_scale == 4)
-   screen->blit4x(x_off, y_off, buf, 8, bg_w, bg_h, bg_w, true);
- else if(draw_scale == 3)
-   screen->blit3x(x_off, y_off, buf, 8, bg_w, bg_h, bg_w, true);
- else if(draw_scale == 2)
-   screen->blit2x(x_off, y_off, buf, 8, bg_w, bg_h, bg_w, true);
- else
-   screen->blit(x_off, y_off, buf, 8, bg_w, bg_h, bg_w, true);
-}
-
-
 void MapWindow::drawBorder()
 {
  Tile *tile;
@@ -1754,26 +1678,28 @@ void MapWindow::drawBorder()
  uint16 orig_win_h = 11;
  uint16 x_off = Game::get_game()->get_game_x_offset();
  uint16 y_off = Game::get_game()->get_game_y_offset();
+ uint16 tile_size = 16 * 4; // always 4x scale
 
+ // Draw border tiles without clip_rect to avoid clipping issues at 4x scale
  tile = tile_manager->get_tile(432);
- screen->blit(x_off,y_off,tile->data,8,16,16,16,true,&clip_rect); // upper left corner
+ screen->blit4x(x_off,y_off,tile->data,8,16,16,16,true,NULL); // upper left corner
 
  tile = tile_manager->get_tile(434);
- screen->blit(x_off+(orig_win_w-1)*16,y_off,tile->data,8,16,16,16,true); // upper right corner (got rid of &clip_rect for original+)
+ screen->blit4x(x_off+(orig_win_w-1)*tile_size,y_off,tile->data,8,16,16,16,true,NULL); // upper right corner
 
  tile = tile_manager->get_tile(435);
- screen->blit(x_off,y_off+(orig_win_h-1)*16,tile->data,8,16,16,16,true,&clip_rect); // lower left corner
+ screen->blit4x(x_off,y_off+(orig_win_h-1)*tile_size,tile->data,8,16,16,16,true,NULL); // lower left corner
 
  tile = tile_manager->get_tile(437);
- screen->blit(x_off+(orig_win_w-1)*16,y_off+(orig_win_h-1)*16,tile->data,8,16,16,16,true); // lower right corner (got rid of &clip_rect for original+)
+ screen->blit4x(x_off+(orig_win_w-1)*tile_size,y_off+(orig_win_h-1)*tile_size,tile->data,8,16,16,16,true,NULL); // lower right corner
 
  tile = tile_manager->get_tile(433);
  tile1 = tile_manager->get_tile(436);
 
  for(i=1;i < orig_win_w-1;i++)
    {
-    screen->blit(x_off+i*16,y_off,tile->data,8,16,16,16,true,&clip_rect); // top row
-    screen->blit(x_off+i*16,y_off+(orig_win_h-1)*16,tile1->data,8,16,16,16,true,&clip_rect); // bottom row
+    screen->blit4x(x_off+i*tile_size,y_off,tile->data,8,16,16,16,true,NULL); // top row
+    screen->blit4x(x_off+i*tile_size,y_off+(orig_win_h-1)*tile_size,tile1->data,8,16,16,16,true,NULL); // bottom row
    }
 
  tile = tile_manager->get_tile(438);
@@ -1781,8 +1707,8 @@ void MapWindow::drawBorder()
 
   for(i=1;i < orig_win_h-1;i++)
    {
-    screen->blit(x_off,y_off+i*16,tile->data,8,16,16,16,true,&clip_rect); // left column
-    screen->blit(x_off+(orig_win_w-1)*16,y_off+i*16,tile1->data,8,16,16,16,true); // right column (got rid of &clip_rect for original+)
+    screen->blit4x(x_off,y_off+i*tile_size,tile->data,8,16,16,16,true,NULL); // left column
+    screen->blit4x(x_off+(orig_win_w-1)*tile_size,y_off+i*tile_size,tile1->data,8,16,16,16,true,NULL); // right column
    }
 }
 

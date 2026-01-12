@@ -52,6 +52,7 @@ Custom tiles:|커스텀 타일:
 Game style:|게임 스타일:
 Video graphics:|비디오 그래픽:
 Map tile scale:|맵 타일 스케일:
+Smooth movement:|부드러운 이동:
 
 # InputDialog
 Interface:|인터페이스:

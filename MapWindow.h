@@ -150,8 +150,20 @@ SDL_Rect paper_clip_rect;
 
  uint8 map_tile_scale; // 1, 2, or 4 for map tile rendering scale
 
- void drawPaperBackground();
- void drawPaperFrame();
+ // Smooth movement settings
+ bool smooth_movement;  // enable smooth actor/scroll movement
+ uint32 smooth_move_duration; // duration of smooth movement in ms (default 100)
+ uint32 last_smooth_update_time; // last time smooth movement was updated
+
+ // Smooth map scrolling
+ float scroll_offset_x;  // current visual scroll offset in pixels
+ float scroll_offset_y;
+ float scroll_start_offset_x;  // initial offset when scrolling started
+ float scroll_start_offset_y;
+ float scroll_target_x;  // target offset to reach (in pixels)
+ float scroll_target_y;
+ uint32 scroll_start_time;
+ bool smooth_scrolling;  // currently doing smooth scroll interpolation
 
  public:
 
@@ -185,6 +197,9 @@ SDL_Rect paper_clip_rect;
  void set_min_brightness(int brightness) { min_brightness = brightness; }
  uint8 get_map_tile_scale() { return map_tile_scale; }
  void set_map_tile_scale(uint8 scale) { if(scale >= 1 && scale <= 4) map_tile_scale = scale; }
+ bool is_smooth_movement_enabled() { return smooth_movement; }
+ void set_smooth_movement(bool val) { smooth_movement = val; }
+ void update_smooth_movement();
 
  void moveLevel(uint8 new_level);
  void moveMap(sint16 new_x, sint16 new_y, sint8 new_level, uint8 new_x_add = 0, uint8 new_y_add = 0);
