@@ -1570,6 +1570,28 @@ inline void MapWindow::drawObj(Obj *obj, bool draw_lowertiles, bool toptile)
      }
     }
 
+  // Check if this is a surrounding object of a multi-tile actor in smooth movement
+  if(obj->is_actor_obj() && smooth_movement)
+  {
+      // Get the actor that owns this surrounding object (stored in quality field)
+      Actor *owner = actor_manager->get_actor(obj->quality);
+      if(owner && owner->is_smooth_moving())
+      {
+          // Calculate pixel offset based on actor's smooth movement
+          float actor_visual_x = owner->get_visual_x();
+          float actor_visual_y = owner->get_visual_y();
+          float actor_tile_x = owner->x * 16.0f;
+          float actor_tile_y = owner->y * 16.0f;
+
+          // Apply the same offset to this surrounding object
+          float obj_pixel_x = obj->x * 16.0f + (actor_visual_x - actor_tile_x);
+          float obj_pixel_y = obj->y * 16.0f + (actor_visual_y - actor_tile_y);
+
+          drawTileAtWorldPixel(tile, obj_pixel_x, obj_pixel_y);
+          return;
+      }
+  }
+
   drawTile(tile, x, obj->y - cur_y, toptile);
 
 }

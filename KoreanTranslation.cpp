@@ -571,6 +571,18 @@ std::string KoreanTranslation::getParticle_wagwa(const std::string &korean_word)
     return hasJongseong(korean_word) ? "과" : "와";
 }
 
+// 이야/야 - informal copula (비격식 서술격 조사)
+std::string KoreanTranslation::getParticle_iya(const std::string &korean_word)
+{
+    return hasJongseong(korean_word) ? "이야" : "야";
+}
+
+// 이오/오 - formal archaic copula (격식 고어체 서술격 조사)
+std::string KoreanTranslation::getParticle_io(const std::string &korean_word)
+{
+    return hasJongseong(korean_word) ? "이오" : "요";
+}
+
 bool KoreanTranslation::hasJongseongRieul(const std::string &korean_word)
 {
     if (korean_word.empty())
@@ -733,6 +745,24 @@ bool KoreanTranslation::loadDialogueTranslations(const std::string &filename)
             if (lower_no_quotes != lower_key && !lower_no_quotes.empty())
                 dialogue_translations[npc_num][lower_no_quotes] = korean_text;
 
+            // Store FM Towns compatible key: @ removed AND spaces before punctuation removed (combined)
+            std::string fmtowns_key = english_text;
+            // Remove @ symbols
+            size_t at_pos;
+            while ((at_pos = fmtowns_key.find('@')) != std::string::npos)
+                fmtowns_key.erase(at_pos, 1);
+            // Remove spaces before punctuation
+            size_t sp_pos;
+            while ((sp_pos = fmtowns_key.find(" ?")) != std::string::npos)
+                fmtowns_key.erase(sp_pos, 1);
+            while ((sp_pos = fmtowns_key.find(" !")) != std::string::npos)
+                fmtowns_key.erase(sp_pos, 1);
+            while ((sp_pos = fmtowns_key.find(" .")) != std::string::npos)
+                fmtowns_key.erase(sp_pos, 1);
+            std::string lower_fmtowns = toLowercase(fmtowns_key);
+            if (lower_fmtowns != lower_key && !lower_fmtowns.empty())
+                dialogue_translations[npc_num][lower_fmtowns] = korean_text;
+
             // If this contains compound text with \n*\n or *, also register individual parts
             // This allows both combined and split forms to work
             if (english_text.find("\n*\n") != std::string::npos ||
@@ -820,6 +850,27 @@ bool KoreanTranslation::loadDialogueTranslations(const std::string &filename)
 std::string KoreanTranslation::lookupSingleDialogue(uint16 npc_num, const std::string &text)
 {
     std::string trimmed = text;
+
+    // Remove FM Towns speech tags (~P and ~L followed by numbers)
+    // These are in the format ~P123 or ~L123
+    size_t tag_pos;
+    while ((tag_pos = trimmed.find("~P")) != std::string::npos)
+    {
+        size_t end_pos = tag_pos + 2;
+        while (end_pos < trimmed.length() && trimmed[end_pos] >= '0' && trimmed[end_pos] <= '9')
+            end_pos++;
+        trimmed.erase(tag_pos, end_pos - tag_pos);
+    }
+    while ((tag_pos = trimmed.find("~L")) != std::string::npos)
+    {
+        size_t end_pos = tag_pos + 2;
+        while (end_pos < trimmed.length() && trimmed[end_pos] >= '0' && trimmed[end_pos] <= '9')
+            end_pos++;
+        trimmed.erase(tag_pos, end_pos - tag_pos);
+    }
+
+    DEBUG(0, LEVEL_DEBUGGING, "KoreanTranslation::lookupSingleDialogue NPC %d after tag removal: [%s]\n", npc_num, trimmed.c_str());
+
     // Trim whitespace and trailing * (used as continuation marker in scripts)
     while (!trimmed.empty() && (trimmed[0] == ' ' || trimmed[0] == '\n' || trimmed[0] == '\r'))
         trimmed.erase(0, 1);
@@ -844,6 +895,17 @@ std::string KoreanTranslation::lookupSingleDialogue(uint16 npc_num, const std::s
         if (trimmed[i] != '"' && trimmed[i] != '\'')
             no_all_quotes += trimmed[i];
     }
+
+    // Create version with @ symbols removed (FM Towns uses @keyword markers)
+    std::string no_at_signs = trimmed;
+    size_t at_pos;
+    while ((at_pos = no_at_signs.find('@')) != std::string::npos)
+        no_at_signs.erase(at_pos, 1);
+
+    // Also create no_quotes version without @ signs
+    std::string no_quotes_no_at = no_quotes;
+    while ((at_pos = no_quotes_no_at.find('@')) != std::string::npos)
+        no_quotes_no_at.erase(at_pos, 1);
 
     std::map<uint16, std::map<std::string, std::string> >::iterator npc_it = dialogue_translations.find(npc_num);
     if (npc_it != dialogue_translations.end())
@@ -884,6 +946,43 @@ std::string KoreanTranslation::lookupSingleDialogue(uint16 npc_num, const std::s
         it = npc_it->second.find(lower_no_all_quotes);
         if (it != npc_it->second.end())
             return it->second;
+
+        // Try with @ symbols removed (FM Towns uses @keyword markers that DOS doesn't have)
+        std::string lower_no_at = toLowercase(no_at_signs);
+        it = npc_it->second.find(lower_no_at);
+        if (it != npc_it->second.end())
+            return it->second;
+
+        std::string lower_no_quotes_no_at = toLowercase(no_quotes_no_at);
+        it = npc_it->second.find(lower_no_quotes_no_at);
+        if (it != npc_it->second.end())
+            return it->second;
+
+        // Try with quotes around the @ removed version
+        with_quotes = "\"" + lower_no_quotes_no_at + "\"";
+        it = npc_it->second.find(with_quotes);
+        if (it != npc_it->second.end())
+            return it->second;
+
+        // Try with extra spaces before punctuation removed (FM Towns sometimes has "text ?" instead of "text?")
+        std::string normalized_spaces = lower_no_quotes_no_at;
+        size_t space_punct_pos;
+        while ((space_punct_pos = normalized_spaces.find(" ?")) != std::string::npos)
+            normalized_spaces.erase(space_punct_pos, 1);
+        while ((space_punct_pos = normalized_spaces.find(" !")) != std::string::npos)
+            normalized_spaces.erase(space_punct_pos, 1);
+        while ((space_punct_pos = normalized_spaces.find(" .")) != std::string::npos)
+            normalized_spaces.erase(space_punct_pos, 1);
+        if (normalized_spaces != lower_no_quotes_no_at)
+        {
+            it = npc_it->second.find(normalized_spaces);
+            if (it != npc_it->second.end())
+                return it->second;
+            with_quotes = "\"" + normalized_spaces + "\"";
+            it = npc_it->second.find(with_quotes);
+            if (it != npc_it->second.end())
+                return it->second;
+        }
 
         // Try normalized version for multiline texts
         std::string normalized = toLowercase(normalizeDialogueText(trimmed));

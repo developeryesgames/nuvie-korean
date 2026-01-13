@@ -1027,3 +1027,32 @@ invisibility|투명
 xray vision|투시
 unknown|알 수 없음
 
+# Dungeon names
+Deceit|디시트
+Despise|디스파이즈
+Destard|데스타드
+Wrong|롱
+Covetous|코베터스
+Shame|셰임
+Hythloth|히슬로스
+GSA|GSA
+Control|컨트롤
+Passion|패션
+Diligence|딜리전스
+Tomb of Kings|왕들의 무덤
+Ant Mound|개미굴
+Swamp Cave|늪지 동굴
+Spider Cave|거미 동굴
+Cyclops Cave|사이클롭스 동굴
+Heftimus Cave|헤프티무스 동굴
+Heroes' Hole|영웅의 구멍
+Pirate Cave|해적 동굴
+Buccaneer's Cave|해적단 동굴
+
+# Dungeon message prefixes
+dungeon |던전
+shrine of |의 사당
+
+# Shamino dungeon message
+Shamino says, "This is the |샤미노 : "여기는
+

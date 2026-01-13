@@ -97,6 +97,8 @@ public:
     static std::string getParticle_eunneun(const std::string &korean_word);  // 은/는 (topic marker)
     static std::string getParticle_wagwa(const std::string &korean_word);    // 와/과 (and/with)
     static std::string getParticle_euroro(const std::string &korean_word);   // 으로/로 (instrumental)
+    static std::string getParticle_iya(const std::string &korean_word);      // 이야/야 (informal copula)
+    static std::string getParticle_io(const std::string &korean_word);       // 이오/오 (formal archaic copula)
     static bool hasJongseong(const std::string &korean_word);  // Check if last char has final consonant
     static bool hasJongseongRieul(const std::string &korean_word);  // Check if last char ends with ㄹ
 };

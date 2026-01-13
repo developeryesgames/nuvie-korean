@@ -3382,6 +3382,8 @@ void Event::doAction() {
       get_spell_num(player->get_actor(), magic->get_spellbook_obj());
     } else {
       endAction(true);
+      // End player turn after spell is complete (like original U6's C_1E0F_4E0A)
+      game->get_actor_manager()->startActors();
     }
   } else if (mode == MULTIUSE_MODE) {
     if (input.loc) // on map

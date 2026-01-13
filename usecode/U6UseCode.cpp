@@ -2930,10 +2930,25 @@ bool U6UseCode::enter_dungeon(Obj *obj, UseCodeEvent ev)
         if(obj->quality != 0 && party->contains_actor(3) && actor_manager->get_actor(3)->is_alive())
         {
             // scroll->printf("%s says, \"This is the %s%s.\"\n\n",blah->name, prefix, dungeon_name);
-            scroll->display_string("Shamino says, \"This is the ");
-            scroll->display_string(prefix);
-            scroll->display_string(dungeon_name);
-            scroll->display_string(".\"\n\n");
+            KoreanTranslation *kt = game->get_korean_translation();
+            if(kt && kt->isEnabled())
+            {
+                // Korean: 샤미노 : "여기는 [던전 이름/이름의 사당][이오/요]."\n\n
+                scroll->display_string(kt->getUIText("Shamino says, \"This is the ").c_str());
+                scroll->display_string(" ");  // space after "여기는"
+                scroll->display_string(kt->getUIText(prefix).c_str());
+                std::string dungeon_ko = kt->getUIText(dungeon_name);
+                scroll->display_string(dungeon_ko.c_str());
+                scroll->display_string(KoreanTranslation::getParticle_io(dungeon_ko).c_str());
+                scroll->display_string(".\"\n\n");
+            }
+            else
+            {
+                scroll->display_string("Shamino says, \"This is the ");
+                scroll->display_string(prefix);
+                scroll->display_string(dungeon_name);
+                scroll->display_string(".\"\n\n");
+            }
             scroll->display_prompt();
         }
         MapCoord entrance(x, y, z);
