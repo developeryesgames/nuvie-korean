@@ -786,14 +786,18 @@ bool SoundManager::LoadSfxManager(string sfx_style)
 
 void SoundManager::musicPlayFrom(string group)
 {
- if(!music_enabled || !audio_enabled)
-   return;
+ // Always update the current group, even if music is disabled
+ // This allows music to start playing when enabled later
  if(m_CurrentGroup != group)
   {
    if(stop_music_on_group_change)
      g_MusicFinished = true;
    m_CurrentGroup = group;
   }
+
+ // Only return early after setting the group
+ if(!music_enabled || !audio_enabled)
+   return;
 }
 
 void SoundManager::musicPause()

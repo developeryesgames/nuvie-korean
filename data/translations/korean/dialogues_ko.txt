@@ -8557,3 +8557,48 @@
 177|"To point out his unproductive fields as an example of why the wingless ones need firm guidance."|"왜 그의 밭이 비생산적인지 예시를 들어 지적하기
 179|"Ah, the old Bitter Kate, she's mended her ways, And as the Virtuous, ended her days."|"아아, 낡은 비터 케이트 호는 개과천선하여,
 202|"Few of us are left to patrol the cities, and those may be sent to the shrines soon." * "I fear we may lose this war."|"도시를 @순찰(patrol)할 인원이 거의 남지 않았고, 그나마 있는 이들도 곧 성소로 보내질지 모르오."
+157|"He is firm but fair.  He does not wish to see any unworthy person bear the Silver Serpent @blazon."|"그는 완고하지만 공정하다네. 자격 없는 자가 은빛 뱀 @문장(blazon) 을 다는 걸 보고 싶어 하지 않지."
+
+# NPC Look 설명 추가 (v1.4)
+2|a ruggedly handsome man, wearing a gleaming suit of armor.|빛나는 갑옷을 입은 거칠게 잘생긴 남자다.
+3|a quiet man, who almost seems to be a creature of the forest.|숲의 생물처럼 보이는 조용한 남자다.
+4|your old friend Iolo.|당신의 오랜 친구 아이올로다.
+5|the noble ruler of Britannia.|브리타니아의 고귀한 통치자다.
+8|a preoccupied man holding a ledger under one arm.|한쪽 팔 아래에 장부를 끼고 있는 골똘한 표정의 남자다.
+10|a carefree fellow in a ludicrous costume.|우스꽝스러운 복장을 한 태평한 사내다.
+11|a lively bard with laughter in his eyes.|눈에 웃음기를 머금은 활기찬 음유시인이다.
+12|a nervous young bard.|긴장한 젊은 음유시인이다.
+13|a cute little girl with short hair.|짧은 머리의 귀여운 어린 소녀다.
+24|a sleepy looking young lady.|졸린 표정의 젊은 아가씨다.
+30|a sharply dressed, very voluptuous woman.|단정하게 차려입은 매우 풍만한 여인이다.
+31|a slender woman wearing a leather glove on her left hand.|왼손에 가죽 장갑을 낀 날씬한 여인이다.
+33|a freckled young lady with an enchanting smile.|매혹적인 미소를 가진 주근깨 투성이 젊은 아가씨다.
+34|a busy looking man wearing a blue robe.|바빠 보이는 파란 로브를 입은 남자다.
+66|a plainly dressed bard.|수수하게 차려입은 음유시인이다.
+73|a spidery looking man with delicate hands.|섬세한 손을 가진 거미 같은 외모의 남자다.
+92|a gentleman of slight build and refined manners.|호리호리한 체격에 세련된 매너를 가진 신사다.
+93|an old farmer who looks to have has made his peace with life.|인생과 화해한 것처럼 보이는 늙은 농부다.
+94|a stalwart fellow, with a look of placid concentration.|차분하게 집중하는 표정의 건장한 사내다.
+110|an amused looking gentleman.|재미있어 보이는 신사다.
+123|a heavily scarred man with a look of agony on his face.|얼굴에 고통스러운 표정을 띤 흉터투성이 남자다.
+124|a burly man, who looks a little healthier than the other patients.|다른 환자들보다 조금 더 건강해 보이는 덩치 큰 남자다.
+125|an unconcious man, his face twisted with pain.|고통으로 얼굴이 일그러진 의식불명의 남자다.
+127|a distinguished looking gentleman.|품위 있어 보이는 신사다.
+131|a burly barbarian warrior.|덩치 큰 야만 전사다.
+133|a lively soul of a gypsy, with a bit of a wild look to him.|약간 거친 눈빛을 가진 활기찬 집시 영혼이다.
+136|a mysterious gypsy woman wearing an ankh pendant.|앙크 펜던트를 착용한 신비로운 집시 여인이다.
+137|a slightly built gypsy lad.|작은 체구의 집시 소년이다.
+139|a handsome, carefree gypsy man.|잘생기고 태평한 집시 남자다.
+140|a gypsy wench with a voluptuous figure.|풍만한 몸매의 집시 아가씨다.
+142|a short, barefooted crazy man.|맨발의 키 작은 미치광이다.
+143|a huge male cyclops.|거대한 남성 사이클롭스다.
+144|a huge female cyclops.|거대한 여성 사이클롭스다.
+145|a young human child.|어린 인간 아이다.
+146|a quiet, pale, almost motionless gentleman.|조용하고 창백하며 거의 움직이지 않는 신사다.
+157|a commanding presence: a tall warrior in black armor.|위엄 있는 존재감: 검은 갑옷을 입은 키 큰 전사다.
+182|a graceful, silver haired woman in robes of blue.|파란 로브를 입은 우아한 은발의 여인이다.
+184|a skinny, awkward looking man, wearing boots that come up past his knees.|무릎 위까지 올라오는 장화를 신은 깡마르고 어색해 보이는 남자다.
+186|a handsome warrior.|잘생긴 전사다.
+187|a rugged looking lady farmer.|거친 외모의 여성 농부다.
+201|a strange, glowing ball of energy.|이상하게 빛나는 에너지 구체다.
+5|"Take this key."|"이 열쇠를 받으시오."

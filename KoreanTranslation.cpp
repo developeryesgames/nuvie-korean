@@ -473,6 +473,15 @@ std::string KoreanTranslation::translate(const std::string &english_text)
         }
     }
 
+    // Try dialogue translations (for shop items stored as NPC dialogues)
+    for (std::map<uint16, std::map<std::string, std::string> >::iterator npc_it = dialogue_translations.begin();
+         npc_it != dialogue_translations.end(); ++npc_it)
+    {
+        std::map<std::string, std::string>::iterator it = npc_it->second.find(lower_text);
+        if (it != npc_it->second.end())
+            return it->second;
+    }
+
     // Not found - return original text without logging (too noisy)
     return english_text;
 }
@@ -763,6 +772,16 @@ bool KoreanTranslation::loadDialogueTranslations(const std::string &filename)
             if (lower_fmtowns != lower_key && !lower_fmtowns.empty())
                 dialogue_translations[npc_num][lower_fmtowns] = korean_text;
 
+            // Store key with all spaces AND quotes removed (handles spacing differences)
+            std::string no_spaces_key;
+            for (size_t i = 0; i < lower_no_quotes.size(); i++)
+            {
+                if (lower_no_quotes[i] != ' ')
+                    no_spaces_key += lower_no_quotes[i];
+            }
+            if (!no_spaces_key.empty() && no_spaces_key != lower_no_quotes)
+                dialogue_translations[npc_num][no_spaces_key] = korean_text;
+
             // If this contains compound text with \n*\n or *, also register individual parts
             // This allows both combined and split forms to work
             if (english_text.find("\n*\n") != std::string::npos ||
@@ -869,12 +888,35 @@ std::string KoreanTranslation::lookupSingleDialogue(uint16 npc_num, const std::s
         trimmed.erase(tag_pos, end_pos - tag_pos);
     }
 
+
+    // Remove script item tags like +33Book+ (format: +number+text+)
+    // These are item references added by the game script
+    while ((tag_pos = trimmed.find('+')) != std::string::npos)
+    {
+        // Check if it starts with a number (like +33Book+)
+        if (tag_pos + 1 < trimmed.length() && trimmed[tag_pos + 1] >= '0' && trimmed[tag_pos + 1] <= '9')
+        {
+            // Find the number part
+            size_t num_end = tag_pos + 1;
+            while (num_end < trimmed.length() && trimmed[num_end] >= '0' && trimmed[num_end] <= '9')
+                num_end++;
+            // Find the text part and closing +
+            size_t close_pos = trimmed.find('+', num_end);
+            if (close_pos != std::string::npos)
+            {
+                trimmed.erase(tag_pos, close_pos - tag_pos + 1);
+                continue;
+            }
+        }
+        break; // Not a valid tag pattern, stop
+    }
+
     DEBUG(0, LEVEL_DEBUGGING, "KoreanTranslation::lookupSingleDialogue NPC %d after tag removal: [%s]\n", npc_num, trimmed.c_str());
 
-    // Trim whitespace and trailing * (used as continuation marker in scripts)
-    while (!trimmed.empty() && (trimmed[0] == ' ' || trimmed[0] == '\n' || trimmed[0] == '\r'))
+    // Trim whitespace, { and trailing * (FM Towns inserts {\n before narrative text)
+    while (!trimmed.empty() && (trimmed[0] == ' ' || trimmed[0] == '\n' || trimmed[0] == '\r' || trimmed[0] == '{'))
         trimmed.erase(0, 1);
-    while (!trimmed.empty() && (trimmed.back() == ' ' || trimmed.back() == '\n' || trimmed.back() == '\r' || trimmed.back() == '*'))
+    while (!trimmed.empty() && (trimmed.back() == ' ' || trimmed.back() == '\n' || trimmed.back() == '\r' || trimmed.back() == '*' || trimmed.back() == '{'))
         trimmed.pop_back();
     // Note: Don't strip leading single quote - it may be part of the text (e.g., 'Abyss')
 
@@ -964,22 +1006,16 @@ std::string KoreanTranslation::lookupSingleDialogue(uint16 npc_num, const std::s
         if (it != npc_it->second.end())
             return it->second;
 
-        // Try with extra spaces before punctuation removed (FM Towns sometimes has "text ?" instead of "text?")
-        std::string normalized_spaces = lower_no_quotes_no_at;
-        size_t space_punct_pos;
-        while ((space_punct_pos = normalized_spaces.find(" ?")) != std::string::npos)
-            normalized_spaces.erase(space_punct_pos, 1);
-        while ((space_punct_pos = normalized_spaces.find(" !")) != std::string::npos)
-            normalized_spaces.erase(space_punct_pos, 1);
-        while ((space_punct_pos = normalized_spaces.find(" .")) != std::string::npos)
-            normalized_spaces.erase(space_punct_pos, 1);
-        if (normalized_spaces != lower_no_quotes_no_at)
+        // Try with all spaces removed (handles DOS vs FM Towns spacing differences)
+        std::string no_spaces;
+        for (size_t i = 0; i < lower_no_quotes_no_at.size(); i++)
         {
-            it = npc_it->second.find(normalized_spaces);
-            if (it != npc_it->second.end())
-                return it->second;
-            with_quotes = "\"" + normalized_spaces + "\"";
-            it = npc_it->second.find(with_quotes);
+            if (lower_no_quotes_no_at[i] != ' ')
+                no_spaces += lower_no_quotes_no_at[i];
+        }
+        if (!no_spaces.empty())
+        {
+            it = npc_it->second.find(no_spaces);
             if (it != npc_it->second.end())
                 return it->second;
         }
@@ -1008,26 +1044,9 @@ std::string KoreanTranslation::getDialogueTranslation(uint16 npc_num, const std:
     // Special case: if text starts with '' (double single-quote), remove one (orphan from previous line)
     if (trimmed.length() >= 2 && trimmed[0] == '\'' && trimmed[1] == '\'')
         trimmed.erase(0, 1);
-    // Remove trailing whitespace, newlines, *, and stray quotes (both single and double)
-    // The pattern "text."\n*\n"' leaves orphan quotes after the dialogue ends
+    // Remove trailing whitespace, newlines, *, and stray quotes (orphan quotes from dialogue)
     while (!trimmed.empty() && (trimmed.back() == ' ' || trimmed.back() == '\n' || trimmed.back() == '\r' || trimmed.back() == '*' || trimmed.back() == '\'' || trimmed.back() == '"'))
         trimmed.pop_back();
-    // Now re-add the closing quote if we stripped it from actual dialogue
-    // Dialogue should end with ." or !" or ?" or .'" - if last char is now one of these, add quote back
-    // Also handle .' pattern (e.g., 'Bitter Kate.'")
-    if (!trimmed.empty())
-    {
-        char last = trimmed.back();
-        if (last == '.' || last == '!' || last == '?' || last == ',')
-            trimmed += '"';
-        else if (last == '\'' && trimmed.length() >= 2)
-        {
-            // Check if it's .' pattern (quote inside dialogue ending with period)
-            char second_last = trimmed[trimmed.length() - 2];
-            if (second_last == '.' || second_last == '!' || second_last == '?')
-                trimmed += '"';
-        }
-    }
 
     // Try direct lookup first (for complete text)
     std::string result = lookupSingleDialogue(npc_num, trimmed);

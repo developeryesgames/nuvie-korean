@@ -1056,3 +1056,4 @@ shrine of |의 사당
 # Shamino dungeon message
 Shamino says, "This is the |샤미노 : "여기는
 
+Direction:|방향:

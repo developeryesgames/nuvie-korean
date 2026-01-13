@@ -1436,7 +1436,10 @@ bool U6UseCode::use_shovel(Obj *obj, UseCodeEvent ev)
         from = parent->get_location();
 
 //        game->get_event()->useselect_mode(obj, "Direction: ");
-        game->get_event()->get_direction(from, "Direction: ");
+        KoreanTranslation *korean = game->get_korean_translation();
+        std::string dir_prompt = (korean && korean->isEnabled()) ? korean->getUIText("Direction:") : "Direction: ";
+        if (dir_prompt.empty()) dir_prompt = "Direction: ";
+        game->get_event()->get_direction(from, dir_prompt.c_str());
         if(game->get_map_window()->get_interface() == INTERFACE_NORMAL)
             game->get_event()->do_not_show_target_cursor = true;
         game->get_event()->request_input(this, obj);

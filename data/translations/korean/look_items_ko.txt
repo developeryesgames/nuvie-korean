@@ -1925,3 +1925,6 @@
 9177|Summon|소환
 9178|Time Stop|시간 정지
 9179|Tremor|진동
+# Max shop items (NPC 18)
+heater shield|히터 실드
+leather armour|가죽 갑옷

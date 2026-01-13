@@ -41,6 +41,7 @@
 #include "MsgScroll.h"
 #include "FontManager.h"
 #include "Player.h"
+#include "KoreanTranslation.h"
 
 // Shamino warning flag for off-screen enemy spawning (original U6 behavior)
 static bool shamino_spawn_warned = false;
@@ -303,7 +304,7 @@ bool EggManager::spawn_egg(Obj *egg, uint8 hatch_probability)
                          else if(rel_x < 0 && rel_y == 0) korean_dir = "서";
                          else if(rel_x < 0 && rel_y < 0) korean_dir = "북서";
                          else korean_dir = "";
-                         scroll->display_string(std::string("\n샤미노: \"") + korean_dir + "쪽에서 뭔가 들려!\"\n");
+                         scroll->display_string(std::string("\n샤미노 : \"") + korean_dir + "쪽에서 뭔가 들리오!\"\n");
                        } else {
                          const char *dir_names[] = {"North", "Northeast", "East", "Southeast", "South", "Southwest", "West", "Northwest"};
                          int dir_idx = 0;
