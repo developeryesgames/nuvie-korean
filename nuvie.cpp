@@ -30,6 +30,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <vector>
 
 #include "SDL.h"
 
@@ -51,6 +52,9 @@
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#endif
+#ifndef WIN32
+#include <unistd.h>
 #endif
 
 Nuvie::Nuvie()
@@ -656,27 +660,101 @@ bool Nuvie::checkGameDir(uint8 game_type)
  return true;
 }
 
+// Helper function to check if a directory exists
+static bool directoryExists(const std::string& path)
+{
+	struct stat sb;
+	return (stat(path.c_str(), &sb) == 0 && (sb.st_mode & S_IFDIR));
+}
+
+// Helper function to get executable directory
+static std::string getExecutableDir()
+{
+#ifdef WIN32
+	char buffer[MAX_PATH];
+	DWORD len = GetModuleFileNameA(NULL, buffer, MAX_PATH);
+	if (len > 0 && len < MAX_PATH)
+	{
+		std::string path(buffer);
+		size_t lastSlash = path.find_last_of("\/");
+		if (lastSlash != std::string::npos)
+			return path.substr(0, lastSlash);
+	}
+#else
+	// For non-Windows, try /proc/self/exe (Linux) or similar
+	char buffer[4096];
+	ssize_t len = readlink("/proc/self/exe", buffer, sizeof(buffer) - 1);
+	if (len > 0)
+	{
+		buffer[len] = '\0';
+		std::string path(buffer);
+		size_t lastSlash = path.find_last_of('/');
+		if (lastSlash != std::string::npos)
+			return path.substr(0, lastSlash);
+	}
+#endif
+	return "";
+}
+
 bool Nuvie::checkDataDir()
 {
-	std::string path;
-	config->value("config/datadir", path, "");
-	ConsoleAddInfo("datadir: \"%s\"", path.c_str());
+	std::string configPath;
+	config->value("config/datadir", configPath, "");
+
+	// List of paths to search for data directory
+	std::vector<std::string> searchPaths;
+
+	// 1. First check config-specified path if it is an absolute path
+	if (!configPath.empty())
+	{
+		searchPaths.push_back(configPath);
+	}
+
+	// 2. Current working directory
+	searchPaths.push_back("./data");
+	searchPaths.push_back("data");
+
+	// 3. Executable directory
+	std::string exeDir = getExecutableDir();
+	if (!exeDir.empty())
+	{
+		searchPaths.push_back(exeDir + "/data");
+		// 4. Parent of executable directory (for build folder scenarios)
+		size_t lastSlash = exeDir.find_last_of("\/");
+		if (lastSlash != std::string::npos)
+		{
+			std::string parentDir = exeDir.substr(0, lastSlash);
+			searchPaths.push_back(parentDir + "/data");
+		}
+	}
 
 #ifndef WIN32
- struct stat sb;
-
- if(stat(path.c_str(),&sb) == 0 && sb.st_mode & S_IFDIR)
-  {
-   return true;
-  }
-
- ConsoleAddError("Cannot open datadir!");
- ConsoleAddError("\"" + path + "\"");
-
- return false;
+	// 5. System install paths (Linux/Unix)
+	searchPaths.push_back("/usr/share/nuvie/data");
+	searchPaths.push_back("/usr/local/share/nuvie/data");
 #endif
 
- return true;
+	// Try each path
+	for (const auto& path : searchPaths)
+	{
+		if (directoryExists(path))
+		{
+			// Update config with the found path
+			config->set("config/datadir", path);
+			ConsoleAddInfo("datadir found: \"%s\"", path.c_str());
+			return true;
+		}
+	}
+
+	// If nothing found, report error
+	ConsoleAddError("Cannot find data directory!");
+	ConsoleAddError("Searched paths:");
+	for (const auto& path : searchPaths)
+	{
+		ConsoleAddError("  \"" + path + "\"");
+	}
+
+	return false;
 }
 
 bool Nuvie::playIntro()
