@@ -80,6 +80,7 @@ struct CSSprite {
 	sint16 x;
 	sint16 y;
 	uint8 opacity;
+	uint8 dissolve;  // 0=invisible, 255=fully visible, dissolve effect threshold
 	CSImage *image;
 	bool visible;
 	SDL_Rect clip_rect;
@@ -92,6 +93,7 @@ struct CSSprite {
 		x = 0;
 		y = 0;
 		opacity = 255;
+		dissolve = 255;  // fully visible by default
 		image = NULL;
 		visible = false;
 		clip_rect.x = 0;

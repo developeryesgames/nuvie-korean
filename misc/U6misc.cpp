@@ -243,7 +243,15 @@ bool has_fmtowns_support(Configuration *config)
 	std::string townsdir;
     config->value("config/ultima6/townsdir", townsdir, "");
     if(townsdir != "" && directory_exists(townsdir.c_str()))
-    	return true;
+    {
+        // Check if essential fmtowns file exists (converse.a)
+        std::string converse_path = townsdir;
+        if(!converse_path.empty() && converse_path[converse_path.length()-1] != '/' && converse_path[converse_path.length()-1] != '\\')
+            converse_path += "/";
+        converse_path += "converse.a";
+        if(file_exists(converse_path.c_str()))
+            return true;
+    }
 
     return false;
 }

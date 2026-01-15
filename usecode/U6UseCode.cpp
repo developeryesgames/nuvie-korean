@@ -1973,7 +1973,8 @@ bool U6UseCode::use_key(Obj *obj, UseCodeEvent ev)
     Obj *door_obj = NULL;
     if(ev == USE_EVENT_USE)
     {
-        USECODE_SELECT_OBJ(door_obj, "On "); // door_obj <- items.obj_ref or from user
+        bool use_ko = (game->get_korean_translation() && game->get_korean_translation()->isEnabled());
+        USECODE_SELECT_OBJ(door_obj, use_ko ? "대상: " : "On "); // door_obj <- items.obj_ref or from user
         if(!door_obj)
         {
             scroll->display_string((game->get_korean_translation() && game->get_korean_translation()->isEnabled()) ? "아무것도 없음\n" : "nothing\n");

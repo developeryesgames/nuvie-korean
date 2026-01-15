@@ -764,9 +764,13 @@ void TimedRestGather::timed(uint32 evtime)
 void TimedRestGather::check_campfire()
 {
 	ActorManager *actor_manager = Game::get_game()->get_actor_manager();
+	if(dest == NULL)
+	    return;
     for(sint32 a = 0; a < party->get_party_size(); a++)
     {
     	Actor *actor = party->get_actor(a);
+    	if(actor == NULL)
+    	    continue;
     	MapCoord loc = actor->get_location();
     	if(loc.x == dest->x && loc.y == dest->y)
     	{
@@ -797,6 +801,9 @@ bool TimedRestGather::move_party()
         5, 1, 6
     };
 
+    if(dest == NULL)
+        return false;
+
     // check everyone in party because they might not be in the positions list
     for(sint32 a = 0; a < party->get_party_size(); a++)
     {
@@ -805,6 +812,10 @@ bool TimedRestGather::move_party()
                 if(positions[x+y*3] == a)
                 {
                     Actor *actor = party->get_actor(a);
+                    if(actor == NULL)
+                    {
+                        x=3;y=3; break;
+                    }
                     MapCoord loc = actor->get_location();
                     MapCoord actor_dest(dest->x + x-1, dest->y + y-1, loc.z);
                     if(actor_dest == loc)
@@ -839,15 +850,22 @@ TimedRest::TimedRest(uint8 hours, Actor *who_will_guard, Obj *campfire_obj)
 /* This is the only place we know that the TimedAdvance has completed. */
 TimedRest::~TimedRest()
 {
-    MapCoord loc = Game::get_game()->get_player()->get_actor()->get_location();
-    assert(campfire != 0);
-    campfire->frame_n = 0; // extinguish campfire
+    Player *player = Game::get_game()->get_player();
+    if(player && player->get_actor())
+    {
+        MapCoord loc = player->get_actor()->get_location();
+    }
+
+    if(campfire != NULL)
+        campfire->frame_n = 0; // extinguish campfire
 
     bool can_heal = (Game::get_game()->get_clock()->get_rest_counter() == 0); //only heal once every 12 hours.
 
     for(int s=0; s<party->get_party_size(); s++)
     {
     	Actor *actor = party->get_actor(s);
+    	if(actor == NULL)
+    	    continue;
 
         if(can_heal && actor->is_sleeping() && s < number_that_had_food)
         {
@@ -870,7 +888,7 @@ TimedRest::~TimedRest()
         	}
 
         }
-        party->get_actor(s)->revert_worktype(); // "wake up"
+        actor->revert_worktype(); // "wake up"
     }
 
     if(can_heal)
@@ -892,7 +910,11 @@ void TimedRest::timed(uint32 evtime)
             if(print_message == 0)
                 bard_play(); // Iolo plays a tune.
             else if(print_message <= party->get_party_size())
-                eat(party->get_actor(print_message-1)); // print each person's message
+            {
+                Actor *actor = party->get_actor(print_message-1);
+                if(actor != NULL)
+                    eat(actor); // print each person's message
+            }
             else
             {
                 sleeping = true; // finished eating
@@ -905,7 +927,11 @@ void TimedRest::timed(uint32 evtime)
     {
         TimedAdvance::timed(evtime);
         for(int s=0; s<party->get_party_size(); s++)
-            party->get_actor(s)->update_time(); // checks status effects
+        {
+            Actor *actor = party->get_actor(s);
+            if(actor != NULL)
+                actor->update_time(); // checks status effects
+        }
 
         // FIXME: chance for random enemies to attack
     }
@@ -953,19 +979,21 @@ void TimedRest::bard_play()
     else
         scroll->display_string("Mealtime!\n");
     for(int b=0; b<party->get_party_size(); b++)
-        if(party->get_actor(b)->get_obj_n() == OBJ_U6_MUSICIAN)
+    {
+        Actor *actor = party->get_actor(b);
+        if(actor != NULL && actor->get_obj_n() == OBJ_U6_MUSICIAN)
         {
-            Actor *bard = party->get_actor(b);
-            bard->morph(OBJ_U6_MUSICIAN_PLAYING);
+            actor->morph(OBJ_U6_MUSICIAN_PLAYING);
             if(korean && korean->isEnabled())
             {
-                std::string bard_name = korean->translate(bard->get_name());
+                std::string bard_name = korean->translate(actor->get_name());
                 scroll->display_fmt_string("%s%s", bard_name.c_str(), korean->translate(" plays a tune.\n").c_str());
             }
             else
-                scroll->display_fmt_string("%s plays a tune.\n", bard->get_name());
+                scroll->display_fmt_string("%s plays a tune.\n", actor->get_name());
             break;
         }
+    }
 }
 
 /* Start sleeping until the requested time. One person can stand guard. */
@@ -973,13 +1001,18 @@ void TimedRest::sleep()
 {
     // FIXME: changing to SLEEP worktype should automatically do this
     for(int b=0; b<party->get_party_size(); b++)
-        if(party->get_actor(b)->get_obj_n() == OBJ_U6_MUSICIAN_PLAYING)
-            party->get_actor(b)->morph(OBJ_U6_MUSICIAN);
+    {
+        Actor *actor = party->get_actor(b);
+        if(actor != NULL && actor->get_obj_n() == OBJ_U6_MUSICIAN_PLAYING)
+            actor->morph(OBJ_U6_MUSICIAN);
+    }
 
     KoreanTranslation *korean = Game::get_game()->get_korean_translation();
     for(int s=0; s<party->get_party_size(); s++)
     {
         Actor *actor = party->get_actor(s);
+        if(actor == NULL)
+            continue;
         if(actor == lookout)
         {
             actor->set_worktype(WORKTYPE_U6_LOOKOUT);

@@ -511,10 +511,36 @@ void KeyBinder::ShowKeys() const // FIXME This doesn't look very good, the font 
 		MsgScroll *scroll = Game::get_game()->get_scroll();
 		scroll->set_autobreak(true);
 
+		KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+		bool use_korean = (kt && kt->isEnabled());
+
 		for (iter = keyhelp.begin(); iter != keyhelp.end(); ++iter)
 		{
 			keys = "\n";
-			keys.append(iter->c_str());
+			if (use_korean)
+			{
+				// Parse "key - description" format and translate the description
+				string entry = *iter;
+				size_t dash_pos = entry.find(" - ");
+				if (dash_pos != string::npos)
+				{
+					string key_part = entry.substr(0, dash_pos);
+					string desc_part = entry.substr(dash_pos + 3);
+					string korean_desc = kt->getUIText(desc_part.c_str());
+					if (!korean_desc.empty())
+						keys.append(key_part + " - " + korean_desc);
+					else
+						keys.append(entry);
+				}
+				else
+				{
+					keys.append(entry);
+				}
+			}
+			else
+			{
+				keys.append(iter->c_str());
+			}
 			scroll->display_string(keys, 1);
 		}
 		scroll->message("\n\n\t");

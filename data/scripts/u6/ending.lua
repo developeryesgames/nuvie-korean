@@ -8,11 +8,20 @@ local korean_mode = false
 local ko_text_sprite = nil
 
 local function init_korean()
-	if is_korean_enabled and is_korean_enabled() then
-		korean_mode = true
-		if load_translation then
-			load_translation("ending_ko.txt")
+	print("init_korean: checking is_korean_enabled...\n")
+	if is_korean_enabled then
+		print("init_korean: is_korean_enabled exists\n")
+		local result = is_korean_enabled()
+		print("init_korean: is_korean_enabled() returned: " .. tostring(result) .. "\n")
+		if result then
+			korean_mode = true
+			print("init_korean: korean_mode set to true\n")
+			if load_translation then
+				load_translation("ending_ko.txt")
+			end
 		end
+	else
+		print("init_korean: is_korean_enabled does not exist!\n")
 	end
 end
 
@@ -112,14 +121,18 @@ local function play()
 	
 	local scroll_img = image_load("end.shp", 0xb)
 
+	if not korean_mode then
+		image_print(scroll_img, "A glowing portal springs from the floor!", 7, 303, 34, 13, 0x3e)
+	end
+	local scroll = sprite_new(scroll_img, 1, 0xa0, true)
+
+	-- Korean text sprite must be created AFTER scroll sprite so it renders on top
 	if korean_mode then
 		ko_text_sprite = sprite_new(nil, 34, 0xa0 + 13, true)
 		ko_text_sprite.text = "바닥에서 빛나는 관문이 솟아오른다!"
 		ko_text_sprite.text_color = 0x3e
-	else
-		image_print(scroll_img, "A glowing portal springs from the floor!", 7, 303, 34, 13, 0x3e)
+		ko_text_sprite.text_align = 2
 	end
-	local scroll = sprite_new(scroll_img, 1, 0xa0, true)
 	
 	local input
 	local i
@@ -187,6 +200,7 @@ local function play()
 		ko_text_sprite = sprite_new(nil, 63, 0xa0 + 13, true)
 		ko_text_sprite.text = "\"도대체 그것으로 무슨 짓을 한 것이오?\""
 		ko_text_sprite.text_color = 0x3e
+		ko_text_sprite.text_align = 2
 	else
 		image_print(scroll_img, "\"WHAT HAST THOU DONE WITH IT?\127", 8, 303, 63, 13, 0x3e)
 	end
@@ -237,28 +251,28 @@ local function play()
 	
 	star_field.visible = true
 	wall_transparent.visible = true
-	
+
 	for i=0xff,0,-3  do
-		wall.opacity = i
+		wall.dissolve = i
 		image_update_effect(star_field.image)
 		canvas_update()
 		input = input_poll()
 		if input ~= nil then
-			wall.opacity = 0
+			wall.dissolve = 0
 			break
 		end
 	end
 
-	codex.opacity = 0
+	codex.dissolve = 0
 	codex.visible = true
 
 	for i=0,0xff,3  do
-		codex.opacity = i
+		codex.dissolve = i
 		image_update_effect(star_field.image)
 		canvas_update()
 		input = input_poll()
 		if input ~= nil then
-			codex.opacity = 0xff
+			codex.dissolve = 0xff
 			break
 		end
 	end
@@ -271,6 +285,7 @@ local function play()
 		ko_text_sprite = sprite_new(nil, 70, 0xa0 + 13, true)
 		ko_text_sprite.text = "그러나 책은 여전히 닫혀 있다."
 		ko_text_sprite.text_color = 0x3e
+		ko_text_sprite.text_align = 2
 	else
 		image_print(scroll_img, "Yet the book remains closed.", 8, 303, 70, 13, 0x3e)
 	end
@@ -335,6 +350,7 @@ local function play()
 		ko_text_sprite = sprite_new(nil, 46, 0xa0 + 13, true)
 		ko_text_sprite.text = "\"때가 되었다, 도둑놈아,\" 그가 말한다."
 		ko_text_sprite.text_color = 0x3e
+		ko_text_sprite.text_align = 2
 	else
 		image_print(scroll_img, "\"Thy time hath come, Thief,\127 he says.", 8, 303, 46, 13, 0x3e)
 	end
@@ -421,16 +437,16 @@ local function play()
 	scroll.x = 0x1
 	scroll.y = 0x85
 	
-	codex_opened.opacity = 0
+	codex_opened.dissolve = 0
 	codex_opened.visible = true
-	
+
 	for i=0,0xff,3  do
-		codex_opened.opacity = i
+		codex_opened.dissolve = i
 		image_update_effect(star_field.image)
 		canvas_update()
 		input = input_poll()
 		if input ~= nil then
-			codex_opened.opacity = 0xff
+			codex_opened.dissolve = 0xff
 			break
 		end
 	end
@@ -457,28 +473,28 @@ local function play()
 	if ko_text_sprite then ko_text_sprite.visible = false end
 	
 	for i=0xff,0,-3  do
-		codex_opened.opacity = i
+		codex_opened.dissolve = i
 		image_update_effect(star_field.image)
 		canvas_update()
 		input = input_poll()
 		if input ~= nil then
-			codex_opened.opacity = 0
+			codex_opened.dissolve = 0
 			break
 		end
 	end
-	
+
 	codex_opened.visible = false
-	
-	wall.opacity = 0
+
+	wall.dissolve = 0
 	wall.visible = true
 
 	for i=0,0xff,3  do
-		wall.opacity = i
+		wall.dissolve = i
 		image_update_effect(star_field.image)
 		canvas_update()
 		input = input_poll()
 		if input ~= nil then
-			wall.opacity = 0xff
+			wall.dissolve = 0xff
 			break
 		end
 	end
@@ -604,14 +620,17 @@ local function play()
 		ko_text_sprite = sprite_new(nil, 1, 0x44 + 9, true)
 		ko_text_sprite.text = "축하합니다"
 		ko_text_sprite.text_color = 0x3e
+		ko_text_sprite.text_align = 2
 
 		local ko_text_sprite2 = sprite_new(nil, 1, 0x44 + 25, true)
 		ko_text_sprite2.text = "그대는 울티마 VI: 거짓 예언자를 완수하였습니다."
 		ko_text_sprite2.text_color = 0x3e
+		ko_text_sprite2.text_align = 2
 
 		local ko_text_sprite3 = sprite_new(nil, 1, 0x44 + 41, true)
 		ko_text_sprite3.text = "오리진 시스템즈의 로드 브리티시에게 그대의 업적을 보고하십시오!"
 		ko_text_sprite3.text_color = 0x3e
+		ko_text_sprite3.text_align = 2
 	else
 		image_print(scroll_img, "CONGRATULATIONS", 8, 303, 107, y, 0x3e)
 		y=y+8

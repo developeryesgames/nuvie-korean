@@ -37,6 +37,19 @@
 #include "Background.h"
 #include "Configuration.h"
 #include "U6misc.h"
+#include "KoreanTranslation.h"
+#include "FontManager.h"
+
+// Helper function for translated UI text
+static std::string get_ui_text(const char* english) {
+	FontManager *fm = Game::get_game()->get_font_manager();
+	KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+	if (fm && fm->is_korean_enabled() && kt) {
+		std::string korean = kt->getUIText(english);
+		if (!korean.empty()) return korean;
+	}
+	return std::string(english);
+}
 
 #define GAME Game::get_game()
 #define EVENT Game::get_game()->get_event()
@@ -452,21 +465,21 @@ void ActionToggleAudio(int const *params)
 {
 	bool audio = !GAME->get_sound_manager()->is_audio_enabled();
 	GAME->get_sound_manager()->set_audio_enabled(audio);
-	new TextEffect(audio ? "Audio enabled" : "Audio disabled");
+	new TextEffect(get_ui_text(audio ? "Audio enabled" : "Audio disabled"));
 }
 
 void ActionToggleMusic(int const *params)
 {
 	bool music = !GAME->get_sound_manager()->is_music_enabled();
 	GAME->get_sound_manager()->set_music_enabled(music);
-	new TextEffect(music ? "Music enabled" : "Music disabled");
+	new TextEffect(get_ui_text(music ? "Music enabled" : "Music disabled"));
 }
 
 void ActionToggleSFX(int const *params)
 {
 	bool sfx = !GAME->get_sound_manager()->is_sfx_enabled();
 	GAME->get_sound_manager()->set_sfx_enabled(sfx);
-	new TextEffect(sfx ? "Sfx enabled" : "Sfx disabled");
+	new TextEffect(get_ui_text(sfx ? "Sfx enabled" : "Sfx disabled"));
 }
 
 void ActionToggleOriginalStyleCommandBar(int const *params)
@@ -555,7 +568,11 @@ void ActionUseItem(int const *params)
 		obj =  PARTY->get_obj(obj_n, qual, match_qual, frame_n, match_frame_n);
 	if(obj)
 	{
-		GAME->get_scroll()->display_string("Use-", MSGSCROLL_NO_MAP_DISPLAY);
+		FontManager *fm_use = GAME->get_font_manager();
+		if(fm_use && fm_use->is_korean_enabled() && fm_use->get_korean_font())
+			GAME->get_scroll()->display_string("사용-", MSGSCROLL_NO_MAP_DISPLAY);
+		else
+			GAME->get_scroll()->display_string("Use-", MSGSCROLL_NO_MAP_DISPLAY);
 		EVENT->set_mode(USE_MODE);
 		EVENT->use(obj);
 	}

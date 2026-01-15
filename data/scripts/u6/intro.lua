@@ -448,6 +448,7 @@ local function lounge_sequence()
 		ko_text_sprite = sprite_new(nil, 0x48, 0xa5, true)
 		ko_text_sprite.text = "밖에서는 차가운 바람이 일기 시작하고..."
 		ko_text_sprite.text_color = 0x3e
+		ko_text_sprite.text_align = 2
 	else
 		image_print(scroll_img, "Outside, a chill wind rises...", 39, 200, 39, 8, 0x3e)
 	end
@@ -699,6 +700,7 @@ local function window_sequence()
 		ko_text_sprite = sprite_new(nil, 36, 0x98 + 14, true)
 		ko_text_sprite.text = "...순식간에 폭풍우가 그대를 덮친다."
 		ko_text_sprite.text_color = 0x3e
+		ko_text_sprite.text_align = 2
 	else
 		local x, y = image_print(scroll_img, "...and in moments, the storm is upon you.", 8, 312, 36, 14, 0x3e)
 	end
@@ -747,6 +749,7 @@ local function window_sequence()
 		ko_text_sprite = sprite_new(nil, 8, 0x98 + 10, true)
 		ko_text_sprite.text = "돌무더기 사이에 내리친 번개! 이것은 저 멀리 브리타니아에서 온 신호인가?"
 		ko_text_sprite.text_color = 0x3e
+		ko_text_sprite.text_align = 2
 	else
 		x, y = image_print(scroll_img, "Lightning among the stones!", 8, 310, 73, 10, 0x3e)
 		image_print(scroll_img, "Is this a sign from distant Britannia?", 8, 310, 41, 18, 0x3e)
@@ -919,6 +922,7 @@ local function stones_sequence()
 		ko_text_sprite = sprite_new(nil, 0x21, 0x1e + 8, true)
 		ko_text_sprite.text = "의구심을 품은 채, 그대는 그것을 집어 든다...."
 		ko_text_sprite.text_color = 0x3e
+		ko_text_sprite.text_align = 2
 	else
 		image_print(scroll_img, "Wondering, you pick it up....", 8, 234, 0x2a, 8, 0x3e)
 	end
@@ -1052,6 +1056,7 @@ local function stones_sequence()
 		ko_text_sprite = sprite_new(nil, 1, 0x98 + 8, true)
 		ko_text_sprite.text = "하지만 기쁨은 곧 불안으로 바뀐다. 브리타니아로 향하는 문은 언제나 아침 하늘처럼 푸른색이었거늘..."
 		ko_text_sprite.text_color = 0x3e
+		ko_text_sprite.text_align = 2
 	else
 		image_print(scroll_img, "But your joy soon gives way to apprehension.", 7, 303, 16, 8, 0x3e)
 		image_print(scroll_img, "The gate to Britannia has always been blue...", 7, 303, 18, 24, 0x3e)
@@ -1070,6 +1075,7 @@ local function stones_sequence()
 		ko_text_sprite = sprite_new(nil, 1, 0xa0 + 10, true)
 		ko_text_sprite.text = "갑자기 관문이 진동하며 땅 밑으로 가라앉기 시작한다. 그 진홍빛 광채가 희미해져 간다!"
 		ko_text_sprite.text_color = 0x3e
+		ko_text_sprite.text_align = 2
 	else
 		x,y = image_print(scroll_img, "Abruptly, the portal quivers and begins to sink ", 7, 303, 7, 10, 0x3e)
 		image_print(scroll_img, "into the ground.  Its crimson light wanes!", 7, 303, x, y, 0x3e)
@@ -1088,6 +1094,7 @@ local function stones_sequence()
 		ko_text_sprite = sprite_new(nil, 1, 0xa0 + 14, true)
 		ko_text_sprite.text = "절박함이 선택을 결단으로 바꾼다."
 		ko_text_sprite.text_color = 0x3e
+		ko_text_sprite.text_align = 2
 	else
 		x,y = image_print(scroll_img, "Desperation makes the decision an easy one.", 7, 303, 22, 14, 0x3e)
 	end
@@ -1131,9 +1138,9 @@ local function stones_sequence()
 		stones_rotate_palette()
 		g_stones_tbl["moon_gate"].x = 0x7c + math.random(0, 1)
 		g_stones_tbl["moon_gate"].y = 5 + math.random(0, 3)
-		
-		g_stones_tbl["avatar"].opacity = i
-	
+
+		g_stones_tbl["avatar"].dissolve = i
+
 		local input = input_poll()
 		if input ~= nil and should_exit(input) then
 			return false
@@ -2818,6 +2825,7 @@ local function intro()
 		ko_text_sprite = sprite_new(nil, 0x21, 0x9d + 8, true)
 		ko_text_sprite.text = "...갈 곳이 없다."
 		ko_text_sprite.text_color = 0x3e
+		ko_text_sprite.text_align = 2
 	else
 		image_print(scroll_img, "...but you have no place to go.", 7, 308, 35, 8, 0x3e)
 	end
@@ -2919,6 +2927,7 @@ local function intro()
 		ko_text_sprite = sprite_new(nil, 33, 0xa0 + 10, true)
 		ko_text_sprite.text = "무릎을 꿇은 무리들이 몸을 흔들며 영창을 외우자, 위엄 있는 날개 달린 악몽 같은 존재가 앞으로 걸어 나온다."
 		ko_text_sprite.text_color = 0x3e
+		ko_text_sprite.text_align = 2
 	else
 		image_print(scroll_img, "Kneeling, the hordes sway and chant as a stately winged nightmare steps forward.", 32, 262, 33, 10, 0x3e)
 	end
@@ -3007,6 +3016,7 @@ local function intro()
 		ko_text_sprite = sprite_new(nil, 16, 0xa0 + 10, true)
 		ko_text_sprite.text = "그대는 눈을 감는다. 그대의 것으로 분명한 단말마의 비명이 공기를 얼어붙게 만든다."
 		ko_text_sprite.text_color = 0x3e
+		ko_text_sprite.text_align = 2
 	else
 		image_print(scroll_img, "You close your eyes. A dying scream, certainly your own, curdles the air.", 80, 228, 16, 10, 0x3e)
 	end
@@ -3062,6 +3072,7 @@ local function intro()
 		ko_text_sprite = sprite_new(nil, 39, 0x50 + 14, true)
 		ko_text_sprite.text = "야유, 단검, 비명, 그리고 죽음...."
 		ko_text_sprite.text_color = 0x3e
+		ko_text_sprite.text_align = 2
 	else
 		image_print(scroll_img, "Catcalls, the dagger, a scream, Death....", 7, 308, 39, 14, 0x3e)
 	end
@@ -3079,6 +3090,7 @@ local function intro()
 		ko_text_sprite = sprite_new(nil, 34, 0x50 + 14, true)
 		ko_text_sprite.text = "대혼란. 분노와 공포의 외침."
 		ko_text_sprite.text_color = 0x3e
+		ko_text_sprite.text_align = 2
 	else
 		image_print(scroll_img, "Pandemonium. Shrieks of rage, of terror.", 7, 308, 34, 14, 0x3e)
 	end
@@ -3096,6 +3108,7 @@ local function intro()
 		ko_text_sprite = sprite_new(nil, 16, 0x50 + 14, true)
 		ko_text_sprite.text = "피할 수 없는 파멸 속에서, 불가능한 구원이 나타난다."
 		ko_text_sprite.text_color = 0x3e
+		ko_text_sprite.text_align = 2
 	else
 		image_print(scroll_img, "From the inevitable, an impossibility emerges.", 7, 308, 16, 14, 0x3e)
 	end
@@ -3113,6 +3126,7 @@ local function intro()
 		ko_text_sprite = sprite_new(nil, 101, 0x50 + 14, true)
 		ko_text_sprite.text = "그대는 아직 살아 있다."
 		ko_text_sprite.text_color = 0x3e
+		ko_text_sprite.text_align = 2
 	else
 		image_print(scroll_img, "You are still alive.", 7, 308, 101, 14, 0x3e)
 	end
@@ -3391,6 +3405,7 @@ local function intro()
 		ko_text_sprite = sprite_new(nil, 12, 0xa0 + 10, true)
 		ko_text_sprite.text = "그대와 듀프레가 뛰어들자 관문의 빛이 빠르게 사라져 가고..."
 		ko_text_sprite.text_color = 0x3e
+		ko_text_sprite.text_align = 2
 	else
 		image_print(scroll_img, "The gate wanes rapidly as you and Dupre charge through...", 130, 178, 12, 10, 0x3e)
 	end
@@ -3423,6 +3438,7 @@ local function intro()
 		ko_text_sprite = sprite_new(nil, 0x21, 0x9d + 8, true)
 		ko_text_sprite.text = "...하지만 충분히 빠르지는 않았다."
 		ko_text_sprite.text_color = 0x3e
+		ko_text_sprite.text_align = 2
 	else
 		image_print(scroll_img, "...but not rapidly enough.", 7, 308, 50, 8, 0x3e)
 	end

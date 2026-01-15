@@ -282,12 +282,12 @@ bool MapWindow::init(TileManager *tm, ObjManager *om, ActorManager *am)
 			 }
 
 			 // Map pixel size
-			 uint16 map_pixel_w = map_w * scaled_tile_size;
-			 uint16 map_pixel_h = map_h * scaled_tile_size;
+			 sint32 map_pixel_w = (sint32)map_w * scaled_tile_size;
+			 sint32 map_pixel_h = (sint32)map_h * scaled_tile_size;
 
-			 // Position map centered in visible area
-			 offset_x = game->get_game_x_offset() + edge + (sint32)(visible_w - map_pixel_w) / 2;
-			 offset_y = game->get_game_y_offset() + edge + (sint32)(visible_h - map_pixel_h) / 2;
+			 // Position map centered in visible area (use signed arithmetic to handle negative offsets)
+			 offset_x = game->get_game_x_offset() + edge + ((sint32)visible_w - map_pixel_w) / 2;
+			 offset_y = game->get_game_y_offset() + edge + ((sint32)visible_h - map_pixel_h) / 2;
 
 			 // Clip rect = visible map area (fixed by UI scale)
 			 paper_clip_active = true;
@@ -312,8 +312,8 @@ bool MapWindow::init(TileManager *tm, ObjManager *om, ActorManager *am)
 				 map_w += 2;
 				 map_h += 2;
 			 }
-			 offset_x -= (map_w * scaled_tile_size - game_width) / 2;
-			 offset_y -= (map_h * scaled_tile_size - game_height) / 2;
+			 offset_x -= ((sint32)map_w * scaled_tile_size - (sint32)game_width) / 2;
+			 offset_y -= ((sint32)map_h * scaled_tile_size - (sint32)game_height) / 2;
 		 }
 	 } else if(game->is_original_plus_full_map()) {
 		 map_center_xoff = (border_width/scaled_tile_size)%scaled_tile_size;
@@ -331,8 +331,8 @@ bool MapWindow::init(TileManager *tm, ObjManager *om, ActorManager *am)
 			 map_w += 2;
 			 map_h += 2;
 		 }
-		 offset_x -= (map_w*scaled_tile_size - game_width)/2;
-		 offset_y -= (map_h*scaled_tile_size - game_height)/2;
+		 offset_x -= ((sint32)map_w*scaled_tile_size - (sint32)game_width)/2;
+		 offset_y -= ((sint32)map_h*scaled_tile_size - (sint32)game_height)/2;
 	 } else { // new style
 		 map_center_xoff = 0;
 		 map_w = game_width/scaled_tile_size;
@@ -349,8 +349,8 @@ bool MapWindow::init(TileManager *tm, ObjManager *om, ActorManager *am)
 			 map_w += 2;
 			 map_h += 2;
 		 }
-		 offset_x -= (map_w*scaled_tile_size - game_width)/2;
-		 offset_y -= (map_h*scaled_tile_size - game_height)/2;
+		 offset_x -= ((sint32)map_w*scaled_tile_size - (sint32)game_width)/2;
+		 offset_y -= ((sint32)map_h*scaled_tile_size - (sint32)game_height)/2;
 	 }
  }
  else
@@ -1137,16 +1137,19 @@ void MapWindow::updateLighting()
 
      if(actor->z == cur_level)
        {
-        if(actor->x >= cur_x - TMP_MAP_BORDER && actor->x < cur_x + win_width + TMP_MAP_BORDER)
+        sint32 rel_x = (sint32)actor->x - (sint32)cur_x;
+        sint32 rel_y = (sint32)actor->y - (sint32)cur_y;
+        if(rel_x >= -TMP_MAP_BORDER && rel_x < (sint32)win_width + TMP_MAP_BORDER)
           {
-           if(actor->y >= cur_y - TMP_MAP_BORDER && actor->y < cur_y + win_height + TMP_MAP_BORDER)
+           if(rel_y >= -TMP_MAP_BORDER && rel_y < (sint32)win_height + TMP_MAP_BORDER)
              {
-              if(tmp_map_buf[(actor->y - cur_y + TMP_MAP_BORDER) * tmp_map_width + (actor->x - cur_x + TMP_MAP_BORDER)] != 0)
+              uint32 buf_idx = (rel_y + TMP_MAP_BORDER) * tmp_map_width + (rel_x + TMP_MAP_BORDER);
+              if(buf_idx < tmp_map_width * tmp_map_height && tmp_map_buf[buf_idx] != 0)
                 {
                  uint8 light = actor->get_light_level();
                  if(light > 0)
                  {
-                   screen->drawalphamap8globe(actor->x - cur_x, actor->y - cur_y, light);
+                   screen->drawalphamap8globe(rel_x, rel_y, light);
                  }
                 }
              }
@@ -1357,9 +1360,11 @@ void MapWindow::drawActors()
        uint8 x = WRAP_VIEWP(cur_x,actor->x,map_width);
        if(x < win_width)//actor->x >= cur_x && actor->x < cur_x + win_width)
          {
-          if(actor->y >= cur_y && actor->y < cur_y + win_height)
+          sint32 rel_y = (sint32)actor->y - (sint32)cur_y;
+          if(rel_y >= 0 && rel_y < (sint32)win_height)
             {
-             if(tmp_map_buf[(actor->y - cur_y + TMP_MAP_BORDER) * tmp_map_width + (x + TMP_MAP_BORDER)] != 0)
+             uint32 buf_idx = (rel_y + TMP_MAP_BORDER) * tmp_map_width + (x + TMP_MAP_BORDER);
+             if(buf_idx < tmp_map_width * tmp_map_height && tmp_map_buf[buf_idx] != 0)
                {
                 drawActor(actor);
                }

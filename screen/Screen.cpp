@@ -1017,8 +1017,12 @@ bool Screen::blit3x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16
 }
 
 // 4x scaled blit - each source pixel becomes a 4x4 block
-bool Screen::blit4x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16 src_bpp, uint16 src_w, uint16 src_h, uint16 src_pitch, bool trans, SDL_Rect *clip_rect)
+// dissolve: 0=invisible, 255=fully visible - uses dither pattern for partial visibility
+bool Screen::blit4x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16 src_bpp, uint16 src_w, uint16 src_h, uint16 src_pitch, bool trans, SDL_Rect *clip_rect, uint8 opacity, uint8 dissolve)
 {
+ // Skip completely transparent/invisible sprites
+ if(opacity == 0 || dissolve == 0)
+   return true;
  uint16 src_x = 0;
  uint16 src_y = 0;
 
@@ -1139,17 +1143,161 @@ bool Screen::blit4x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16
    pixels += dest_y * surface->w + dest_x;
    uint32 row_stride = surface->w;
 
-   if(trans)
+   if(dissolve < 255)
    {
-     for(uint16 i = 0; i < src_h; i++)
+     // Dissolve effect - random pixel appearance using hash function
+     // Each SOURCE pixel gets a pseudo-random threshold, and the entire 4x4 block appears/disappears together
+     if(trans)
      {
-       for(uint16 j = 0; j < src_w; j++)
+       for(uint16 i = 0; i < src_h; i++)
        {
-         if(src_buf[j] != 0xff)
+         for(uint16 j = 0; j < src_w; j++)
+         {
+           if(src_buf[j] != 0xff)
+           {
+             // Hash function for pseudo-random threshold per source pixel
+             uint32 hash = (i * 31337) ^ (j * 7919) ^ ((i + j) * 1013);
+             hash = ((hash >> 16) ^ hash) * 0x45d9f3b;
+             hash = ((hash >> 16) ^ hash) * 0x45d9f3b;
+             hash = (hash >> 16) ^ hash;
+             uint8 threshold = hash & 0xFF;
+
+             // Only draw entire 4x4 block if dissolve level exceeds this pixel's threshold
+             if(threshold < dissolve)
+             {
+               uint16 color = (uint16)surface->colour32[src_buf[j]];
+               uint32 base = j * 4;
+               for(int row = 0; row < 4; row++)
+               {
+                 uint16 *row_ptr = pixels + row * row_stride + base;
+                 row_ptr[0] = color;
+                 row_ptr[1] = color;
+                 row_ptr[2] = color;
+                 row_ptr[3] = color;
+               }
+             }
+           }
+         }
+         src_buf += src_pitch;
+         pixels += row_stride * 4;
+       }
+     }
+     else
+     {
+       for(uint16 i = 0; i < src_h; i++)
+       {
+         for(uint16 j = 0; j < src_w; j++)
+         {
+           uint32 hash = (i * 31337) ^ (j * 7919) ^ ((i + j) * 1013);
+           hash = ((hash >> 16) ^ hash) * 0x45d9f3b;
+           hash = ((hash >> 16) ^ hash) * 0x45d9f3b;
+           hash = (hash >> 16) ^ hash;
+           uint8 threshold = hash & 0xFF;
+
+           if(threshold < dissolve)
+           {
+             uint16 color = (uint16)surface->colour32[src_buf[j]];
+             uint32 base = j * 4;
+             for(int row = 0; row < 4; row++)
+             {
+               uint16 *row_ptr = pixels + row * row_stride + base;
+               row_ptr[0] = color;
+               row_ptr[1] = color;
+               row_ptr[2] = color;
+               row_ptr[3] = color;
+             }
+           }
+         }
+         src_buf += src_pitch;
+         pixels += row_stride * 4;
+       }
+     }
+   }
+   else if(opacity < 255)
+   {
+     // Opacity blending mode for 16-bit
+     if(trans)
+     {
+       for(uint16 i = 0; i < src_h; i++)
+       {
+         for(uint16 j = 0; j < src_w; j++)
+         {
+           if(src_buf[j] != 0xff)
+           {
+             uint16 src_color = (uint16)surface->colour32[src_buf[j]];
+             uint32 base = j * 4;
+             for(int row = 0; row < 4; row++)
+             {
+               uint16 *row_ptr = pixels + row * row_stride + base;
+               row_ptr[0] = blendpixel16(row_ptr[0], src_color, opacity);
+               row_ptr[1] = blendpixel16(row_ptr[1], src_color, opacity);
+               row_ptr[2] = blendpixel16(row_ptr[2], src_color, opacity);
+               row_ptr[3] = blendpixel16(row_ptr[3], src_color, opacity);
+             }
+           }
+         }
+         src_buf += src_pitch;
+         pixels += row_stride * 4;
+       }
+     }
+     else
+     {
+       for(uint16 i = 0; i < src_h; i++)
+       {
+         for(uint16 j = 0; j < src_w; j++)
+         {
+           uint16 src_color = (uint16)surface->colour32[src_buf[j]];
+           uint32 base = j * 4;
+           for(int row = 0; row < 4; row++)
+           {
+             uint16 *row_ptr = pixels + row * row_stride + base;
+             row_ptr[0] = blendpixel16(row_ptr[0], src_color, opacity);
+             row_ptr[1] = blendpixel16(row_ptr[1], src_color, opacity);
+             row_ptr[2] = blendpixel16(row_ptr[2], src_color, opacity);
+             row_ptr[3] = blendpixel16(row_ptr[3], src_color, opacity);
+           }
+         }
+         src_buf += src_pitch;
+         pixels += row_stride * 4;
+       }
+     }
+   }
+   else
+   {
+     // Full opacity - original fast path
+     if(trans)
+     {
+       for(uint16 i = 0; i < src_h; i++)
+       {
+         for(uint16 j = 0; j < src_w; j++)
+         {
+           if(src_buf[j] != 0xff)
+           {
+             uint16 color = (uint16)surface->colour32[src_buf[j]];
+             uint32 base = j * 4;
+             // Write 4x4 block
+             for(int row = 0; row < 4; row++)
+             {
+               uint16 *row_ptr = pixels + row * row_stride + base;
+               row_ptr[0] = color;
+               row_ptr[1] = color;
+               row_ptr[2] = color;
+               row_ptr[3] = color;
+             }
+           }
+         }
+         src_buf += src_pitch;
+         pixels += row_stride * 4; // Skip 4 rows
+       }
+     }
+     else
+     {
+       for(uint16 i = 0; i < src_h; i++)
+       {
+         for(uint16 j = 0; j < src_w; j++)
          {
            uint16 color = (uint16)surface->colour32[src_buf[j]];
            uint32 base = j * 4;
-           // Write 4x4 block
            for(int row = 0; row < 4; row++)
            {
              uint16 *row_ptr = pixels + row * row_stride + base;
@@ -1159,30 +1307,9 @@ bool Screen::blit4x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16
              row_ptr[3] = color;
            }
          }
+         src_buf += src_pitch;
+         pixels += row_stride * 4;
        }
-       src_buf += src_pitch;
-       pixels += row_stride * 4; // Skip 4 rows
-     }
-   }
-   else
-   {
-     for(uint16 i = 0; i < src_h; i++)
-     {
-       for(uint16 j = 0; j < src_w; j++)
-       {
-         uint16 color = (uint16)surface->colour32[src_buf[j]];
-         uint32 base = j * 4;
-         for(int row = 0; row < 4; row++)
-         {
-           uint16 *row_ptr = pixels + row * row_stride + base;
-           row_ptr[0] = color;
-           row_ptr[1] = color;
-           row_ptr[2] = color;
-           row_ptr[3] = color;
-         }
-       }
-       src_buf += src_pitch;
-       pixels += row_stride * 4;
      }
    }
  }
@@ -1192,17 +1319,160 @@ bool Screen::blit4x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16
    pixels += dest_y * surface->w + dest_x;
    uint32 row_stride = surface->w;
 
-   if(trans)
+   if(dissolve < 255)
    {
-     for(uint16 i = 0; i < src_h; i++)
+     // Dissolve effect - random pixel appearance using hash function
+     // Each SOURCE pixel gets a pseudo-random threshold, and the entire 4x4 block appears/disappears together
+     if(trans)
      {
-       for(uint16 j = 0; j < src_w; j++)
+       for(uint16 i = 0; i < src_h; i++)
        {
-         if(src_buf[j] != 0xff)
+         for(uint16 j = 0; j < src_w; j++)
+         {
+           if(src_buf[j] != 0xff)
+           {
+             uint32 hash = (i * 31337) ^ (j * 7919) ^ ((i + j) * 1013);
+             hash = ((hash >> 16) ^ hash) * 0x45d9f3b;
+             hash = ((hash >> 16) ^ hash) * 0x45d9f3b;
+             hash = (hash >> 16) ^ hash;
+             uint8 threshold = hash & 0xFF;
+
+             if(threshold < dissolve)
+             {
+               uint32 color = surface->colour32[src_buf[j]];
+               uint32 base = j * 4;
+               for(int row = 0; row < 4; row++)
+               {
+                 uint32 *row_ptr = pixels + row * row_stride + base;
+                 row_ptr[0] = color;
+                 row_ptr[1] = color;
+                 row_ptr[2] = color;
+                 row_ptr[3] = color;
+               }
+             }
+           }
+         }
+         src_buf += src_pitch;
+         pixels += row_stride * 4;
+       }
+     }
+     else
+     {
+       for(uint16 i = 0; i < src_h; i++)
+       {
+         for(uint16 j = 0; j < src_w; j++)
+         {
+           uint32 hash = (i * 31337) ^ (j * 7919) ^ ((i + j) * 1013);
+           hash = ((hash >> 16) ^ hash) * 0x45d9f3b;
+           hash = ((hash >> 16) ^ hash) * 0x45d9f3b;
+           hash = (hash >> 16) ^ hash;
+           uint8 threshold = hash & 0xFF;
+
+           if(threshold < dissolve)
+           {
+             uint32 color = surface->colour32[src_buf[j]];
+             uint32 base = j * 4;
+             for(int row = 0; row < 4; row++)
+             {
+               uint32 *row_ptr = pixels + row * row_stride + base;
+               row_ptr[0] = color;
+               row_ptr[1] = color;
+               row_ptr[2] = color;
+               row_ptr[3] = color;
+             }
+           }
+         }
+         src_buf += src_pitch;
+         pixels += row_stride * 4;
+       }
+     }
+   }
+   else if(opacity < 255)
+   {
+     // Opacity blending mode
+     if(trans)
+     {
+       for(uint16 i = 0; i < src_h; i++)
+       {
+         for(uint16 j = 0; j < src_w; j++)
+         {
+           if(src_buf[j] != 0xff)
+           {
+             uint32 src_color = surface->colour32[src_buf[j]];
+             uint32 base = j * 4;
+             // Write 4x4 block with blending
+             for(int row = 0; row < 4; row++)
+             {
+               uint32 *row_ptr = pixels + row * row_stride + base;
+               row_ptr[0] = blendpixel32(row_ptr[0], src_color, opacity);
+               row_ptr[1] = blendpixel32(row_ptr[1], src_color, opacity);
+               row_ptr[2] = blendpixel32(row_ptr[2], src_color, opacity);
+               row_ptr[3] = blendpixel32(row_ptr[3], src_color, opacity);
+             }
+           }
+         }
+         src_buf += src_pitch;
+         pixels += row_stride * 4;
+       }
+     }
+     else
+     {
+       for(uint16 i = 0; i < src_h; i++)
+       {
+         for(uint16 j = 0; j < src_w; j++)
+         {
+           uint32 src_color = surface->colour32[src_buf[j]];
+           uint32 base = j * 4;
+           for(int row = 0; row < 4; row++)
+           {
+             uint32 *row_ptr = pixels + row * row_stride + base;
+             row_ptr[0] = blendpixel32(row_ptr[0], src_color, opacity);
+             row_ptr[1] = blendpixel32(row_ptr[1], src_color, opacity);
+             row_ptr[2] = blendpixel32(row_ptr[2], src_color, opacity);
+             row_ptr[3] = blendpixel32(row_ptr[3], src_color, opacity);
+           }
+         }
+         src_buf += src_pitch;
+         pixels += row_stride * 4;
+       }
+     }
+   }
+   else
+   {
+     // Full opacity - original fast path
+     if(trans)
+     {
+       for(uint16 i = 0; i < src_h; i++)
+       {
+         for(uint16 j = 0; j < src_w; j++)
+         {
+           if(src_buf[j] != 0xff)
+           {
+             uint32 color = surface->colour32[src_buf[j]];
+             uint32 base = j * 4;
+             // Write 4x4 block
+             for(int row = 0; row < 4; row++)
+             {
+               uint32 *row_ptr = pixels + row * row_stride + base;
+               row_ptr[0] = color;
+               row_ptr[1] = color;
+               row_ptr[2] = color;
+               row_ptr[3] = color;
+             }
+           }
+         }
+         src_buf += src_pitch;
+         pixels += row_stride * 4;
+       }
+     }
+     else
+     {
+       for(uint16 i = 0; i < src_h; i++)
+       {
+         for(uint16 j = 0; j < src_w; j++)
          {
            uint32 color = surface->colour32[src_buf[j]];
            uint32 base = j * 4;
-           // Write 4x4 block
            for(int row = 0; row < 4; row++)
            {
              uint32 *row_ptr = pixels + row * row_stride + base;
@@ -1212,30 +1482,9 @@ bool Screen::blit4x(sint32 dest_x, sint32 dest_y, unsigned char *src_buf, uint16
              row_ptr[3] = color;
            }
          }
+         src_buf += src_pitch;
+         pixels += row_stride * 4;
        }
-       src_buf += src_pitch;
-       pixels += row_stride * 4;
-     }
-   }
-   else
-   {
-     for(uint16 i = 0; i < src_h; i++)
-     {
-       for(uint16 j = 0; j < src_w; j++)
-       {
-         uint32 color = surface->colour32[src_buf[j]];
-         uint32 base = j * 4;
-         for(int row = 0; row < 4; row++)
-         {
-           uint32 *row_ptr = pixels + row * row_stride + base;
-           row_ptr[0] = color;
-           row_ptr[1] = color;
-           row_ptr[2] = color;
-           row_ptr[3] = color;
-         }
-       }
-       src_buf += src_pitch;
-       pixels += row_stride * 4;
      }
    }
  }

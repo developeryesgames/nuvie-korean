@@ -21,6 +21,7 @@
  *
  */
 #include <math.h>
+#include <vector>
 #include "nuvieDefs.h"
 #include "U6misc.h"
 #include "U6Lib_n.h"
@@ -738,6 +739,13 @@ static int nscript_sprite_set(lua_State *L)
 		return 0;
 	}
 
+	if(!strcmp(key, "dissolve"))
+	{
+		int dissolve = lua_tointeger(L, 3);
+		sprite->dissolve = (uint8)clamp(dissolve, 0, 255);
+		return 0;
+	}
+
 	if(!strcmp(key, "visible"))
 	{
 		sprite->visible = lua_toboolean(L, 3);
@@ -797,12 +805,11 @@ static int nscript_sprite_set(lua_State *L)
 		sprite->text_color = lua_tointeger(L, 3);
 		return 0;
 	}
-  if(!strcmp(key, "text_align"))
-  {
-    int align_val = lua_tointeger(L, 3);
-    sprite->text_align = (uint8) align_val;
-    return 0;
-  }
+	if(!strcmp(key, "text_align"))
+	{
+		sprite->text_align = (uint8) lua_tointeger(L, 3);
+		return 0;
+	}
    return 0;
 }
 
@@ -838,6 +845,12 @@ static int nscript_sprite_get(lua_State *L)
 	if(!strcmp(key, "opacity"))
 	{
 		lua_pushinteger(L, sprite->opacity);
+		return 1;
+	}
+
+	if(!strcmp(key, "dissolve"))
+	{
+		lua_pushinteger(L, sprite->dissolve);
 		return 1;
 	}
 
@@ -1830,108 +1843,119 @@ void ScriptCutscene::Display(bool full_redraw)
 
 	if(screen_opacity > 0)
 	{
+		// First pass: draw all image sprites
 		for(std::list<CSSprite *>::iterator it = sprite_list.begin(); it != sprite_list.end(); it++)
 		{
 			CSSprite *s = *it;
-			if(s->visible)
+			if(s->visible && s->image)
 			{
-				if(s->image)
-				{
-					uint16 w, h;
-					s->image->shp->get_size(&w, &h);
-					uint16 hx, hy;
-					s->image->shp->get_hot_point(&hx, &hy);
+				uint16 w, h;
+				s->image->shp->get_size(&w, &h);
+				uint16 hx, hy;
+				s->image->shp->get_hot_point(&hx, &hy);
 
-					if(render_scale == 4)
+				if(render_scale == 4)
+				{
+					// Use 4x scaled rendering for original+ mode
+					int draw_x = x_off + (s->x - hx) * render_scale;
+					int draw_y = y_off + (s->y - hy) * render_scale;
+					// clip_rect is already scaled when set via lua
+					screen->blit4x(draw_x, draw_y, s->image->shp->get_data(), 8, w, h, w, true, s->clip_rect.w != 0 ? &s->clip_rect : &clip_rect, s->opacity, s->dissolve);
+				}
+				else
+				{
+					screen->blit(x_off+s->x-hx, y_off+s->y-hy, s->image->shp->get_data(), 8, w, h, w, true, s->clip_rect.w != 0 ? &s->clip_rect : &clip_rect, s->opacity);
+				}
+
+				// Draw text embedded in image sprite (original behavior)
+				if(s->text.length() > 0)
+				{
+					if(s->text_align != 0)
 					{
-						// Use 4x scaled rendering for original+ mode
-						int draw_x = x_off + (s->x - hx) * render_scale;
-						int draw_y = y_off + (s->y - hy) * render_scale;
-						// clip_rect is already scaled when set via lua
-						screen->blit4x(draw_x, draw_y, s->image->shp->get_data(), 8, w, h, w, true, s->clip_rect.w != 0 ? &s->clip_rect : &clip_rect);
+						display_wrapped_text(s);
 					}
 					else
 					{
-						screen->blit(x_off+s->x-hx, y_off+s->y-hy, s->image->shp->get_data(), 8, w, h, w, true, s->clip_rect.w != 0 ? &s->clip_rect : &clip_rect, s->opacity);
+						uint8 color = (s->text_color == 0xffff) ? 0x48 : (uint8)s->text_color;
+						int draw_x = x_off + s->x * render_scale;
+						int draw_y = y_off + s->y * render_scale;
+						font->drawString(screen, s->text.c_str(), draw_x, draw_y, color, color);
+					}
+				}
+			}
+		}
+
+		// Second pass: draw text-only sprites (no image) ON TOP of everything
+		for(std::list<CSSprite *>::iterator it = sprite_list.begin(); it != sprite_list.end(); it++)
+		{
+			CSSprite *s = *it;
+			if(s->visible && !s->image && s->text.length() > 0)
+			{
+				// Check for Korean mode
+				KoreanFont *korean_font = cutscene_korean_font;
+				bool use_korean = cutscene_korean_enabled && korean_font;
+
+				// If no cutscene font, try Game's FontManager
+				if(!use_korean)
+				{
+					Game *game = Game::get_game();
+					if(game)
+					{
+						FontManager *fm = game->get_font_manager();
+						if(fm && fm->is_korean_enabled())
+						{
+							korean_font = fm->get_korean_font();
+							use_korean = (korean_font != NULL);
+						}
 					}
 				}
 
-				if(s->text.length() > 0)
+				if(s->text_align != 0)
 				{
-				  // Check for Korean mode
-				  KoreanFont *korean_font = cutscene_korean_font;
-				  bool use_korean = cutscene_korean_enabled && korean_font;
+					display_wrapped_text(s);
+				}
+				else
+				{
+					uint8 color = (s->text_color == 0xffff) ? 0x48 : (uint8)s->text_color;
+					if(use_korean && korean_font)
+					{
+						// Scale coordinates for 4x mode - left aligned (no centering)
+						int draw_x = x_off + s->x * render_scale;
+						int draw_y = y_off + s->y * render_scale;
 
-				  // If no cutscene font, try Game's FontManager
-				  if(!use_korean)
-				  {
-				    Game *game = Game::get_game();
-				    if(game)
-				    {
-				      FontManager *fm = game->get_font_manager();
-				      if(fm && fm->is_korean_enabled())
-				      {
-				        korean_font = fm->get_korean_font();
-				        use_korean = (korean_font != NULL);
-				      }
-				    }
-				  }
+						// Right edge for word wrap
+						int right_edge = x_off + (320 * render_scale) - (8 * render_scale);
+						int line_height = korean_font->getCharHeightScaled(1) + 4;
+						int current_x = draw_x;
+						int current_y = draw_y;
+						int line_start_x = draw_x;
 
-				  if(s->text_align != 0)
-				  {
-            display_wrapped_text(s);
-				  }
-				  else
-				  {
-				    uint8 color = (s->text_color == 0xffff) ? 0x48 : (uint8)s->text_color;
-				    if(use_korean && korean_font)
-				    {
-				      // Scale coordinates for 4x mode
-					int adjusted_x_off = (x_off < 16) ? 16 : x_off;
-					int draw_x = adjusted_x_off + s->x * render_scale;
-				      int draw_y = y_off + s->y * render_scale;
+						// Korean text: wrap character by character
+						const char *text = s->text.c_str();
+						const char *p = text;
+						while(*p)
+						{
+							const char *char_start = p;
+							uint32 cp = KoreanFont::nextUTF8Char(p);
+							std::string ch(char_start, p - char_start);
+							int char_width = korean_font->getStringWidthUTF8(ch.c_str(), 1);
 
-				      // Right edge for word wrap (screen width minus margin)
-				      int right_edge = x_off + (320 * render_scale) - (8 * render_scale);
-				      int line_height = korean_font->getCharHeightScaled(1) + 4; // 32px + 4px spacing
-				      int current_x = draw_x;
-				      int current_y = draw_y;
-				      int line_start_x = draw_x;
+							if(current_x + char_width > right_edge && current_x > line_start_x)
+							{
+								current_x = line_start_x;
+								current_y += line_height;
+							}
 
-				      // Korean text: wrap character by character (not word-based)
-				      const char *text = s->text.c_str();
-				      const char *p = text;
-				      while(*p)
-				      {
-				        // Get next UTF-8 character
-				        const char *char_start = p;
-				        uint32 cp = KoreanFont::nextUTF8Char(p);
-				        std::string ch(char_start, p - char_start);
-
-				        // Get character width
-				        int char_width = korean_font->getStringWidthUTF8(ch.c_str(), 1);
-
-				        // Check if character fits on current line
-				        if(current_x + char_width > right_edge && current_x > line_start_x)
-				        {
-				          // Move to next line
-				          current_x = line_start_x;
-				          current_y += line_height;
-				        }
-
-				        // Draw the character and advance position
-				        // drawStringUTF8 returns the width drawn, not new x position
-				        current_x += korean_font->drawStringUTF8(screen, ch.c_str(), current_x, current_y, color, 0, 1);
-				      }
-				    }
-				    else
-				    {
-				      // For English text, scale coordinates in 4x mode
-				      int draw_x = x_off + s->x * render_scale;
-				      int draw_y = y_off + s->y * render_scale;
-				      font->drawString(screen, s->text.c_str(), draw_x, draw_y, color, color);
-				    }
-				  }
+							current_x += korean_font->drawStringUTF8(screen, ch.c_str(), current_x, current_y, color, 0, 1);
+						}
+					}
+					else
+					{
+						// For English text, scale coordinates in 4x mode
+						int draw_x = x_off + s->x * render_scale;
+						int draw_y = y_off + s->y * render_scale;
+						font->drawString(screen, s->text.c_str(), draw_x, draw_y, color, color);
+					}
 				}
 			}
 		}
@@ -1984,20 +2008,116 @@ void ScriptCutscene::display_wrapped_text(CSSprite *s)
 
 int ScriptCutscene::display_wrapped_text_line(std::string str, uint8 text_color, int x, int y, uint8 align_val)
 {
+  // Check for Korean mode
+  KoreanFont *korean_font = cutscene_korean_font;
+  bool use_korean = cutscene_korean_enabled && korean_font;
 
-  //font->drawString(screen, s->text.c_str(), s->x + x_off, s->y + y_off, text_color, text_color);
-  int len=0;
-  size_t start=0;
-  size_t found;
-  str = str + " ";
-  std::list<std::string> tokens;
-  int space_width = font->getStringWidth(" ");
-  //uint16 x1 = startx;
-  int width = 320 - x * 2;
+  // If no cutscene font, try Game's FontManager
+  if(!use_korean)
+  {
+    Game *game = Game::get_game();
+    if(game)
+    {
+      FontManager *fm = game->get_font_manager();
+      if(fm && fm->is_korean_enabled())
+      {
+        korean_font = fm->get_korean_font();
+        use_korean = (korean_font != NULL);
+      }
+    }
+  }
 
-  int char_height = font->getCharHeight();
+  // Apply render scale for 4x mode
+  int scaled_x_off = x_off;
+  int scaled_y_off = y_off;
+  // Use fixed scroll area width (approximately 303 pixels for text area)
+  // The scroll area starts at x=1 and has about 318 pixels of usable width
+  int base_width = 318;  // Fixed width for centering calculation
+  int width = base_width * render_scale;
+  int scaled_x = x * render_scale;
 
-  std::string line = "";
+  if(use_korean && korean_font)
+  {
+    // Korean text rendering with word wrapping and centering
+    int char_height = korean_font->getCharHeightScaled(1) + 4;
+
+    // Parse text into lines based on width
+    std::vector<std::string> lines;
+    std::vector<int> line_widths;
+
+    std::string current_line;
+    int current_width = 0;
+
+    const char *text = str.c_str();
+    const char *p = text;
+
+    while(*p)
+    {
+      const char *char_start = p;
+      uint32 cp = KoreanFont::nextUTF8Char(p);
+      std::string ch(char_start, p - char_start);
+
+      int char_width = korean_font->getStringWidthUTF8(ch.c_str(), 1);
+
+      // Check if we need to wrap
+      if(current_width + char_width > width && !current_line.empty())
+      {
+        lines.push_back(current_line);
+        line_widths.push_back(current_width);
+        current_line = "";
+        current_width = 0;
+      }
+
+      current_line += ch;
+      current_width += char_width;
+    }
+
+    // Add last line
+    if(!current_line.empty())
+    {
+      lines.push_back(current_line);
+      line_widths.push_back(current_width);
+    }
+
+    // Draw each line with alignment
+    int draw_y = scaled_y_off + y * render_scale;
+    for(size_t i = 0; i < lines.size(); i++)
+    {
+      int line_x;
+
+      // Apply alignment: 1 = left, 2 = center
+      if(align_val == 2)  // Center alignment - center within the full screen width (320 pixels)
+      {
+        // Center in the full 320 pixel width area
+        int full_width = 320 * render_scale;
+        line_x = scaled_x_off + (full_width - line_widths[i]) / 2;
+      }
+      else  // Left alignment
+      {
+        line_x = scaled_x_off + scaled_x;
+      }
+
+      korean_font->drawStringUTF8(screen, lines[i].c_str(), line_x, draw_y, text_color, 0, 1);
+      draw_y += char_height;
+      y += (char_height / render_scale);
+    }
+
+    return y;
+  }
+  else
+  {
+    // Original English text rendering
+    int len=0;
+    size_t start=0;
+    size_t found;
+    str = str + " ";
+    std::list<std::string> tokens;
+    int space_width = font->getStringWidth(" ");
+    int eng_width = base_width;  // English uses unscaled width
+
+    int char_height = font->getCharHeight();
+
+    std::string line = "";
 
     found=str.find_first_of(" ", start);
     while (found!=string::npos)
@@ -2006,13 +2126,13 @@ int ScriptCutscene::display_wrapped_text_line(std::string str, uint8 text_color,
 
       int token_len = font->getStringWidth(token.c_str());
 
-      if(len + token_len > width)
+      if(len + token_len > eng_width)
       {
         if(len > 0)
         {
           len -= space_width;
         }
-        font->drawString(screen, line.c_str(), x + x_off + (align_val == 1 ? 0 : (width - len)) / 2, y + y_off, text_color, text_color);
+        font->drawString(screen, line.c_str(), x + x_off + (align_val == 1 ? 0 : (eng_width - len)) / 2, y + y_off, text_color, text_color);
         line = "";
         y += char_height + 2;
         len = 0;
@@ -2028,11 +2148,12 @@ int ScriptCutscene::display_wrapped_text_line(std::string str, uint8 text_color,
     if(len > 0)
     {
       len -= space_width;
-      font->drawString(screen, line.c_str(), x + x_off + (align_val == 1 ? 0 : (width - len)) / 2, y + y_off, text_color, text_color);
+      font->drawString(screen, line.c_str(), x + x_off + (align_val == 1 ? 0 : (eng_width - len)) / 2, y + y_off, text_color, text_color);
       y += char_height + 2;
     }
 
     return y;
+  }
 }
 void CSImage::setScale(uint16 percentage)
 {
@@ -2157,10 +2278,22 @@ static int nscript_load_translation(lua_State *L)
 
     g_intro_translations.clear();
 
-    // Build path relative to data/translations/korean/
+    // Build path relative to datadir/translations/korean/ (not gamedir)
     std::string path;
-    Configuration *config = Game::get_game()->get_config();
-    config_get_path(config, std::string("translations/korean/") + filename, path);
+    if(cutScene)
+    {
+        std::string datadir;
+        cutScene->get_config()->value("config/datadir", datadir, "");
+        build_path(datadir, "translations", path);
+        build_path(path, "korean", path);
+        build_path(path, filename, path);
+    }
+    else
+    {
+        // Fallback to old method
+        Configuration *config = Game::get_game()->get_config();
+        config_get_path(config, std::string("translations/korean/") + filename, path);
+    }
 
     FILE *f = fopen(path.c_str(), "r");
     if(!f)

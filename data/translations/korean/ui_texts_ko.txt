@@ -78,6 +78,14 @@ Enable sfx:|효과음:
 Sfx volume:|효과음 볼륨:
 Enable speech:|음성:
 
+# Toggle messages (keyboard shortcuts)
+Audio enabled|오디오 켜짐
+Audio disabled|오디오 꺼짐
+Music enabled|음악 켜짐
+Music disabled|음악 꺼짐
+Sfx enabled|효과음 켜짐
+Sfx disabled|효과음 꺼짐
+
 # GameplayDialog
 Party formation:|파티 대형:
 Look shows private property:|살펴보기 시 소유물 표시:
@@ -1057,3 +1065,123 @@ shrine of |의 사당
 Shamino says, "This is the |샤미노 : "여기는
 
 Direction:|방향:
+
+# Key Help (h key)
+Walk west|서쪽 이동
+Walk east|동쪽 이동
+Walk north|북쪽 이동
+Walk south|남쪽 이동
+Walk north-east|북동 이동
+Walk south-east|남동 이동
+Walk north-west|북서 이동
+Walk south-west|남서 이동
+Cast|주문
+Look|살펴보기
+Talk|대화
+Use|사용
+Get|집기
+Move|이동
+Drop|버리기
+Toggle combat|전투 전환
+Attack|공격
+Rest|휴식
+Multi-use|다중 사용
+Select Command Bar|명령바 선택
+Select New Command Bar|새 명령바 선택
+Doll gump|캐릭터 인형
+Shows the party member's stats|파티원 능력치 표시
+inventory|인벤토리
+Previous party member|이전 파티원
+Next party member|다음 파티원
+Home key|Home 키
+End key|End 키
+Toggle between inventory and actor view|인벤토리/캐릭터 뷰 전환
+Party view|파티 보기
+Solo mode|솔로 모드
+Party mode|파티 모드
+Save menu|저장 메뉴
+Load latest save|최근 저장 불러오기
+Quick save|빠른 저장
+Quick load|빠른 불러오기
+Quit|종료
+Quit without confirmation|확인 없이 종료
+Show game menu; Cancel action if in middle of action|게임 메뉴 표시; 진행 중인 작업 취소
+Toggle Fullscreen|전체화면 전환
+Toggle Cursor|커서 전환
+Toggle combat strategy|전투 전략 전환
+Toggle frames per second display|FPS 표시 전환
+Toggle audio|오디오 전환
+Toggle music|음악 전환
+Toggle sfx|효과음 전환
+Show/hide original style command bar|원본 명령바 표시/숨김
+Do action|행동 실행
+Cancel action|행동 취소
+Msg scroll up|메시지 위로
+Msg scroll down|메시지 아래로
+Show keys|키 도움말
+Decrease debug|디버그 감소
+Increase debug|디버그 증가
+Close gumps|창 닫기
+Use item|아이템 사용
+Show eggs|에그 표시
+Toggle hack move|핵무브 전환
+Toggle egg spawn|에그 생성 전환
+Toggle unlimited casting|무제한 주문 전환
+Toggle no darkness|어둠 없음 전환
+Toggle pickpocket mode|소매치기 모드 전환
+Toggle god mode|갓 모드 전환
+Toggle ethereal mode|영혼 모드 전환
+Toggle X-ray mode|투시 모드 전환
+Heal party|파티 치료
+Teleport to cursor|커서로 텔레포트
+Toggle cheats|치트 전환
+cycle doll gump|캐릭터 인형 전환
+select attack on the command bar|명령바에서 공격 선택
+select talk on the command bar|명령바에서 대화 선택
+select look on the command bar|명령바에서 살펴보기 선택
+select get on the command bar|명령바에서 집기 선택
+select drop on the command bar|명령바에서 버리기 선택
+select move on the command bar|명령바에서 이동 선택
+select use on the command bar|명령바에서 사용 선택
+select toggle combat on the command bar|명령바에서 전투 전환 선택
+select cast on the command bar|명령바에서 주문 선택
+select rest on the command bar|명령바에서 휴식 선택
+solo mode as Avatar|아바타로 솔로 모드
+solo mode as character 2|캐릭터 2로 솔로 모드
+solo mode as character 3|캐릭터 3으로 솔로 모드
+solo mode as character 4|캐릭터 4로 솔로 모드
+solo mode as character 5|캐릭터 5로 솔로 모드
+solo mode as character 6|캐릭터 6으로 솔로 모드
+solo mode as character 7|캐릭터 7로 솔로 모드
+solo mode as character 8|캐릭터 8로 솔로 모드
+solo mode as character 9|캐릭터 9로 솔로 모드
+Show doll_gump for Avatar|아바타 캐릭터 인형 표시
+Show doll gump for Avatar|아바타 캐릭터 인형 표시
+Show doll gump for character 2|캐릭터 2 인형 표시
+Show doll gump for character 3|캐릭터 3 인형 표시
+Show doll gump for character 4|캐릭터 4 인형 표시
+Show doll gump for character 5|캐릭터 5 인형 표시
+Show doll gump for character 6|캐릭터 6 인형 표시
+Show doll gump for character 7|캐릭터 7 인형 표시
+Show doll gump for character 8|캐릭터 8 인형 표시
+Show doll gump for character 9|캐릭터 9 인형 표시
+Show inventory for Avatar|아바타 인벤토리 표시
+Show inventory for character 2|캐릭터 2 인벤토리 표시
+Show inventory for character 3|캐릭터 3 인벤토리 표시
+Show inventory for character 4|캐릭터 4 인벤토리 표시
+Show inventory for character 5|캐릭터 5 인벤토리 표시
+Show inventory for character 6|캐릭터 6 인벤토리 표시
+Show inventory for character 7|캐릭터 7 인벤토리 표시
+Show inventory for character 8|캐릭터 8 인벤토리 표시
+Show inventory for character 9|캐릭터 9 인벤토리 표시
+Show stats for Avatar|아바타 능력치 표시
+Show stats for character 2|캐릭터 2 능력치 표시
+Show stats for character 3|캐릭터 3 능력치 표시
+Show stats for character 4|캐릭터 4 능력치 표시
+Show stats for character 5|캐릭터 5 능력치 표시
+Show stats for character 6|캐릭터 6 능력치 표시
+Show stats for character 7|캐릭터 7 능력치 표시
+Show stats for character 8|캐릭터 8 능력치 표시
+Show stats for character 9|캐릭터 9 능력치 표시
+use orb of moons|달의 오브 사용
+use lock pick|자물쇠 따개 사용
