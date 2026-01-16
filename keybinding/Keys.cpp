@@ -435,6 +435,105 @@ bool KeyBinder::DoAction(ActionType const& a) const
 	return true;
 }
 
+// Convert SDL scancode to US QWERTY keycode (layout-independent)
+static SDL_Keycode scancode_to_qwerty_keycode(SDL_Scancode scancode)
+{
+	switch(scancode)
+	{
+		case SDL_SCANCODE_A: return SDLK_a;
+		case SDL_SCANCODE_B: return SDLK_b;
+		case SDL_SCANCODE_C: return SDLK_c;
+		case SDL_SCANCODE_D: return SDLK_d;
+		case SDL_SCANCODE_E: return SDLK_e;
+		case SDL_SCANCODE_F: return SDLK_f;
+		case SDL_SCANCODE_G: return SDLK_g;
+		case SDL_SCANCODE_H: return SDLK_h;
+		case SDL_SCANCODE_I: return SDLK_i;
+		case SDL_SCANCODE_J: return SDLK_j;
+		case SDL_SCANCODE_K: return SDLK_k;
+		case SDL_SCANCODE_L: return SDLK_l;
+		case SDL_SCANCODE_M: return SDLK_m;
+		case SDL_SCANCODE_N: return SDLK_n;
+		case SDL_SCANCODE_O: return SDLK_o;
+		case SDL_SCANCODE_P: return SDLK_p;
+		case SDL_SCANCODE_Q: return SDLK_q;
+		case SDL_SCANCODE_R: return SDLK_r;
+		case SDL_SCANCODE_S: return SDLK_s;
+		case SDL_SCANCODE_T: return SDLK_t;
+		case SDL_SCANCODE_U: return SDLK_u;
+		case SDL_SCANCODE_V: return SDLK_v;
+		case SDL_SCANCODE_W: return SDLK_w;
+		case SDL_SCANCODE_X: return SDLK_x;
+		case SDL_SCANCODE_Y: return SDLK_y;
+		case SDL_SCANCODE_Z: return SDLK_z;
+		case SDL_SCANCODE_1: return SDLK_1;
+		case SDL_SCANCODE_2: return SDLK_2;
+		case SDL_SCANCODE_3: return SDLK_3;
+		case SDL_SCANCODE_4: return SDLK_4;
+		case SDL_SCANCODE_5: return SDLK_5;
+		case SDL_SCANCODE_6: return SDLK_6;
+		case SDL_SCANCODE_7: return SDLK_7;
+		case SDL_SCANCODE_8: return SDLK_8;
+		case SDL_SCANCODE_9: return SDLK_9;
+		case SDL_SCANCODE_0: return SDLK_0;
+		case SDL_SCANCODE_RETURN: return SDLK_RETURN;
+		case SDL_SCANCODE_ESCAPE: return SDLK_ESCAPE;
+		case SDL_SCANCODE_BACKSPACE: return SDLK_BACKSPACE;
+		case SDL_SCANCODE_TAB: return SDLK_TAB;
+		case SDL_SCANCODE_SPACE: return SDLK_SPACE;
+		case SDL_SCANCODE_MINUS: return SDLK_MINUS;
+		case SDL_SCANCODE_EQUALS: return SDLK_EQUALS;
+		case SDL_SCANCODE_LEFTBRACKET: return SDLK_LEFTBRACKET;
+		case SDL_SCANCODE_RIGHTBRACKET: return SDLK_RIGHTBRACKET;
+		case SDL_SCANCODE_BACKSLASH: return SDLK_BACKSLASH;
+		case SDL_SCANCODE_SEMICOLON: return SDLK_SEMICOLON;
+		case SDL_SCANCODE_APOSTROPHE: return SDLK_QUOTE;
+		case SDL_SCANCODE_GRAVE: return SDLK_BACKQUOTE;
+		case SDL_SCANCODE_COMMA: return SDLK_COMMA;
+		case SDL_SCANCODE_PERIOD: return SDLK_PERIOD;
+		case SDL_SCANCODE_SLASH: return SDLK_SLASH;
+		case SDL_SCANCODE_F1: return SDLK_F1;
+		case SDL_SCANCODE_F2: return SDLK_F2;
+		case SDL_SCANCODE_F3: return SDLK_F3;
+		case SDL_SCANCODE_F4: return SDLK_F4;
+		case SDL_SCANCODE_F5: return SDLK_F5;
+		case SDL_SCANCODE_F6: return SDLK_F6;
+		case SDL_SCANCODE_F7: return SDLK_F7;
+		case SDL_SCANCODE_F8: return SDLK_F8;
+		case SDL_SCANCODE_F9: return SDLK_F9;
+		case SDL_SCANCODE_F10: return SDLK_F10;
+		case SDL_SCANCODE_F11: return SDLK_F11;
+		case SDL_SCANCODE_F12: return SDLK_F12;
+		case SDL_SCANCODE_INSERT: return SDLK_INSERT;
+		case SDL_SCANCODE_HOME: return SDLK_HOME;
+		case SDL_SCANCODE_PAGEUP: return SDLK_PAGEUP;
+		case SDL_SCANCODE_DELETE: return SDLK_DELETE;
+		case SDL_SCANCODE_END: return SDLK_END;
+		case SDL_SCANCODE_PAGEDOWN: return SDLK_PAGEDOWN;
+		case SDL_SCANCODE_RIGHT: return SDLK_RIGHT;
+		case SDL_SCANCODE_LEFT: return SDLK_LEFT;
+		case SDL_SCANCODE_DOWN: return SDLK_DOWN;
+		case SDL_SCANCODE_UP: return SDLK_UP;
+		case SDL_SCANCODE_KP_DIVIDE: return SDLK_KP_DIVIDE;
+		case SDL_SCANCODE_KP_MULTIPLY: return SDLK_KP_MULTIPLY;
+		case SDL_SCANCODE_KP_MINUS: return SDLK_KP_MINUS;
+		case SDL_SCANCODE_KP_PLUS: return SDLK_KP_PLUS;
+		case SDL_SCANCODE_KP_ENTER: return SDLK_KP_ENTER;
+		case SDL_SCANCODE_KP_1: return SDLK_KP_1;
+		case SDL_SCANCODE_KP_2: return SDLK_KP_2;
+		case SDL_SCANCODE_KP_3: return SDLK_KP_3;
+		case SDL_SCANCODE_KP_4: return SDLK_KP_4;
+		case SDL_SCANCODE_KP_5: return SDLK_KP_5;
+		case SDL_SCANCODE_KP_6: return SDLK_KP_6;
+		case SDL_SCANCODE_KP_7: return SDLK_KP_7;
+		case SDL_SCANCODE_KP_8: return SDLK_KP_8;
+		case SDL_SCANCODE_KP_9: return SDLK_KP_9;
+		case SDL_SCANCODE_KP_0: return SDLK_KP_0;
+		case SDL_SCANCODE_KP_PERIOD: return SDLK_KP_PERIOD;
+		default: return SDLK_UNKNOWN;
+	}
+}
+
 KeyMap::iterator KeyBinder::get_sdlkey_index(SDL_Keysym keysym)
 {
 	SDL_Keysym key = keysym;
@@ -456,12 +555,12 @@ KeyMap::iterator KeyBinder::get_sdlkey_index(SDL_Keysym keysym)
 	if (it != bindings.end())
 		return it;
 
-	// Fallback: If not found, try using scancode to get the key
+	// Fallback: If not found, try using scancode to get US QWERTY keycode
 	// This handles non-ASCII input methods (e.g., Korean IME on macOS)
 	// where sym may be 0 or different but scancode is still valid
 	if (keysym.scancode != SDL_SCANCODE_UNKNOWN)
 	{
-		SDL_Keycode fallback_sym = SDL_GetKeyFromScancode(keysym.scancode);
+		SDL_Keycode fallback_sym = scancode_to_qwerty_keycode(keysym.scancode);
 		if (fallback_sym != SDLK_UNKNOWN && fallback_sym != keysym.sym)
 		{
 			key.sym = fallback_sym;
