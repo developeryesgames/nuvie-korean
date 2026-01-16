@@ -82,7 +82,7 @@ class SaveGame
 
  bool check_version(NuvieIOFileRead *loadfile);
 
- bool save(const char *filename, std::string *save_description);
+ bool save(const char *filename, std::string *save_description, bool silent = false);
 
 
  uint16 get_num_saves() { return header.num_saves; };
@@ -90,7 +90,7 @@ class SaveGame
  protected:
 
  bool load_objlist();
- bool save_objlist();
+ bool save_objlist(bool silent = false);
  bool save_thumbnail(NuvieIOFileWrite *savefile);
 
  void clean_up();

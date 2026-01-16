@@ -453,7 +453,7 @@ bool SaveGame::load(const char *filename)
  return true;
 }
 
-bool SaveGame::save(const char *filename, std::string *save_description)
+bool SaveGame::save(const char *filename, std::string *save_description, bool silent)
 {
  uint8 i;
  NuvieIOFileWrite *savefile;
@@ -495,7 +495,8 @@ bool SaveGame::save(const char *filename, std::string *save_description)
 
  savefile->writeBuf((const unsigned char *)game_tag, 2);
 
- header.num_saves++;
+ if(!silent)
+   header.num_saves++;
  savefile->write2(header.num_saves);
 
  memset(save_desc, 0, MAX_SAVE_DESC_LENGTH);
@@ -529,7 +530,7 @@ bool SaveGame::save(const char *filename, std::string *save_description)
  for(i=0;i<5;i++)
    obj_manager->save_super_chunk(savefile, i+1, 0);
 
- save_objlist();
+ save_objlist(silent);
 
  savefile->writeBuf(objlist.get_raw_data(), objlist.get_size());
 
@@ -540,7 +541,7 @@ bool SaveGame::save(const char *filename, std::string *save_description)
  return true;
 }
 
-bool SaveGame::save_objlist()
+bool SaveGame::save_objlist(bool silent)
 {
  Game *game;
  GameClock *clock;
@@ -549,7 +550,7 @@ bool SaveGame::save_objlist()
  Party *party;
  MsgScroll *scroll;
  Weather *weather;
- 
+
  game = Game::get_game();
 
  clock = game->get_clock();
@@ -565,19 +566,22 @@ bool SaveGame::save_objlist()
 
  player->save(&objlist);
  party->save(&objlist);
- 
+
  weather->save(&objlist);
  game->get_command_bar()->save(&objlist);
- 
+
  game->get_script()->call_save_game(&objlist);
 
- KoreanTranslation *korean = game->get_korean_translation();
- if (korean && korean->isEnabled()) {
-   scroll->display_string("\n게임 저장 완료\n\n");
- } else {
-   scroll->display_string("\nGame Saved\n\n");
+ if(!silent)
+ {
+   KoreanTranslation *korean = game->get_korean_translation();
+   if (korean && korean->isEnabled()) {
+     scroll->display_string("\n게임 저장 완료\n\n");
+   } else {
+     scroll->display_string("\nGame Saved\n\n");
+   }
+   scroll->display_prompt();
  }
- scroll->display_prompt();
 
  return true;
 }

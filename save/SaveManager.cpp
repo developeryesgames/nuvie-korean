@@ -297,7 +297,7 @@ bool SaveManager::autosave()
 
 	DEBUG(0, LEVEL_INFORMATIONAL, "Autosaving to %s\n", fullpath.c_str());
 
-	bool result = savegame->save(fullpath.c_str(), &save_desc);
+	bool result = savegame->save(fullpath.c_str(), &save_desc, true);  // silent=true for autosave
 
 	if(result)
 	{
