@@ -24,6 +24,8 @@
 
 #include "SDL.h"
 #include "nuvieDefs.h"
+#include "U6misc.h"
+#include "Configuration.h"
 
 #include "GUI.h"
 #include "GUI_types.h"
@@ -133,29 +135,32 @@ WorldMapDialog::~WorldMapDialog()
 
 bool WorldMapDialog::loadWorldMap()
 {
-    // Try to load worldmap_4x.bmp first, then fallback to lower resolutions
-    const char *filenames[] = { "worldmap_4x.bmp", "worldmap_2x.bmp", "worldmap_1x.bmp", NULL };
+    // Load worldmap_4x.bmp from data/images folder
+    Configuration *config = Game::get_game()->get_config();
+    std::string datadir;
+    config->value("config/datadir", datadir, "./data");
 
-    for(int i = 0; filenames[i] != NULL; i++)
+    std::string images_path, full_path;
+    build_path(datadir, "images", images_path);
+    build_path(images_path, "worldmap_4x.bmp", full_path);
+
+    SDL_Surface *loaded = SDL_LoadBMP(full_path.c_str());
+    if(loaded != NULL)
     {
-        SDL_Surface *loaded = SDL_LoadBMP(filenames[i]);
-        if(loaded != NULL)
-        {
-            // Convert to 32-bit ARGB format for consistent handling
-            worldmap_surface = SDL_ConvertSurfaceFormat(loaded, SDL_PIXELFORMAT_ARGB8888, 0);
-            SDL_FreeSurface(loaded);
+        // Convert to 32-bit ARGB format for consistent handling
+        worldmap_surface = SDL_ConvertSurfaceFormat(loaded, SDL_PIXELFORMAT_ARGB8888, 0);
+        SDL_FreeSurface(loaded);
 
-            if(worldmap_surface)
-            {
-                map_width = worldmap_surface->w;
-                map_height = worldmap_surface->h;
-                DEBUG(0, LEVEL_INFORMATIONAL, "Loaded world map: %s (%dx%d)\n", filenames[i], map_width, map_height);
-                return true;
-            }
+        if(worldmap_surface)
+        {
+            map_width = worldmap_surface->w;
+            map_height = worldmap_surface->h;
+            DEBUG(0, LEVEL_INFORMATIONAL, "Loaded world map: %s (%dx%d)\n", full_path.c_str(), map_width, map_height);
+            return true;
         }
     }
 
-    DEBUG(0, LEVEL_ERROR, "Failed to load world map image (worldmap_4x.bmp).\n");
+    DEBUG(0, LEVEL_ERROR, "Failed to load world map image: %s\n", full_path.c_str());
     return false;
 }
 
