@@ -35,6 +35,7 @@
 #include "Configuration.h"
 #include "Keys.h"
 #include "FontManager.h"
+#include "KoreanTranslation.h"
 //#include <math.h>
 
 #define JD_WIDTH 244
@@ -45,6 +46,16 @@ static int get_menu_scale() {
 	if (fm && fm->is_korean_enabled())
 		return 3;  // 3x scale for Korean mode
 	return 1;
+}
+
+// Helper to get translated text for JoystickDialog
+static std::string get_jd_text(const char *english_text) {
+	KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+	if (kt && kt->isEnabled()) {
+		std::string t = kt->getUIText(english_text);
+		if (!t.empty()) return t;
+	}
+	return english_text;
 }
 
 JoystickDialog::JoystickDialog(GUI_CallBack *callback)
@@ -99,27 +110,37 @@ bool JoystickDialog::init() {
 	}
 
 // enable_button
-	widget = (GUI_Widget *) new GUI_Text(textX[0], textY, 0, 0, 0, "Enable joystick:", font);
+	std::string enable_label = get_jd_text("Enable joystick:");
+	widget = (GUI_Widget *) new GUI_Text(textX[0], textY, 0, 0, 0, enable_label.c_str(), font);
 	if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
 	AddWidget(widget);
-	const char* const enabled_text[] = { "Joystick 0", "Joystick 1", "Joystick 2", "joystick 3", "Disabled", enable_buff };
+	std::string disabled_str = get_jd_text("Disabled");
+	const char* enabled_text[] = { "Joystick 0", "Joystick 1", "Joystick 2", "Joystick 3", disabled_str.c_str(), enable_buff };
 	enable_button = new GUI_TextToggleButton(this, buttonX[1], buttonY, 93*scale, height, enabled_text, enable_selection == 5 ? 6 : 5, enable_selection, font, BUTTON_TEXTALIGN_CENTER, this, 0);
 	if (scale > 1) { enable_button->SetTextScale(scale); enable_button->ChangeTextButton(-1,-1,-1,-1,"Joystick 0",BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(enable_button);
 	button_index[last_index] = enable_button;
 // hat_repeating_b
-	widget = (GUI_Widget *) new GUI_Text(textX[0], textY += row_h, 0, 0, 0, "Repeat when held:", font);
+	std::string repeat_label = get_jd_text("Repeat when held:");
+	widget = (GUI_Widget *) new GUI_Text(textX[0], textY += row_h, 0, 0, 0, repeat_label.c_str(), font);
 	if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
 	AddWidget(widget);
-	const char* const hat_repeating_text[] = { "axes pair 1", "hat" };
+	std::string axes_pair_1 = get_jd_text("axes pair 1");
+	std::string hat_str = get_jd_text("hat");
+	const char* hat_repeating_text[] = { axes_pair_1.c_str(), hat_str.c_str() };
 	hat_repeating_b = new GUI_TextToggleButton(this, buttonX[1], buttonY += row_h, 93*scale, height, hat_repeating_text, 2, kb->is_hat_repeating(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
-	if (scale > 1) { hat_repeating_b->SetTextScale(scale); hat_repeating_b->ChangeTextButton(-1,-1,-1,-1,"axes pair 1",BUTTON_TEXTALIGN_CENTER); }
+	if (scale > 1) { hat_repeating_b->SetTextScale(scale); hat_repeating_b->ChangeTextButton(-1,-1,-1,-1,axes_pair_1.c_str(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(hat_repeating_b);
 	button_index[last_index+= 1] = hat_repeating_b;
 // Axes Pairs
 	int str_i = 0; // used in loop
-	const char* axis_text[] = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "none", "" };
-	const char* const axes_str[] = { "Axes pair 1:", "Axes pair 2:", "Axes pair 3:", "Axes pair 4:" };
+	std::string none_str = get_jd_text("none");
+	const char* axis_text[] = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", none_str.c_str(), "" };
+	std::string axes_str_1 = get_jd_text("Axes pair 1:");
+	std::string axes_str_2 = get_jd_text("Axes pair 2:");
+	std::string axes_str_3 = get_jd_text("Axes pair 3:");
+	std::string axes_str_4 = get_jd_text("Axes pair 4:");
+	const char* axes_str[] = { axes_str_1.c_str(), axes_str_2.c_str(), axes_str_3.c_str(), axes_str_4.c_str() };
 	for(int i=0; i < 8; i++) {
 		if(i%2 == 0) { // pairs text
 			widget = (GUI_Widget *) new GUI_Text(textX[0], textY += row_h, 0, 0, 0, axes_str[str_i++], font);
@@ -136,17 +157,20 @@ bool JoystickDialog::init() {
 			axis_text[11] = axis_buff;
 		}
 		axes_index[i] = new GUI_TextToggleButton(this, i%2 ? buttonX[2] : buttonX[0], buttonY += i%2 ? 0 : row_h + sub_h, axis_w, height, axis_text, index == 11 ? 12 : 11, index, font, BUTTON_TEXTALIGN_CENTER, this, 0);
-		AddWidget(axes_index[i]); 
+		if (scale > 1) axes_index[i]->SetTextScale(scale);
+		AddWidget(axes_index[i]);
 		button_index[last_index+= 1] = axes_index[i];
 	}
 // cancel_button
-	cancel_button = new GUI_Button(this, 59*scale, JD_HEIGHT*scale - 20*scale, 54*scale, height, "Cancel", font, BUTTON_TEXTALIGN_CENTER, 0, this, 0);
-	if (scale > 1) { cancel_button->SetTextScale(scale); cancel_button->ChangeTextButton(-1,-1,-1,-1,"Cancel",BUTTON_TEXTALIGN_CENTER); }
+	std::string cancel_str = get_jd_text("Cancel");
+	cancel_button = new GUI_Button(this, 59*scale, JD_HEIGHT*scale - 20*scale, 54*scale, height, cancel_str.c_str(), font, BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	if (scale > 1) { cancel_button->SetTextScale(scale); cancel_button->ChangeTextButton(-1,-1,-1,-1,cancel_str.c_str(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(cancel_button);
 	button_index[last_index += 1] = cancel_button;
 // save_button
-	save_button = new GUI_Button(this, 124*scale, JD_HEIGHT*scale - 20*scale, 60*scale, height, "Save", font, BUTTON_TEXTALIGN_CENTER, 0, this, 0);
-	if (scale > 1) { save_button->SetTextScale(scale); save_button->ChangeTextButton(-1,-1,-1,-1,"Save",BUTTON_TEXTALIGN_CENTER); }
+	std::string save_str = get_jd_text("Save");
+	save_button = new GUI_Button(this, 124*scale, JD_HEIGHT*scale - 20*scale, 60*scale, height, save_str.c_str(), font, BUTTON_TEXTALIGN_CENTER, 0, this, 0);
+	if (scale > 1) { save_button->SetTextScale(scale); save_button->ChangeTextButton(-1,-1,-1,-1,save_str.c_str(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(save_button);
 	button_index[last_index += 1] = save_button;
 

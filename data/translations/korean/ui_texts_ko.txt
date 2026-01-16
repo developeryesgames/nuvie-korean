@@ -108,10 +108,15 @@ Minimum brightness:|최소 밝기:
 
 # JoystickDialog
 Enable joystick:|조이스틱 활성화:
-Joystick device:|조이스틱 장치:
-Analog deadzone:|아날로그 데드존:
-Action button:|액션 버튼:
-Cancel button:|취소 버튼:
+Repeat when held:|누르고 있을 때 반복:
+Axes pair 1:|축 쌍 1:
+Axes pair 2:|축 쌍 2:
+Axes pair 3:|축 쌍 3:
+Axes pair 4:|축 쌍 4:
+axes pair 1|축 쌍 1
+hat|햇
+none|없음
+Disabled|비활성화
 
 # Inventory
 Inventory|인벤토리
