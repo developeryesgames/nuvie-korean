@@ -117,7 +117,7 @@ bool JoystickDialog::init() {
 	std::string disabled_str = get_jd_text("Disabled");
 	const char* enabled_text[] = { "Joystick 0", "Joystick 1", "Joystick 2", "Joystick 3", disabled_str.c_str(), enable_buff };
 	enable_button = new GUI_TextToggleButton(this, buttonX[1], buttonY, 93*scale, height, enabled_text, enable_selection == 5 ? 6 : 5, enable_selection, font, BUTTON_TEXTALIGN_CENTER, this, 0);
-	if (scale > 1) { enable_button->SetTextScale(scale); enable_button->ChangeTextButton(-1,-1,-1,-1,"Joystick 0",BUTTON_TEXTALIGN_CENTER); }
+	if (scale > 1) { enable_button->SetTextScale(scale); enable_button->ChangeTextButton(-1,-1,-1,-1,enable_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(enable_button);
 	button_index[last_index] = enable_button;
 // hat_repeating_b
@@ -129,7 +129,7 @@ bool JoystickDialog::init() {
 	std::string hat_str = get_jd_text("hat");
 	const char* hat_repeating_text[] = { axes_pair_1.c_str(), hat_str.c_str() };
 	hat_repeating_b = new GUI_TextToggleButton(this, buttonX[1], buttonY += row_h, 93*scale, height, hat_repeating_text, 2, kb->is_hat_repeating(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
-	if (scale > 1) { hat_repeating_b->SetTextScale(scale); hat_repeating_b->ChangeTextButton(-1,-1,-1,-1,axes_pair_1.c_str(),BUTTON_TEXTALIGN_CENTER); }
+	if (scale > 1) { hat_repeating_b->SetTextScale(scale); hat_repeating_b->ChangeTextButton(-1,-1,-1,-1,hat_repeating_b->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(hat_repeating_b);
 	button_index[last_index+= 1] = hat_repeating_b;
 // Axes Pairs
