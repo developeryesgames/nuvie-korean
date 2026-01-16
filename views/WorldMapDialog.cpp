@@ -44,6 +44,9 @@
 #include "FontManager.h"
 #include "KoreanFont.h"
 #include "KoreanTranslation.h"
+#include "Map.h"
+#include "TileManager.h"
+#include "Console.h"
 
 // Wider dialog to include memo list panel
 #define WMD_WIDTH 420
@@ -135,33 +138,175 @@ WorldMapDialog::~WorldMapDialog()
 
 bool WorldMapDialog::loadWorldMap()
 {
-    // Load worldmap_4x.bmp from data/images folder
+    // Try to load cached worldmap_4x.bmp from savedir first
     Configuration *config = Game::get_game()->get_config();
+    std::string savedir;
+    std::string savedir_key = config_get_game_key(config);
+    savedir_key.append("/savedir");
+    config->value(savedir_key, savedir, "");
+
+    std::string cached_path;
+    if(!savedir.empty())
+    {
+        build_path(savedir, "worldmap_4x.bmp", cached_path);
+        SDL_Surface *loaded = SDL_LoadBMP(cached_path.c_str());
+        if(loaded != NULL)
+        {
+            worldmap_surface = SDL_ConvertSurfaceFormat(loaded, SDL_PIXELFORMAT_ARGB8888, 0);
+            SDL_FreeSurface(loaded);
+            if(worldmap_surface)
+            {
+                map_width = worldmap_surface->w;
+                map_height = worldmap_surface->h;
+                DEBUG(0, LEVEL_INFORMATIONAL, "Loaded cached world map: %s (%dx%d)\n", cached_path.c_str(), map_width, map_height);
+                return true;
+            }
+        }
+    }
+
+    // Try data/images folder (for pre-generated maps)
     std::string datadir;
     config->value("config/datadir", datadir, "./data");
-
-    std::string images_path, full_path;
+    std::string images_path, data_path;
     build_path(datadir, "images", images_path);
-    build_path(images_path, "worldmap_4x.bmp", full_path);
+    build_path(images_path, "worldmap_4x.bmp", data_path);
 
-    SDL_Surface *loaded = SDL_LoadBMP(full_path.c_str());
+    SDL_Surface *loaded = SDL_LoadBMP(data_path.c_str());
     if(loaded != NULL)
     {
-        // Convert to 32-bit ARGB format for consistent handling
         worldmap_surface = SDL_ConvertSurfaceFormat(loaded, SDL_PIXELFORMAT_ARGB8888, 0);
         SDL_FreeSurface(loaded);
-
         if(worldmap_surface)
         {
             map_width = worldmap_surface->w;
             map_height = worldmap_surface->h;
-            DEBUG(0, LEVEL_INFORMATIONAL, "Loaded world map: %s (%dx%d)\n", full_path.c_str(), map_width, map_height);
+            DEBUG(0, LEVEL_INFORMATIONAL, "Loaded world map: %s (%dx%d)\n", data_path.c_str(), map_width, map_height);
             return true;
         }
     }
 
-    DEBUG(0, LEVEL_ERROR, "Failed to load world map image: %s\n", full_path.c_str());
-    return false;
+    // Generate world map from tiles
+    DEBUG(0, LEVEL_INFORMATIONAL, "Generating world map from tiles...\n");
+    ConsoleAddInfo("Generating world map (first time only)...");
+
+    if(!generateWorldMap())
+    {
+        DEBUG(0, LEVEL_ERROR, "Failed to generate world map\n");
+        return false;
+    }
+
+    // Save generated map to cache
+    if(!savedir.empty() && worldmap_surface)
+    {
+        if(SDL_SaveBMP(worldmap_surface, cached_path.c_str()) == 0)
+        {
+            DEBUG(0, LEVEL_INFORMATIONAL, "Saved generated world map to: %s\n", cached_path.c_str());
+            ConsoleAddInfo("World map saved to: %s", cached_path.c_str());
+        }
+    }
+
+    return true;
+}
+
+bool WorldMapDialog::generateWorldMap()
+{
+    Game *game = Game::get_game();
+    Map *map = game->get_game_map();
+    TileManager *tile_mgr = game->get_tile_manager();
+    Screen *scr = game->get_screen();
+
+    if(!map || !tile_mgr || !scr)
+        return false;
+
+    // Map is 1024x1024 tiles, we render at 4x scale (4 pixels per tile)
+    const int TILE_SCALE = 4;
+    const int MAP_SIZE = 1024;
+    map_width = MAP_SIZE * TILE_SCALE;
+    map_height = MAP_SIZE * TILE_SCALE;
+
+    // Create surface for world map
+    worldmap_surface = SDL_CreateRGBSurface(0, map_width, map_height, 32,
+        0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+    if(!worldmap_surface)
+    {
+        DEBUG(0, LEVEL_ERROR, "Failed to create world map surface\n");
+        return false;
+    }
+
+    // Get the screen's palette for color lookup
+    SDL_Palette *palette = scr->get_sdl_surface()->format->palette;
+    if(!palette)
+    {
+        DEBUG(0, LEVEL_ERROR, "Failed to get screen palette\n");
+        SDL_FreeSurface(worldmap_surface);
+        worldmap_surface = NULL;
+        return false;
+    }
+
+    SDL_LockSurface(worldmap_surface);
+    uint32 *pixels = (uint32 *)worldmap_surface->pixels;
+    int pitch = worldmap_surface->pitch / 4;
+
+    // Render each tile at 4x4 pixels using average/dominant color
+    for(int ty = 0; ty < MAP_SIZE; ty++)
+    {
+        for(int tx = 0; tx < MAP_SIZE; tx++)
+        {
+            Tile *tile = map->get_tile(tx, ty, 0);  // Surface level (z=0)
+            if(!tile)
+                continue;
+
+            // Calculate average color from tile's 16x16 pixel data
+            int r_sum = 0, g_sum = 0, b_sum = 0;
+            int pixel_count = 0;
+
+            for(int py = 0; py < 16; py++)
+            {
+                for(int px = 0; px < 16; px++)
+                {
+                    uint8 color_idx = tile->data[py * 16 + px];
+                    if(color_idx < palette->ncolors)
+                    {
+                        r_sum += palette->colors[color_idx].r;
+                        g_sum += palette->colors[color_idx].g;
+                        b_sum += palette->colors[color_idx].b;
+                        pixel_count++;
+                    }
+                }
+            }
+
+            uint32 avg_color = 0xFF000000;  // Default black with full alpha
+            if(pixel_count > 0)
+            {
+                uint8 r = (uint8)(r_sum / pixel_count);
+                uint8 g = (uint8)(g_sum / pixel_count);
+                uint8 b = (uint8)(b_sum / pixel_count);
+                avg_color = (0xFF << 24) | (r << 16) | (g << 8) | b;
+            }
+
+            // Fill 4x4 pixel block with average color
+            int base_x = tx * TILE_SCALE;
+            int base_y = ty * TILE_SCALE;
+            for(int dy = 0; dy < TILE_SCALE; dy++)
+            {
+                for(int dx = 0; dx < TILE_SCALE; dx++)
+                {
+                    pixels[(base_y + dy) * pitch + (base_x + dx)] = avg_color;
+                }
+            }
+        }
+
+        // Progress indicator every 128 rows
+        if(ty % 128 == 0)
+        {
+            ConsoleAddInfo("Generating world map: %d%%", (ty * 100) / MAP_SIZE);
+        }
+    }
+
+    SDL_UnlockSurface(worldmap_surface);
+    ConsoleAddInfo("World map generation complete!");
+
+    return true;
 }
 
 uint32 WorldMapDialog::getMarkerColor(int color_index)

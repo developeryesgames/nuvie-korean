@@ -112,6 +112,7 @@ protected:
 
     // Internal methods
     bool loadWorldMap();
+    bool generateWorldMap();  // Generate world map from tiles at runtime
     void drawMapView();
     void drawPlayerMarker();
     void drawMarkers();
