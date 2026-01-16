@@ -157,7 +157,7 @@ bool JoystickDialog::init() {
 			axis_text[11] = axis_buff;
 		}
 		axes_index[i] = new GUI_TextToggleButton(this, i%2 ? buttonX[2] : buttonX[0], buttonY += i%2 ? 0 : row_h + sub_h, axis_w, height, axis_text, index == 11 ? 12 : 11, index, font, BUTTON_TEXTALIGN_CENTER, this, 0);
-		if (scale > 1) axes_index[i]->SetTextScale(scale);
+		if (scale > 1) { axes_index[i]->SetTextScale(scale); axes_index[i]->ChangeTextButton(-1,-1,-1,-1,axes_index[i]->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 		AddWidget(axes_index[i]);
 		button_index[last_index+= 1] = axes_index[i];
 	}
