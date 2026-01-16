@@ -487,6 +487,8 @@ set(SOURCE_FILES
     sound/mt32emu/Enumerations.h
     sound/mt32emu/File.cpp
     sound/mt32emu/File.h
+    sound/mt32emu/FileStream.cpp
+    sound/mt32emu/FileStream.h
     sound/mt32emu/globals.h
     sound/mt32emu/internals.h
     sound/mt32emu/LA32FloatWaveGenerator.cpp
@@ -513,6 +515,13 @@ set(SOURCE_FILES
     sound/mt32emu/ROMInfo.h
     sound/mt32emu/SampleRateConverter.cpp
     sound/mt32emu/SampleRateConverter.h
+    sound/mt32emu/srchelper/InternalResampler.cpp
+    sound/mt32emu/srchelper/InternalResampler.h
+    sound/mt32emu/srchelper/srctools/src/FIRResampler.cpp
+    sound/mt32emu/srchelper/srctools/src/IIR2xResampler.cpp
+    sound/mt32emu/srchelper/srctools/src/LinearResampler.cpp
+    sound/mt32emu/srchelper/srctools/src/ResamplerModel.cpp
+    sound/mt32emu/srchelper/srctools/src/SincResampler.cpp
     sound/mt32emu/sha1/sha1.cpp
     sound/mt32emu/Structures.h
     sound/mt32emu/Synth.cpp
@@ -684,6 +693,8 @@ include_directories(sound)
 include_directories(sound/adplug)
 include_directories(sound/mixer)
 include_directories(sound/mt32emu)
+include_directories(sound/mt32emu/srchelper)
+include_directories(sound/mt32emu/srchelper/srctools/include)
 include_directories(usecode)
 include_directories(views)
 

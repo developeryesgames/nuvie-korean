@@ -33,8 +33,8 @@
  *    is exported, and thus the client application may ONLY use MT32EMU_API_TYPE 2.
  * 3: All the available API types are provided by the library build.
  */
-#define MT32EMU_EXPORTS_TYPE 0
-#define MT32EMU_API_TYPE 0
+#define MT32EMU_EXPORTS_TYPE 3
+#define MT32EMU_API_TYPE 3
 
 /* Type of library build.
  *
