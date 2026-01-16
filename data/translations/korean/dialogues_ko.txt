@@ -269,7 +269,7 @@
 8|"As for the other runes - they are no longer together, as they were when the @Codex was recovered."|"다른 룬들에 관해서라면... @코덱스(Codex) 를 회수했을 때처럼 더 이상 한데 모여 있지 않다오."
 8|"Since then, they have become scattered throughout the land. Each was sent to a town near its shrine."|"그 후로 룬들은 온 땅에 흩어지게 되었소. 각 룬은 해당 성소 근처의 마을로 보내졌지."
 8|"If thou dost ask the lords of each of these towns, they should be able to tell thee more."|"그대가 이 마을들의 영주들에게 묻는다면 그들이 더 많은 것을 알려줄 수 있을 것이오."
-8|"The towns are Moonglow, Jhelom, Yew, Minoc, Trinsic, Skara Brae, and New Magincia."|"해당 마을들은 문글로우, 젤롬, 유, 미녹, 트린식, 스카라 브레이, 그리고 뉴 마진시아라오."
+8|"The towns are Moonglow, Jhelom, Yew, Minoc, Trinsic, Skara Brae, and New Magincia."|"해당 마을들은 문글로우, 젤롬, 유, 미녹, 트린식, 스카라 브레, 그리고 뉴 마진시아라오."
 8|Tholden bows deeply.|톨든이 깊이 고개를 숙인다.
 8|Tholden goes down on one knee and kisses your hand.|톨든이 한쪽 무릎을 굽히고 당신의 손에 입을 맞춘다.
 
@@ -757,7 +757,7 @@
 21|"Let's see now." He counts them off on his fingers.|"어디 보자." 그가 손가락을 꼽으며 세어 본다.
 21|"Lord British appointed lords to rule the eight @cities."|"로드 브리티시께서 여덟 @도시(cities) 를 통치할 영주들을 임명하셨지."
 21|"Magical little things."|"신기하고 작은 것들이지."
-21|"Minoc, Trinsic, Jhelom, Yew, Skara Brae, Britain, Moonglow..."|"미녹, 트린식, 젤롬, 유, 스카라 브레이, 브리튼, 문글로우..."
+21|"Minoc, Trinsic, Jhelom, Yew, Skara Brae, Britain, Moonglow..."|"미녹, 트린식, 젤롬, 유, 스카라 브레, 브리튼, 문글로우..."
 21|"Probably out till all hours, collecting @runes and such."|"아마 밤늦게까지 돌아다니며 @룬(runes) 같은 것들을 수집하고 있겠지."
 21|"Probably spell something out if you put 'em all on a necklace."|"그것들을 다 모아서 목걸이로 만들면 무슨 글자가 완성될지도 몰라."
 21|"Something to do with the @shrines, I think."|"내 생각엔 @성소(shrines) 들과 관련이 있는 것 같아."
@@ -1919,7 +1919,7 @@
 47|"I was the greatest sabre fighter on all the high seas."|"나는 온 바다를 통틀어 최고의 세이버 투사였다네."
 47|"I'll be allright, matey."|"난 괜찮을 걸세, 친구."
 47|"I've been into the dungeon @Wrong."|"나는 @롱(Wrong) 던전에 들어갔었지."
-47|"Once Buccaneer's @Den quaked at the mention o' me name."|"한때는 버커니어즈 @덴(Den) 도 내 이름만 들으면 벌벌 떨었지."
+47|"Once Buccaneer's @Den quaked at the mention o' me name."|"한때는 부케니어스 @덴(Den) 도 내 이름만 들으면 벌벌 떨었지."
 47|"Pah!" He spits on the ground.|"퉤!" 그가 바닥에 침을 뱉는다.
 47|"So be it, matey."|"알겠네, 친구."
 47|"Soon as I've saved up a stake, I'm going in there to dig for gold."|"여윳돈이 좀 모이는 대로, 거기로 금을 캐러 갈 생각이야."
@@ -5083,7 +5083,7 @@
 116|"You've got an awful lot of questions... Maybe I don't care to talk about $Z."|"자네 질문이 너무 많군... 어쩌면 난 $Z에 대해 말하고 싶지 않을지도 몰라."
 116|Do you give him the cloak?|그에게 망토를 주겠습니까?
 116|He hands you the last piece of the map.|그가 지도의 마지막 조각을 건네준다.
-116|"The island in the upper left hand corner is Buccaneer's Den."|"왼쪽 위 구석에 있는 섬이 버커니어즈 덴이라네."
+116|"The island in the upper left hand corner is Buccaneer's Den."|"왼쪽 위 구석에 있는 섬이 부케니어스 덴이라네."
 116|He hesitates, then adds quickly, "Of course, I had nothing to do with it."|그는 주저하더니 재빨리 덧붙인다. "물론 나는 그 일과 아무 관련이 없지만 말이야."
 116|He regards you warily. "Who sent you?"|그가 당신을 경계하며 살핀다. "누가 보냈나?"
 116|He takes the cloak from you. "Thanks for keeping your word. There's not many that does, these days..."|그가 당신에게서 망토를 받는다. "약속을 지켜줘서 고맙군. 요즘 세상엔 그런 사람이 드물거든..."
@@ -5615,7 +5615,7 @@
 133|"While we were on the way there, we were ambushed by Captain @Hawkins and his crew."|"거기로 가는 길에 우리는 @호킨스(Hawkins) 선장과 그 일당에게 매복 공격을 당했지."
 133|The tablet was broken in two during the scuffle. The pirates got away with the bigger half."|"난투극 중에 은판이 두 조각으로 깨졌고, 해적들이 더 큰 쪽을 가지고 달아나 버렸소."
 133|"Hawkins took my finest earring as well - I spit on his mother's grave!"|"호킨스는 내 소중한 귀걸이까지 빼앗아 갔소 - 그놈의 어미 무덤에 침을 뱉고 싶구료!"
-133|"Most likely they went to Buccaneer's @Den with their loot."|"놈들은 아마 전리품을 챙겨 버커니어즈 @덴(Den) 으로 갔을 거요."
+133|"Most likely they went to Buccaneer's @Den with their loot."|"놈들은 아마 전리품을 챙겨 부케니어스 @덴(Den) 으로 갔을 거요."
 133|"We took the corner of the tablet that they missed to the @Lycaeum and sold it to @Mariah."|"우리는 놈들이 놓친 은판 귀퉁이를 @라이케움(Lycaeum) 으로 가져가 @마리아(Mariah) 에게 팔았소."
 133|"Tell you what. Since I'm in a good mood, I'll only charge you two gold coins. Is it a deal?"|"이렇게 합시다. 내가 기분이 좋으니 특별히 2금화만 받겠소. 거래하겠소?"
 133|"The four winds - they are gypsies too!"|"동서남북 네 바람 - 그들도 집시라오!"
@@ -7497,7 +7497,7 @@
 180|a charming fellow with a peacock feather in his cap.|모자에 공작 깃털을 꽂은 매력적인 사내다.
 180|"$P! It's been too long. What brings you to this part of the realm?"|"$P! 정말 오랜만이구려. 이 왕국 여기까지는 어쩐 일로 오셨소?"
 180|"'Tis in @Moonglow."|"그곳은 @문글로우(Moonglow) 에 있소."
-180|"'Tis in Buccaneer's @Den - no place for the timid."|"그곳은 버커니어즈 @덴(Den) 에 있소 - 겁쟁이들이 갈 만한 곳은 아니지."
+180|"'Tis in Buccaneer's @Den - no place for the timid."|"그곳은 부케니어스 @덴(Den) 에 있소 - 겁쟁이들이 갈 만한 곳은 아니지."
 180|"@Derydlus often drinks there - the man can put away more ale than any other I've met."|"@데리들러스(Derydlus) 가 거기서 자주 술을 마신다오 - 그는 내가 만나본 그 누구보다 에일을 많이 들이켤 수 있는 사람이거든."
 180|"A gypsy girl and a butterfly|"집시 소녀와 나비 한 마리가
 180|"A pleasure, to be sure, $G. I hope I'll be seeing a lot more of you." He gives you a sly wink.|"만나서 정말 즐겁구료, $G. 앞으로 자주 뵙기를 바라겠소." 그가 당신에게 능글맞게 윙크한다.
@@ -7598,7 +7598,7 @@
 182|"You'll never know when it's coming."\n\n*She turns and throws the dagger at a little mouse that was sniffing around for food, pinning it to the wall by its tail.|"언제 닥칠지도 모를 거예요."\n\n*그녀는 몸을 돌려 먹이를 찾아 킁킁거리던 작은 생쥐에게 단검을 던졌고, 쥐의 꼬리가 벽에 박혀 고정된다.
 182|"Eeeeek!" Sherry runs up your leg, and it takes several minutes before you can coax her back down again.|"찌익!" 셰리가 당신의 다리를 타고 기어 올라왔고, 그녀를 다시 내려오게 달래는 데 몇 분이나 걸린다.
 182|"Figure it out yourself."|"직접 알아내세요."
-182|"He lives in Buccaneer's @Den."|"그는 버커니어즈 @덴(Den) 에 살아요."
+182|"He lives in Buccaneer's @Den."|"그는 부케니어스 @덴(Den) 에 살아요."
 182|"These tunnels can take you there - unless you get lost, or the rats get you..."|"길을 잃거나 쥐들에게 잡히지만 않는다면, 이 터널들이 당신을 그곳으로 안내해 줄 거예요..."
 182|"I am Phoenix."|"나는 피닉스(Phoenix)예요."
 182|"I don't know about you, but some of us have more important things to do with our time."|"당신은 어떨지 모르겠지만, 우리 중 누군가는 시간을 쏟아야 할 더 중요한 일들이 있답니다."
@@ -8287,7 +8287,7 @@
 6|"Hast thou gone to the Lycaeum and shown Mariah the book? 'Tis most important."\n*\n"There is naught else I can help thee with at this time."|"라이케움에 가서 @마리아(Mariah) 에게 그 책을 보여주었소? 그것은 매우 중요한 일이오."\n*\n"지금 당장은 더 이상 그대에게 도움을 줄 수 있는 것이 없소."
 8|"All the little details of governing, all the paperwork falls on my shoulders."\n*\n"Someone must do it, and yet I miss the days when I was a carefree adventurer."|"통치에 관한 모든 세세한 사항들과 서류 작업들이 나의 어깨에 지워져 있소."\n*\n"누군가는 이 일을 해야 하지만, 가끔은 걱정 없던 모험가 시절이 그립기도 하오."
 8|"I am Tholden von Bazillius, Chancellor to Lord @British."\n*\n"In my younger days, I was known as 'The @Werecat of the Wine Cellar'..."|"나는 로드 @브리티시(British) 의 재상인 톨든 폰 바질리우스라고 하오."\n*\n"젊은 시절 나는 '와인 창고의 @인묘(Werecat)'로 불렸었지..."
-8|"The rune and mantra of Compassion are in the keeping of the bards at the @Conservatory."\n*\n"I entrusted them with the rune due to their compassionate nature."\n*\n"As for the other runes - they are no longer together, as they were when the @Codex was recovered."\n*\n"Since then, they have become scattered throughout the land. Each was sent to a town near its shrine."\n*\n"If thou dost ask the lords of each of these towns, they should be able to tell thee more."\n*\n"The towns are Moonglow, Jhelom, Yew, Minoc, Trinsic, Skara Brae, and New Magincia."|"자애의 룬과 만트라는 @음악 학교(Conservatory) 의 음유시인들이 보관하고 있소."\n*\n"그들의 자비로운 성품 때문에 그들에게 룬을 맡겼다오."\n*\n"다른 룬들에 관해서라면... @코덱스(Codex) 를 회수했을 때처럼 더 이상 한데 모여 있지 않다오."\n*\n"그 후로 룬들은 온 땅에 흩어지게 되었소. 각 룬은 해당 성소 근처의 마을로 보내졌지."\n*\n"그대가 이 마을들의 영주들에게 묻는다면 그들이 더 많은 것을 알려줄 수 있을 것이오."\n*\n"해당 마을들은 문글로우, 젤롬, 유, 미녹, 트린식, 스카라 브레이, 그리고 뉴 마진시아라오."
+8|"The rune and mantra of Compassion are in the keeping of the bards at the @Conservatory."\n*\n"I entrusted them with the rune due to their compassionate nature."\n*\n"As for the other runes - they are no longer together, as they were when the @Codex was recovered."\n*\n"Since then, they have become scattered throughout the land. Each was sent to a town near its shrine."\n*\n"If thou dost ask the lords of each of these towns, they should be able to tell thee more."\n*\n"The towns are Moonglow, Jhelom, Yew, Minoc, Trinsic, Skara Brae, and New Magincia."|"자애의 룬과 만트라는 @음악 학교(Conservatory) 의 음유시인들이 보관하고 있소."\n*\n"그들의 자비로운 성품 때문에 그들에게 룬을 맡겼다오."\n*\n"다른 룬들에 관해서라면... @코덱스(Codex) 를 회수했을 때처럼 더 이상 한데 모여 있지 않다오."\n*\n"그 후로 룬들은 온 땅에 흩어지게 되었소. 각 룬은 해당 성소 근처의 마을로 보내졌지."\n*\n"그대가 이 마을들의 영주들에게 묻는다면 그들이 더 많은 것을 알려줄 수 있을 것이오."\n*\n"해당 마을들은 문글로우, 젤롬, 유, 미녹, 트린식, 스카라 브레, 그리고 뉴 마진시아라오."
 9|"All right. Now I can hear my bedtime stories again!"\n*\n"I'll leave my stuff with you in case you need it."|"좋아요. 이제 다시 잠자리 이야기를 들을 수 있겠네요!"\n*\n"혹시 필요하실지 모르니 제 짐은 당신께 맡겨둘게요."
 10|"But I will give you this @hint that may lead you to it..."\n*\n"Search the @chest in @Nystul's room."|"하지만 당신을 그곳으로 인도해 줄 이 @힌트(hint) 를 주겠소..."\n*\n"@니스툴(Nystul) 의 방에 있는 @상자(chest) 를 찾아보시오."
 10|"To @jape, to jeer, to prance, to frolic! To keep this place unmelancholic!"\n*\n"I practice @tomfoolery for Lord @British - or anyone else who passes too close."|"@익살(jape) 하고, 조롱하고, 활보하고, 즐겁게 뛰노세! 이곳에 우울함이 발붙이지 못하게 하세!"\n*\n"나는 로드 @브리티시(British) 께, 또는 너무 가까이 지나가는 누구에게나 @바보짓(tomfoolery) 을 선보이오."
@@ -8386,7 +8386,7 @@
 111|"I hear he went @underground seeking the @gargoyles, but he fled from the first one he encountered."\n*\n"Nobody knows where he is now."|"듣기로는 그가 @가고일(gargoyles) 들을 찾아 @지하(underground) 로 내려갔다는데, 첫 번째 놈을 마주치자마자 도망쳤다더군."\n*\n"지금은 그가 어디 있는지 아무도 몰라."
 113|"Okay. I think I'll head back to the Fallen Virgin, then."\n*\n"Here's all the equipment I was carrying, if you need it."|"알겠소. 그럼 난 '타락한 처녀(Fallen Virgin)'로 돌아가 있겠소."\n*\n"필요하다면 내가 가지고 있던 장비들은 여기 다 두고 가겠소."
 114|"Okay. I'll go wait back at the Fallen Virgin."\n*\n"You're more likely to need this equipment than I am."\n*\nShe sets down everything she was carrying before walking off.|"알겠어요. 전 '타락한 처녀(Fallen Virgin)'로 돌아가서 기다릴게요."\n*\n"이 장비들은 저보다 당신에게 더 필요할 것 같네요."\n*\n그녀는 떠나기 전 자신이 가지고 있던 모든 물건을 바닥에 내려놓는다.
-116|He hands you the last piece of the map.\n*\n"The island in the upper left hand corner is Buccaneer's Den."|그가 지도의 마지막 조각을 건네준다.\n*\n"왼쪽 위 구석에 있는 섬이 버커니어즈 덴이라네."
+116|He hands you the last piece of the map.\n*\n"The island in the upper left hand corner is Buccaneer's Den."|그가 지도의 마지막 조각을 건네준다.\n*\n"왼쪽 위 구석에 있는 섬이 부케니어스 덴이라네."
 124|"A moonstone was upon the shrine, surrounded by a strange violet glow."\n*\n"I tried to get to it, but 'twas surrounded by some kind of force @field."|"성소 위에 문스톤이 있었는데, 기묘한 보랏빛 광채에 둘러싸여 있었습니다."\n*\n"가까이 가려 했지만, 어떤 종류의 힘의 @장막(field) 에 가로막혀 있었죠."
 124|"We sought to liberate the Shrine of Compassion."\n*\n"My men fought valiantly, but the gargoyles were too much for us. They didst @slay more than half our party."|"우리는 자애의 성소를 해방시키려 했습니다."\n*\n"부하들은 용감하게 싸웠지만, 가고일들은 우리가 감당하기엔 너무 강했습니다. 그놈들이 우리 일행의 절반 넘게 @살해(slay) 했지요."
 127|"Ah, $P! 'Tis an honor to welcome thee once more to my humble village."\n*\n"How might I be of assistance this fine $T?"|"아, $P! 보잘것없는 내 마을에 그대를 다시 한번 모시게 되어 영광이오."\n*\n"이 좋은 $T에 내가 어떻게 도움을 드리면 좋겠소?"
@@ -8406,7 +8406,7 @@
 133|"I'd be glad to help you out. But 'tis a hard life, sometimes, being a gypsy."\n*\n"You'd be willing to pay ten gold for the information, would you?"|"기꺼이 도와주고 싶구료. 하지만 집시로 산다는 건 때로는 고된 일이라서 말이오."\n*\n"정보를 얻는 대가로 10금화를 지불할 의향이 있으시오?"
 133|"I'll tell you this:"\n*\n"Powder kegs are useful for persuading uncooperative doors to open."|"이걸 알려주지:"\n*\n"화약통은 말을 듣지 않는 문을 여는 데 아주 유용하다오."
 133|"It's no place for an honest soul like you."\n*\n"But if you're determined to go, I hear it's on an island due east of @Paws."|"그곳은 당신같이 정직한 사람이 갈 만한 곳이 아니오."\n*\n"하지만 굳이 가겠다면, @포즈(Paws) 정동쪽에 있는 섬에 있다고 들었소."
-133|"Some @gorgio called 'Captain @John' brought us the silver tablet and paid us to take it to the Lycaeum."\n*\n"While we were on the way there, we were ambushed by Captain @Hawkins and his crew."\n*\nThe tablet was broken in two during the scuffle. The pirates got away with the bigger half."\n*\n"Hawkins took my finest earring as well - I spit on his mother's grave!"\n*\n"Most likely they went to Buccaneer's @Den with their loot."\n*\n"We took the corner of the tablet that they missed to the @Lycaeum and sold it to @Mariah."|"@존(John) 선장이라는 어떤 @고르지오(gorgio) 가 우리에게 은판을 가져와서는 라이케움으로 전달해달라고 돈을 주었소."\n*\n"거기로 가는 길에 우리는 @호킨스(Hawkins) 선장과 그 일당에게 매복 공격을 당했지."\n*\n"난투극 중에 은판이 두 조각으로 깨졌고, 해적들이 더 큰 쪽을 가지고 달아나 버렸소."\n*\n"호킨스는 내 소중한 귀걸이까지 빼앗아 갔소 - 그놈의 어미 무덤에 침을 뱉고 싶구료!"\n*\n"놈들은 아마 전리품을 챙겨 버커니어즈 @덴(Den) 으로 갔을 거요."\n*\n"우리는 놈들이 놓친 은판 귀퉁이를 @라이케움(Lycaeum) 으로 가져가 @마리아(Mariah) 에게 팔았소."
+133|"Some @gorgio called 'Captain @John' brought us the silver tablet and paid us to take it to the Lycaeum."\n*\n"While we were on the way there, we were ambushed by Captain @Hawkins and his crew."\n*\nThe tablet was broken in two during the scuffle. The pirates got away with the bigger half."\n*\n"Hawkins took my finest earring as well - I spit on his mother's grave!"\n*\n"Most likely they went to Buccaneer's @Den with their loot."\n*\n"We took the corner of the tablet that they missed to the @Lycaeum and sold it to @Mariah."|"@존(John) 선장이라는 어떤 @고르지오(gorgio) 가 우리에게 은판을 가져와서는 라이케움으로 전달해달라고 돈을 주었소."\n*\n"거기로 가는 길에 우리는 @호킨스(Hawkins) 선장과 그 일당에게 매복 공격을 당했지."\n*\n"난투극 중에 은판이 두 조각으로 깨졌고, 해적들이 더 큰 쪽을 가지고 달아나 버렸소."\n*\n"호킨스는 내 소중한 귀걸이까지 빼앗아 갔소 - 그놈의 어미 무덤에 침을 뱉고 싶구료!"\n*\n"놈들은 아마 전리품을 챙겨 부케니어스 @덴(Den) 으로 갔을 거요."\n*\n"우리는 놈들이 놓친 은판 귀퉁이를 @라이케움(Lycaeum) 으로 가져가 @마리아(Mariah) 에게 팔았소."
 133|"Why worry yourself with that?"\n*\n"Perhaps you'd like to look over some of the fine @reagents I have for sale."|"왜 그런 걸로 고민하고 계시오?"\n*\n"차라리 내가 파는 질 좋은 @시약(reagents) 들을 한번 구경해 보시는 게 어떻겠소."
 133|"You cannot tie a gypsy down to a single place."\n*\n"We are free @spirits, and must roam like the @wind throughout the land."|"집시를 한곳에 묶어둘 수는 없는 법이오."\n*\n"우리는 자유로운 @영혼(spirits) 이고, @바람(wind) 처럼 온 땅을 떠돌아야 하니까."
 133|@Karina produces a fiddle from somewhere and begins to play a tune at a very high tempo.\n*\nZoltan dances a wild dance for you, leaping and capering about frantically.\n*\nHis chest glistens with sweat as he walks up to you expectantly.|@카리나(Karina) 가 어디선가 바이올린을 꺼내 아주 빠른 템포로 곡을 연주하기 시작한다.\n*\n졸탄은 당신을 위해 광기 어린 춤을 추며 미친 듯이 껑충껑충 뛰어다닌다.\n*\n그의 가슴은 땀으로 번들거리고, 기대에 찬 모습으로 당신에게 다가온다.
@@ -8465,7 +8465,7 @@
 178|"Now, now. You can't be bringing bodies out here without no reservations."\n*\n"Go see me master Glen about having a funeral first."|"이바쇼, 이바쇼. 예약도 없이 시체를 여기로 가져오면 안 되지."\n*\n"먼저 내 주인 글렌을 찾아가서 장례식부터 치르쇼."
 178|"Old penny pincher says he's going to pay me?"\n*\n"I'll believe it when I have the coins in me hand."|"그 늙은 구두쇠가 내게 돈을 주겠다고 했다고?"\n*\n"내 손에 금화가 쥐어지기 전까진 안 믿을 거요."
 178|"Thank ye very much! And 'tis not even my birthday!"\n*\n"Let me tell you this - keep an eye on old Glen."\n*\n"They say not all of the bodies end up where they're supposed to..."\n*\n"You know, 'e was supposed to have paid me for a new shovel, and then you wouldn't have 'ad to go to so much trouble."|"정말 고맙소! 내 생일도 아닌데 말이오!"\n*\n"이것 하나만 말해두지 - 늙은 글렌을 잘 지켜보쇼."\n*\n"사람들 말로는 모든 시체가 가야 할 곳으로 가는 건 아니라고 하더군..."\n*\n"아시다시피, 그 양반이 진작 새 삽 살 돈만 줬어도 당신이 이렇게 고생할 일은 없었을 거요."
-182|"He lives in Buccaneer's @Den."\n*\n"These tunnels can take you there - unless you get lost, or the rats get you..."|"그는 버커니어즈 @덴(Den) 에 살아요."\n*\n"길을 잃거나 쥐들에게 잡히지만 않는다면, 이 터널들이 당신을 그곳으로 안내해 줄 거예요..."
+182|"He lives in Buccaneer's @Den."\n*\n"These tunnels can take you there - unless you get lost, or the rats get you..."|"그는 부케니어스 @덴(Den) 에 살아요."\n*\n"길을 잃거나 쥐들에게 잡히지만 않는다면, 이 터널들이 당신을 그곳으로 안내해 줄 거예요..."
 182|"I used to be captain of the Black @Thechu."\n*\n"But now I'm a member of the @thieves @guild, and I don't care who knows it."\n*\n"Britain is the wealthiest city in the world, and I make a tidy living sneaking up there at night to 'liberate' a few possessions."\n*\n"Of course, I only steal from those who have too much wealth for their own good."|"예전엔 블랙 @세추(Thechu) 호의 선장이었죠."\n*\n"하지만 지금은 @도둑 @길드(thieves guild) 의 일원이고, 누가 알든 상관없어요."\n*\n"브리튼은 세계에서 가장 부유한 도시죠. 난 밤에 몰래 그곳에 올라가 몇몇 물건들을 '해방'시키며 꽤 짭짤한 생활을 하고 있답니다."\n*\n"물론, 난 넘치는 부를 주체하지 못하는 사람들의 것만 훔쳐요."
 182|"No way! I'm making too good a living to give it up now."\n*\n"If you want to get my belt, use your @wits. Prove you're worthy to replace me."|"절대 안 되죠! 지금 생활이 너무 만족스러워서 그만둘 생각이 전혀 없거든요."\n*\n"내 벨트를 가지고 싶다면, 당신의 @지혜(wits) 를 발휘해 보세요. 당신이 나를 대신할 자격이 있음을 증명해 보란 말이에요."
 182|"She was the finest ship that ever sailed. But those days are past."\n*\n"The crew's scattered to the four corners of the earth, and the Thechu's off amongst the @stars."|"세상에서 가장 멋진 배였죠. 하지만 그 시절은 지났어요."\n*\n"선원들은 세상 사방으로 흩어졌고, 세추 호는 @별(stars) 들 사이로 떠나버렸죠."

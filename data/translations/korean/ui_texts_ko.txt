@@ -253,7 +253,7 @@ Gideon|기드온
 Stivius|스티비우스
 Marta|마르타
 
-# Skara Brae NPCs - 스카라 브래
+# Skara Brae NPCs - 스카라 브레
 Yorl|요를
 Dezana|데자나
 Horance|호랜스
