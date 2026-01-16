@@ -132,11 +132,17 @@ bool SaveManager::init()
  // Use game-specific key (e.g., config/ultima6/autosave)
  std::string autosave_key = config_get_game_key(config);
  autosave_key.append("/autosave");
+ ConsoleAddInfo("SaveManager: Loading autosave from key '%s'", autosave_key.c_str());
  config->value(autosave_key, autosave_enabled, false);
+ ConsoleAddInfo("SaveManager: autosave_enabled = %s", autosave_enabled ? "true" : "false");
  if(autosave_enabled)
  {
    ConsoleAddInfo("Autosave enabled (1 minute interval)");
    last_autosave_time = SDL_GetTicks();
+ }
+ else
+ {
+   ConsoleAddInfo("Autosave disabled");
  }
 
  return true;
@@ -296,12 +302,18 @@ bool SaveManager::autosave()
 	std::string save_desc = "Autosave";
 
 	DEBUG(0, LEVEL_INFORMATIONAL, "Autosaving to %s\n", fullpath.c_str());
+	ConsoleAddInfo("Autosaving to %s", fullpath.c_str());
 
 	bool result = savegame->save(fullpath.c_str(), &save_desc, true);  // silent=true for autosave
 
 	if(result)
 	{
 		last_autosave_time = SDL_GetTicks();
+		ConsoleAddInfo("Autosave successful");
+	}
+	else
+	{
+		ConsoleAddInfo("Autosave FAILED");
 	}
 
 	return result;
@@ -318,8 +330,8 @@ void SaveManager::check_autosave()
 		autosave_pending = false;
 		if(!autosave())
 		{
-			// If autosave failed (e.g., in combat), reset timer to try again later
-			last_autosave_time = SDL_GetTicks();
+			// If autosave failed (e.g., in combat), retry in 10 seconds
+			last_autosave_time = SDL_GetTicks() - AUTOSAVE_INTERVAL_MS + 10000;
 		}
 		return;
 	}
@@ -329,9 +341,9 @@ void SaveManager::check_autosave()
 	{
 		if(!autosave())
 		{
-			// If autosave failed (e.g., in combat, dialog open), reset timer
-			// This prevents spamming autosave attempts every frame
-			last_autosave_time = SDL_GetTicks();
+			// If autosave failed (e.g., in combat, dialog open), retry in 10 seconds
+			// This prevents spamming autosave attempts every frame but still retries soon
+			last_autosave_time = SDL_GetTicks() - AUTOSAVE_INTERVAL_MS + 10000;
 		}
 	}
 }
