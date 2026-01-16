@@ -177,6 +177,9 @@ bool Screen::set_palette(uint8 *p)
  if(surface == NULL || p == NULL)
    return false;
 
+ // Copy palette data to internal palette array for later access
+ memcpy(palette, p, 768);
+
  //SDL_SetColors(scaled_surface,palette,0,256);
  for (int i = 0; i < 256; ++i)
    {
@@ -197,6 +200,11 @@ bool Screen::set_palette_entry(uint8 idx, uint8 r, uint8 g, uint8 b)
  if(surface == NULL)
    return false;
 
+ // Update internal palette array
+ palette[idx * 3 + 0] = r;
+ palette[idx * 3 + 1] = g;
+ palette[idx * 3 + 2] = b;
+
  uint32	c= ((((uint32)r)>>RenderSurface::Rloss)<<RenderSurface::Rshift) | ((((uint32)g)>>RenderSurface::Gloss)<<RenderSurface::Gshift) | ((((uint32)b)>>RenderSurface::Bloss)<<RenderSurface::Bshift);
 
  surface->colour32[idx] = c;
@@ -209,6 +217,23 @@ bool Screen::rotate_palette(uint8 pos, uint8 length)
  uint32 tmp_colour;
  uint8 i;
 
+ // Rotate internal palette array
+ uint8 tmp_r = palette[(pos + length - 1) * 3 + 0];
+ uint8 tmp_g = palette[(pos + length - 1) * 3 + 1];
+ uint8 tmp_b = palette[(pos + length - 1) * 3 + 2];
+
+ for(i = length - 1; i > 0; i--)
+ {
+    palette[(pos + i) * 3 + 0] = palette[(pos + i - 1) * 3 + 0];
+    palette[(pos + i) * 3 + 1] = palette[(pos + i - 1) * 3 + 1];
+    palette[(pos + i) * 3 + 2] = palette[(pos + i - 1) * 3 + 2];
+ }
+
+ palette[pos * 3 + 0] = tmp_r;
+ palette[pos * 3 + 1] = tmp_g;
+ palette[pos * 3 + 2] = tmp_b;
+
+ // Rotate colour32 array
  tmp_colour = surface->colour32[pos+length-1];
 
  for(i= length-1;i > 0; i-- )

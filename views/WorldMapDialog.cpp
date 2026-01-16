@@ -215,8 +215,13 @@ bool WorldMapDialog::generateWorldMap()
     TileManager *tile_mgr = game->get_tile_manager();
     Screen *scr = game->get_screen();
 
+    DEBUG(0, LEVEL_INFORMATIONAL, "generateWorldMap: map=%p, tile_mgr=%p, scr=%p\n", (void*)map, (void*)tile_mgr, (void*)scr);
+
     if(!map || !tile_mgr || !scr)
+    {
+        DEBUG(0, LEVEL_ERROR, "generateWorldMap: Missing required objects\n");
         return false;
+    }
 
     // Map is 1024x1024 tiles, we render at 4x scale (4 pixels per tile)
     const int TILE_SCALE = 4;
@@ -247,42 +252,56 @@ bool WorldMapDialog::generateWorldMap()
     uint32 *pixels = (uint32 *)worldmap_surface->pixels;
     int pitch = worldmap_surface->pitch / 4;
 
+    // Debug: check first tile
+    Tile *first_tile = map->get_tile(0, 0, 0);
+    DEBUG(0, LEVEL_INFORMATIONAL, "generateWorldMap: first_tile=%p\n", (void*)first_tile);
+    if(first_tile)
+    {
+        DEBUG(0, LEVEL_INFORMATIONAL, "generateWorldMap: first tile data[0]=%d, palette[0]=%d,%d,%d\n",
+            first_tile->data[0], palette[0], palette[1], palette[2]);
+    }
+
+    int tiles_processed = 0;
+    int tiles_null = 0;
+
     // Render each tile at 4x4 pixels using average/dominant color
     for(int ty = 0; ty < MAP_SIZE; ty++)
     {
         for(int tx = 0; tx < MAP_SIZE; tx++)
         {
             Tile *tile = map->get_tile(tx, ty, 0);  // Surface level (z=0)
-            if(!tile)
-                continue;
-
-            // Calculate average color from tile's 16x16 pixel data
-            int r_sum = 0, g_sum = 0, b_sum = 0;
-            int pixel_count = 0;
-
-            for(int py = 0; py < 16; py++)
-            {
-                for(int px = 0; px < 16; px++)
-                {
-                    uint8 color_idx = tile->data[py * 16 + px];
-                    // palette is uint8[768]: 256 colors * 3 bytes (R, G, B)
-                    r_sum += palette[color_idx * 3 + 0];
-                    g_sum += palette[color_idx * 3 + 1];
-                    b_sum += palette[color_idx * 3 + 2];
-                    pixel_count++;
-                }
-            }
 
             uint32 avg_color = 0xFF000000;  // Default black with full alpha
-            if(pixel_count > 0)
+
+            if(tile)
             {
-                uint8 r = (uint8)(r_sum / pixel_count);
-                uint8 g = (uint8)(g_sum / pixel_count);
-                uint8 b = (uint8)(b_sum / pixel_count);
+                tiles_processed++;
+                // Calculate average color from tile's 16x16 pixel data
+                int r_sum = 0, g_sum = 0, b_sum = 0;
+
+                for(int py = 0; py < 16; py++)
+                {
+                    for(int px = 0; px < 16; px++)
+                    {
+                        uint8 color_idx = tile->data[py * 16 + px];
+                        // palette is uint8[768]: 256 colors * 3 bytes (R, G, B)
+                        r_sum += palette[color_idx * 3 + 0];
+                        g_sum += palette[color_idx * 3 + 1];
+                        b_sum += palette[color_idx * 3 + 2];
+                    }
+                }
+
+                uint8 r = (uint8)(r_sum / 256);
+                uint8 g = (uint8)(g_sum / 256);
+                uint8 b = (uint8)(b_sum / 256);
                 avg_color = (0xFF << 24) | (r << 16) | (g << 8) | b;
             }
+            else
+            {
+                tiles_null++;
+            }
 
-            // Fill 4x4 pixel block with average color
+            // Fill 4x4 pixel block with color
             int base_x = tx * TILE_SCALE;
             int base_y = ty * TILE_SCALE;
             for(int dy = 0; dy < TILE_SCALE; dy++)
@@ -302,7 +321,8 @@ bool WorldMapDialog::generateWorldMap()
     }
 
     SDL_UnlockSurface(worldmap_surface);
-    ConsoleAddInfo("World map generation complete!");
+    DEBUG(0, LEVEL_INFORMATIONAL, "generateWorldMap: tiles_processed=%d, tiles_null=%d\n", tiles_processed, tiles_null);
+    ConsoleAddInfo("World map: %d tiles processed, %d null", tiles_processed, tiles_null);
 
     return true;
 }
