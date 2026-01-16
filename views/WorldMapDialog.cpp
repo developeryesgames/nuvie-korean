@@ -1081,13 +1081,8 @@ GUI_status WorldMapDialog::KeyDown(SDL_Keysym key)
     {
         if(key.sym == SDLK_RETURN || key.sym == SDLK_KP_ENTER)
         {
-            // If composing text exists, just finalize it (IME will send TextInput)
-            // Don't finish editing yet - wait for next Enter
-            if(!composing_text.empty())
-            {
-                // The IME should handle this - just consume the key
-                return GUI_YUM;
-            }
+            // finishEditingMemo() already handles composing_text,
+            // so just call it directly - no need to wait for second Enter
             finishEditingMemo();
             return GUI_YUM;
         }
