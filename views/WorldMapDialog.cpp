@@ -1721,7 +1721,20 @@ void WorldMapDialog::loadMarkers()
 {
     markers.clear();
 
-    FILE *f = fopen("worldmap_markers.txt", "r");
+    // Build path to markers file in savedir
+    Configuration *config = Game::get_game()->get_config();
+    std::string savedir;
+    std::string savedir_key = config_get_game_key(config);
+    savedir_key.append("/savedir");
+    config->value(savedir_key, savedir, "");
+
+    if(savedir.empty())
+        return;
+
+    std::string markers_path;
+    build_path(savedir, "worldmap_markers.txt", markers_path);
+
+    FILE *f = fopen(markers_path.c_str(), "r");
     if(!f)
         return;
 
@@ -1744,12 +1757,25 @@ void WorldMapDialog::loadMarkers()
     }
 
     fclose(f);
-    DEBUG(0, LEVEL_INFORMATIONAL, "Loaded %d markers from worldmap_markers.txt\n", (int)markers.size());
+    DEBUG(0, LEVEL_INFORMATIONAL, "Loaded %d markers from %s\n", (int)markers.size(), markers_path.c_str());
 }
 
 void WorldMapDialog::saveMarkers()
 {
-    FILE *f = fopen("worldmap_markers.txt", "w");
+    // Build path to markers file in savedir
+    Configuration *config = Game::get_game()->get_config();
+    std::string savedir;
+    std::string savedir_key = config_get_game_key(config);
+    savedir_key.append("/savedir");
+    config->value(savedir_key, savedir, "");
+
+    if(savedir.empty())
+        return;
+
+    std::string markers_path;
+    build_path(savedir, "worldmap_markers.txt", markers_path);
+
+    FILE *f = fopen(markers_path.c_str(), "w");
     if(!f)
         return;
 
@@ -1760,5 +1786,5 @@ void WorldMapDialog::saveMarkers()
     }
 
     fclose(f);
-    DEBUG(0, LEVEL_INFORMATIONAL, "Saved %d markers to worldmap_markers.txt\n", (int)markers.size());
+    DEBUG(0, LEVEL_INFORMATIONAL, "Saved %d markers to %s\n", (int)markers.size(), markers_path.c_str());
 }
