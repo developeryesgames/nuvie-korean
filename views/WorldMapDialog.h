@@ -102,6 +102,7 @@ protected:
     bool editing_memo;       // True when editing a memo
     std::string editing_text; // Current text being edited
     std::string composing_text; // IME composition text (Korean input preview)
+    uint32 finish_editing_time; // Time when editing finished (to ignore duplicate Enter)
 
     // Double-click detection
     uint32 last_click_time;

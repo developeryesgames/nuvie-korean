@@ -114,6 +114,7 @@ WorldMapDialog::WorldMapDialog()
 
     selected_marker = -1;
     editing_memo = false;
+    finish_editing_time = 0;
 
     last_click_time = 0;
     last_click_marker = -1;
@@ -362,7 +363,6 @@ bool WorldMapDialog::init()
         player_x = player->get_actor()->get_x();
         player_y = player->get_actor()->get_y();
         is_underground = (player->get_actor()->get_z() != 0);
-        DEBUG(0, LEVEL_INFORMATIONAL, "WorldMapDialog: player position = (%d, %d), underground = %d\n", player_x, player_y, is_underground ? 1 : 0);
     }
 
     // Get translated button texts for Korean mode
@@ -991,6 +991,7 @@ void WorldMapDialog::finishEditingMemo()
         }
         markers[selected_marker].text = editing_text;
         editing_memo = false;
+        finish_editing_time = SDL_GetTicks();  // Mark time to ignore duplicate Enter
         SDL_StopTextInput();
     }
 }
@@ -1081,8 +1082,6 @@ GUI_status WorldMapDialog::KeyDown(SDL_Keysym key)
     {
         if(key.sym == SDLK_RETURN || key.sym == SDLK_KP_ENTER)
         {
-            // finishEditingMemo() already handles composing_text,
-            // so just call it directly - no need to wait for second Enter
             finishEditingMemo();
             return GUI_YUM;
         }
@@ -1186,7 +1185,11 @@ GUI_status WorldMapDialog::KeyDown(SDL_Keysym key)
 
         case SDLK_RETURN:
         case SDLK_KP_ENTER:
-            startEditingMemo();
+            // Ignore Enter if we just finished editing (Windows IME sends duplicate Enter)
+            if(SDL_GetTicks() - finish_editing_time > 100)
+            {
+                startEditingMemo();
+            }
             break;
 
         default:
