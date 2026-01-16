@@ -140,6 +140,8 @@ const struct Action {
 	{ "HEAL_PARTY", ActionHealParty, "Heal party", Action::cheat_keys, true, OTHER_KEY },
 	{ "TELEPORT_TO_CURSOR", ActionTeleportToCursor, "Teleport to cursor", Action::cheat_keys, true, OTHER_KEY },
 	{ "TOGGLE_CHEATS", ActionToggleCheats, "Toggle cheats", Action::normal_keys, true, OTHER_KEY },
+	{ "GENERATE_WORLDMAP", ActionGenerateWorldMap, "Generate world map image", Action::normal_keys, true, OTHER_KEY },
+	{ "SHOW_WORLDMAP", ActionShowWorldMap, "Show world map viewer", Action::normal_keys, true, OTHER_KEY },
 	{ "DO_NOTHING", ActionDoNothing, "", Action::dont_show, true, OTHER_KEY },
 	{ "", 0, "", Action::dont_show, false, OTHER_KEY } //terminator
 };

@@ -44,6 +44,7 @@
 #include "U6Actor.h"
 #include "FontManager.h"
 #include "KoreanTranslation.h"
+#include "SaveManager.h"
 
 uint8 walk_frame_tbl[4] = {0,1,2,1};
 
@@ -586,6 +587,9 @@ bool Actor::move(uint16 new_x, uint16 new_y, uint8 new_z, ActorMoveFlags flags)
     start_smooth_move(x, y, target_x, target_y);
  }
 
+ // Check if level changed (for autosave trigger later)
+ bool level_changed = (new_z != oldpos.z);
+
  // move
  x = WRAPPED_COORD(new_x,new_z); // FIXME: this is probably needed because PathFinder is not wrapping coords
  y = WRAPPED_COORD(new_y,new_z);
@@ -615,6 +619,16 @@ bool Actor::move(uint16 new_x, uint16 new_y, uint8 new_z, ActorMoveFlags flags)
     game->get_map_window()->centerMapOnActor(this);
  // allows a delay to be set on actor movement, in lieu of using animations
  move_time = clock->get_ticks();
+
+ // Trigger autosave when player changes level (after move is complete)
+ if(level_changed && game->get_player() && game->get_player()->get_actor()
+    && id_n == game->get_player()->get_actor()->id_n)
+ {
+   SaveManager *save_manager = game->get_save_manager();
+   if(save_manager)
+     save_manager->trigger_autosave_on_map_change();
+ }
+
  return true;
 }
 

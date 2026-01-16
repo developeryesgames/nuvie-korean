@@ -344,7 +344,9 @@ GUI_status SaveDialog::callback(uint16 msg, GUI_CallBack *caller, void *data)
 
  if(caller == (GUI_CallBack *)save_button)
     {
-     if(selected_slot != NULL && callback_object->callback(SAVEDIALOG_CB_SAVE, this, selected_slot) == GUI_YUM)
+     // Don't allow saving to autosave slot
+     if(selected_slot != NULL && !selected_slot->is_autosave_slot() &&
+        callback_object->callback(SAVEDIALOG_CB_SAVE, this, selected_slot) == GUI_YUM)
         close_dialog();
      return GUI_YUM;
     }
@@ -361,7 +363,10 @@ GUI_status SaveDialog::callback(uint16 msg, GUI_CallBack *caller, void *data)
 
     if(msg == SAVESLOT_CB_SAVE)
       {
-       if(callback_object->callback(SAVEDIALOG_CB_SAVE, this, caller) == GUI_YUM) //caller = slot to save in
+       // Don't allow saving to autosave slot
+       SaveSlot *slot = (SaveSlot *)caller;
+       if(!slot->is_autosave_slot() &&
+          callback_object->callback(SAVEDIALOG_CB_SAVE, this, caller) == GUI_YUM) //caller = slot to save in
          close_dialog();
       }
    }

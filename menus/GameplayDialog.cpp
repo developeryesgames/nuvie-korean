@@ -41,9 +41,10 @@
 #include "Keys.h"
 #include "FontManager.h"
 #include "KoreanTranslation.h"
+#include "SaveManager.h"
 
 #define GD_WIDTH 274
-#define GD_HEIGHT 179
+#define GD_HEIGHT 192
 
 static int get_menu_scale() {
 	FontManager *fm = Game::get_game()->get_font_manager();
@@ -127,6 +128,7 @@ bool GameplayDialog::init() {
 	std::string txt_skip = get_gd_text("Skip intro:");
 	std::string txt_console = get_gd_text("Show console:");
 	std::string txt_cursor = get_gd_text("Use original cursors:");
+	std::string txt_autosave = get_gd_text("Autosave:");
 	std::string txt_cancel = get_gd_text("Cancel");
 	std::string txt_save = get_gd_text("Save");
 
@@ -195,6 +197,15 @@ bool GameplayDialog::init() {
 	} else
 		converse_solid_bg_button = NULL;
 
+// autosave
+	widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, txt_autosave.c_str(), font);
+	if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
+	AddWidget(widget);
+	bool autosave_enabled = game->get_save_manager()->is_autosave_enabled();
+	autosave_button = new GUI_TextToggleButton(this, colX[2], buttonY += row_h, yesno_width, height, yesno_text, 2, autosave_enabled, font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	if (scale > 1) { autosave_button->SetTextScale(scale); autosave_button->ChangeTextButton(-1,-1,-1,-1,autosave_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
+	AddWidget(autosave_button);
+	button_index[last_index+=1] = autosave_button;
 
 // following require restart
 	widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h*2, 0, 0, 0, txt_restart.c_str(), font);
@@ -340,6 +351,11 @@ GUI_status GameplayDialog::callback(uint16 msg, GUI_CallBack *caller, void *data
 				game->get_converse_gump()->set_solid_bg(converse_solid_bg_button->GetSelection());
 			config->set(key + "/converse_solid_bg", converse_solid_bg_button->GetSelection() ? "yes" : "no");
 		}
+		// autosave setting (immediate effect, no restart needed)
+		bool new_autosave = autosave_button->GetSelection();
+		game->get_save_manager()->set_autosave_enabled(new_autosave);
+		config->set(key + "/autosave", new_autosave ? "yes" : "no");
+
 		config->set("config/loadgame", get_selected_game_config_string(startup_game_button->GetSelection()));
 		config->set(key + "/skip_intro", skip_intro_button->GetSelection() ? "yes" : "no"); // need restart
 		config->set("config/general/show_console", show_console_button->GetSelection() ? "yes" : "no"); // need restart

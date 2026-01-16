@@ -173,7 +173,7 @@ class Game
  bool anims_paused() { return(pause_flags & PAUSE_ANIMS); }
  bool world_paused() { return(pause_flags & PAUSE_WORLD); }
 
- void quit() { game_play = false; }
+ void quit();
 
  bool set_mouse_pointer(uint8 ptr_num);
  void dont_wait_for_interval();

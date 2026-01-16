@@ -844,6 +844,17 @@ TimedRest::TimedRest(uint8 hours, Actor *who_will_guard, Obj *campfire_obj)
 {
     lookout = who_will_guard;
     campfire = campfire_obj;
+    // Store campfire location for safe access in destructor
+    if(campfire_obj != NULL)
+    {
+        campfire_x = campfire_obj->x;
+        campfire_y = campfire_obj->y;
+        campfire_z = campfire_obj->z;
+    }
+    else
+    {
+        campfire_x = campfire_y = campfire_z = 0;
+    }
     number_that_had_food = 0;
 }
 
@@ -856,8 +867,18 @@ TimedRest::~TimedRest()
         MapCoord loc = player->get_actor()->get_location();
     }
 
+    // Safely extinguish campfire - verify it still exists on the map
+    // The campfire could have been destroyed (attacked) or cleaned up (temp object)
     if(campfire != NULL)
-        campfire->frame_n = 0; // extinguish campfire
+    {
+        ObjManager *obj_manager = Game::get_game()->get_obj_manager();
+        Obj *verified_campfire = obj_manager->get_obj_of_type_from_location(
+            OBJ_U6_CAMPFIRE, campfire_x, campfire_y, campfire_z);
+        if(verified_campfire == campfire)
+        {
+            campfire->frame_n = 0; // extinguish campfire
+        }
+    }
 
     bool can_heal = (Game::get_game()->get_clock()->get_rest_counter() == 0); //only heal once every 12 hours.
 

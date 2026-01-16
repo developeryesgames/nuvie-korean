@@ -21,6 +21,8 @@
  *
  */
 #include <cassert>
+#include <vector>
+#include <algorithm>
 #include "nuvieDefs.h"
 
 #include "Configuration.h"
@@ -53,6 +55,7 @@
 #include "FontManager.h"
 #include "KoreanFont.h"
 #include "KoreanTranslation.h"
+#include "SaveManager.h"
 
 #define USE_BUTTON 1 /* FIXME: put this in a common location */
 #define WALK_BUTTON 3
@@ -548,14 +551,24 @@ void MapWindow::set_walking(bool state)
 
 void MapWindow::moveLevel(uint8 new_level)
 {
+ uint8 old_level = cur_level;
  cur_level = new_level;
 
  updateBlacking();
+
+ // Trigger autosave on level change (entering/leaving dungeons)
+ if(old_level != new_level)
+ {
+   SaveManager *save_mgr = game->get_save_manager();
+   if(save_mgr)
+     save_mgr->trigger_autosave_on_map_change();
+ }
 }
 
 void MapWindow::moveMap(sint16 new_x, sint16 new_y, sint8 new_level, uint8 new_x_add, uint8 new_y_add)
 {
   map_width = map->get_width(new_level);
+  uint8 old_level = cur_level;
 
  if(new_x < 0)
  {
@@ -574,6 +587,13 @@ void MapWindow::moveMap(sint16 new_x, sint16 new_y, sint8 new_level, uint8 new_x
  cur_y_add = new_y_add;
  updateBlacking();
 
+ // Trigger autosave on level change (entering/leaving dungeons)
+ if(old_level != (uint8)new_level)
+ {
+   SaveManager *save_mgr = game->get_save_manager();
+   if(save_mgr)
+     save_mgr->trigger_autosave_on_map_change();
+ }
 }
 
 void MapWindow::moveMapRelative(sint16 rel_x, sint16 rel_y)
@@ -1351,6 +1371,11 @@ void MapWindow::drawActors()
  uint16 i;
  Actor *actor;
 
+ // Collect visible actors first, then sort by Y coordinate
+ // Original U6 draws objects/actors in Y-coordinate order (top to bottom)
+ std::vector<Actor*> visible_actors;
+ visible_actors.reserve(64);
+
  for(i=0;i < 256;i++)
    {
     actor = actor_manager->get_actor(i);
@@ -1366,11 +1391,34 @@ void MapWindow::drawActors()
              uint32 buf_idx = (rel_y + TMP_MAP_BORDER) * tmp_map_width + (x + TMP_MAP_BORDER);
              if(buf_idx < tmp_map_width * tmp_map_height && tmp_map_buf[buf_idx] != 0)
                {
-                drawActor(actor);
+                visible_actors.push_back(actor);
                }
             }
          }
       }
+   }
+
+ // Sort by Y coordinate first, then X coordinate (ascending) for proper draw order
+ // Original U6: for(j=0;j<11;j++) for(i=0;i<11;i++) - Y outer loop, X inner loop
+ // Actors with lower Y are drawn first (behind), higher Y drawn later (in front)
+ // For same Y, lower X (left) drawn first, higher X (right) drawn later
+ // For smooth movement, use visual coordinates for sorting
+ std::sort(visible_actors.begin(), visible_actors.end(),
+   [this](Actor *a, Actor *b) {
+     float y_a = (a->is_smooth_moving() && smooth_movement) ? a->get_visual_y() : (a->y * 16.0f);
+     float y_b = (b->is_smooth_moving() && smooth_movement) ? b->get_visual_y() : (b->y * 16.0f);
+     if(y_a != y_b)
+       return y_a < y_b;
+     // Same Y: sort by X
+     float x_a = (a->is_smooth_moving() && smooth_movement) ? a->get_visual_x() : (a->x * 16.0f);
+     float x_b = (b->is_smooth_moving() && smooth_movement) ? b->get_visual_x() : (b->x * 16.0f);
+     return x_a < x_b;
+   });
+
+ // Draw actors in sorted order
+ for(Actor *a : visible_actors)
+   {
+    drawActor(a);
    }
 }
 
@@ -1412,7 +1460,8 @@ inline void MapWindow::drawActor(Actor *actor)
         if(actor->is_smooth_moving() && smooth_movement)
         {
             Tile *draw_tile = rtile ? rtile : tile;
-            drawTileAtWorldPixel(draw_tile, actor->get_visual_x(), actor->get_visual_y());
+            drawTileAtWorldPixel(draw_tile, actor->get_visual_x(), actor->get_visual_y(), false);
+            drawTileAtWorldPixel(draw_tile, actor->get_visual_x(), actor->get_visual_y(), true);
             if(rtile)
                 delete rtile;
         }
@@ -1592,7 +1641,7 @@ inline void MapWindow::drawObj(Obj *obj, bool draw_lowertiles, bool toptile)
           float obj_pixel_x = obj->x * 16.0f + (actor_visual_x - actor_tile_x);
           float obj_pixel_y = obj->y * 16.0f + (actor_visual_y - actor_tile_y);
 
-          drawTileAtWorldPixel(tile, obj_pixel_x, obj_pixel_y);
+          drawTileAtWorldPixel(tile, obj_pixel_x, obj_pixel_y, toptile);
           return;
       }
   }
@@ -1717,8 +1766,21 @@ inline void MapWindow::drawTopTile(Tile *tile, uint16 x, uint16 y, bool toptile)
     }
 }
 
+// Helper to blit a single tile at screen coordinates
+inline void MapWindow::blitTileAtScreen(Tile *tile, sint16 draw_x, sint16 draw_y)
+{
+    if(map_tile_scale == 4)
+        screen->blit4x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+    else if(map_tile_scale == 3)
+        screen->blit3x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+    else if(map_tile_scale == 2)
+        screen->blit2x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+    else
+        screen->blit(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+}
+
 // Draw a tile at world pixel coordinates (for smooth actor movement)
-inline void MapWindow::drawTileAtWorldPixel(Tile *tile, float world_px, float world_py)
+inline void MapWindow::drawTileAtWorldPixel(Tile *tile, float world_px, float world_py, bool toptile)
 {
     // Convert world pixel to screen pixel
     // world_px is in original 16x16 pixel units
@@ -1734,29 +1796,73 @@ inline void MapWindow::drawTileAtWorldPixel(Tile *tile, float world_px, float wo
 
     sint16 draw_x = area.x + (sint16)(screen_rel_x * map_tile_scale);
     sint16 draw_y = area.y + (sint16)(screen_rel_y * map_tile_scale);
+    sint16 tile_pixel_size = 16 * map_tile_scale;
 
-    // Draw both bottom and top tile layers
-    if(!tile->toptile)
+    uint16 tile_num = tile->tile_num;
+    bool dbl_width = tile->dbl_width;
+    bool dbl_height = tile->dbl_height;
+
+    // Draw main tile - only draw if toptile flag matches
+    if(toptile)
     {
-        if(map_tile_scale == 4)
-            screen->blit4x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-        else if(map_tile_scale == 3)
-            screen->blit3x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-        else if(map_tile_scale == 2)
-            screen->blit2x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-        else
-            screen->blit(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+        if(tile->toptile)
+            blitTileAtScreen(tile, draw_x, draw_y);
     }
-    if(tile->toptile)
+    else
     {
-        if(map_tile_scale == 4)
-            screen->blit4x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-        else if(map_tile_scale == 3)
-            screen->blit3x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-        else if(map_tile_scale == 2)
-            screen->blit2x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+        if(!tile->toptile)
+            blitTileAtScreen(tile, draw_x, draw_y);
+    }
+
+    // Handle double-width tiles (e.g., trolls, cyclops)
+    if(dbl_width)
+    {
+        tile_num--;
+        Tile *left_tile = tile_manager->get_tile(tile_num);
+        if(toptile)
+        {
+            if(left_tile->toptile)
+                blitTileAtScreen(left_tile, draw_x - tile_pixel_size, draw_y);
+        }
         else
-            screen->blit(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+        {
+            if(!left_tile->toptile)
+                blitTileAtScreen(left_tile, draw_x - tile_pixel_size, draw_y);
+        }
+    }
+
+    // Handle double-height tiles
+    if(dbl_height)
+    {
+        tile_num--;
+        Tile *top_tile = tile_manager->get_tile(tile_num);
+        if(toptile)
+        {
+            if(top_tile->toptile)
+                blitTileAtScreen(top_tile, draw_x, draw_y - tile_pixel_size);
+        }
+        else
+        {
+            if(!top_tile->toptile)
+                blitTileAtScreen(top_tile, draw_x, draw_y - tile_pixel_size);
+        }
+    }
+
+    // Handle double-width + double-height (4 tiles total)
+    if(dbl_width && dbl_height)
+    {
+        tile_num--;
+        Tile *topleft_tile = tile_manager->get_tile(tile_num);
+        if(toptile)
+        {
+            if(topleft_tile->toptile)
+                blitTileAtScreen(topleft_tile, draw_x - tile_pixel_size, draw_y - tile_pixel_size);
+        }
+        else
+        {
+            if(!topleft_tile->toptile)
+                blitTileAtScreen(topleft_tile, draw_x - tile_pixel_size, draw_y - tile_pixel_size);
+        }
     }
 }
 
@@ -3443,4 +3549,179 @@ bool MapWindow::in_dungeon_level() {
     return (cur_level == 1 || cur_level > 3); //FIXME this should probably be moved into script.
   }
   return(cur_level != 0 && cur_level != 5);
+}
+
+// Calculate average color of a region of a tile from its pixel data
+// start_x, start_y: starting pixel position (0-15)
+// size: region size (16=whole tile, 8=quarter, 4=16th, 2=64th)
+// fallback_color: color to use if tile is mostly transparent (for overlay tiles like bridges)
+static uint32 get_tile_region_color(Tile *tile, unsigned char *palette, int start_x, int start_y, int size, uint32 fallback_color = 0xFF000000)
+{
+    if(!tile || !palette)
+        return fallback_color;
+
+    // For water tiles, return a nice blue color since they're mostly transparent
+    if(tile->water)
+        return 0xFF0040A0; // deep blue water color
+
+    uint32 r_sum = 0, g_sum = 0, b_sum = 0;
+    int valid_pixels = 0;
+
+    int end_x = start_x + size;
+    int end_y = start_y + size;
+    if(end_x > 16) end_x = 16;
+    if(end_y > 16) end_y = 16;
+
+    // Sample pixels from tile data (16x16 = 256 pixels)
+    for(int py = start_y; py < end_y; py++)
+    {
+        for(int px = start_x; px < end_x; px++)
+        {
+            int i = py * 16 + px;
+            uint8 idx = tile->data[i];
+            // Skip transparent/magic color pixels
+            if(idx == 255 || idx == 0)
+                continue;
+
+            r_sum += palette[idx * 4];
+            g_sum += palette[idx * 4 + 1];
+            b_sum += palette[idx * 4 + 2];
+            valid_pixels++;
+        }
+    }
+
+    // If mostly transparent, use fallback color (base tile color)
+    if(valid_pixels == 0)
+        return fallback_color;
+
+    // If less than 25% of pixels are valid, blend with fallback color
+    int total_pixels = size * size;
+    if(valid_pixels < total_pixels / 4 && fallback_color != 0xFF000000)
+    {
+        // Blend transparent tile color with base tile color
+        uint8 r = (uint8)(r_sum / valid_pixels);
+        uint8 g = (uint8)(g_sum / valid_pixels);
+        uint8 b = (uint8)(b_sum / valid_pixels);
+
+        uint8 fb_r = (fallback_color >> 16) & 0xFF;
+        uint8 fb_g = (fallback_color >> 8) & 0xFF;
+        uint8 fb_b = fallback_color & 0xFF;
+
+        // 50% blend
+        r = (r + fb_r) / 2;
+        g = (g + fb_g) / 2;
+        b = (b + fb_b) / 2;
+
+        return 0xFF000000 | (r << 16) | (g << 8) | b;
+    }
+
+    uint8 r = (uint8)(r_sum / valid_pixels);
+    uint8 g = (uint8)(g_sum / valid_pixels);
+    uint8 b = (uint8)(b_sum / valid_pixels);
+
+    return 0xFF000000 | (r << 16) | (g << 8) | b;
+}
+
+SDL_Surface *MapWindow::generate_world_map(uint8 scale)
+{
+    // Supported scales: 1, 2, 4, 8
+    if(scale < 1) scale = 1;
+    if(scale > 8) scale = 8;
+    // Round to nearest valid scale (1, 2, 4, 8)
+    if(scale == 3) scale = 4;
+    if(scale >= 5 && scale <= 6) scale = 4;
+    if(scale == 7) scale = 8;
+
+    uint16 map_size = 1024; // Britannia surface map is 1024x1024 tiles
+    uint32 img_size = map_size * scale;
+
+    // Load palette
+    unsigned char palette[256 * 4];
+    Game::get_game()->get_palette()->loadPaletteIntoBuffer(palette);
+
+    // Create 32-bit ARGB surface
+    SDL_Surface *world_map = SDL_CreateRGBSurface(0, img_size, img_size, 32,
+        0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+
+    if(!world_map)
+    {
+        DEBUG(0, LEVEL_ERROR, "Failed to create world map surface\n");
+        return NULL;
+    }
+
+    SDL_LockSurface(world_map);
+    uint32 *pixels = (uint32 *)world_map->pixels;
+    int pitch = world_map->pitch / 4; // pitch in uint32 units
+
+    // Calculate region size based on scale
+    // scale 1: 16x16 (whole tile) -> 1 pixel
+    // scale 2: 8x8 regions -> 4 pixels
+    // scale 4: 4x4 regions -> 16 pixels
+    // scale 8: 2x2 regions -> 64 pixels
+    int region_size = 16 / scale;
+
+    // Generate map for surface level (z=0)
+    for(uint16 y = 0; y < map_size; y++)
+    {
+        for(uint16 x = 0; x < map_size; x++)
+        {
+            // Get base map tile
+            Tile *base_tile = map->get_tile(x, y, 0, true);
+            // Get object tile at this location (bridges, etc.)
+            Tile *obj_tile = obj_manager->get_obj_tile(x, y, 0, true);
+
+            // Fill pixels based on scale
+            for(int sy = 0; sy < scale; sy++)
+            {
+                for(int sx = 0; sx < scale; sx++)
+                {
+                    // First get base tile color
+                    uint32 base_color = get_tile_region_color(base_tile, palette,
+                        sx * region_size, sy * region_size, region_size);
+
+                    uint32 color;
+                    if(obj_tile != NULL)
+                    {
+                        // If there's an object, use its color with base as fallback
+                        color = get_tile_region_color(obj_tile, palette,
+                            sx * region_size, sy * region_size, region_size, base_color);
+                    }
+                    else
+                    {
+                        color = base_color;
+                    }
+
+                    uint32 px = x * scale + sx;
+                    uint32 py = y * scale + sy;
+                    pixels[py * pitch + px] = color;
+                }
+            }
+        }
+    }
+
+    SDL_UnlockSurface(world_map);
+
+    DEBUG(0, LEVEL_INFORMATIONAL, "Generated world map: %dx%d (scale=%d)\n", img_size, img_size, scale);
+    return world_map;
+}
+
+bool MapWindow::save_world_map_bmp(const char *filename, uint8 scale)
+{
+    SDL_Surface *world_map = generate_world_map(scale);
+    if(!world_map)
+        return false;
+
+    int result = SDL_SaveBMP(world_map, filename);
+    SDL_FreeSurface(world_map);
+
+    if(result == 0)
+    {
+        DEBUG(0, LEVEL_INFORMATIONAL, "Saved world map to: %s\n", filename);
+        return true;
+    }
+    else
+    {
+        DEBUG(0, LEVEL_ERROR, "Failed to save world map: %s\n", SDL_GetError());
+        return false;
+    }
 }

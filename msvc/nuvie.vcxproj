@@ -335,6 +335,7 @@
     <ClCompile Include="..\views\SunMoonStripWidget.cpp" />
     <ClCompile Include="..\views\View.cpp" />
     <ClCompile Include="..\views\ViewManager.cpp" />
+    <ClCompile Include="..\views\WorldMapDialog.cpp" />
     <ClCompile Include="..\Weather.cpp" />
     <ClCompile Include="dirent.cpp" />
   </ItemGroup>
@@ -569,6 +570,7 @@
     <ClInclude Include="..\views\SunMoonStripWidget.h" />
     <ClInclude Include="..\views\View.h" />
     <ClInclude Include="..\views\ViewManager.h" />
+    <ClInclude Include="..\views\WorldMapDialog.h" />
     <ClInclude Include="..\Weather.h" />
     <ClInclude Include="dirent.h" />
     <ClInclude Include="msvc_inc.h" />

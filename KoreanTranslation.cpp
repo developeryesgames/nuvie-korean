@@ -1201,6 +1201,62 @@ std::string KoreanTranslation::getDialogueTranslation(uint16 npc_num, const std:
         }
     }
 
+    // Pattern 3: Simple multiline text (no * separator) - FM Towns songs/poems
+    // Split by newlines and translate each line individually
+    if (trimmed.find('\n') != std::string::npos)
+    {
+        std::vector<std::string> lines;
+        std::string remaining = trimmed;
+        size_t nl_pos;
+
+        while ((nl_pos = remaining.find('\n')) != std::string::npos)
+        {
+            std::string line = remaining.substr(0, nl_pos);
+            // Trim whitespace from line
+            while (!line.empty() && (line[0] == ' ' || line[0] == '\r'))
+                line.erase(0, 1);
+            while (!line.empty() && (line.back() == ' ' || line.back() == '\r'))
+                line.pop_back();
+            if (!line.empty())
+                lines.push_back(line);
+            remaining = remaining.substr(nl_pos + 1);
+        }
+        // Add the last line
+        while (!remaining.empty() && (remaining[0] == ' ' || remaining[0] == '\r'))
+            remaining.erase(0, 1);
+        while (!remaining.empty() && (remaining.back() == ' ' || remaining.back() == '\r'))
+            remaining.pop_back();
+        if (!remaining.empty())
+            lines.push_back(remaining);
+
+        if (lines.size() > 1)
+        {
+            std::string combined_result;
+            bool any_translated = false;
+
+            for (size_t i = 0; i < lines.size(); i++)
+            {
+                std::string trans = lookupSingleDialogue(npc_num, lines[i]);
+                if (!trans.empty())
+                {
+                    any_translated = true;
+                    if (!combined_result.empty())
+                        combined_result += "\n";
+                    combined_result += trans;
+                }
+                else
+                {
+                    if (!combined_result.empty())
+                        combined_result += "\n";
+                    combined_result += lines[i];
+                }
+            }
+
+            if (any_translated)
+                return combined_result;
+        }
+    }
+
     // Log untranslated text
     static std::set<std::string> logged_texts;
     std::string log_key = std::to_string(npc_num) + "|" + trimmed;

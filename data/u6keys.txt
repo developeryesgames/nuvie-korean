@@ -4,4 +4,5 @@ r	rest
 Alt-r	select_command_bar	8	# select rest on the command bar
 o	use_item	87	# use orb of moons
 p	use_item	63	# use lock pick
-Alt-w	toggle_unlimited_casting
+w	show_worldmap	# Show world map viewer
+Shift-w	generate_worldmap	4	# Generate world map (4x scale, 4096x4096)

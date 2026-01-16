@@ -62,6 +62,7 @@ SaveSlot::SaveSlot(GUI_CallBack *callback, GUI_Color bg_color) : GUI_Widget(NULL
 
  selected = false;
  new_save = false;
+ is_autosave = false;
  thumbnail = NULL;
  textinput_widget = NULL;
 }
@@ -79,6 +80,11 @@ bool SaveSlot::init(const char *directory, std::string *file)
  if(file != NULL)
   {
    filename.assign(file->c_str());
+
+   // Check if this is an autosave file
+   if(filename.find("_autosave.sav") != std::string::npos)
+     is_autosave = true;
+
    if(!load_info(directory))
      return false;
   }
@@ -110,11 +116,29 @@ bool SaveSlot::init(const char *directory, std::string *file)
 
  int scale = get_saveslot_scale();
  int thumb_offset = MAPWINDOW_THUMBNAIL_SIZE * scale + 2 * scale;
- textinput_widget = new GUI_TextInput(thumb_offset, 2 * scale, 255, 255, 255, (char *)save_description.c_str(), gui->get_font(),26,2, this);
+
+ // For autosave, show "[Autosave]" prefix and make read-only
+ std::string display_desc = save_description;
+ if(is_autosave)
+ {
+   KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+   if (kt && kt->isEnabled()) {
+     display_desc = "[자동저장] " + save_description;
+   } else {
+     display_desc = "[Autosave] " + save_description;
+   }
+ }
+
+ textinput_widget = new GUI_TextInput(thumb_offset, 2 * scale, 255, 255, 255, (char *)display_desc.c_str(), gui->get_font(),26,2, this);
  if (scale > 1) {
    textinput_widget->SetTextScale(scale);
    textinput_widget->UpdateAreaSize();
  }
+
+ // Make autosave slot read-only (disable text editing)
+ if(is_autosave)
+   textinput_widget->set_read_only(true);
+
  AddWidget((GUI_Widget *)textinput_widget);
 
  return true;
@@ -242,13 +266,21 @@ void SaveSlot::Display(bool full_redraw)
    {
     int scale = get_saveslot_scale();
     if (scale > 1) {
-      // Lighter blue for Korean mode
-      Uint32 light_blue = SDL_MapRGB(surface->format, 100, 140, 200);
-      SDL_FillRect(surface, &framerect, light_blue);
+      // Lighter blue for Korean mode (darker for autosave)
+      Uint32 select_color = is_autosave ?
+        SDL_MapRGB(surface->format, 80, 120, 80) :   // Green tint for autosave
+        SDL_MapRGB(surface->format, 100, 140, 200);  // Blue for normal
+      SDL_FillRect(surface, &framerect, select_color);
     } else {
       GUI *gui = GUI::get_gui();
       SDL_FillRect(surface, &framerect, gui->get_selected_color()->sdl_color);
     }
+   }
+ else if(is_autosave)
+   {
+    // Autosave slot: slightly different background color (greenish tint)
+    Uint32 autosave_bg = SDL_MapRGB(surface->format, 130, 140, 110);
+    SDL_FillRect(surface, &framerect, autosave_bg);
    }
  else
    SDL_FillRect(surface, &framerect, background_color.sdl_color);

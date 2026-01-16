@@ -97,6 +97,7 @@ Startup game:|시작 게임:
 Skip intro:|인트로 생략:
 Show console:|콘솔 표시:
 Use original cursors:|원본 커서 사용:
+Autosave:|자동저장:
 
 # CheatsDialog
 Cheats:|치트:
@@ -1185,3 +1186,7 @@ Show stats for character 8|캐릭터 8 능력치 표시
 Show stats for character 9|캐릭터 9 능력치 표시
 use orb of moons|달의 오브 사용
 use lock pick|자물쇠 따개 사용
+
+# WorldMap messages
+Map only available on surface.\n|지상에서만 지도를 볼 수 있습니다.\n
+World map not available.\n|월드맵을 사용할 수 없습니다.\n

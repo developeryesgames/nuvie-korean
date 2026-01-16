@@ -53,6 +53,8 @@ Alt-i	toggle_no_darkness
 Alt-Ctrl-p	toggle_pickpocket_mode
 Ctrl-t	teleport_to_cursor
 x	toggle_x_ray
+Alt-w	generate_worldmap	1	# Generate world map (1x scale)
+Alt-Ctrl-w	generate_worldmap	2	# Generate world map (2x scale)
 
 Ctrl-a	toggle_audio
 Ctrl-m	toggle_music

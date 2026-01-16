@@ -293,6 +293,10 @@ SDL_Rect paper_clip_rect;
  SDL_Surface *get_sdl_surface(uint16 x, uint16 y, uint16 w, uint16 h);
  SDL_Surface *get_roof_tiles() { return roof_tiles; }
 
+ // World map generation
+ SDL_Surface *generate_world_map(uint8 scale = 1); // scale: 1 = 1024x1024, 2 = 2048x2048
+ bool save_world_map_bmp(const char *filename, uint8 scale = 1);
+
  std::vector<Obj *> m_ViewableObjects; //^^ dodgy public buffer
 
  void wizard_eye_start(MapCoord location, uint16 duration, CallBack *caller);
@@ -311,7 +315,8 @@ protected:
  inline void drawNewTile(Tile *tile, uint16 x, uint16 y, bool toptile);
  void drawBorder();
  inline void drawTopTile(Tile *tile, uint16 x, uint16 y, bool toptile);
- inline void drawTileAtWorldPixel(Tile *tile, float world_px, float world_py);
+ inline void blitTileAtScreen(Tile *tile, sint16 draw_x, sint16 draw_y);
+ inline void drawTileAtWorldPixel(Tile *tile, float world_px, float world_py, bool toptile);
  inline void drawActor(Actor *actor);
  void drawRoofs();
  void drawGrid();

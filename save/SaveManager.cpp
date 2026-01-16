@@ -37,7 +37,8 @@
 #include "NuvieFileList.h"
 
 #include "GUI.h"
-//#include "Game.h"
+#include "Game.h"
+#include "Party.h"
 #include "Event.h"
 #include "Console.h"
 #include "SaveDialog.h"
@@ -63,6 +64,9 @@ SaveManager::SaveManager(Configuration *cfg)
  obj_manager = NULL;
  savegame = NULL;
  game_type = 0;
+ autosave_enabled = false;
+ last_autosave_time = 0;
+ autosave_pending = false;
 }
 
 // setup the savedir variable.
@@ -124,6 +128,17 @@ bool SaveManager::init()
 
    ConsoleAddInfo("Save dir: \"%s\"", savedir.c_str());
 
+ // Load autosave setting (default: disabled)
+ // Use game-specific key (e.g., config/ultima6/autosave)
+ std::string autosave_key = config_get_game_key(config);
+ autosave_key.append("/autosave");
+ config->value(autosave_key, autosave_enabled, false);
+ if(autosave_enabled)
+ {
+   ConsoleAddInfo("Autosave enabled (1 minute interval)");
+   last_autosave_time = SDL_GetTicks();
+ }
+
  return true;
 }
 
@@ -159,21 +174,29 @@ bool SaveManager::load_latest_save()
    ConsoleAddError("Opening " + savedir);
    return false;
  }
- filename = filelist.get_latest();
+
+ // Try each save file in order (newest first) until one loads successfully
+ // This handles corrupted/empty save files by falling through to the next one
+ while((filename = filelist.next()) != NULL)
+ {
+   build_path(savedir, filename->c_str(), fullpath);
+   DEBUG(0, LEVEL_INFORMATIONAL, "Trying to load save: %s\n", fullpath.c_str());
+   if(savegame->load(fullpath.c_str()))
+   {
+     filelist.close();
+     return true;
+   }
+   DEBUG(0, LEVEL_WARNING, "Failed to load save: %s, trying next...\n", fullpath.c_str());
+ }
 
  filelist.close();
 
- if(filename != NULL)
-   build_path(savedir, filename->c_str(), fullpath);
-
- if(!filename || savegame->load(fullpath.c_str()) == false) //try to load the latest save
-   {
-    if(savegame->load_original() == false)          // fall back to savegame/ if no nuvie savegames exist.
-      {
-       DEBUG(0,LEVEL_WARNING,"Starting load_new() for new game");
-		return savegame->load_new();                 // if all else fails try to load a new game.
-      }
-   }
+ // No valid saves found, try original savegame/ or new game
+ if(savegame->load_original() == false)
+ {
+   DEBUG(0,LEVEL_WARNING,"Starting load_new() for new game");
+   return savegame->load_new();
+ }
 
  return true;
 }
@@ -237,6 +260,90 @@ bool SaveManager::quick_save(int save_num, bool load)
 	}
 
 	return savegame->save(fullpath_char, &save_name); // always true
+}
+
+bool SaveManager::autosave()
+{
+	if(!autosave_enabled)
+		return false;
+
+	Event *event = Game::get_game()->get_event();
+
+	// Don't autosave if not in move mode or if game is paused
+	if(event->get_mode() == EQUIP_MODE)
+		event->set_mode(MOVE_MODE);
+	if(event->get_mode() != MOVE_MODE || Game::get_game()->user_paused())
+		return false;
+
+	// Don't autosave during combat
+	if(Game::get_game()->get_party()->is_in_combat_mode())
+		return false;
+
+	// Don't autosave if armageddon or using control cheat
+	if(Game::get_game()->is_armageddon())
+		return false;
+	if(event->using_control_cheat())
+		return false;
+
+	// Build autosave filename: nuvieU6_autosave.sav
+	std::string save_name = "nuvie";
+	save_name.append(get_game_tag(game_type));
+	save_name.append("_autosave.sav");
+
+	std::string fullpath;
+	build_path(savedir, save_name.c_str(), fullpath);
+
+	std::string save_desc = "Autosave";
+
+	DEBUG(0, LEVEL_INFORMATIONAL, "Autosaving to %s\n", fullpath.c_str());
+
+	bool result = savegame->save(fullpath.c_str(), &save_desc);
+
+	if(result)
+	{
+		last_autosave_time = SDL_GetTicks();
+	}
+
+	return result;
+}
+
+void SaveManager::check_autosave()
+{
+	if(!autosave_enabled)
+		return;
+
+	// Check for pending autosave from map change (deferred to next frame)
+	if(autosave_pending)
+	{
+		autosave_pending = false;
+		if(!autosave())
+		{
+			// If autosave failed (e.g., in combat), reset timer to try again later
+			last_autosave_time = SDL_GetTicks();
+		}
+		return;
+	}
+
+	uint32 current_time = SDL_GetTicks();
+	if(current_time - last_autosave_time >= AUTOSAVE_INTERVAL_MS)
+	{
+		if(!autosave())
+		{
+			// If autosave failed (e.g., in combat, dialog open), reset timer
+			// This prevents spamming autosave attempts every frame
+			last_autosave_time = SDL_GetTicks();
+		}
+	}
+}
+
+void SaveManager::trigger_autosave_on_map_change()
+{
+	if(!autosave_enabled)
+		return;
+
+	// Set pending flag - actual save happens in check_autosave() next frame
+	// This ensures game state is fully stable before saving
+	autosave_pending = true;
 }
 
 void SaveManager::create_dialog()

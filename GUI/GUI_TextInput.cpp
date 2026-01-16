@@ -41,6 +41,7 @@ GUI_TextInput:: GUI_TextInput(int x, int y, Uint8 r, Uint8 g, Uint8 b, char *str
  callback_object = callback;
  cursor_color = 0;
  selected_bgcolor = 0;
+ read_only = false;
 
  // Check for Korean mode
  FontManager *fm = Game::get_game()->get_font_manager();
@@ -113,6 +114,14 @@ GUI_status GUI_TextInput::KeyDown(SDL_Keysym key)
 
  if(!focused)
    return GUI_PASS;
+
+ // Read-only mode: only allow navigation and focus release
+ if(read_only)
+ {
+   if(key.sym == SDLK_ESCAPE || key.sym == SDLK_RETURN || key.sym == SDLK_KP_ENTER)
+     release_focus();
+   return GUI_YUM;
+ }
 
 
  if(!is_printable && key.sym != SDLK_BACKSPACE)
@@ -456,6 +465,10 @@ GUI_status GUI_TextInput::TextInput(const char *input_text)
 {
  if(!focused || input_text == NULL || input_text[0] == '\0')
    return GUI_PASS;
+
+ // Read-only mode: ignore text input
+ if(read_only)
+   return GUI_YUM;
 
  // Clear composing text since we got a finalized character
  composing_text.clear();

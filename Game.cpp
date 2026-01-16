@@ -712,9 +712,23 @@ void Game::play()
 
      screen->preformUpdate();
      sound_manager->update();
+
+     // Check for autosave (1 minute interval)
+     save_manager->check_autosave();
+
      event->wait();
    }
   return;
+}
+
+void Game::quit()
+{
+  // Autosave on quit if enabled
+  if(save_manager && save_manager->is_autosave_enabled())
+  {
+    save_manager->autosave();
+  }
+  game_play = false;
 }
 
 void Game::update_until_converse_finished()

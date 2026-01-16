@@ -27,10 +27,14 @@
 #include <string>
 #include <list>
 
+#include <SDL.h>
 #include "GUI_CallBack.h"
 
 #define QUICK_LOAD true
 #define QUICK_SAVE false
+
+// Autosave interval in milliseconds (1 minute = 60000ms)
+#define AUTOSAVE_INTERVAL_MS 60000
 
 class Configuration;
 
@@ -48,6 +52,11 @@ class SaveManager : public GUI_CallBack
  int game_type;
 
  SaveGame *savegame;
+
+ // Autosave
+ bool autosave_enabled;
+ uint32 last_autosave_time;
+ bool autosave_pending;  // Set to true when level change triggers autosave
 
  std::string savedir;
  std::string search_prefix; //eg. nuvieU6, nuvieMD or nuvieSE
@@ -71,6 +80,13 @@ class SaveManager : public GUI_CallBack
  bool load(SaveSlot *save_slot);
  bool save(SaveSlot *save_slot);
  bool quick_save(int save_num, bool load);
+
+ // Autosave functions
+ bool autosave();
+ void check_autosave();  // Called from game loop
+ void trigger_autosave_on_map_change();  // Called on level change
+ bool is_autosave_enabled() { return autosave_enabled; }
+ void set_autosave_enabled(bool enabled) { autosave_enabled = enabled; if(enabled) last_autosave_time = SDL_GetTicks(); }
 
  std::string get_new_savefilename();
  std::string get_savegame_directory() { return savedir; }

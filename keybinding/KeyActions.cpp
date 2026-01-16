@@ -39,6 +39,7 @@
 #include "U6misc.h"
 #include "KoreanTranslation.h"
 #include "FontManager.h"
+#include "WorldMapDialog.h"
 
 // Helper function for translated UI text
 static std::string get_ui_text(const char* english) {
@@ -670,6 +671,57 @@ void ActionToggleCheats(int const *params)
 		MAP_WINDOW->set_x_ray_view(X_RAY_CHEAT_ON);
 	else if(xray == X_RAY_CHEAT_ON)
 		MAP_WINDOW->set_x_ray_view(X_RAY_CHEAT_OFF);
+}
+
+void ActionGenerateWorldMap(int const *params)
+{
+	// World map generation is disabled - use pre-generated worldmap_4x.bmp instead
+	// The code below is preserved for reference but not executed
+	GAME->get_scroll()->display_string("World map generation is disabled.\n");
+	return;
+
+#if 0  // Disabled - kept for reference
+	DEBUG(0, LEVEL_DEBUGGING, "ActionGenerateWorldMap called\n");
+	new TextEffect("Generating map...");
+
+	int scale = (params && params[0] > 0) ? params[0] : 1;
+	if(scale > 8) scale = 8;
+
+	char filename[32];
+	snprintf(filename, sizeof(filename), "worldmap_%dx.bmp", scale);
+
+	GAME->get_scroll()->display_string("Generating world map...\n");
+	if(MAP_WINDOW->save_world_map_bmp(filename, scale))
+	{
+		char msg[64];
+		snprintf(msg, sizeof(msg), "Saved: %s\n", filename);
+		GAME->get_scroll()->display_string(msg);
+		new TextEffect("World map saved!");
+	}
+	else
+	{
+		GAME->get_scroll()->display_string("Failed to save world map.\n");
+		new TextEffect("World map generation failed!");
+	}
+#endif
+}
+
+void ActionShowWorldMap(int const *params)
+{
+	DEBUG(0, LEVEL_DEBUGGING, "ActionShowWorldMap called\n");
+
+	// Create and show world map dialog (works underground too, with restrictions)
+	WorldMapDialog *dialog = new WorldMapDialog();
+	if(dialog->init())
+	{
+		GUI::get_gui()->AddWidget(dialog);
+		GUI::get_gui()->lock_input(dialog);
+	}
+	else
+	{
+		delete dialog;
+		GAME->get_scroll()->display_string(get_ui_text("World map not available.\n").c_str());
+	}
 }
 
 void ActionDoNothing(int const *params)

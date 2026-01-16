@@ -95,6 +95,8 @@ void ActionToggleX_Ray(int const *params);
 void ActionHealParty(int const *params);
 void ActionTeleportToCursor(int const *params);
 void ActionToggleCheats(int const *params);
+void ActionGenerateWorldMap(int const *params);
+void ActionShowWorldMap(int const *params);
 
 void ActionDoNothing(int const *params);
 

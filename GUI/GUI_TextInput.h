@@ -50,6 +50,7 @@ class GUI_TextInput : public GUI_Text
  std::string utf8_text;       // UTF-8 text buffer for Korean
  bool use_korean;
  uint16 korean_cursor_x;      // Cached cursor x position for Korean mode
+ bool read_only;              // If true, text cannot be edited
 
  public:
 
@@ -69,6 +70,8 @@ class GUI_TextInput : public GUI_Text
  void add_utf8_char(const char *utf8_char);
  void remove_char();
  void set_text(const char *new_text);
+ void set_read_only(bool readonly) { read_only = readonly; }
+ bool is_read_only() { return read_only; }
  char *get_text() { return text; }
  std::string get_utf8_text();
 void SetDisplay(Screen *s);
