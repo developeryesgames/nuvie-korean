@@ -452,7 +452,26 @@ KeyMap::iterator KeyBinder::get_sdlkey_index(SDL_Keysym keysym)
 		key.mod = (SDL_Keymod)(key.mod | KMOD_ALT);
 #endif
 
-	return bindings.find(key);
+	KeyMap::iterator it = bindings.find(key);
+	if (it != bindings.end())
+		return it;
+
+	// Fallback: If not found, try using scancode to get the key
+	// This handles non-ASCII input methods (e.g., Korean IME on macOS)
+	// where sym may be 0 or different but scancode is still valid
+	if (keysym.scancode != SDL_SCANCODE_UNKNOWN)
+	{
+		SDL_Keycode fallback_sym = SDL_GetKeyFromScancode(keysym.scancode);
+		if (fallback_sym != SDLK_UNKNOWN && fallback_sym != keysym.sym)
+		{
+			key.sym = fallback_sym;
+			it = bindings.find(key);
+			if (it != bindings.end())
+				return it;
+		}
+	}
+
+	return bindings.end();
 }
 
 bool KeyBinder::HandleEvent(const SDL_Event *ev)
