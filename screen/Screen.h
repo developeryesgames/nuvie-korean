@@ -98,6 +98,7 @@ class Screen
    SDL_Surface *get_sdl_surface();
    uint16 get_width() { return width; }
    uint16 get_height() { return height; }
+   const uint8 *get_palette() { return palette; }
    uint16 get_translated_x(uint16 x);
    uint16 get_translated_y(uint16 y);
 

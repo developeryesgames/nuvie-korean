@@ -233,8 +233,8 @@ bool WorldMapDialog::generateWorldMap()
         return false;
     }
 
-    // Get the screen's palette for color lookup
-    SDL_Palette *palette = scr->get_sdl_surface()->format->palette;
+    // Get the screen's palette for color lookup (RGB values, 256 colors * 3 bytes)
+    const uint8 *palette = scr->get_palette();
     if(!palette)
     {
         DEBUG(0, LEVEL_ERROR, "Failed to get screen palette\n");
@@ -265,13 +265,11 @@ bool WorldMapDialog::generateWorldMap()
                 for(int px = 0; px < 16; px++)
                 {
                     uint8 color_idx = tile->data[py * 16 + px];
-                    if(color_idx < palette->ncolors)
-                    {
-                        r_sum += palette->colors[color_idx].r;
-                        g_sum += palette->colors[color_idx].g;
-                        b_sum += palette->colors[color_idx].b;
-                        pixel_count++;
-                    }
+                    // palette is uint8[768]: 256 colors * 3 bytes (R, G, B)
+                    r_sum += palette[color_idx * 3 + 0];
+                    g_sum += palette[color_idx * 3 + 1];
+                    b_sum += palette[color_idx * 3 + 2];
+                    pixel_count++;
                 }
             }
 
