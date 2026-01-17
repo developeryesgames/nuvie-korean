@@ -97,8 +97,8 @@ Converse::init(Configuration *cfg, nuvie_game_t t, MsgScroll *s,ActorManager *a,
     cfg->value("config/cheats/party_all_the_time", party_all_the_time);
     cfg->value("config/audio/conversations_stop_music", conversations_stop_music, false);
 
-    cfg->value("config/ultima6/townsdir", townsdir, "");
-    if(townsdir != "" && directory_exists(townsdir.c_str()))
+    // Only enable fmtowns mode if converse.a actually exists in townsdir
+    if(has_fmtowns_support(cfg))
       using_fmtowns = true;
     
     speech = new ConverseSpeech();

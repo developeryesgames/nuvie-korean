@@ -211,6 +211,11 @@ bool SaveManager::quick_save(int save_num, bool load)
 {
 	if(save_num < 0 || save_num > 999)
 		return false;
+
+	// Safety check - ensure game is fully initialized
+	if(!savegame || savedir.empty())
+		return false;
+
 	Event *event = Game::get_game()->get_event();
 
 	if(event->get_mode() == EQUIP_MODE)
@@ -271,6 +276,10 @@ bool SaveManager::quick_save(int save_num, bool load)
 bool SaveManager::autosave()
 {
 	if(!autosave_enabled)
+		return false;
+
+	// Safety check - ensure game is fully initialized
+	if(!savegame || savedir.empty())
 		return false;
 
 	Event *event = Game::get_game()->get_event();
@@ -365,7 +374,12 @@ void SaveManager::create_dialog()
  if(dialog == NULL)
    {
     dialog = new SaveDialog((GUI_CallBack *)this);
-    dialog->init(savedir.c_str(), search_prefix.c_str());
+    if(!dialog->init(savedir.c_str(), search_prefix.c_str()))
+    {
+      delete dialog;
+      dialog = NULL;
+      return;
+    }
     dialog->grab_focus();
     gui->AddWidget(dialog);
     gui->lock_input(dialog);

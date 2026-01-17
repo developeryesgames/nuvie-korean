@@ -464,22 +464,31 @@ void ActionToggleFps(int const *params)
 
 void ActionToggleAudio(int const *params)
 {
-	bool audio = !GAME->get_sound_manager()->is_audio_enabled();
-	GAME->get_sound_manager()->set_audio_enabled(audio);
+	SoundManager *sm = GAME->get_sound_manager();
+	if(!sm)
+		return;
+	bool audio = !sm->is_audio_enabled();
+	sm->set_audio_enabled(audio);
 	new TextEffect(get_ui_text(audio ? "Audio enabled" : "Audio disabled"));
 }
 
 void ActionToggleMusic(int const *params)
 {
-	bool music = !GAME->get_sound_manager()->is_music_enabled();
-	GAME->get_sound_manager()->set_music_enabled(music);
+	SoundManager *sm = GAME->get_sound_manager();
+	if(!sm)
+		return;
+	bool music = !sm->is_music_enabled();
+	sm->set_music_enabled(music);
 	new TextEffect(get_ui_text(music ? "Music enabled" : "Music disabled"));
 }
 
 void ActionToggleSFX(int const *params)
 {
-	bool sfx = !GAME->get_sound_manager()->is_sfx_enabled();
-	GAME->get_sound_manager()->set_sfx_enabled(sfx);
+	SoundManager *sm = GAME->get_sound_manager();
+	if(!sm)
+		return;
+	bool sfx = !sm->is_sfx_enabled();
+	sm->set_sfx_enabled(sfx);
 	new TextEffect(get_ui_text(sfx ? "Sfx enabled" : "Sfx disabled"));
 }
 
