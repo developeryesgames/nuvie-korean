@@ -1,0 +1,58 @@
+# FM Towns 대사 - dialogues_ko.txt에 추가할 내용
+# DOS 번역을 참고하여 한국어 번역 추가 필요
+# 총 53개
+#===================================================================
+
+10|"Let's try it again." *|<DOS 참고: "Let's try it again."...>
+139|"Oho, so that's what you're after, you naughty boy!"|<DOS 참고: "Oho, so that's what you're after, you naughty...>
+130|"Stand over there!" *|<DOS 참고: "Stand over there!"...>
+130|"So soon to leave?" *|<DOS 참고: "So soon to leave?"...>
+174|"To ask how I can help you, noble one."|<DOS 참고: "To ask how I can help, noble one."...>
+139|Dupre interrupts. "`$G, I really doubt we have time for this..."|<DOS 참고: $Y interrupts. "`$G, I really doubt we have time f...>
+130|"Stand over here!" *|<DOS 참고: "Stand over here!"...>
+139|Shamino scowls. "Well, you've certainly picked a fine one to be carrying on with."|<DOS 참고: $Y scowls. "Well, you've certainly picked a fine o...>
+140|Iolo speaks. "I don't think we have time for this..."|<DOS 참고: $Y speaks. "I don't think we have time for this......>
+35|"Ahem. Yes, what can I help you with, sir?"|<DOS 참고: "Ahem. Yes, what can I help you with,...>
+139|"Oho, so that's what you're after, you naughty girl!|<DOS 참고: "Oho, so that's what you're after, you naughty...>
+146|"Help yourself." *|<DOS 참고: "Help yourself."...>
+15|"But 'twill ne'er come to pass. He lives in a world of eternal silence."|<DOS 참고: "But 'tw explorer ne'er come to pass. He lives in ...>
+140|Dupre speaks. "I don't think we have time for this..."|<DOS 참고: $Y speaks. "I don't think we have time for this......>
+139|Shamino interrupts. "`$G, I really doubt we have time for this..."|<DOS 참고: $Y interrupts. "`$G, I really doubt we have time f...>
+66|"In the standard numerical notation, it reads '678987 +64|<DOS 참고: "In the standard numerical notation, it reads '678...>
+28|Iolo speaks. "I know of this person, $G."|<DOS 참고: $Y speaks. "I know of this person, $G."...>
+30|"Hello. My name's Terri - I run the mint." * "Say, aren't you the Avatar? Yes, I recognize you from your portrait..." * "My mother used to tell me stories about you when I was a girl." * "You probably wouldn't remember her, but she was at the big celebration right after you recovered the Codex." *|<DOS 참고: "Hello. My name's Terri - I run the mint."\n*\n"Sa...>
+35|"Ahem. Yes, what can I help you with, madam?"|<DOS 참고: "Ahem. Yes, what can I help you with,...>
+140|Shamino speaks. "I don't think we have time for this..."|<DOS 참고: $Y speaks. "I don't think we have time for this......>
+28|Dupre speaks. "I know of this person, $G."|<DOS 참고: $Y speaks. "I know of this person, $G."...>
+20|"Lord British treasures antiques. There is one book for which he hath offered a reward:" "'The Wizard of Oz.'"|<DOS 참고: "Lord British treasures antiques. There is one boo...>
+30|"It's Terri... Don't you think that would be a good name for an Avatar's wife?"|<DOS 참고: Don't you think that would be a good name for an A...>
+28|Shamino speaks. "I know of this person, $G."|<DOS 참고: $Y speaks. "I know of this person, $G."...>
+67|"Aye, so the great Avatar deigns to return."|<DOS 참고: "Aye, so the great Avatar deigns to return, does h...>
+110|"I'll take 1 bead." *|<DOS 참고: "I'll take #1 bead\s."...>
+107|Hendle smiles at $Y, "That will cost you #1 gold. Interested?"|<DOS 참고: $N smiles at $Y, "For $0 it will cost you #1 gold....>
+30|"It's Terri... But I wish I had been named after you."|<DOS 참고: But I wish I had been named after you."...>
+158|Just ask and I'll give you a lesson!"|<DOS 참고: and I'll give you a @lesson!"...>
+202|"Few of us are left to patrol the cities, and those may be sent to the shrines soon." * "I fear we may lose this war."|<DOS 참고: "Few of us are left to @patrol the cities, and tho...>
+110|"I'll take 2 beads." *|<DOS 참고: "I'll take #1 bead\s."...>
+110|"I'll take 3 beads." *|<DOS 참고: "I'll take #1 bead\s."...>
+5|"In the proper positions,{ the stone canst conjure gates to take thee to numerous destinations."|<DOS 참고: the stone canst conjure gates to take thee to nume...>
+82|"She has run the pier ever since her father, Quenton, was attacked by a gargoyle."{ He coughs then clears his throat.|<DOS 참고: "She has run the pier ever since her father, @Quen...>
+170|"To have been told by Naxatilor, {long ago, that the you would one day come to me, wearing the Amulet of Submission." "To never have believed it would come to pass."|<DOS 참고: "To have been told by @Naxatilor, long ago, that y...>
+43|"'Twas the sunset o'er Brittany Bay and the ships at rest in the harbor which drew me away to the sea."|<DOS 참고: and the ships at rest in the harbor which drew me ...>
+110|"Good night, sweet prince, and flights of angels tend thee to thy rest."|<DOS 참고: , and flights of angels tend thee to thy rest."...>
+110|"Good night, sweet princess, and flights of angels tend thee to thy rest."|<DOS 참고: , and flights of angels tend thee to thy rest."...>
+151|"These rows," he gestures, "are seedless grapes."|<DOS 참고: "These rows," he gestures, "are...>
+30|"Oh, I'm sorry, I wasn't listening. I was just noticing how strong and handsome you are..." { She looks away and sighs.|<DOS 참고: noticing how strong and handsome you are..."\n*\nS...>
+163|"Ok, here are the mantras: justice - do compassion -re honor - mi valour - fa spirituality - so humility - la sacrifice - ti Gosh, wouldn't you know it? The Mantra of Honesty slips my mind at the moment..."|<DOS 참고: "Ok, here are the mantras:\njustice - do\ncompassi...>
+177|"To point out his unproductive fields as an example of why the wingless ones need firm guidance."|<DOS 참고: "To point out his unproductive fields as an exampl...>
+74|"If you have any complaint, no matter how trivial, please feel free to bother me."{ It doesn't really sound like she means what she said.|<DOS 참고: "If you have any complaint, no matter how trivial,...>
+151|"Here at the abbey we grow seedless grapes."|<DOS 참고: "Here at the abbey we grow...>
+99|"With a jingle vang jingle vang jingle vang jingle, With a jingle vang jingle vang jingle hi ho."|<DOS 참고: With a jingle vang jingle vang jingle vang jingle ...>
+99|"With a jingle vang jingle vang jingle vang jingle, With a jingle vang jingle vang jingle hi ho!"|<DOS 참고: With a jingle vang jingle vang jingle vang jingle ...>
+43|"Those who live the warriors' life like to sing, and to regale one another with fanciful accounts of their exploits."|<DOS 참고: and to regale one another with fanciful accounts o...>
+163|"Broke, are you? Well, come by after I'm done with this disguise, and I'll give you a loan from the royal treasury."|<DOS 참고: "Broke, are you? Well, come by after I'm done with...>
+30|"Oh, I'm sorry, I wasn't listening. I was just thinking how nice it must be to be as beautiful as you."|<DOS 참고: thinking how nice it must be to be as beautiful as...>
+179|"Ah, the old Bitter Kate, she's mended her ways, And as the Virtuous, ended her days."|<DOS 참고: "Ah, the old Bitter Kate, she's mended her ways,...>
+30|"Anyway... I just wanted to tell you that I always hoped someday I'd meet a man like you..."|<DOS 참고: "Anyway... I just wanted to tell you that I always...>
+30|"Anyway... I just wanted to tell you that I always wanted to grow up to be just like you..."|<DOS 참고: "Anyway... I just wanted to tell you that I always...>
+99|"'I will' said the smith and they went off together, "Unto the young damsel's forge they did go.|<DOS 참고: "'I will' said the smith and they went off togethe...>

@@ -1177,6 +1177,34 @@ Sound *SoundManager::RequestSong (string group)
       psc = (*it).second;
       return psc->Select ();
     }
+  // Fallback: load missing song from adlib if MP3 not found
+  if (game_type == NUVIE_GAME_U6 && opl != NULL)
+    {
+      Song *song = NULL;
+      string filename;
+      const char *adlib_file = NULL;
+      const char *title = NULL;
+
+      if (group == "combat") { adlib_file = "engage.m"; title = "Engagement and Melee"; }
+      else if (group == "boat") { adlib_file = "hornpipe.m"; title = "Captain Johne's Hornpipe"; }
+      else if (group == "gargoyle") { adlib_file = "gargoyle.m"; title = "Audchar Gargl Zenmur"; }
+      else if (group == "dungeon") { adlib_file = "dungeon.m"; title = "Dungeon"; }
+
+      if (adlib_file != NULL)
+        {
+          config_get_path(m_Config, adlib_file, filename);
+          song = new SongAdPlug(mixer->getMixer(), opl);
+          if (loadSong(song, filename.c_str(), title))
+            {
+              groupAddSong(group.c_str(), song);
+              return song;
+            }
+          else
+            {
+              delete song;
+            }
+        }
+    }
   return NULL;
 };
 

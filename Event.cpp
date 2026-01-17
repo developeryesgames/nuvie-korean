@@ -2962,6 +2962,9 @@ bool Event::rest_input(uint16 input) {
   scroll->set_input_mode(false);
   scroll->display_string("\n");
   if (rest_time == 0) {
+    // Limit to single digit (0-9) - original game behavior
+    if (input > 9)
+      input = input % 10;  // Take only first digit
     rest_time = input;
     if (rest_time == 0) {
       endAction(true);
@@ -2981,8 +2984,14 @@ bool Event::rest_input(uint16 input) {
     if (rest_guard == 0)
       scroll->display_string("none\n");
     else {
-      scroll->display_string(party->get_actor(rest_guard - 1)->get_name());
-      scroll->display_string("\n");
+      Actor *guard_actor = party->get_actor(rest_guard - 1);
+      if (guard_actor) {
+        scroll->display_string(guard_actor->get_name());
+        scroll->display_string("\n");
+      } else {
+        scroll->display_string("none\n");
+        rest_guard = 0;
+      }
     }
     scroll->display_string("\n");
     party->rest_gather();
@@ -3328,7 +3337,10 @@ void Event::doAction() {
       rest_input(party_num > 0 ? party_num : 0);
       return;
     }
-    assert(input.str);
+    if (!input.str) {
+      // Fast input race condition - ignore
+      return;
+    }
     if (strncmp(input.str->c_str(), "", input.str->length()) == 0) {
       if (rest_time == 0)
         scroll->display_string("0");

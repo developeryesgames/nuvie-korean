@@ -1056,7 +1056,21 @@ GUI_status MsgScroll::KeyDown(SDL_Keysym key)
                             // Add any composing text (Korean IME) to input buffer before finalizing
                             if(!composing_text.empty())
                             {
-                              input_buf_add_string(composing_text.c_str());
+                              // Y/N mode: map Korean composing text to Y or N
+                              if(yes_no_only)
+                              {
+                                char mapped_char = 'N';  // Default to N
+                                // Yes keywords: ㅛ, 예, 응, 어, 네, ㅇ
+                                if(composing_text == "ㅛ" || composing_text == "예" ||
+                                   composing_text == "응" || composing_text == "어" ||
+                                   composing_text == "네" || composing_text == "ㅇ")
+                                  mapped_char = 'Y';
+                                input_buf_add_char(mapped_char);
+                              }
+                              else
+                              {
+                                input_buf_add_string(composing_text.c_str());
+                              }
                               composing_text.clear();
                             }
                             if(input_char != 0)
@@ -1172,6 +1186,33 @@ GUI_status MsgScroll::TextInput(const char *text)
                 return GUI_YUM;
             }
         }
+
+        // Y/N mode: Korean input handling
+        // Yes keywords -> Y, everything else -> N
+        if(yes_no_only && text != NULL && strlen(text) > 0)
+        {
+            char mapped_char = 'N';  // Default to N for unrecognized input
+
+            // Check for Yes keywords
+            // Korean keyboard raw: j = ㅛ
+            // UTF-8 Korean: ㅛ, 예, 응, 어, 네, ㅇ
+            if(strlen(text) == 1 && (text[0] == 'j' || text[0] == 'J'))
+                mapped_char = 'Y';
+            else if(strcmp(text, "ㅛ") == 0 || strcmp(text, "예") == 0 ||
+                    strcmp(text, "응") == 0 || strcmp(text, "어") == 0 ||
+                    strcmp(text, "네") == 0 || strcmp(text, "ㅇ") == 0)
+                mapped_char = 'Y';
+
+            if(strchr(permit_input, mapped_char))
+            {
+                input_buf_add_char(mapped_char);
+                set_input_mode(false);
+                return GUI_YUM;
+            }
+        }
+
+        // Consume invalid input to prevent error messages
+        return GUI_YUM;
     }
 
     return GUI_PASS;

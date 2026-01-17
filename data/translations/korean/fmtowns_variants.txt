@@ -1,0 +1,58 @@
+# FM Towns 대사 변형 (DOS와 다른 대사)
+# Format: NPC번호|FM Towns 대사|DOS 대사|유사도
+# 총 53개
+#===================================================================
+
+10|"Let's try it again." *|"Let's try it again."|94.7%
+139|"Oho, so that's what you're after, you naughty boy!"|"Oho, so that's what you're after, you naughty|94.5%
+130|"Stand over there!" *|"Stand over there!"|94.4%
+130|"So soon to leave?" *|"So soon to leave?"|94.4%
+174|"To ask how I can help you, noble one."|"To ask how I can help, noble one."|94.3%
+139|Dupre interrupts. "`$G, I really doubt we have time for this..."|$Y interrupts. "`$G, I really doubt we have time for this..."|94.2%
+130|"Stand over here!" *|"Stand over here!"|94.1%
+139|Shamino scowls. "Well, you've certainly picked a fine one to be carrying on with."|$Y scowls. "Well, you've certainly picked a fine one to be carrying on with."|94.1%
+140|Iolo speaks. "I don't think we have time for this..."|$Y speaks. "I don't think we have time for this..."|93.9%
+35|"Ahem. Yes, what can I help you with, sir?"|"Ahem. Yes, what can I help you with,|93.5%
+139|"Oho, so that's what you're after, you naughty girl!|"Oho, so that's what you're after, you naughty|93.5%
+146|"Help yourself." *|"Help yourself."|93.3%
+15|"But 'twill ne'er come to pass. He lives in a world of eternal silence."|"But 'tw explorer ne'er come to pass. He lives in a world of eternal silence."|93.0%
+140|Dupre speaks. "I don't think we have time for this..."|$Y speaks. "I don't think we have time for this..."|92.9%
+139|Shamino interrupts. "`$G, I really doubt we have time for this..."|$Y interrupts. "`$G, I really doubt we have time for this..."|92.7%
+66|"In the standard numerical notation, it reads '678987 +64|"In the standard numerical notation, it reads '678987 8767653'."|92.2%
+28|Iolo speaks. "I know of this person, $G."|$Y speaks. "I know of this person, $G."|92.1%
+30|"Hello. My name's Terri - I run the mint." * "Say, aren't you the Avatar? Yes, I recognize you from your portrait..." * "My mother used to tell me stories about you when I was a girl." * "You probably wouldn't remember her, but she was at the big celebration right after you recovered the Codex." *|"Hello. My name's Terri - I run the mint."\n*\n"Say, aren't you the Avatar? Yes, I recognize you from your portrait..."\n*\n"My mother used to tell me stories about you when I was a girl."\n*\n"You probably wouldn't remember her, but she was at the big celebration right after you recovered the Codex."\n*\n"Anyway... I just wanted to tell you that I always|92.0%
+35|"Ahem. Yes, what can I help you with, madam?"|"Ahem. Yes, what can I help you with,|91.1%
+140|Shamino speaks. "I don't think we have time for this..."|$Y speaks. "I don't think we have time for this..."|91.1%
+28|Dupre speaks. "I know of this person, $G."|$Y speaks. "I know of this person, $G."|90.9%
+20|"Lord British treasures antiques. There is one book for which he hath offered a reward:" "'The Wizard of Oz.'"|"Lord British treasures antiques. There is one book for which he hath offered a reward:|90.5%
+30|"It's Terri... Don't you think that would be a good name for an Avatar's wife?"|Don't you think that would be a good name for an Avatar's wife?"|90.4%
+28|Shamino speaks. "I know of this person, $G."|$Y speaks. "I know of this person, $G."|88.6%
+67|"Aye, so the great Avatar deigns to return."|"Aye, so the great Avatar deigns to return, does he?"|88.2%
+110|"I'll take 1 bead." *|"I'll take #1 bead\s."|86.5%
+107|Hendle smiles at $Y, "That will cost you #1 gold. Interested?"|$N smiles at $Y, "For $0 it will cost you #1 gold. Interested?"|86.0%
+30|"It's Terri... But I wish I had been named after you."|But I wish I had been named after you."|85.4%
+158|Just ask and I'll give you a lesson!"|and I'll give you a @lesson!"|85.2%
+202|"Few of us are left to patrol the cities, and those may be sent to the shrines soon." * "I fear we may lose this war."|"Few of us are left to @patrol the cities, and those may be sent to the shrines soon."|84.3%
+110|"I'll take 2 beads." *|"I'll take #1 bead\s."|84.2%
+110|"I'll take 3 beads." *|"I'll take #1 bead\s."|84.2%
+5|"In the proper positions,{ the stone canst conjure gates to take thee to numerous destinations."|the stone canst conjure gates to take thee to numerous destinations."|84.0%
+82|"She has run the pier ever since her father, Quenton, was attacked by a gargoyle."{ He coughs then clears his throat.|"She has run the pier ever since her father, @Quenton, was attacked by a @gargoyle."|82.1%
+170|"To have been told by Naxatilor, {long ago, that the you would one day come to me, wearing the Amulet of Submission." "To never have believed it would come to pass."|"To have been told by @Naxatilor, long ago, that you would one day come to me, wearing the Amulet of Submission."|81.2%
+43|"'Twas the sunset o'er Brittany Bay and the ships at rest in the harbor which drew me away to the sea."|and the ships at rest in the harbor which drew me away to the sea."|80.0%
+110|"Good night, sweet prince, and flights of angels tend thee to thy rest."|, and flights of angels tend thee to thy rest."|79.3%
+110|"Good night, sweet princess, and flights of angels tend thee to thy rest."|, and flights of angels tend thee to thy rest."|78.0%
+151|"These rows," he gestures, "are seedless grapes."|"These rows," he gestures, "are|76.7%
+30|"Oh, I'm sorry, I wasn't listening. I was just noticing how strong and handsome you are..." { She looks away and sighs.|noticing how strong and handsome you are..."\n*\nShe looks away and sighs.|75.3%
+163|"Ok, here are the mantras: justice - do compassion -re honor - mi valour - fa spirituality - so humility - la sacrifice - ti Gosh, wouldn't you know it? The Mantra of Honesty slips my mind at the moment..."|"Ok, here are the mantras:\njustice - do\ncompassion - re\nhonor - mi\nvalour - fa\nspirituality - so\nhumility - la\nsacrifice - ti|75.2%
+177|"To point out his unproductive fields as an example of why the wingless ones need firm guidance."|"To point out his unproductive fields as an example of why|75.0%
+74|"If you have any complaint, no matter how trivial, please feel free to bother me."{ It doesn't really sound like she means what she said.|"If you have any complaint, no matter how trivial, please feel free to bother me."|74.8%
+151|"Here at the abbey we grow seedless grapes."|"Here at the abbey we grow|74.6%
+99|"With a jingle vang jingle vang jingle vang jingle, With a jingle vang jingle vang jingle hi ho."|With a jingle vang jingle vang jingle vang jingle hi ho."|74.2%
+99|"With a jingle vang jingle vang jingle vang jingle, With a jingle vang jingle vang jingle hi ho!"|With a jingle vang jingle vang jingle vang jingle hi ho!"|74.2%
+43|"Those who live the warriors' life like to sing, and to regale one another with fanciful accounts of their exploits."|and to regale one another with fanciful accounts of their exploits."|74.0%
+163|"Broke, are you? Well, come by after I'm done with this disguise, and I'll give you a loan from the royal treasury."|"Broke, are you? Well, come by after I'm done with this disguise,"|72.0%
+30|"Oh, I'm sorry, I wasn't listening. I was just thinking how nice it must be to be as beautiful as you."|thinking how nice it must be to be as beautiful as you."|71.4%
+179|"Ah, the old Bitter Kate, she's mended her ways, And as the Virtuous, ended her days."|"Ah, the old Bitter Kate, she's mended her ways,|71.3%
+30|"Anyway... I just wanted to tell you that I always hoped someday I'd meet a man like you..."|"Anyway... I just wanted to tell you that I always|71.0%
+30|"Anyway... I just wanted to tell you that I always wanted to grow up to be just like you..."|"Anyway... I just wanted to tell you that I always|70.5%
+99|"'I will' said the smith and they went off together, "Unto the young damsel's forge they did go.|"'I will' said the smith and they went off together,|70.0%

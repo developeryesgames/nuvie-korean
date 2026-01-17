@@ -39,7 +39,7 @@ d	drop
 b	toggle_combat
 a	attack
 i	doll_gump #cycle doll gump
-h	show_keys
+Ctrl-h	show_keys
 z	close_gumps
 
 Ctrl-c	toggle_cheats
