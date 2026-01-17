@@ -3317,7 +3317,10 @@ void Event::doAction() {
       assert(input.type == EVENTINPUT_OBJECT);
       drop_select(input.obj);
     } else if (!drop_qty) {
-      assert(input.str);
+      if (!input.str) {
+        // Fast input race condition - ignore
+        return;
+      }
       if (strncmp(input.str->c_str(), "", input.str->length()) == 0) {
         char buf[6];
         snprintf(buf, sizeof(buf), "%u", drop_obj->qty);
