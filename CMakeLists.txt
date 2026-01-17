@@ -590,6 +590,8 @@ set(SOURCE_FILES
     views/View.h
     views/ViewManager.cpp
     views/ViewManager.h
+    views/WorldMapDialog.cpp
+    views/WorldMapDialog.h
     AnimManager.cpp
     AnimManager.h
     Background.cpp
