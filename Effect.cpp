@@ -963,6 +963,8 @@ uint16 SleepEffect::callback(uint16 msg, CallBack *caller, void *data)
             for(int s=0; s<party->get_party_size(); s++)
             {
             	Actor *actor = party->get_actor(s);
+            	if(actor == NULL)
+            	    continue;
 
             	//heal actors.
             	uint8 hp_diff = actor->get_maxhp() - actor->get_hp();
