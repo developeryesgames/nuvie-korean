@@ -291,7 +291,10 @@ void TimedPartyMove::timed(uint32 evtime)
     }
     else // timed out, make sure nobody is walking
         for(uint32 m = 0; m < party->get_party_size(); m++)
-            party->get_actor(m)->delete_pathfinder();
+        {
+            Actor *a = party->get_actor(m);
+            if(a) a->delete_pathfinder();
+        }
 
     // NOTE: set by repeat() or stop()
     if(repeat_count == 0) // everyone is in position
@@ -749,7 +752,10 @@ void TimedRestGather::timed(uint32 evtime)
     }
     else // timed out, make sure nobody is walking
         for(uint32 m = 0; m < party->get_party_size(); m++)
-            party->get_actor(m)->delete_pathfinder();
+        {
+            Actor *a = party->get_actor(m);
+            if(a) a->delete_pathfinder();
+        }
 
     if(repeat_count == 0)
     {

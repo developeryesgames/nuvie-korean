@@ -510,7 +510,10 @@ void Party::follow(sint8 rel_x, sint8 rel_y)
     if(is_in_combat_mode()) // just update everyone's combat mode
     {
         for(int p=0; p<get_party_size();p++)
-            get_actor(p)->set_worktype(get_actor(p)->get_combat_mode());
+        {
+            Actor *a = get_actor(p);
+            if(a) a->set_worktype(a->get_combat_mode());
+        }
         return;
     }
 
@@ -548,8 +551,12 @@ void Party::follow(sint8 rel_x, sint8 rel_y)
         else if(member[p].actor->get_pathfinder())
             pathfinder->end_seek(p);
 
-        get_actor(p)->set_moves_left(get_actor(p)->get_moves_left() - 10);
-        get_actor(p)->set_worktype(0x01); // revert to normal worktype
+        Actor *a = get_actor(p);
+        if(a)
+        {
+            a->set_moves_left(a->get_moves_left() - 10);
+            a->set_worktype(0x01); // revert to normal worktype
+        }
     }
 
     defer_removing_dead_members = false;
@@ -558,7 +565,7 @@ void Party::follow(sint8 rel_x, sint8 rel_y)
     for(int p=get_party_size()-1; p>=0;p--)
     {
         Actor *a = get_actor(p);
-        if(a->is_alive() == false)
+        if(a && a->is_alive() == false)
         	remove_actor(a, PARTY_KEEP_PARTY_FLAG);
     }
 }
@@ -679,12 +686,18 @@ void Party::set_in_combat_mode(bool value)
   if(in_combat_mode)
   {
 	  for(int p=0; p<get_party_size();p++)
-		  get_actor(p)->set_worktype(get_actor(p)->get_combat_mode()); //set combat worktype
+	  {
+		  Actor *a = get_actor(p);
+		  if(a) a->set_worktype(a->get_combat_mode()); //set combat worktype
+	  }
   }
   else
   {
 	  for(int p=0; p<get_party_size();p++)
-	  		  get_actor(p)->set_worktype(ACTOR_WT_FOLLOW); //set back to follow party leader.
+	  {
+		  Actor *a = get_actor(p);
+		  if(a) a->set_worktype(ACTOR_WT_FOLLOW); //set back to follow party leader.
+	  }
   }
 //  if(combat_changes_music)
       update_music();
