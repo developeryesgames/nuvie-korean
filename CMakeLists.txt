@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.5)
 project(nuvie)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${nuvie_SOURCE_DIR}/builds/cmake")
@@ -7,8 +7,8 @@ find_package(SDL2 REQUIRED)
 # SDL2_mixer no longer needed - using dr_mp3 and stb_vorbis instead
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLUA_USE_MACOSX -DUNIX -DMACOSX -DHAVE_JOYSTICK_SUPPORT")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DLUA_USE_MACOSX -DMACOSX -DHAVE_JOYSTICK_SUPPORT")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLUA_USE_MACOSX -DUNIX -DMACOSX -DHAVE_JOYSTICK_SUPPORT -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/=")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DLUA_USE_MACOSX -DMACOSX -DHAVE_JOYSTICK_SUPPORT -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/=")
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")

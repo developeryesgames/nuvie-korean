@@ -56,6 +56,10 @@
 #ifndef WIN32
 #include <unistd.h>
 #endif
+#ifdef MACOSX
+#include <mach-o/dyld.h>
+#include <libgen.h>
+#endif
 
 Nuvie::Nuvie()
 {
@@ -310,6 +314,21 @@ bool Nuvie::initConfig()
 
  if(loadConfigFile(config_path))
    return true;
+
+#ifdef MACOSX
+ // nuvie.cfg next to executable (for macOS double-click launch)
+ {
+   char exe_path[PATH_MAX];
+   uint32_t size = sizeof(exe_path);
+   if(_NSGetExecutablePath(exe_path, &size) == 0) {
+     char *exe_dir = dirname(exe_path);
+     config_path.assign(exe_dir);
+     config_path.append("/nuvie.cfg");
+     if(loadConfigFile(config_path))
+       return true;
+   }
+ }
+#endif
 
 #ifndef WIN32
  // standard share locations
