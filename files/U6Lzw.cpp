@@ -97,9 +97,9 @@ bool U6Lzw::is_valid_lzw_file(NuvieIOFileRead *input_file)
 
 bool U6Lzw::is_valid_lzw_buffer(unsigned char *buf, uint32 length)
 {
-    if(length < 6)
+    if(buf == NULL || length < 6)
     {
-        errstr = "is_valid_lzw_buffer: buffer length < 6";
+        errstr = "is_valid_lzw_buffer: buffer is NULL or length < 6";
         return false;
     }
     if(buf[3] != 0)

@@ -42,9 +42,17 @@ FMtownsDecoderStream::FMtownsDecoderStream(std::string filename, uint16 sample_n
 	 U6Lib_n sam_file;
 	 U6Lzw lzw;
 
-	 sam_file.open(filename, 4);
+	 raw_audio_buf = NULL;
+	 buf_len = 0;
+	 buf_pos = 0;
+	 should_free_raw_data = false;
+
+	 if(!sam_file.open(filename, 4))
+		 return;
 
 	 item_data = sam_file.get_item(sample_num, NULL);
+	 if(item_data == NULL)
+		 return;
 
 	 if(isCompressed)
 	 {
@@ -60,7 +68,6 @@ FMtownsDecoderStream::FMtownsDecoderStream(std::string filename, uint16 sample_n
 		 buf_len = sam_file.get_item_size(sample_num);
 	 }
 
-	 buf_pos = 0;
 	 should_free_raw_data = true;
 }
 

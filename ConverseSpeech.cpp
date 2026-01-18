@@ -119,14 +119,18 @@ NuvieIOBuffer *ConverseSpeech::load_speech(std::string filename, uint16 sample_n
  U6Lzw lzw;
  NuvieIOBuffer *wav_buffer = 0;
  uint32 j, k;
- 
- sam_file.open(filename, 4);
- 
+
+ if(!sam_file.open(filename, 4))
+   return NULL;
+
  compressed_data = sam_file.get_item(sample_num, NULL);
+ if(compressed_data == NULL)
+   return NULL;
+
  raw_audio = lzw.decompress_buffer(compressed_data, sam_file.get_item_size(sample_num), decomp_size);
- 
+
  free(compressed_data);
- 
+
  if(raw_audio != NULL)
   {
    wav_buffer = new NuvieIOBuffer();

@@ -1361,6 +1361,7 @@
 35|He hands $Y a $0.|그가 $Y에게 $0(을)를 건네준다.
 35|Pleased with your interest, Ephemerides shows you papers with plans for a clockwork model of the Sosarian system.|당신의 관심에 기뻐하며, 에페메리데스가 소사리아 체계의 시계태엽식 모델 설계도를 보여준다.
 35|The old man adjusts the telescope, exclaims "Aha!" and starts scribbling on a scroll.|노인이 망원경을 조정하더니 "아하!" 하고 외치며 두루마리에 무언가 휘갈겨 쓰기 시작한다.
+35|The old man never turns away from his telescope. "Shhh! Can't you see I'm busy?!"|노인은 망원경에서 눈을 떼지 않는다. "쉬잇! 내가 바쁜 거 안 보입니까?!"
 35|The old man never turns away from his telescope. "Shhh! Can't you see I've busy?!"|노인은 망원경에서 눈을 떼지 않는다. "쉬잇! 내가 바쁜 거 안 보입니까?!"
 35|You watch as he works, intently focused on his task. Finally he pronounces the job a success.|그가 자신의 일에 깊이 몰두하여 작업하는 것을 지켜본다. 마침내 그는 성공했다고 선언한다.
 35|]|]
@@ -3474,6 +3475,7 @@
 83|"I'm just an innkeep. Ask @Yorl: his father used to sail for our ruler."|"나는 그저 여관 주인일 뿐이라오. @욜(Yorl) 에게 물어보시오. 그의 아버지는 우리 통치자를 위해 항해하곤 했으니까."
 83|"I'm sorry, but we require cash in advance for our rooms.\n"|"죄송하지만, 방값은 현금 선불로 받고 있소.\n"
 83|"I'm sure by now you've heard such banter about old Quenton."|"지금쯤이면 늙은 퀜턴에 대한 그런 농담조의 이야기를 들어보셨을 거요."
+83|"I've heard these beasts eat their prey. Why did they leave Quenton alone then?"|"이 괴물들이 먹잇감을 잡아먹는다고 들었소. 그런데 왜 퀜턴은 그냥 내버려 둔 거요?"
 83|"I've heard these beasts eat their prey. Why did them leave Quenton alone then?"|"이 괴물들이 먹잇감을 잡아먹는다고 들었소. 그런데 왜 퀜턴은 그냥 내버려 둔 거요?"
 83|"If you've never had @Stivius' wine, you're in for a treat."|"@스티비우스(Stivius) 의 와인을 마셔본 적 없다면, 정말 대단한 행운을 만나는 거요."
 83|"Is it you, $P?" he says, leaning close and staring you in the eyes.|"자네가 $P인가?" 그가 가까이 다가와 당신의 눈을 빤히 쳐다보며 말한다.
@@ -5442,6 +5444,7 @@
 
 129|a white-haired mage in flowing robes with a mad gleam in his eye.|휘날리는 로브를 입은, 눈에 광기가 서린 백발의 마법사다.
 129|"Balloonist? Yes, Sutek remembers him."|"열기구 제작자? 그래, 수텍은 그를 기억한다."
+129|"Begone, and pester Sutek no further!"|"당장 꺼져라, 그리고 더 이상 수텍을 괴롭히지 마라!"
 129|"Beggone, and pester Sutek no further!"|"당장 꺼져라, 그리고 더 이상 수텍을 괴롭히지 마라!"
 129|"But Sutek is mad, and so he will grant you one last nugget of wisdom before thy death!"|"하지만 수텍은 미쳤지, 그래서 죽기 전에 마지막 지혜 한 조각을 베풀어 주마!"
 129|"But he won't tell you!"|"하지만 그는 네게 말해주지 않을 거다!"

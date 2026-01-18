@@ -326,9 +326,11 @@ char *Party::get_actor_name(uint8 member_num)
  */
 sint8 Party::get_member_num(Actor *actor)
 {
+    if(actor == NULL)
+        return(-1);
     for(int i=0; i < num_in_party; i++)
     {
-        if(member[i].actor->id_n == actor->id_n)
+        if(member[i].actor && member[i].actor->id_n == actor->id_n)
             return(i);
     }
     return(-1);
@@ -336,7 +338,10 @@ sint8 Party::get_member_num(Actor *actor)
 
 sint8 Party::get_member_num(uint8 a)
 {
- return(get_member_num(actor_manager->get_actor(a)));
+ Actor *actor = actor_manager->get_actor(a);
+ if(actor == NULL)
+     return(-1);
+ return(get_member_num(actor));
 }
 
 uint8 Party::get_actor_num(uint8 member_num)
@@ -446,14 +451,20 @@ void Party::reform_party()
 sint8 Party::get_leader()
 {
     for(int m = 0; m < num_in_party; m++)
+    {
+        if(member[m].actor == NULL)
+            continue;
         if(member[m].actor->is_immobile() == false && member[m].actor->is_charmed() == false)
             return m;
+    }
     return -1;
 }
 
 /* Get map location of a party member. */
 MapCoord Party::get_location(uint8 m)
 {
+    if(m >= num_in_party || member[m].actor == NULL)
+        return MapCoord();
     return(member[m].actor->get_location());
 }
 
@@ -462,7 +473,7 @@ MapCoord Party::get_leader_location()
 {
     sint8 m = get_leader();
     MapCoord loc;
-    if(m >= 0)
+    if(m >= 0 && member[m].actor != NULL)
         loc = member[m].actor->get_location();
     return(loc);
 }
@@ -475,7 +486,7 @@ MapCoord Party::get_formation_coords(uint8 m)
     MapCoord a = get_location(m); // my location
     MapCoord l = get_leader_location(); // leader location
     sint8 leader = get_leader();
-    if(leader < 0)
+    if(leader < 0 || member[leader].actor == NULL)
         return(a);
     uint8 ldir = member[leader].actor->get_direction(); // leader direction
     // intended location
@@ -520,12 +531,18 @@ void Party::follow(sint8 rel_x, sint8 rel_y)
     defer_removing_dead_members = true;
 
     // set previous leader location first, just in case the leader changed
-    prev_leader_x = WRAPPED_COORD(member[leader].actor->x - rel_x, member[leader].actor->z);
-    prev_leader_y = member[leader].actor->y - rel_y;
+    Actor *leader_actor = member[leader].actor;
+    if(leader_actor == NULL)
+    {
+        defer_removing_dead_members = false;
+        return;
+    }
+    prev_leader_x = WRAPPED_COORD(leader_actor->x - rel_x, leader_actor->z);
+    prev_leader_y = leader_actor->y - rel_y;
     // PASS 1: Keep actors chained together.
     for(uint32 p = (leader+1); p < num_in_party; p++)
     {
-        if(member[p].actor->is_immobile()) continue;
+        if(member[p].actor == NULL || member[p].actor->is_immobile()) continue;
 
         try_again[p] = false;
         if(!pathfinder->follow_passA(p))
@@ -534,7 +551,7 @@ void Party::follow(sint8 rel_x, sint8 rel_y)
     // PASS 2: Catch up to party.
     for(uint32 p = (leader+1); p < num_in_party; p++)
     {
-        if(member[p].actor->is_immobile()) continue;
+        if(member[p].actor == NULL || member[p].actor->is_immobile()) continue;
 
         if(try_again[p])
             pathfinder->follow_passA(p);
@@ -577,6 +594,8 @@ bool Party::has_obj(uint16 obj_n, uint8 quality, bool match_zero_qual)
 
  for(i=0;i<num_in_party;i++)
   {
+   if(member[i].actor == NULL)
+     continue;
    if(member[i].actor->inventory_get_object(obj_n, quality, match_zero_qual) != NULL) // we got a match
      return true;
   }
@@ -589,9 +608,11 @@ bool Party::remove_obj(uint16 obj_n, uint8 quality)
 {
  uint16 i;
  Obj *obj;
- 
+
  for(i = 0; i < num_in_party; i++)
    {
+    if(member[i].actor == NULL)
+      continue;
     obj = member[i].actor->inventory_get_object(obj_n, quality);
     if(obj != NULL)
        {
@@ -602,7 +623,7 @@ bool Party::remove_obj(uint16 obj_n, uint8 quality)
           }
        }
    }
-    
+
  return false;
 }
 
@@ -612,6 +633,8 @@ Actor *Party::who_has_obj(uint16 obj_n, uint8 quality, bool match_qual_zero)
     uint16 i;
     for(i = 0; i < num_in_party; i++)
     {
+        if(member[i].actor == NULL)
+            continue;
         if(member[i].actor->inventory_get_object(obj_n, quality, match_qual_zero) != NULL)
             return(member[i].actor);
     }
@@ -623,6 +646,8 @@ Obj *Party::get_obj(uint16 obj_n, uint8 quality, bool match_qual_zero, uint8 fra
     Obj *obj;
     for(uint16 i = 0; i < num_in_party; i++)
     {
+        if(member[i].actor == NULL)
+            continue;
         obj = member[i].actor->inventory_get_object(obj_n, quality, match_qual_zero, frame_n, match_frame_n);
         if(obj)
             return obj;
@@ -636,6 +661,8 @@ bool Party::is_at(uint16 x, uint16 y, uint8 z, uint32 threshold)
 {
     for(uint32 p = 0; p < num_in_party; p++)
     {
+        if(member[p].actor == NULL)
+            continue;
         MapCoord loc(x, y, z);
         if(!member[p].actor->is_nearby(loc, threshold))
             return(false);
@@ -653,6 +680,8 @@ bool Party::is_anyone_at(uint16 x, uint16 y, uint8 z, uint32 threshold)
 {
     for(uint32 p = 0; p < num_in_party; p++)
     {
+        if(member[p].actor == NULL)
+            continue;
         MapCoord loc(x, y, z);
         if(member[p].actor->is_nearby(loc, threshold))
             return(true);
@@ -741,27 +770,30 @@ void Party::heal()
 
  for(i=0;i<num_in_party;i++)
   {
-   member[i].actor->heal();
+   if(member[i].actor)
+     member[i].actor->heal();
   }
 
  return;
- 
+
 }
 
 void Party::cure()
 {
  for(uint16 i=0;i<num_in_party;i++)
  {
-   member[i].actor->cure();
- } 
+   if(member[i].actor)
+     member[i].actor->cure();
+ }
 }
 
 void Party::set_ethereal(bool ethereal)
 {
  for(uint16 i=0;i<num_in_party;i++)
  {
-   member[i].actor->set_ethereal(ethereal);
- } 
+   if(member[i].actor)
+     member[i].actor->set_ethereal(ethereal);
+ }
 }
 
 void Party::show()
@@ -770,7 +802,8 @@ void Party::show()
 
  for(i=0;i<num_in_party;i++)
   {
-   member[i].actor->show();
+   if(member[i].actor)
+     member[i].actor->show();
   }
 
  return;
@@ -782,7 +815,8 @@ void Party::hide()
 
  for(i=0;i<num_in_party;i++)
   {
-   member[i].actor->hide();
+   if(member[i].actor)
+     member[i].actor->hide();
   }
 
  return;
@@ -793,8 +827,12 @@ void Party::hide()
 bool Party::move(uint16 dx, uint16 dy, uint8 dz)
 {
     for(sint32 m = 0; m < num_in_party; m++)
+    {
+        if(member[m].actor == NULL)
+            continue;
         if(!member[m].actor->move(dx, dy, dz, ACTOR_FORCE_MOVE))
             return(false);
+    }
     return(true);
 }
 
@@ -914,6 +952,8 @@ void Party::dismount_from_horses()
 
  for(uint32 m = 0; m < num_in_party; m++)
    {
+    if(member[m].actor == NULL)
+      continue;
     if(member[m].actor->obj_n == OBJ_U6_HORSE_WITH_RIDER)
       {
        Obj *my_obj = member[m].actor->make_obj();
@@ -929,12 +969,14 @@ Actor *Party::get_slowest_actor()
 {
     Actor *actor = 0;
     sint8 begin = get_leader();
-    if(begin >= 0)
+    if(begin >= 0 && member[begin].actor != NULL)
     {
         actor = member[begin].actor;
         sint8 moves = actor->get_moves_left();
         for(uint32 m = begin+1; m < num_in_party; m++)
         {
+            if(member[m].actor == NULL)
+                continue;
             sint8 select_moves = member[m].actor->get_moves_left();
             if(member[m].actor->is_immobile() == false && (select_moves < moves))
             {
@@ -1043,23 +1085,33 @@ bool Party::can_rest(std::string &err_str)
 bool Party::is_horsed()
 {
     for(int p=0; p<num_in_party; p++)
+    {
+        if(member[p].actor == NULL)
+            continue;
         if(member[p].actor->get_obj_n() == OBJ_U6_HORSE_WITH_RIDER)
             return true;
+    }
     return false;
 }
 
 bool Party::is_everyone_horsed()
 {
-	for(int p=0; p<num_in_party; p++)
-	        if(member[p].actor->get_obj_n() != OBJ_U6_HORSE_WITH_RIDER)
-	            return false;
-	    return true;
+    for(int p=0; p<num_in_party; p++)
+    {
+        if(member[p].actor == NULL)
+            continue;
+        if(member[p].actor->get_obj_n() != OBJ_U6_HORSE_WITH_RIDER)
+            return false;
+    }
+    return true;
 }
 
 Obj *Party::get_food()
 {
     for(int p=0; p<num_in_party; p++)
     {
+        if(member[p].actor == NULL)
+            continue;
         Obj *food = member[p].actor->inventory_get_food();
         if(food)
             return food;
@@ -1113,12 +1165,17 @@ void Party::update_light_sources()
 {
 	lightsources = 0;
 	for(int i=0;i< num_in_party;i++) {
+		if(member[i].actor == NULL)
+			continue;
 		for (int j=0; j < member[i].actor->get_num_light_sources(); j++)
 			add_light_source();
 	}
 	if(game->get_event()->using_control_cheat()) {
-		for(int i=0; i < game->get_player()->get_actor()->get_num_light_sources(); i++)
-			add_light_source();
+		Actor *player_actor = game->get_player()->get_actor();
+		if(player_actor) {
+			for(int i=0; i < player_actor->get_num_light_sources(); i++)
+				add_light_source();
+		}
 	}
 	game->get_map_window()->updateAmbience();
 }
@@ -1132,9 +1189,11 @@ bool Party::has_light_source()
 			if(game->get_player()->get_actor()->get_num_light_sources() > 0)
 				return true;
 			else
-				return false; 
+				return false;
 		}
 		for(int i=0;i< num_in_party;i++) {
+			if(member[i].actor == NULL)
+				continue;
 			if(member[i].actor->get_num_light_sources() > 0) {
 				if(!game->get_map_window()->tile_is_black(member[i].actor->x, member[i].actor->y)
 				   && member[i].actor->is_nearby(game->get_player()->get_actor())) // within 5 tiles of player

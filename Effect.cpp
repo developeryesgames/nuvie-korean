@@ -932,8 +932,15 @@ void SleepEffect::delete_self()
 //FIXME: need to handle TimedAdvance() errors and fade-in
 uint16 SleepEffect::callback(uint16 msg, CallBack *caller, void *data)
 {
-    uint8 hour = Game::get_game()->get_clock()->get_hour();
-    uint8 minute = Game::get_game()->get_clock()->get_minute();
+    GameClock *clock = game ? game->get_clock() : NULL;
+    if(clock == NULL)
+    {
+        delete_self();
+        return(0);
+    }
+
+    uint8 hour = clock->get_hour();
+    uint8 minute = clock->get_minute();
 
     // waited for FadeEffect
     if(msg == MESG_EFFECT_COMPLETE)
@@ -960,28 +967,32 @@ uint16 SleepEffect::callback(uint16 msg, CallBack *caller, void *data)
         else // stopping
         {
         	Party *party = game->get_party();
-            for(int s=0; s<party->get_party_size(); s++)
-            {
-            	Actor *actor = party->get_actor(s);
-            	if(actor == NULL)
-            	    continue;
+        	if(party)
+        	{
+                for(int s=0; s<party->get_party_size(); s++)
+                {
+                	Actor *actor = party->get_actor(s);
+                	if(actor == NULL)
+                	    continue;
 
-            	//heal actors.
-            	uint8 hp_diff = actor->get_maxhp() - actor->get_hp();
-            	if(hp_diff > 0)
-            	{
-            		if(hp_diff == 1)
-            			hp_diff = 2;
-            		actor->set_hp(actor->get_hp() + NUVIE_RAND()%(hp_diff/2) + hp_diff/2);
-            	}
-            }
+                	//heal actors.
+                	uint8 hp_diff = actor->get_maxhp() - actor->get_hp();
+                	if(hp_diff > 0)
+                	{
+                		if(hp_diff == 1)
+                			hp_diff = 2;
+                		actor->set_hp(actor->get_hp() + NUVIE_RAND()%(hp_diff/2) + hp_diff/2);
+                	}
+                }
+        	}
             game->unpause_user();
             delete_self();
         }
         return(0);
     }
     // assume msg == MESG_TIMED; will stop after effect completes
-    if(hour == stop_hour && minute >= stop_minute)
+    // Only trigger fade-in once (timer != NULL means we're in sleep mode)
+    if(timer != NULL && hour == stop_hour && minute >= stop_minute)
         effect_manager->watch_effect(this, new FadeEffect(FADE_PIXELATED, FADE_IN));
 
     return(0);

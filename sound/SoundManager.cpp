@@ -183,7 +183,7 @@ bool SoundManager::nuvieStartup (Configuration * config)
   config_key.append("/mt32_rom_path");
   config->value (config_key, mt32_rom_path, sound_dir.c_str());
 
-  if(game_type == NUVIE_GAME_U6) { // FM-Towns speech
+  if(game_type == NUVIE_GAME_U6 && has_fmtowns_support(config)) { // FM-Towns speech
 	  config_key = config_get_game_key(config);
 	  config_key.append("/enable_speech");
 	  config->value (config_key, speech_enabled, true);
@@ -774,7 +774,8 @@ bool SoundManager::LoadSfxManager(string sfx_style)
 	}
 	else if(sfx_style == "towns")
 	{
-		m_SfxManager = new TownsSfxManager(m_Config, mixer->getMixer());
+		if(has_fmtowns_support(m_Config))
+			m_SfxManager = new TownsSfxManager(m_Config, mixer->getMixer());
 	}
 	else if(sfx_style == "custom")
 	{
