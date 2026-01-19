@@ -95,6 +95,11 @@
   - 한글이 깨지면 data\fonts\korean 폴더 확인
   - 설정은 nuvie.cfg 파일에서 수정 가능
 
+■ macOS 문제 해결
+  - Gatekeeper 경고 시: 터미널에서 xattr -cr /설치경로/Ultima6_Korean_*
+  - 설정이 적용 안 될 때: ~/Library/Preferences/Nuvie Preferences 파일 삭제
+    (이전 버전 설정 파일이 충돌할 수 있음)
+
 ■ 설정 옵션
   - map_tile_scale: 맵 타일 크기 (2/3/4, 기본값 4)
     * 4: 원본과 동일한 뷰 (타일 크기 1:1)

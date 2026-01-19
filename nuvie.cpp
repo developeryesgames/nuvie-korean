@@ -277,46 +277,8 @@ bool Nuvie::initConfig()
 
  config = new Configuration();
 
-#ifdef WIN32
-	const char *configFilePath = getConfigPathWin32();
-	 config_path.assign(configFilePath);
-	 if(loadConfigFile(config_path))
-	   return true;
-#endif
-
-#ifndef WIN32
- // ~/.nuvierc
-
- char *home_env = getenv("HOME");
- if(home_env != NULL)
- {
-	 config_path.assign(home_env);
-	// config_path.append(U6PATH_DELIMITER);
-	 config_path.append("/.nuvierc");
-
-	 if(loadConfigFile(config_path))
-	   return true;
-
 #ifdef MACOSX
-	 config_path.assign(home_env);
-	 config_path.append("/Library/Preferences/Nuvie Preferences");
-
-	 if(loadConfigFile(config_path))
-	   return true;
-#endif
-
- }
-#endif
-
- // nuvie.cfg in the working dir
-
- config_path.assign("nuvie.cfg");
-
- if(loadConfigFile(config_path))
-   return true;
-
-#ifdef MACOSX
- // nuvie.cfg next to executable (for macOS double-click launch)
+ // nuvie.cfg next to executable (highest priority for macOS)
  {
    char exe_path[PATH_MAX];
    uint32_t size = sizeof(exe_path);
@@ -327,6 +289,38 @@ bool Nuvie::initConfig()
      if(loadConfigFile(config_path))
        return true;
    }
+ }
+#endif
+
+#ifdef WIN32
+	const char *configFilePath = getConfigPathWin32();
+	 config_path.assign(configFilePath);
+	 if(loadConfigFile(config_path))
+	   return true;
+#endif
+
+ // nuvie.cfg in the working dir
+ config_path.assign("nuvie.cfg");
+ if(loadConfigFile(config_path))
+   return true;
+
+#ifndef WIN32
+ // ~/.nuvierc
+ char *home_env = getenv("HOME");
+ if(home_env != NULL)
+ {
+	 config_path.assign(home_env);
+	 config_path.append("/.nuvierc");
+	 if(loadConfigFile(config_path))
+	   return true;
+
+#ifdef MACOSX
+	 // ~/Library/Preferences/Nuvie Preferences (legacy, lowest priority)
+	 config_path.assign(home_env);
+	 config_path.append("/Library/Preferences/Nuvie Preferences");
+	 if(loadConfigFile(config_path))
+	   return true;
+#endif
  }
 #endif
 
