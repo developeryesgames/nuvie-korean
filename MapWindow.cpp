@@ -2615,11 +2615,8 @@ bool MapWindow::drag_accept_drop(int x, int y, int message, void *data)
  x -= area.x;
  y -= area.y;
 
- // Calculate tile size based on Korean 4x mode
- FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_4x = font_manager && font_manager->is_korean_enabled() &&
-               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
- int tile_size = use_4x ? 64 : 16;
+ // Use map_tile_scale for tile size (consistent with other coordinate calculations)
+ int tile_size = 16 * map_tile_scale;
 
  x /= tile_size;
  y /= tile_size;
@@ -2667,7 +2664,8 @@ bool MapWindow::drag_accept_drop(int x, int y, int message, void *data)
     			}
 				else
 				{
-					game->get_scroll()->display_string("\n\nOnly within the party!");
+					KoreanTranslation *korean = game->get_korean_translation();
+					game->get_scroll()->display_string((korean && korean->isEnabled()) ? "\n\n파티 내에서만 가능!" : "\n\nOnly within the party!");
 					game->get_scroll()->message("\n\n");
 					return false;
 				}
@@ -2715,6 +2713,14 @@ void MapWindow::drag_perform_drop(int x, int y, int message, void *data)
     DEBUG(0,LEVEL_DEBUGGING,"MapWindow::drag_perform_drop()\n");
     Event *event = game->get_event();
     uint16 map_width = map->get_width(cur_level);
+
+    // Scale input coordinates to match widget coordinates
+    SDL_Surface *sdl_surface = screen->get_sdl_surface();
+    int logical_w = screen->get_width();
+    int coord_scale = (logical_w > 0) ? (sdl_surface->w / logical_w) : 1;
+    if (coord_scale < 1) coord_scale = 1;
+    x *= coord_scale;
+    y *= coord_scale;
 
     // Use map_tile_scale for tile size (same as mouseToWorldCoords)
     int tile_size = 16 * map_tile_scale;

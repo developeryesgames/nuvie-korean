@@ -558,6 +558,7 @@ void WorldMapDialog::drawMapView()
             }
         }
     }
+
 }
 
 void WorldMapDialog::drawPlayerMarker()
@@ -789,7 +790,6 @@ void WorldMapDialog::drawMemoList()
         }
     }
 
-    // Scrollbar widget handles scroll indicators
 }
 
 void WorldMapDialog::Display(bool full_redraw)
@@ -800,6 +800,20 @@ void WorldMapDialog::Display(bool full_redraw)
     drawMarkers();
     drawPlayerMarker();
     drawMemoList();
+
+    // Draw hint text in button area (between zoom buttons and memo buttons)
+    int scale = get_menu_scale();
+    FontManager *fm = Game::get_game()->get_font_manager();
+    KoreanFont *korean_font = (fm && fm->is_korean_enabled()) ? fm->get_korean_font() : NULL;
+    if(korean_font)
+    {
+        Screen *scr = Game::get_game()->get_screen();
+        const char *hint = "우클릭: 메모 추가";
+        // Position: after zoom buttons (around 100*scale), centered before memo_list_x (240*scale)
+        int hint_x = area.x + 100 * scale;
+        int hint_y = area.y + 6 * scale;
+        korean_font->drawStringUTF8(scr, hint, hint_x, hint_y, 0x0f, 0x00, 1);
+    }
 
     screen->update(area.x, area.y, area.w, area.h);
 }

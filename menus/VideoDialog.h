@@ -32,6 +32,7 @@ class VideoDialog : public GUI_Dialog {
 		uint8 last_index;
 		sint8 b_index_num;
 		bool old_use_new_dolls, old_use_tile_lighting;
+		int old_lighting, old_sprites, old_dither, old_map_tile_scale;
 		GUI_CallBack *callback_object;
 		GUI_Button *save_button, *cancel_button, *only2x_button;
 		GUI_TextToggleButton *scale_button, *scale_win_button, *scaler_button, *scaler_win_button,

@@ -42,6 +42,7 @@
 #include "FontManager.h"
 #include "KoreanTranslation.h"
 #include "SaveManager.h"
+#include "MsgScroll.h"
 
 #define GD_WIDTH 274
 #define GD_HEIGHT 192
@@ -141,6 +142,9 @@ bool GameplayDialog::init() {
 	config->value(key + "/skip_intro", skip_intro, false);
 	config->value("config/general/show_console", show_console, false);
 	config->value("config/general/enable_cursors", use_original_cursor, false);
+	old_skip_intro = skip_intro;
+	old_show_console = show_console;
+	old_cursor = use_original_cursor;
 // party formation
 	widget = (GUI_Widget *) new GUI_Text(colX[0], textY, 0, 0, 0, txt_formation.c_str(), font);
 	if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
@@ -362,6 +366,23 @@ GUI_status GameplayDialog::callback(uint16 msg, GUI_CallBack *caller, void *data
 		config->set("config/general/enable_cursors", cursor_button->GetSelection() ? "yes" : "no"); // need restart
 
 		config->write();
+
+		// Check if any restart-required option changed
+		bool restart_needed = ((skip_intro_button->GetSelection() != 0) != old_skip_intro ||
+		                       (show_console_button->GetSelection() != 0) != old_show_console ||
+		                       (cursor_button->GetSelection() != 0) != old_cursor);
+		if(restart_needed) {
+			MsgScroll *scroll = game->get_scroll();
+			if(scroll) {
+				KoreanTranslation *kt = game->get_korean_translation();
+				if(kt && kt->isEnabled()) {
+					scroll->display_string("\n※ 재시작 후 적용됩니다.\n");
+				} else {
+					scroll->display_string("\n* Restart required to apply changes.\n");
+				}
+			}
+		}
+
 		close_dialog();
 		return GUI_YUM;
 	}

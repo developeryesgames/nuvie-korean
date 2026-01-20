@@ -2882,7 +2882,8 @@ bool U6UseCode::look_mirror(Obj *obj, UseCodeEvent ev)
         items.actor_ref->get_location(&x, &y, &z);
         if(x == obj->x && y > obj->y && y <= (obj->y + 2))
         {
-            scroll->display_string("\nYou can see yourself!");
+            KoreanTranslation *korean = game->get_korean_translation();
+            scroll->display_string((korean && korean->isEnabled()) ? "\n거울에 그대의 모습이 비치오!" : "\nYou can see yourself!");
             game->get_event()->display_portrait(items.actor_ref);
         }
         scroll->display_string("\n");

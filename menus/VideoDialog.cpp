@@ -44,6 +44,7 @@
 #include "Keys.h"
 #include "FontManager.h"
 #include "KoreanTranslation.h"
+#include "MsgScroll.h"
 
 #define VD_WIDTH 311
 #define VD_HEIGHT 210 // add or subtract 13 if you add/remove a row
@@ -284,7 +285,8 @@ bool VideoDialog::init() {
 	if (menu_scale > 1) ((GUI_Text*)widget)->SetTextScale(menu_scale);
 	AddWidget(widget);
 	const char* const lighting_text[] = { "none", "smooth", "original" };
-	lighting_button = new GUI_TextToggleButton(this, colX[3], buttonY += row_h*3, 70*menu_scale, height, lighting_text, 3, screen->get_old_lighting_style(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	old_lighting = screen->get_old_lighting_style();
+	lighting_button = new GUI_TextToggleButton(this, colX[3], buttonY += row_h*3, 70*menu_scale, height, lighting_text, 3, old_lighting, font, BUTTON_TEXTALIGN_CENTER, this, 0);
 	if (menu_scale > 1) { lighting_button->SetTextScale(menu_scale); lighting_button->ChangeTextButton(-1,-1,-1,-1,lighting_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(lighting_button);
 	button_index[last_index+=1] = lighting_button;
@@ -301,7 +303,8 @@ bool VideoDialog::init() {
 		custom_tiles = 2;
 	else
 		custom_tiles = custom_tile_str == "yes" ? 1 : 0;
-	sprites_b = new GUI_TextToggleButton(this, colX[3], buttonY += row_h, 70*menu_scale, height, sprite_text, 3, custom_tiles, font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	old_sprites = custom_tiles;
+	sprites_b = new GUI_TextToggleButton(this, colX[3], buttonY += row_h, 70*menu_scale, height, sprite_text, 3, old_sprites, font, BUTTON_TEXTALIGN_CENTER, this, 0);
 	if (menu_scale > 1) { sprites_b->SetTextScale(menu_scale); sprites_b->ChangeTextButton(-1,-1,-1,-1,sprites_b->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(sprites_b);
 	button_index[last_index+=1] = sprites_b;
@@ -311,7 +314,8 @@ bool VideoDialog::init() {
 	if (menu_scale > 1) ((GUI_Text*)widget)->SetTextScale(menu_scale);
 	AddWidget(widget);
 	const char* const dither_text[] = { "no", "CGA", "EGA" };
-	dither_button = new GUI_TextToggleButton(this, colX[4], buttonY += row_h, yesno_width, height, dither_text, 3, game->get_dither()->get_mode(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	old_dither = game->get_dither()->get_mode();
+	dither_button = new GUI_TextToggleButton(this, colX[4], buttonY += row_h, yesno_width, height, dither_text, 3, old_dither, font, BUTTON_TEXTALIGN_CENTER, this, 0);
 	if (menu_scale > 1) { dither_button->SetTextScale(menu_scale); dither_button->ChangeTextButton(-1,-1,-1,-1,dither_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(dither_button);
 	button_index[last_index+=1] = dither_button;
@@ -323,8 +327,8 @@ bool VideoDialog::init() {
 	const char* const map_tile_scale_text[] = { "2", "3", "4" };
 	int current_map_tile_scale;
 	config->value("config/video/map_tile_scale", current_map_tile_scale, 4);
-	int map_tile_scale_index = (current_map_tile_scale >= 2 && current_map_tile_scale <= 4) ? current_map_tile_scale - 2 : 2; // default to 4 (index 2)
-	map_tile_scale_button = new GUI_TextToggleButton(this, colX[4], buttonY += row_h, yesno_width, height, map_tile_scale_text, 3, map_tile_scale_index, font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	old_map_tile_scale = (current_map_tile_scale >= 2 && current_map_tile_scale <= 4) ? current_map_tile_scale - 2 : 2; // default to 4 (index 2)
+	map_tile_scale_button = new GUI_TextToggleButton(this, colX[4], buttonY += row_h, yesno_width, height, map_tile_scale_text, 3, old_map_tile_scale, font, BUTTON_TEXTALIGN_CENTER, this, 0);
 	if (menu_scale > 1) { map_tile_scale_button->SetTextScale(menu_scale); map_tile_scale_button->ChangeTextButton(-1,-1,-1,-1,map_tile_scale_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(map_tile_scale_button);
 	button_index[last_index+=1] = map_tile_scale_button;
@@ -514,7 +518,7 @@ GUI_status VideoDialog::callback(uint16 msg, GUI_CallBack *caller, void *data) {
 				iv->set_party_member(iv->get_party_member_num());
 		}
 	// tile_lighting_b
-		if(old_use_tile_lighting != tile_lighting_b->GetSelection()) {
+		if(old_use_tile_lighting != (tile_lighting_b->GetSelection() != 0)) {
 			config->set(config_get_game_key(config) + "/map_tile_lighting", tile_lighting_b->GetSelection() ? "yes" : "no");
 			game->get_map_window()->using_map_tile_lighting = tile_lighting_b->GetSelection() == 1;
 			game->get_map_window()->updateAmbience();
@@ -557,6 +561,24 @@ GUI_status VideoDialog::callback(uint16 msg, GUI_CallBack *caller, void *data) {
 		game->get_map_window()->set_smooth_movement(smooth_movement);
 
 		config->write();
+
+		// Check if any restart-required option changed
+		bool restart_needed = (lighting_button->GetSelection() != old_lighting ||
+		                       sprites_b->GetSelection() != old_sprites ||
+		                       dither_button->GetSelection() != old_dither ||
+		                       map_tile_scale_button->GetSelection() != old_map_tile_scale);
+		if(restart_needed) {
+			MsgScroll *scroll = game->get_scroll();
+			if(scroll) {
+				KoreanTranslation *kt = game->get_korean_translation();
+				if(kt && kt->isEnabled()) {
+					scroll->display_string("\n※ 재시작 후 적용됩니다.\n");
+				} else {
+					scroll->display_string("\n* Restart required to apply changes.\n");
+				}
+			}
+		}
+
 		close_dialog();
 		return GUI_YUM;
 	}

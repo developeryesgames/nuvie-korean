@@ -3,21 +3,13 @@
 ================================================================================
 
 ■ 패치 내용 (v1.4.2)
-  - 이동 중 크래시 버그 수정
-    * 파티 멤버 NULL 참조로 인한 크래시 방지
-    * Party 클래스 전체 함수에 방어적 코드 추가
-  - FM Towns 없이 실행 시 크래시 수정
-    * fmtowns 폴더가 비어있거나 없을 때 안전하게 처리
-    * 음성 기능이 FM Towns 지원 확인 후에만 활성화
-  - 여관 숙박(SleepEffect) 크래시 수정
-    * GameClock/Party NULL 체크 추가
-    * FadeIn 중복 호출 방지
-  - LZW 압축 해제 크래시 수정
-    * NULL 버퍼 체크 추가
-  - 번역 오타 수정
-    * NPC 35 (Ephemerides): "I've busy" → "I'm busy"
-    * NPC 83 (Gideon): "them leave" → "they leave"
-    * NPC 129 (Sutek): "Beggone" → "Begone"
+  - 게임 단축키 힌트 변경 (H → Ctrl+H)
+  - Y/N 질문 답변 시 예약어가 아닌 입력에 에러메시지 안 뜨도록 수정
+  - 야영 시작 시 두 자리수 빠르게 입력하면 크래시 나던 문제 등
+    각종 크래시 방어 코드 추가
+  - MP3 파일이 하나라도 없으면 해당 곡은 애드립 음원으로 재생되도록 수정
+  - NPC 3명(에페메리데스, 기드온, 수텍)의 대사 중 하나씩 번역 오타로
+    빠진 것 추가
 
 ■ v1.4.1 변경사항
   - 새 게임 시작 시 NPC 대화가 안 되던 버그 수정
@@ -105,6 +97,28 @@
     * 4: 원본과 동일한 뷰 (타일 크기 1:1)
     * 3: 더 넓은 시야 (타일을 작게 표시)
     * 2: 가장 넓은 시야 (타일을 더 작게 표시)
+
+■ MP3 고음질 음악 (선택사항)
+  music 폴더에 MP3 파일을 넣으면 고음질 음악으로 재생됩니다.
+
+  다운로드: https://dor-lomin.com/archive/ultima/musicarchive/u6/
+
+  장면                    파일명 (아무거나 하나)
+  ─────────────────────────────────────────────
+  부팅화면                opening.mp3 또는 bootup.mp3
+  인트로                  introduction.mp3 또는 intro.mp3
+  캐릭터 생성             createcharacter.mp3 또는 create.mp3
+  메인 테마               ultimatheme.mp3 또는 ultima.mp3
+  영국 성 (낮)            rulebritannia.mp3 또는 brit.mp3
+  숲/필드                 wanderer.mp3 또는 forest.mp3
+  스톤즈                  stones.mp3
+  전투                    engagement-melee.mp3 또는 engage.mp3
+  배 위                   capnjohnhornpipe.mp3 또는 hornpipe.mp3
+  가고일 지역             gargoyles.mp3 또는 gargoyle.mp3
+  던전                    dungeon.mp3
+  엔딩                    unification.mp3 또는 end.mp3
+
+  ※ OGG 형식도 지원됩니다
 
 ■ 크레딧
   - 번역: yesgames

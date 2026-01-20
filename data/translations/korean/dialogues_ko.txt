@@ -734,7 +734,7 @@
 20|"You'll find none better."|"이보다 더 좋은 건 찾기 힘들 거요."
 20|#1. $Y|#1. $Y
 20|#2. $Y|#2. $Y
-20|$N turns to $Y and says "Will you take 8 gold for that wool?"|$N이 $Y를 돌아보며 말한다. "그 양모를 8금화에 파시겠소?"
+20|$N turns to $Y and says "Will you take 8 gold for that wool?"|$N이 $Y(을)를 돌아보며 말한다. "그 양모를 8금화에 파시겠소?"
 20|cloth|천
 20|thread|실
 
@@ -789,10 +789,10 @@
 22|"Which of you?"|"누구한테 줄 거요?"
 22|"Which, @torches, @oil, @gems, @backpacks, @bags, @shovels, or @powder kegs?"|"어떤 거요? @횃불(torches), @기름(oil), @보석(gems), @배낭(backpacks), @자루(bags), @삽(shovels), 아님 @화약통(powder kegs)?"
 22|#1. $Y|#1. $Y
-22|$N frowns at $Y. "Hrmmph. That was a fair price. Well..."|$N이 $Y를 보며 눈살을 찌푸린다. "흠. 적당한 가격이었는데. 뭐..."
-22|$N looks at $Y. "A $0 costs more gold than you have."|$N이 $Y를 본다. "$0(은)는 가진 돈보다 비싸오."
-22|$N looks at $Y. "It'll cost you #0 gold for each $0. How many do you want?"|$N이 $Y를 본다. "$0 하나에 #0금화요. 몇 개나 원하오?"
-22|$N looks at $Y. "You haven't any room in your pack."|$N이 $Y를 본다. "배낭에 자리가 업소."
+22|$N frowns at $Y. "Hrmmph. That was a fair price. Well..."|$N이 $Y(을)를 보며 눈살을 찌푸린다. "흠. 적당한 가격이었는데. 뭐..."
+22|$N looks at $Y. "A $0 costs more gold than you have."|$N이 $Y(을)를 본다. "$0(은)는 가진 돈보다 비싸오."
+22|$N looks at $Y. "It'll cost you #0 gold for each $0. How many do you want?"|$N이 $Y(을)를 본다. "$0 하나에 #0금화요. 몇 개나 원하오?"
+22|$N looks at $Y. "You haven't any room in your pack."|$N이 $Y(을)를 본다. "배낭에 자리가 업소."
 22|."|"
 22|Backpack|배낭
 22|Bag|자루
@@ -910,7 +910,7 @@
 25|#0) $0|#0) $0
 25|#1. $Y|#1. $Y
 25|#2) $Y|#2) $Y
-25|$N turns to $Y, and says "Will you take 5 gold for that sack of flour?"|$N이 $Y를 돌아보며 말한다. "그 밀가루 자루를 5금화에 파시겠소?"
+25|$N turns to $Y, and says "Will you take 5 gold for that sack of flour?"|$N이 $Y(을)를 돌아보며 말한다. "그 밀가루 자루를 5금화에 파시겠소?"
 25|, $Y."|, $Y."
 25|, my friend|, 내 친구
 25|, plus one for luck!"|, 거기다 행운을 빌며 하나 더 얹어 주겠소!"
@@ -1350,10 +1350,10 @@
 35|"You turn that little handle there to get it to go!"|"저기 있는 작은 손잡이를 돌리면 돌아간답니다!"
 35|The normally staid Ephemerides is practically giggling with glee.|평소 엄숙하던 에페메리데스가 거의 기쁨에 겨워 낄낄거리고 있다.
 35|#1. $Y|#1. $Y
-35|$N frowns at $Y, "That was a good price."|$N이 $Y를 보며 눈살을 찌푸린다. "그건 꽤 괜찮은 가격이었는데요."
-35|$N looks at $Y. "It'll cost you #0 gold for a $0. Do you want one?"|$N이 $Y를 본다. "$0 하나에 #0금화입니다. 하나 원하십니까?"
-35|$N looks at $Y. "You haven't any room in your pack."|$N이 $Y를 본다. "배낭에 공간이 없군요."
-35|$N looks at $Y. "`$0s cost more gold than you have."|$N이 $Y를 본다. "$0(은)는 가진 금화보다 비쌉니다."
+35|$N frowns at $Y, "That was a good price."|$N이 $Y(을)를 보며 눈살을 찌푸린다. "그건 꽤 괜찮은 가격이었는데요."
+35|$N looks at $Y. "It'll cost you #0 gold for a $0. Do you want one?"|$N이 $Y(을)를 본다. "$0 하나에 #0금화입니다. 하나 원하십니까?"
+35|$N looks at $Y. "You haven't any room in your pack."|$N이 $Y(을)를 본다. "배낭에 공간이 없군요."
+35|$N looks at $Y. "`$0s cost more gold than you have."|$N이 $Y(을)를 본다. "$0(은)는 가진 금화보다 비쌉니다."
 35|(|(
 35|2|2
 35|Before you can protest, he pockets the lens. "Let me know when you have the glass @sword."|당신이 항의하기도 전에 그는 렌즈를 주머니에 넣는다. "유리 @검(sword) 을 구하면 알려주십시오."
@@ -1836,7 +1836,7 @@
 45|"He's a vicious @daemon."|"그는 사악한 @데몬(daemon) 이야."
 45|"Ho there, $G!"|"거기, $G!"
 45|"How could Lord @British imagine that a gargoyle could understand virtue?"|"로드 @브리티시(British) 께서는 어떻게 가고일 따위가 미덕을 이해할 수 있다고 생각하신 걸까?"
-45|"I am a @monster-slayer."|"나는 @괴물 사냥꾼(monster-slayer) 이라네."
+45|"I am a @monster-slayer."|"나는 @괴물사냥꾼(monster-slayer) 이라네."
 45|"I cannot help ye with that."|"그건 도와줄 수 없네."
 45|"I hate all monsters. They are a blight on the face of Britannia!"|"난 모든 괴물을 증오하네. 그것들은 브리타니아의 수치야!"
 45|"I'm called Starhelm."|"스타헬름이라 부르게."
@@ -2082,7 +2082,7 @@
 51|#2. $Y|#2. $Y
 51|$N gives $Y the rolls.|$N이 $Y에게 롤빵을 주었소.
 51|$N hands the rations to $Y.|$N이 $Y에게 식량을 건네주었소.
-51|$N looks at $Y. "You haven't any room in your pack."|$N이 $Y를 보며 말하오. "배낭에 공간이 없구료."
+51|$N looks at $Y. "You haven't any room in your pack."|$N이 $Y(을)를 보며 말하오. "배낭에 공간이 없구료."
 51|."|"
 51|Ale|에일
 51|He hands $Y #9 mutton ration\s.|그가 $Y에게 #9개의 양고기 식량을 건네주었소.
@@ -2123,7 +2123,7 @@
 53|"But you bought them all!"|"하지만 자네들이 다 사버렸는걸!"
 53|"Excellent!" After accepting the gold, $N hands $Y the deed.|"훌륭해!" 금화를 받은 후, $N이 $Y에게 증서를 건네준다.
 53|"Hello," he says, lumbering over to you and extending a large hand.|"안녕하신가," 그가 당신에게 육중하게 걸어와 커다란 손을 내밀며 말한다.
-53|"I sell|"나는 판다네
+53|"I sell|"나는 
 53|"I used to sell ships and skiffs."|"예전에는 배와 작은 배들을 팔았었지."
 53|"My father was a @sailor, but couldn't spell." He laughs out loud.|"내 아버지는 @선원(sailor) 이었지만, 글자는 잘 못 읽으셨어." 그가 크게 웃는다.
 53|"Sail her straight."|"안전하게 항해하시게."
@@ -2139,13 +2139,13 @@
 53|"You look pretty full to me, $Y."|"내가 보기엔 짐이 꽉 찬 것 같군, $Y."
 53|"You'll ne'er find a better craft."|"이보다 좋은 배는 절대 못 찾을 걸세."
 53|#2) $Y|#2) $Y
-53|$N turns to $Y. "It'll cost you #4 gold for the deed. Interested?"|$N이 $Y를 돌아본다. "증서 가격은 #4금화라네. 관심 있나?"
+53|$N turns to $Y. "It'll cost you #4 gold for the deed. Interested?"|$N이 $Y(을)를 돌아본다. "증서 가격은 #4금화라네. 관심 있나?"
 53|."|"
 53|@ships|@배(ships)
-53|@skiffs."|@소형배(skiffs)를."
+53|@skiffs."|@소형배(skiffs)를 판다네."
 53|He squints at you. "We've met, haven't we?"|그가 당신을 가늘게 뜨고 쳐다본다. "우리 만난 적 있지 않나?"
 53|Your party takes up a collection to purchase the vessel.|일행이 배를 사기 위해 돈을 모은다.
-53|and|그리고
+53|and| 그리고 
 
 54|a man as large as the trees that surround his cottage.|오두막을 둘러싼 나무들만큼이나 거대한 체격의 사내다.
 54|"'Tis my name. Don't wear it out." He laughs resoundingly at his wit.|"내 이름이라네. 너무 불러서 닳게 하지 말라고." 그는 자신의 재치에 껄껄 웃는다.
@@ -2208,7 +2208,7 @@
 55|#0) $Y|#0) $Y
 55|#1. $Y|#1. $Y
 55|$N takes $Y's gold and hands over the purchase.|$N이 $Y의 금화를 받고 물건을 건네준다.
-55|$N turns to $Y, and says "Will you take 8 gold for that thread?"|$N이 $Y를 돌아보며 말한다. "그 실을 8금화에 파시겠어요?"
+55|$N turns to $Y, and says "Will you take 8 gold for that thread?"|$N이 $Y(을)를 돌아보며 말한다. "그 실을 8금화에 파시겠어요?"
 55|-| -
 55|As faint as a whisper comes the word "Le'nard."|속삭임만큼이나 희미하게 "르나르(Le'nard)"라는 말이 들려온다.
 55|He looks around, then waves goodbye.|그는 주위를 둘러보더니 작별 인사를 하며 손을 흔든다.
@@ -2262,7 +2262,7 @@
 56|$N gives $Y some $1.|$N이 $Y에게 $1(을)를 좀 준다.
 56|$N gives $Y some ribs.|$N이 $Y에게 갈비를 좀 준다.
 56|$N hands the rations to $Y.|$N이 $Y에게 식량을 건네준다.
-56|$N looks at $Y. "You haven't any room in your pack."|$N이 $Y를 보며 말한다. "배낭에 자리가 없구먼."
+56|$N looks at $Y. "You haven't any room in your pack."|$N이 $Y(을)를 보며 말한다. "배낭에 자리가 없구먼."
 56|,|,
 56|Ale|에일
 56|And the winner is...|그리고 승자는...
@@ -3042,7 +3042,7 @@
 72|"But you bought them all!"|"하지만 자네들이 다 사버렸는걸!"
 72|"Excellent!" After accepting the gold, $N hands $Y the deed.|"훌륭해!" 금화를 받은 후, $N이 $Y에게 증서를 건네준다.
 72|"Hello," he says, lumbering over to you and extending a large hand.|"안녕하신가," 그가 당신에게 육중하게 걸어와 커다란 손을 내밀며 말한다.
-72|"I sell|"나는 판다네
+72|"I sell|"나는 
 72|"I used to sell ships and skiffs."|"예전에는 배와 작은 배들을 팔았었지."
 72|"Sail her straight."|"안전하게 항해하시게."
 72|"So long friend." He lumbers back to his work.|"또 보세나, 친구." 그가 다시 자신의 일로 돌아간다.
@@ -3058,13 +3058,13 @@
 72|"You look pretty full to me, $Y."|"내가 보기엔 짐이 꽉 찬 것 같군, $Y."
 72|"You'll ne'er find a better craft."|"이보다 좋은 배는 절대 못 찾을 걸세."
 72|#2. $Y|#2. $Y
-72|$N turns to $Y. "It'll cost you #4 gold for the deed. Interested?"|$N이 $Y를 돌아본다. "증서 가격은 #4금화라네. 관심 있나?"
+72|$N turns to $Y. "It'll cost you #4 gold for the deed. Interested?"|$N이 $Y(을)를 돌아본다. "증서 가격은 #4금화라네. 관심 있나?"
 72|."|"
 72|@ships|@배(ships)
-72|@skiffs."|@소형배(skiffs)를."
+72|@skiffs."|@소형배(skiffs)를 판다네."
 72|He squints at you. "We've met, haven't we?"|그가 당신을 가늘게 뜨고 쳐다본다. "우리 만난 적 있지 않나?"
 72|Your party takes up a collection to purchase the vessel.|일행이 배를 사기 위해 돈을 모은다.
-72|and|그리고
+72|and| 그리고 
 
 73|a spidery looking man with delicate hands.|섬세한 손을 가진 거미처럼 생긴 남자다.
 73|"@Ephemerides is going to build a model of the whole system."|"@에페메리데스(Ephemerides) 가 전체 시스템 모델을 만들 계획이라오."
@@ -3214,7 +3214,7 @@
 77|$N gives $Y some $1.|$N이 $Y에게 $1(을)를 좀 주었다.
 77|$N gives $Y some grapes.|$N이 $Y에게 포도를 좀 주었다.
 77|$N hands the rations to $Y.|$N이 $Y에게 식량을 건네주었다.
-77|$N looks at $Y. "You haven't any room in your pack."|$N이 $Y를 보며 말한다. "배낭에 자리가 없네요."
+77|$N looks at $Y. "You haven't any room in your pack."|$N이 $Y(을)를 보며 말한다. "배낭에 자리가 없네요."
 77|Ale|에일
 77|He hands $Y #9 ration\s of mutton.|그가 $Y에게 #9개의 양고기 식량을 건네주었다.
 77|Mead|미드
@@ -3597,8 +3597,8 @@
 84|"You must be new to this village."|"자네 이 마을에 처음 왔군."
 84|#0. $0|#0. $0
 84|#2. $Y|#2. $Y
-84|$N looks at $Y. "You don't have enough gold."|$N이 $Y를 본다. "자네 금화가 부족하구먼."
-84|$N smiles at $Y. "For $0 it will cost you #1 gold. Interested?"|$N이 $Y를 보며 미소 짓는다. "$0 하나에 #1금화라네. 관심 있나?"
+84|$N looks at $Y. "You don't have enough gold."|$N이 $Y(을)를 본다. "자네 금화가 부족하구먼."
+84|$N smiles at $Y. "For $0 it will cost you #1 gold. Interested?"|$N이 $Y(을)를 보며 미소 짓는다. "$0 하나에 #1금화라네. 관심 있나?"
 84|(|(
 84|Dry Wine|드라이 와인
 84|He clasps his hands next to his cheek. "I count the hours until I can see her."|그가 뺨 옆으로 두 손을 모은다. "그녀를 만날 시간만 손꼽아 기다리고 있다네."
@@ -3785,7 +3785,7 @@
 87|"You don't have enough gold."|"금화가 부족하구려."
 87|"You don't look poisoned."|"중독된 것 같지 않구려."
 87|"You look fine to me."|"내가 보기엔 멀쩡해 보이오."
-87|"You look poisoned to me." She nods at $Y.|"내가 보기엔 자네 중독된 것 같구먼." 그녀가 $Y를 향해 고개를 끄덕인다.
+87|"You look poisoned to me." She nods at $Y.|"내가 보기엔 자네 중독된 것 같구먼." 그녀가 $Y(을)를 향해 고개를 끄덕인다.
 87|"You might think about a proper burial."|"제대로 된 매장을 생각해보는 게 좋을 거요."
 87|"You must pay before I can heal you."|"내가 당신을 고치기 전에 먼저 돈을 내야 하오."
 87|"You see, the spirit world can not communicate with ours directly."|"아시다시피, 영혼의 세계는 우리 세계와 직접 소통할 수 없소."
@@ -4224,7 +4224,7 @@
 96|"You don't have room to carry it."*|"그걸 들 공간이 없구려."*
 96|#2. $Y|#2. $Y
 96|$N hands the rations to $Y.|$N이 $Y에게 식량을 건네준다.
-96|$N looks at $Y. "You haven't any room in your pack."|$N이 $Y를 보며 말한다. "배낭에 공간이 없구려."
+96|$N looks at $Y. "You haven't any room in your pack."|$N이 $Y(을)를 보며 말한다. "배낭에 공간이 없구려."
 96|$N serves $Y a fish.|$N이 $Y에게 물고기를 내온다.
 96|Ale|에일
 96|He hands $Y #9 mutton ration\s.|그가 $Y에게 #9개의 양고기 식량을 건네준다.
@@ -4397,7 +4397,7 @@
 100|"You should learn, you should learn."|"배워야 하오, 꼭 배워야 한다오."
 100|#1. $Y|#1. $Y
 100|#2. $Y|#2. $Y
-100|$N turns to $Y, and says "Will you take 6 gold for that Thread?"|$N이 $Y를 돌아보며 말한다. "그 실을 6금화에 파시겠소?"
+100|$N turns to $Y, and says "Will you take 6 gold for that Thread?"|$N이 $Y(을)를 돌아보며 말한다. "그 실을 6금화에 파시겠소?"
 100|He gestures with his hands. "...and flippit on home." The pea sails into the hat.|그가 손짓을 섞어 말한다. "...집으로 톡 날려 보내지." 완두콩이 모자 안으로 날아 들어간다.
 100|He puts the hat down and mumbles "Put the pea in front of bone..."|그는 모자를 내려놓고 중얼거린다. "뼈 앞에 완두콩을 두고..."
 100|He scratches his head and looks around.|그는 머리를 긁적이며 주위를 둘러본다.
@@ -4465,8 +4465,8 @@
 102|"You look pretty full to me."|"내가 보기엔 짐이 꽉 찬 것 같네요."
 102|#1. $Y|#1. $Y
 102|#2. $Y|#2. $Y
-102|$N looks at $Y. "How rude! Don't ask for something you can't pay for!"|$N이 $Y를 본다. "무례하기도 해라! 돈도 없으면서 달라고 하지 마세요!"
-102|$N turns to $Y and asks "Will you take 20 gold for that cloth?"|$N이 $Y를 돌아보며 묻는다. "그 천을 20금화에 파시겠어요?"
+102|$N looks at $Y. "How rude! Don't ask for something you can't pay for!"|$N이 $Y(을)를 본다. "무례하기도 해라! 돈도 없으면서 달라고 하지 마세요!"
+102|$N turns to $Y and asks "Will you take 20 gold for that cloth?"|$N이 $Y(을)를 돌아보며 묻는다. "그 천을 20금화에 파시겠어요?"
 102|, but my shop is closed for now."|, 하지만 지금은 가게 문을 닫았답니다."
 102|1. Tunic\n2. Dress\n3. Pants\n"Which one?"|1. 튜닉\n2. 드레스\n3. 바지\n"어떤 건가요?"
 102|After a while, she completes the silk bag.|잠시 후, 그녀가 실크 자루를 완성한다.
@@ -4561,7 +4561,7 @@
 104|"You look pretty full to me."|"내가 보기엔 짐이 꽉 찬 것 같소만."
 104|#1. $Y|#1. $Y
 104|#2. $Y|#2. $Y
-104|$N turns to $Y, and says "I'll pay you 3 crowns for that sack of grain, ok?"|$N이 $Y를 돌아보며 말한다. "그 곡물 한 자루에 3크라운을 주겠소, 괜찮소?"
+104|$N turns to $Y, and says "I'll pay you 3 crowns for that sack of grain, ok?"|$N이 $Y(을)를 돌아보며 말한다. "그 곡물 한 자루에 3크라운을 주겠소, 괜찮소?"
 104|He sticks a finger in his ear and shakes it. "What?"|그가 귀에 손가락을 넣고 흔든다. "뭐라고요?"
 
 105|a plump older woman with an apron about her waist.|허리에 앞치마를 두른 통통한 나이 든 여인이다.
@@ -4778,7 +4778,7 @@
 110|#2. $Y|#2. $Y
 110|$N gives $Y the milk. "You have good taste, my friend."|$N이 $Y에게 우유를 준다. "안목이 높으시구려, 친구."
 110|$N hands the rations to $Y.|$N이 $Y에게 식량을 건네준다.
-110|$N looks at $Y. "You haven't any room in your pack."|$N이 $Y를 보며 말한다. "배낭에 공간이 없구려."
+110|$N looks at $Y. "You haven't any room in your pack."|$N이 $Y(을)를 보며 말한다. "배낭에 공간이 없구려."
 110|$Y|$Y
 110|"Drink up and enjoy, for who knows what tomorrow may bring?"|"맛있게 드시오, 내일 무슨 일이 벌어질지 누가 알겠소?"
 110|"Would you like to @play again?"|"게임을 다시 @플레이(play)하고 싶소?"
@@ -4989,9 +4989,9 @@
 115|"Why, it's Budo, I believe. That's what it was last week."|"왜라니요, 내 이름은 부도(Budo)일 거요. 지난주엔 확실히 그랬소."
 115|"You're safer not knowing more about the guild than you have to, believe me..."|"길드에 대해 필요 이상으로 알지 않는 게 신상에 좋을 거요, 내 말을 믿으시오..."
 115|#1. $Y|#1. $Y
-115|$N frowns at $Y, "That was a good price."|$N이 $Y를 보며 눈살을 찌푸린다. "그건 꽤 괜찮은 가격이었소."
-115|$N looks at $Y, "It'll cost you #0 gold for each $0, how many do you want?"|$N이 $Y를 본다. "$0 하나에 #0금화요, 몇 개나 원하쇼?"
-115|$N looks at $Y. "You haven't any room in your pack."|$N이 $Y를 본다. "배낭에 공간이 없구려."
+115|$N frowns at $Y, "That was a good price."|$N이 $Y(을)를 보며 눈살을 찌푸린다. "그건 꽤 괜찮은 가격이었소."
+115|$N looks at $Y, "It'll cost you #0 gold for each $0, how many do you want?"|$N이 $Y(을)를 본다. "$0 하나에 #0금화요, 몇 개나 원하쇼?"
+115|$N looks at $Y. "You haven't any room in your pack."|$N이 $Y(을)를 본다. "배낭에 공간이 없구려."
 115|(|(
 115|?|?
 115|A startling change comes over his features.|그의 표정이 놀랍도록 변한다.
@@ -5151,8 +5151,8 @@
 118|"You haven't any room in your pack, $Y."|"배낭에 공간이 없구려, $Y."
 118|#1. $Y|#1. $Y
 118|#2. $Y|#2. $Y
-118|$N frowns at $Y and says, "That was a good price."|$N이 $Y를 보며 눈살을 찌푸린다. "그건 꽤 괜찮은 가격이었소."
-118|$N looks at $Y and says, "It'll cost you 4 gold for each ration. How many do you want?"|$N이 $Y를 보며 말한다. "식량은 하나에 4금화요. 몇 개나 원하쇼?"
+118|$N frowns at $Y and says, "That was a good price."|$N이 $Y(을)를 보며 눈살을 찌푸린다. "그건 꽤 괜찮은 가격이었소."
+118|$N looks at $Y and says, "It'll cost you 4 gold for each ration. How many do you want?"|$N이 $Y(을)를 보며 말한다. "식량은 하나에 4금화요. 몇 개나 원하쇼?"
 118|$N smiles at $Y and says, "That will cost you #1 gold. Interested?"|$N이 $Y에게 미소 지으며 말한다. "그건 #1금화요. 관심 있소?"
 118|Ale|에일
 118|He hands $Y #2 mutton ration\s.|그가 $Y에게 #2개의 양고기 식량을 건네준다.
@@ -5253,8 +5253,8 @@
 121|"You'll ne'er find a better craft."|"이보다 좋은 배는 절대 못 찾을 거요."
 121|"Your party hasn't enough money."|"일행의 돈이 부족하구먼."
 121|#2. $Y|#2. $Y
-121|$N looks at $Y. "You look pretty full to me."|$N이 $Y를 본다. "내가 보기엔 짐이 꽉 찬 것 같소만."
-121|$N turns to $Y, "It'll cost you #4 gold for the deed. Interested?"|$N이 $Y를 보며 말한다. "증서 가격은 #4금화요. 관심 있소?"
+121|$N looks at $Y. "You look pretty full to me."|$N이 $Y(을)를 본다. "내가 보기엔 짐이 꽉 찬 것 같소만."
+121|$N turns to $Y, "It'll cost you #4 gold for the deed. Interested?"|$N이 $Y(을)를 보며 말한다. "증서 가격은 #4금화요. 관심 있소?"
 121|@ships and @skiffs."|@배(ships) 와 @소형배(skiffs) 를."
 121|@ships."|@배(ships) 를."
 121|@skiffs."|@소형배(skiffs) 를."
@@ -5292,7 +5292,7 @@
 124|"Those were the days..."|"그때가 좋았는데..."
 124|"Tis good to see thee again, $P."|"당신을 다시 보게 되어 정말 기쁩니다, $P."
 124|"We sought to liberate the Shrine of Compassion."|"우리는 자애의 성소를 해방시키려 했습니다."
-124|"My men fought valiantly, but the gargoyles were too much for us. They didst @slay more than half our party."|"부하들은 용감하게 싸웠지만, 가고일들은 우리가 감당하기엔 너무 강했습니다. 그놈들이 우리 일행의 절반 넘게 @살해(slay) 했지요."
+124|"My men fought valiantly, but the gargoyles were too much for us. They didst @slay more than half our party."|"부하들은 용감하게 싸웠지만, 가고일들은 우리가 감당하기엔 너무 강했습니다. 그놈들이 우리 일행을 절반 넘게 @살해(slay) 했지요."
 124|#|#
 124|a burly man, who looks a little healthier than the other patients.|다른 환자들보다는 조금 건강해 보이는 건장한 사내다.
 
@@ -5320,7 +5320,7 @@
 126|"If thou wilt not pay, I cannot heal thee."|"지불하지 않으신다면, 치료해 드릴 수 없답니다."
 126|"Is there aught else I can do for thee?"|"제가 더 도와드릴 일이 있을까요?"
 126|"It has been a dark, dark day indeed."|"정말로 어둡고도 침울한 날이네요."
-126|"Leave these men alone! Can't you see they need to @rest?"|"이분들을 가만히 내버려 두세요! @식(rest) 이 필요하다는 게 안 보이시나요?"
+126|"Leave these men alone! Can't you see they need to @rest?"|"이분들을 가만히 내버려 두세요! @휴식(rest) 이 필요하다는 게 안 보이시나요?"
 126|"More wounded? I'll do what I can."|"부상자가 더 있나요? 할 수 있는 한 해보죠."
 126|"My name is Sasha."|"제 이름은 사샤(Sasha)예요."
 126|"Nay, I cannot. I no longer have the energy, or the @reagents."|"아뇨, 못 해요. 제게는 더 이상 기력도, @시약(reagents) 도 남아 있지 않거든요."
@@ -6291,8 +6291,8 @@
 149|"You might have noticed the similarity between my @sister and me."|"내 @여동생(sister) 과 내가 좀 닮았다는 걸 눈치챘을지도 모르겠구려."
 149|#0. $0|#0. $0
 149|#2. $Y|#2. $Y
-149|$N glances at $Y, "You look pretty full to me."|$N이 $Y를 힐끗 본다. "내가 보기엔 짐이 꽉 찬 것 같소만."
-149|$N looks at $Y. "You don't have enough gold."|$N이 $Y를 본다. "금화가 부족하시구려."
+149|$N glances at $Y, "You look pretty full to me."|$N이 $Y(을)를 힐끗 본다. "내가 보기엔 짐이 꽉 찬 것 같소만."
+149|$N looks at $Y. "You don't have enough gold."|$N이 $Y(을)를 본다. "금화가 부족하시구려."
 149|$N smiles at $Y. "For $0 it will cost you #1 gold. Interested?"|$N이 $Y에게 미소 짓는다. "$0 한 병에 #1금화요. 관심 있소?"
 149|(|(
 149|Abbey Dry|수도원 드라이
@@ -6335,8 +6335,8 @@
 150|"You've met @Zeke before, 'aven't ya?" he says, glaring at you.|"당신 전에 @지크(Zeke) 를 만난 적이 있지, 안 그렇소?" 그가 당신을 노려보며 말한다.
 150|#1. $Y|#1. $Y
 150|#2. $Y|#2. $Y
-150|$N looks at $Y. "You ain't that good-looking. My price is 10 gold."|$N이 $Y를 본다. "당신 인물이 그렇게 훤칠하진 않구먼. 내 가격은 10금화요."
-150|$N turns to $Y, and says "Will you take 7 gold for that honey jar?"|$N이 $Y를 돌아보며 말한다. "그 꿀단지를 7금화에 파시겠소?"
+150|$N looks at $Y. "You ain't that good-looking. My price is 10 gold."|$N이 $Y(을)를 본다. "당신 인물이 그렇게 훤칠하진 않구먼. 내 가격은 10금화요."
+150|$N turns to $Y, and says "Will you take 7 gold for that honey jar?"|$N이 $Y(을)를 돌아보며 말한다. "그 꿀단지를 7금화에 파시겠소?"
 150|He laughs. "And get stung once in a while!"|그가 웃는다. "그리고 가끔 침에 쏘이기도 하지!"
 150|He scratches his head and looks around.|그는 머리를 긁적이며 주위를 둘러본다.
 150|a strong looking man with just one arm.|팔이 하나뿐인 강인해 보이는 사내다.
@@ -6493,7 +6493,7 @@
 154|#2. $Y|#2. $Y
 154|$N gives $Y some Waybread.|$N이 $Y에게 웨이브레드를 좀 준다.
 154|$N hands the rations to $Y.|$N이 $Y에게 식량을 건네준다.
-154|$N looks at $Y. "You haven't got room to carry any!"|$N이 $Y를 본다. "그걸 들 자리가 하나도 없으시잖아요!"
+154|$N looks at $Y. "You haven't got room to carry any!"|$N이 $Y(을)를 본다. "그걸 들 자리가 하나도 없으시잖아요!"
 154|Ale|에일
 154|Mead|미드
 154|She hands $Y #9 mutton ration\s.|그녀가 $Y에게 #9개의 양고기 식량을 건네준다.
@@ -8391,7 +8391,7 @@
 114|"Okay. I'll go wait back at the Fallen Virgin."\n*\n"You're more likely to need this equipment than I am."\n*\nShe sets down everything she was carrying before walking off.|"알겠어요. 전 '타락한 처녀(Fallen Virgin)'로 돌아가서 기다릴게요."\n*\n"이 장비들은 저보다 당신에게 더 필요할 것 같네요."\n*\n그녀는 떠나기 전 자신이 가지고 있던 모든 물건을 바닥에 내려놓는다.
 116|He hands you the last piece of the map.\n*\n"The island in the upper left hand corner is Buccaneer's Den."|그가 지도의 마지막 조각을 건네준다.\n*\n"왼쪽 위 구석에 있는 섬이 부케니어스 덴이라네."
 124|"A moonstone was upon the shrine, surrounded by a strange violet glow."\n*\n"I tried to get to it, but 'twas surrounded by some kind of force @field."|"성소 위에 문스톤이 있었는데, 기묘한 보랏빛 광채에 둘러싸여 있었습니다."\n*\n"가까이 가려 했지만, 어떤 종류의 힘의 @장막(field) 에 가로막혀 있었죠."
-124|"We sought to liberate the Shrine of Compassion."\n*\n"My men fought valiantly, but the gargoyles were too much for us. They didst @slay more than half our party."|"우리는 자애의 성소를 해방시키려 했습니다."\n*\n"부하들은 용감하게 싸웠지만, 가고일들은 우리가 감당하기엔 너무 강했습니다. 그놈들이 우리 일행의 절반 넘게 @살해(slay) 했지요."
+124|"We sought to liberate the Shrine of Compassion."\n*\n"My men fought valiantly, but the gargoyles were too much for us. They didst @slay more than half our party."|"우리는 자애의 성소를 해방시키려 했습니다."\n*\n"부하들은 용감하게 싸웠지만, 가고일들은 우리가 감당하기엔 너무 강했습니다. 그놈들이 우리 일행을 절반 넘게 @살해(slay) 했지요."
 127|"Ah, $P! 'Tis an honor to welcome thee once more to my humble village."\n*\n"How might I be of assistance this fine $T?"|"아, $P! 보잘것없는 내 마을에 그대를 다시 한번 모시게 되어 영광이오."\n*\n"이 좋은 $T에 내가 어떻게 도움을 드리면 좋겠소?"
 127|"Ask Lord British's Chancellor, Tholden."\n*\n"He canst tell thee of the mantra, and like as not he will also know of the rune."|"로드 브리티시의 재상인 톨든(Tholden)에게 물어보시오."\n*\n"그가 만트라에 대해 알려줄 수 있을 것이고, 아마도 룬에 대해서도 알고 있을 것이오."
 127|"Each shrine has its own @mantra. This is a chant which one should recite whilst meditating therein."\n*\n"Once there was a time when a special rune was required to enter each shrine as well."\n*\n"Now the gargoyles have taken the Shrine of Compassion, and it is lost to the people once more."|"각 성소에는 고유의 @만트라(mantra) 가 있소. 이는 성소 안에서 명상할 때 읊어야 하는 영창이라오."\n*\n"예전에는 각 성소에 입장하기 위해 특별한 룬이 필요했던 시절도 있었지."\n*\n"이제 가고일들이 자애의 성소를 점령했으니, 백성들에게는 다시 한번 성소가 사라진 셈이오."

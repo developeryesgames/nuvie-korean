@@ -61,6 +61,7 @@
 공예가|good
 과수원|orch
 과정|proc
+괴물사냥꾼|mons
 관심|inte
 관점|pers
 광대|jest
@@ -406,13 +407,13 @@
 시끄럽지|loud
 시약|reag
 시장님|your
-식|rest
 식량|rati
 식물|plan
 신념|beli
 신들|thin
 신뢰|trus
 신발|shoe
+신브랄|sin'
 실|thre
 실수|foll
 실크|silk
@@ -773,6 +774,7 @@
 흔들리기|shak
 흙|dirt
 희생|sacr
+휴식|rest
 힌트|hint
 힘|powe
 양털|wool

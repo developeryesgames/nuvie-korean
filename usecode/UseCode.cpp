@@ -202,9 +202,12 @@ bool UseCode::search_container(Obj *obj, bool show_string)
        obj_manager->moveto_map(temp_obj, obj->is_in_container() ? MapCoord(obj->get_container_obj(true)) : MapCoord(obj));
        if(show_string)
        {
-         scroll->display_string(obj_manager->look_obj(temp_obj,true));
+         std::string item_name = obj_manager->look_obj(temp_obj,true);
+         scroll->display_string(item_name.c_str());
          if(obj_link) // more objects left
            scroll->display_string(obj_link->prev ? ", " : (korean_mode ? ", 그리고 " : ", and "));
+         else if(korean_mode) // last item - add particle for Korean
+           scroll->display_string((KoreanTranslation::getParticle_eulreul(item_name) + " ").c_str());
        }
       }
      /* Remove objects from the container. */

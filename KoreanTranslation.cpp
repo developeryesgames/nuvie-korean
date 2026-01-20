@@ -1431,8 +1431,24 @@ std::string KoreanTranslation::getEnglishKeyword(const std::string &korean_keywo
     if (!enabled)
         return "";
 
+    // First try exact match
     std::map<std::string, std::string>::iterator it = keywords.find(korean_keyword);
     if (it != keywords.end())
         return it->second;
+
+    // Prefix match only for 4+ Korean characters (12+ bytes)
+    // Like English 4-char matching: "brit" matches "british"
+    // Korean: "브리티시" (4 chars) can match, but "브리" (2 chars) requires exact match
+    if (korean_keyword.length() >= 12) {
+        for (it = keywords.begin(); it != keywords.end(); ++it) {
+            // Check if registered keyword starts with input (input is prefix of keyword)
+            // e.g., input "괴물사냥" matches keyword "괴물사냥꾼"
+            if (it->first.length() > korean_keyword.length() &&
+                it->first.compare(0, korean_keyword.length(), korean_keyword) == 0) {
+                return it->second;
+            }
+        }
+    }
+
     return "";
 }

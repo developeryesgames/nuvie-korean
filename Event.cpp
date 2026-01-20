@@ -3295,6 +3295,28 @@ void Event::doAction() {
         pushFrom(*input.loc);
       else
         pushTo(input.loc->x, input.loc->y);
+    } else if (input.type == EVENTINPUT_MAPCOORD && move_in_inventory) {
+      // Selected party member by map cursor or number in inventory move mode
+      if (push_obj && input.actor) {
+        pushTo(NULL, input.actor);
+      } else {
+        pushTo(input.loc->x, input.loc->y);
+      }
+    } else if (move_in_inventory && push_obj) {
+      // In inventory move mode with EVENTINPUT_OBJECT - target selected from inventory view
+      // Try to move to the actor holding the selected item, or use input.actor if set
+      if (input.actor) {
+        pushTo(NULL, input.actor);
+      } else if (input.obj && input.obj->is_in_inventory()) {
+        Actor *target_actor = input.obj->get_actor_holding_obj();
+        if (target_actor) {
+          pushTo(NULL, target_actor);
+        } else {
+          pushTo(input.obj, input.actor);
+        }
+      } else {
+        pushTo(input.obj, input.actor);
+      }
     } else {
       if (!push_obj) {
         move_in_inventory = true;
@@ -3850,15 +3872,16 @@ bool Event::can_move_obj_between_actors(Obj *obj,
                                         bool display_name) // exchange inventory
 {
   MapCoord from = src_actor->get_location();
+  KoreanTranslation *korean = game->get_korean_translation();
 
   if (target_actor) {
     if (display_name) {
-      scroll->display_string(target_actor == src_actor ? "yourself" : target_actor->get_name());
+      scroll->display_string(target_actor == src_actor ? ((korean && korean->isEnabled()) ? "자신" : "yourself") : target_actor->get_name());
       scroll->display_string(".");
     }
 
     if (!target_actor->is_in_party() && target_actor != player->get_actor()) {
-      scroll->display_string("\n\nOnly within the party!");
+      scroll->display_string((korean && korean->isEnabled()) ? "\n\n파티 내에서만 가능!" : "\n\nOnly within the party!");
       return false;
     }
 
