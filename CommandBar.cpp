@@ -547,8 +547,11 @@ void CommandBar::display_information()
     uint16 ui_scale = game->get_game_width() / 320;
     if(ui_scale >= 4 && korean_mode) {
         // Use Korean font with proper scaling and center alignment
-        // Offset left (-32px) for better visual balance, moved up 12 pixels
-        KoreanFont *korean_font = fm->get_korean_font();
+        // In compact_ui mode, use 24px font; otherwise use 32px font
+        bool compact_ui = game->is_compact_ui();
+        KoreanFont *korean_font = (compact_ui && fm->get_korean_font_24())
+                                  ? fm->get_korean_font_24()
+                                  : fm->get_korean_font();
         if(korean_font) {
             uint16 text_width = korean_font->getStringWidthUTF8(infostring.c_str(), 1);
             uint16 x_pos = area.x + (area.w - text_width) / 2 - 32;

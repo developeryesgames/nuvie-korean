@@ -1400,14 +1400,14 @@ The party view is shown if in original UI mode.
  */
 static int nscript_actor_hide_portrait(lua_State *L)
 {
-	// Check for Korean 4x mode
+	// Check for Korean scaling mode
 	FontManager *font_manager = Game::get_game()->get_font_manager();
-	bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+	bool use_korean = font_manager && font_manager->is_korean_enabled() &&
 	              font_manager->get_korean_font() && Game::get_game()->is_original_plus();
 
 	if(Game::get_game()->is_new_style())
 		Game::get_game()->get_view_manager()->get_portrait_view()->Hide();
-	else if(!use_4x) // In Korean 4x mode, don't switch away from portrait view
+	else if(!use_korean) // In Korean mode, don't switch away from portrait view
 		Game::get_game()->get_view_manager()->set_party_mode();
 
 	return 0;

@@ -47,7 +47,8 @@ class FontManager
  uint8 *conv_font_widths;
 
  // Korean localization support
- KoreanFont *korean_font;
+ KoreanFont *korean_font;      // 32x32 font for 4x UI mode (scale 2 = 64px)
+ KoreanFont *korean_font_24;   // 24x24 font for 3x UI mode (scale 1 = 24px)
  bool korean_enabled;
 
  public:
@@ -63,6 +64,7 @@ class FontManager
 
  // Korean font support
  KoreanFont *get_korean_font() { return korean_font; }
+ KoreanFont *get_korean_font_24() { return korean_font_24; }
  bool is_korean_enabled() { return korean_enabled; }
  void set_korean_enabled(bool enabled) { korean_enabled = enabled; }
 

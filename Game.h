@@ -141,6 +141,7 @@ class Game
  bool roof_mode;
  bool free_balloon_movement;
  bool force_solid_converse_bg;
+ bool compact_ui;
 
  public:
 
@@ -216,6 +217,7 @@ class Game
  void set_free_balloon_movement(bool val) { free_balloon_movement = val; }
  bool has_free_balloon_movement() { return free_balloon_movement; }
  bool is_forcing_solid_converse_bg() { return force_solid_converse_bg; }
+ bool is_compact_ui() { return compact_ui; }
  uint16 get_converse_gump_width() { return converse_gump_width; }
  uint16 get_min_converse_gump_width() { return min_converse_gump_width; }
  uint16 get_game_width() { return game_width; }

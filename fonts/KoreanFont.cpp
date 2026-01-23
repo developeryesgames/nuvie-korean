@@ -361,8 +361,8 @@ uint16 KoreanFont::drawCharUnicode(Screen *screen, uint32 codepoint, uint16 x, u
     uint16 src_y = (index / chars_per_row) * cell_height;
 
     // Create buffer for the character (0xff = transparent)
-    // Support up to 32x32 cells
-    unsigned char buf[32 * 32];
+    // Support up to 64x64 cells (for 48x48 font and potential larger fonts)
+    unsigned char buf[64 * 64];
     memset(buf, 0xff, cell_width * cell_height);
 
     // Lock font surface to read pixels

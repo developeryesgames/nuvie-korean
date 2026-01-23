@@ -450,14 +450,14 @@ void Converse::stop()
     }
     if(!Game::get_game()->is_new_style())
     {
-        // Check for Korean 4x mode
+        // Check for Korean scaling mode
         FontManager *font_manager = Game::get_game()->get_font_manager();
-        bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+        bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                       font_manager->get_korean_font() && Game::get_game()->is_original_plus();
 
         if(last_view->set_party_member(last_view->get_party_member_num()) == false) // set party member left party
             last_view->prev_party_member(); // seems only needed with new converse gump but will leave here just in case
-        if(!use_4x) // In Korean 4x mode, don't switch away from portrait view
+        if(!use_korean) // In Korean mode, don't switch away from portrait view
             views->set_current_view(last_view);
     }
 

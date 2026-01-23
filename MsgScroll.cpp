@@ -193,8 +193,11 @@ uint16 MsgLine::get_display_width()
 
   // Check if Korean font is enabled
   FontManager *font_manager = Game::get_game()->get_font_manager();
-  KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
-  bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+  KoreanFont *korean_font_32 = font_manager ? font_manager->get_korean_font() : NULL;
+  KoreanFont *korean_font_24 = font_manager ? font_manager->get_korean_font_24() : NULL;
+  bool use_korean = korean_font_32 && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+  bool compact_ui = Game::get_game()->is_compact_ui();
+  KoreanFont *korean_font = (compact_ui && korean_font_24) ? korean_font_24 : korean_font_32;
 
   for(iter=text.begin();iter != text.end() ; iter++)
   {
@@ -202,7 +205,7 @@ uint16 MsgLine::get_display_width()
 
     if(use_korean)
     {
-      // Korean font: 16x16 native (scale 1)
+      // Korean font: 24x24 for compact_ui, 32x32 for normal (scale 1)
       total_width += korean_font->getStringWidthUTF8(token->s.c_str(), 1);
     }
     else
@@ -278,22 +281,30 @@ MsgScroll::MsgScroll(Configuration *cfg, Font *f) : GUI_Widget(NULL, 0, 0, 0, 0)
                          break;
    }
 
- // Check if Korean mode - need 4x scaled UI positioning
+ // Check if Korean mode - need scaled UI positioning
  FontManager *font_manager = Game::get_game()->get_font_manager();
  bool use_korean = font_manager && font_manager->is_korean_enabled() && font_manager->get_korean_font();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ // Background scale is based on game_width/320, not compact_ui setting
+ // compact_ui only affects font size, not UI positioning
+ uint16 bg_scale = Game::get_game()->get_game_width() / 320;
+ if(bg_scale == 0) bg_scale = 1;
+ int ui_scale = (use_korean && Game::get_game()->is_original_plus()) ? bg_scale : 1;
 
  if(use_korean && Game::get_game()->is_original_plus())
  {
-   // In Korean 4x mode, the UI panel (152px) becomes 608px at 4x scale
-   // panel_start = screen_width - 152*4 = screen_width - 608
-   // MsgScroll x = panel_start + 8*4 (8 pixels margin, scaled 4x)
+   // In Korean mode, the UI panel (152px) is scaled by bg_scale (same as Background)
+   // panel_start = screen_width - 152*scale
+   // MsgScroll x = panel_start + 8*scale (8 pixels margin)
    uint16 screen_width = Game::get_game()->get_screen()->get_width();
-   uint16 panel_start = screen_width - 152 * 4;
-   x = panel_start + 8 * 4; // 8 pixels margin, scaled 4x
+   uint16 screen_height = Game::get_game()->get_screen()->get_height();
+   uint16 panel_start = screen_width - 152 * ui_scale;
+   x = panel_start + 8 * ui_scale; // 8 pixels margin, scaled
 
-   // y position: original y=112 within 200px height
-   // At 4x scale: y = 112 * 4 = 448
-   y = 112 * 4;
+   // y position: Original MsgScroll y=112, scale it by bg_scale to match Background
+   y = 112 * ui_scale;  // 112 * 4 = 448 for 4x bg_scale
+   DEBUG(0, LEVEL_INFORMATIONAL, "MsgScroll: screen=%dx%d, bg_scale=%d, ui_scale=%d, x=%d, y=%d\n",
+         screen_width, screen_height, bg_scale, ui_scale, x, y);
  }
  else if(Game::get_game()->is_original_plus())
  {
@@ -307,19 +318,23 @@ MsgScroll::MsgScroll(Configuration *cfg, Font *f) : GUI_Widget(NULL, 0, 0, 0, 0)
  uint16 area_width, area_height;
  if(use_korean && Game::get_game()->is_original_plus())
  {
-   // Korean font: 16px native, UI scaled 4x
+   // Korean font: 16px native, UI scaled
    // Original area: scroll_width * 8 and scroll_height * 8
-   // At 4x scale: multiply by 4
-   area_width = scroll_width * 8 * 4;  // 18 * 8 * 4 = 576px
-   area_height = scroll_height * 8 * 4; // 10 * 8 * 4 = 320px
+   // At scale: multiply by scale
+   area_width = scroll_width * 8 * ui_scale;  // 18 * 8 * scale
+   area_height = scroll_height * 8 * ui_scale; // 10 * 8 * scale
+   // Korean mode: x is already screen-relative (from panel_start), y includes y_off
+   // Don't add x_off again, but add y_off for vertical centering
+   DEBUG(0, LEVEL_INFORMATIONAL, "MsgScroll Init: x=%d, y=%d, x_off=%d, y_off=%d, final_x=%d, final_y=%d\n",
+         x, y, x_off, y_off, x, y + y_off);
+   GUI_Widget::Init(NULL, x, y + y_off, area_width, area_height);
  }
  else
  {
    area_width = scroll_width * 8;
    area_height = scroll_height * 8;
+   GUI_Widget::Init(NULL, x+x_off, y+y_off, area_width, area_height);
  }
-
- GUI_Widget::Init(NULL, x+x_off, y+y_off, area_width, area_height);
 
  cursor_char = 0;
  cursor_x = 0;
@@ -573,15 +588,18 @@ bool MsgScroll::can_fit_token_on_msgline(MsgLine *msg_line, MsgText *token)
 {
   // Check if Korean font is enabled - use pixel-based width
   FontManager *font_manager = Game::get_game()->get_font_manager();
-  KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
-  bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+  KoreanFont *korean_font_32 = font_manager ? font_manager->get_korean_font() : NULL;
+  KoreanFont *korean_font_24 = font_manager ? font_manager->get_korean_font_24() : NULL;
+  bool use_korean = korean_font_32 && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+  bool compact_ui = Game::get_game()->is_compact_ui();
+  KoreanFont *korean_font = (compact_ui && korean_font_24) ? korean_font_24 : korean_font_32;
 
   if(use_korean)
   {
-    // Use pixel-based width calculation for Korean (16x16 * 2 = 32)
+    // Use pixel-based width calculation for Korean
     uint16 line_width_px = msg_line->get_display_width();
     uint16 token_width_px = korean_font->getStringWidthUTF8(token->s.c_str(), 1);
-    // area.w is the actual scroll area width (4x scaled in Korean mode)
+    // area.w is the actual scroll area width (scaled in Korean mode)
     if(line_width_px + token_width_px > area.w)
     {
       return false;
@@ -604,12 +622,15 @@ bool MsgScroll::parse_token(MsgText *token)
  MsgLine *msg_line = NULL;
 
  FontManager *font_manager = Game::get_game()->get_font_manager();
- KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
- bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ KoreanFont *korean_font_32 = font_manager ? font_manager->get_korean_font() : NULL;
+ KoreanFont *korean_font_24 = font_manager ? font_manager->get_korean_font_24() : NULL;
+ bool use_korean = korean_font_32 && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ KoreanFont *korean_font = (compact_ui && korean_font_24) ? korean_font_24 : korean_font_32;
  uint16 visible_lines = scroll_height;
  if(use_korean)
  {
-   // Korean font: 16x16 native
+   // Korean font height: 24 for compact_ui, 32 for normal
    uint16 font_height = korean_font->getCharHeight();
    if(font_height > 0)
      visible_lines = area.h / font_height;
@@ -771,11 +792,14 @@ MsgLine *MsgScroll::add_new_line()
 
  uint16 visible_lines = scroll_height;
  FontManager *font_manager = Game::get_game()->get_font_manager();
- KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
- bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ KoreanFont *korean_font_32 = font_manager ? font_manager->get_korean_font() : NULL;
+ KoreanFont *korean_font_24 = font_manager ? font_manager->get_korean_font_24() : NULL;
+ bool use_korean = korean_font_32 && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ KoreanFont *korean_font = (compact_ui && korean_font_24) ? korean_font_24 : korean_font_32;
  if(use_korean)
  {
-   // Korean font: 16x16 native
+   // Korean font height: 24 for compact_ui, 32 for normal
    uint16 font_height = korean_font->getCharHeight();
    if(font_height > 0)
      visible_lines = area.h / font_height;
@@ -895,12 +919,15 @@ void MsgScroll::set_input_mode(bool state, const char *allowed, bool can_escape,
 void MsgScroll::move_scroll_down()
 {
  FontManager *font_manager = Game::get_game()->get_font_manager();
- KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
- bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ KoreanFont *korean_font_32 = font_manager ? font_manager->get_korean_font() : NULL;
+ KoreanFont *korean_font_24 = font_manager ? font_manager->get_korean_font_24() : NULL;
+ bool use_korean = korean_font_32 && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ KoreanFont *korean_font = (compact_ui && korean_font_24) ? korean_font_24 : korean_font_32;
  uint16 visible_lines = scroll_height;
  if(use_korean)
  {
-   // Korean font: 16x16 native
+   // Korean font height: 24 for compact_ui, 32 for normal
    uint16 font_height = korean_font->getCharHeight();
    if(font_height > 0)
      visible_lines = area.h / font_height;
@@ -928,12 +955,15 @@ void MsgScroll::page_up()
 {
  uint8 i=0;
  FontManager *font_manager = Game::get_game()->get_font_manager();
- KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
- bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ KoreanFont *korean_font_32 = font_manager ? font_manager->get_korean_font() : NULL;
+ KoreanFont *korean_font_24 = font_manager ? font_manager->get_korean_font_24() : NULL;
+ bool use_korean = korean_font_32 && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ KoreanFont *korean_font = (compact_ui && korean_font_24) ? korean_font_24 : korean_font_32;
  uint16 visible_lines = scroll_height;
  if(use_korean)
  {
-   // Korean font: 16x16 native
+   // Korean font height: 24 for compact_ui, 32 for normal
    uint16 font_height = korean_font->getCharHeight();
    if(font_height > 0)
      visible_lines = area.h / font_height;
@@ -951,12 +981,15 @@ void MsgScroll::page_down()
 {
  uint8 i=0;
  FontManager *font_manager = Game::get_game()->get_font_manager();
- KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
- bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ KoreanFont *korean_font_32 = font_manager ? font_manager->get_korean_font() : NULL;
+ KoreanFont *korean_font_24 = font_manager ? font_manager->get_korean_font_24() : NULL;
+ bool use_korean = korean_font_32 && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ KoreanFont *korean_font = (compact_ui && korean_font_24) ? korean_font_24 : korean_font_32;
  uint16 visible_lines = scroll_height;
  if(use_korean)
  {
-   // Korean font: 16x16 native
+   // Korean font height: 24 for compact_ui, 32 for normal
    uint16 font_height = korean_font->getCharHeight();
    if(font_height > 0)
      visible_lines = area.h / font_height;
@@ -1328,9 +1361,12 @@ std::string MsgScroll::get_token_string_at_pos(uint16 x, uint16 y)
 
  // Check if Korean font is enabled
  FontManager *font_manager = Game::get_game()->get_font_manager();
- KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
- bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
- // Korean font: 16x16 native * scale 2 = 32x32 rendered
+ KoreanFont *korean_font_32 = font_manager ? font_manager->get_korean_font() : NULL;
+ KoreanFont *korean_font_24 = font_manager ? font_manager->get_korean_font_24() : NULL;
+ bool use_korean = korean_font_32 && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ KoreanFont *korean_font = (compact_ui && korean_font_24) ? korean_font_24 : korean_font_32;
+ // Korean font height: 24 for compact_ui, 32 for normal
  uint16 font_height = use_korean ? korean_font->getCharHeight() : 8;
  uint16 visible_lines = scroll_height;
  if(use_korean)
@@ -1386,7 +1422,7 @@ std::string MsgScroll::get_token_string_at_pos(uint16 x, uint16 y)
       for(text_iter = line->text.begin(); text_iter != line->text.end(); text_iter++)
       {
         MsgText *t = *text_iter;
-        uint16 token_width = korean_font->getStringWidthUTF8(t->s.c_str(), 2);
+        uint16 token_width = korean_font->getStringWidthUTF8(t->s.c_str(), 1);
         if(buf_x >= pos_x && buf_x < pos_x + token_width)
         {
           DEBUG(0,LEVEL_DEBUGGING,"Token at pixel (%d,%d) = %s\n",buf_x, buf_y, t->s.c_str());
@@ -1417,9 +1453,12 @@ void MsgScroll::Display(bool full_redraw)
 
  // Check if Korean font is enabled for pixel-based positioning
  FontManager *font_manager = Game::get_game()->get_font_manager();
- KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
- bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
- // Korean font: 16x16 native * scale 2 = 32x32 rendered
+ KoreanFont *korean_font_32 = font_manager ? font_manager->get_korean_font() : NULL;
+ KoreanFont *korean_font_24 = font_manager ? font_manager->get_korean_font_24() : NULL;
+ bool use_korean = korean_font_32 && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ KoreanFont *korean_font = (compact_ui && korean_font_24) ? korean_font_24 : korean_font_32;
+ // Korean font height: 24 for compact_ui, 32 for normal
  uint16 font_height = use_korean ? korean_font->getCharHeight() : 8;
 
  // Calculate visible lines based on actual font height
@@ -1451,11 +1490,25 @@ void MsgScroll::Display(bool full_redraw)
      {
        // For Korean, cursor_x is stored as pixel offset
        cursor_x = msg_line->get_display_width();
-       uint16 scroll_width_px = area.w - left_margin;
+       // Account for cursor drawing offsets: text_padding + cursor_size (no extra offset)
+       uint8 cursor_scale = compact_ui ? 2 : 4;
+       uint16 cursor_size = 8 * cursor_scale;
+       uint16 text_pad = compact_ui ? 8 : 0;
+       uint16 cursor_offset = text_pad + cursor_size;
+       uint16 scroll_width_px = area.w - left_margin - cursor_offset;
        if(cursor_x >= scroll_width_px)
        {
-         if(cursor_y+1 < visible_lines)
+         // Cursor needs to wrap to next line
+         if(cursor_y + 1 < visible_lines)
+         {
            cursor_y++;
+         }
+         else
+         {
+           // At last visible line - scroll the message buffer
+           display_pos++;
+           scroll_updated = true;
+         }
          cursor_x = 0;
        }
      }
@@ -1476,20 +1529,37 @@ void MsgScroll::Display(bool full_redraw)
  else
   {
    if(use_korean)
-     clearCursor(area.x + left_margin + cursor_x + 8, area.y + cursor_y * font_height + 4);
+   {
+     // Clear a wider area to ensure cursor and composing text are fully erased
+     // Cursor draws at: area.x + left_margin + cursor_x + text_padding + composing_width + 4 + 8 (internal offset)
+     // We need to clear from cursor_x position with enough width for both composing text and cursor
+     uint8 cursor_scale = compact_ui ? 2 : 4;
+     uint16 cursor_size = 8 * cursor_scale;
+     uint16 text_padding = compact_ui ? 8 : 0;
+     // Clear starting from same position as cursor (with +8 internal offset)
+     uint16 clear_x = area.x + left_margin + cursor_x + text_padding + 4 + 8;
+     uint16 clear_y = area.y + cursor_y * font_height + 4;
+     // Clear width: composing area (up to 64px) + cursor_size
+     screen->fill(bg_color, clear_x, clear_y, 64 + cursor_size, cursor_size);
+   }
    else
      clearCursor(area.x + 8 * cursor_x, area.y + cursor_y * 8);
   }
 
- if(show_cursor && (msg_buf.size() <= visible_lines || display_pos == msg_buf.size() - visible_lines))
+ // For Korean mode, always show cursor when input is active (cursor position is managed separately)
+ // For original mode, only show cursor on last page
+ bool show_cursor_now = show_cursor && (use_korean || msg_buf.size() <= visible_lines || display_pos == msg_buf.size() - visible_lines);
+ if(show_cursor_now)
  {
    uint16 composing_width = 0;
+   // Text padding from left edge: 8 pixels in compact_ui mode (same as drawLine)
+   uint16 text_padding = (use_korean && compact_ui) ? 8 : 0;
 
    // Draw composing text (IME composition preview) before cursor
    if(use_korean && !composing_text.empty() && input_mode)
    {
-     // Use same coordinate system as drawLine (text): area.x + left_margin + cursor_x
-     uint16 draw_x = area.x + left_margin + cursor_x;
+     // Use same coordinate system as drawLine (text): area.x + left_margin + cursor_x + text_padding
+     uint16 draw_x = area.x + left_margin + cursor_x + text_padding;
      uint16 draw_y = area.y + cursor_y * font_height;
 
      // Draw the composing text with underline to indicate it's being composed
@@ -1504,7 +1574,19 @@ void MsgScroll::Display(bool full_redraw)
    }
 
    if(use_korean)
-     drawCursor(area.x + left_margin + cursor_x + composing_width + 4, area.y + cursor_y * font_height + 4);
+   {
+     // Cursor position: right after the text (no extra offset)
+     uint16 cursor_draw_x = area.x + left_margin + cursor_x + text_padding + composing_width;
+     uint16 cursor_draw_y = area.y + cursor_y * font_height + 4;
+     uint8 cursor_scale = compact_ui ? 2 : 3;  // 3x for 4x UI mode (24px cursor)
+     uint16 cursor_size = 8 * cursor_scale;
+     // Check if cursor fits within area bounds
+     bool x_ok = (cursor_draw_x + cursor_size <= area.x + area.w);
+     // For y check, use font_height instead of cursor_size since cursor sits on the text line
+     bool y_ok = (cursor_draw_y + font_height <= area.y + area.h);
+     if(x_ok && y_ok)
+       drawCursor(cursor_draw_x, cursor_draw_y);
+   }
    else
      drawCursor(area.x + left_margin + 8 * cursor_x, area.y + cursor_y * 8);
  }
@@ -1519,20 +1601,26 @@ inline void MsgScroll::drawLine(Screen *screen, MsgLine *msg_line, uint16 line_y
 
  // Check if Korean font is available
  FontManager *font_manager = Game::get_game()->get_font_manager();
- KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
- bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
- // Korean font: 16x16 native (scale 1)
+ KoreanFont *korean_font_32 = font_manager ? font_manager->get_korean_font() : NULL;
+ KoreanFont *korean_font_24 = font_manager ? font_manager->get_korean_font_24() : NULL;
+ bool use_korean = korean_font_32 && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ // Select active font: 24x24 for 3x UI, 32x32 for 4x UI
+ KoreanFont *korean_font = (compact_ui && korean_font_24) ? korean_font_24 : korean_font_32;
  uint8 korean_scale = 1;
+ // Font height: 24 for compact_ui, 32 for normal Korean, 8 for English
  uint16 font_height = use_korean ? korean_font->getCharHeight() : 8;
+ // Text padding from left edge: 8 pixels in compact_ui mode to avoid text overflow
+ uint16 text_padding = (use_korean && compact_ui) ? 8 : 0;
 
  for(iter=msg_line->text.begin();iter != msg_line->text.end() ; iter++)
    {
     token = *iter;
     if(use_korean)
     {
-      // Use Korean font for UTF-8 string rendering (32x32 native)
+      // Use Korean font for UTF-8 string rendering
       uint16 width = korean_font->drawStringUTF8(screen, token->s.c_str(),
-                       area.x + left_margin + total_x, area.y + line_y * font_height,
+                       area.x + left_margin + total_x + text_padding, area.y + line_y * font_height,
                        token->color, font_highlight_color, korean_scale);
       total_x += width;
     }
@@ -1547,12 +1635,15 @@ inline void MsgScroll::drawLine(Screen *screen, MsgLine *msg_line, uint16 line_y
 
 void MsgScroll::clearCursor(uint16 x, uint16 y)
 {
- // Use appropriate size based on font
+ // Use appropriate size based on cursor scale
  FontManager *font_manager = Game::get_game()->get_font_manager();
- KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
- bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
- // Korean mode: 24x24 cursor (8x8 scaled 3x), Original: 8x8
- uint16 clear_size = use_korean ? 24 : 8;
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
+                   font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ // Cursor size: 16 for compact_ui (8*2), 24 for normal 4x (8*3), 8 for original
+ uint8 cursor_scale = use_korean ? (compact_ui ? 2 : 3) : 1;
+ uint16 clear_size = 8 * cursor_scale;
+ // x,y are already calculated by caller, just fill
  screen->fill(bg_color, x, y, clear_size, clear_size);
 }
 
@@ -1560,15 +1651,18 @@ void MsgScroll::drawCursor(uint16 x, uint16 y)
 {
  uint8 cursor_color = input_mode ? get_input_font_color() : font_color;
 
- // Get font size for update region
+ // Get cursor sizing
  FontManager *font_manager = Game::get_game()->get_font_manager();
- KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
- bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
- // Korean mode: MsgScroll area is 4x scaled, cursor 24x24 (3x scale), shifted right by 8px
- // Korean font: 32x32 native, Original U6 font: 8x8 scaled to 24x24 (3x) in Korean mode
- uint16 cursor_size = use_korean ? 24 : 8;
- uint8 korean_scale = use_korean ? 3 : 1; // 3x scale for 8x8 U6 font (24x24 cursor in Korean mode)
- uint16 cursor_x_offset = use_korean ? 8 : 0; // shift cursor right by 8px in Korean mode
+ KoreanFont *korean_font_32 = font_manager ? font_manager->get_korean_font() : NULL;
+ KoreanFont *korean_font_24 = font_manager ? font_manager->get_korean_font_24() : NULL;
+ bool use_korean = korean_font_32 && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ KoreanFont *korean_font = (compact_ui && korean_font_24) ? korean_font_24 : korean_font_32;
+ // Cursor size: 16 for compact_ui (8*2), 24 for normal 4x (8*3), 8 for original
+ uint8 cursor_scale = use_korean ? (compact_ui ? 2 : 3) : 1;
+ uint16 cursor_size = 8 * cursor_scale;
+ uint8 korean_scale = cursor_scale; // Scale for U6 font cursor
+ uint16 cursor_x_offset = 0; // no extra offset - cursor draws right after text
  x += cursor_x_offset;
 
  if(input_char != 0) { // show letter selected by arrow keys

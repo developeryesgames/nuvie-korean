@@ -32,6 +32,7 @@
 
 #include "Game.h"
 #include "Actor.h"
+#include "Party.h"
 #include "Portrait.h"
 #include "Font.h"
 #include "FontManager.h"
@@ -41,6 +42,7 @@
 #include "GUI.h"
 #include "DollWidget.h"
 #include "PortraitView.h"
+#include "PartyView.h"
 #include "SunMoonStripWidget.h"
 #include "KoreanTranslation.h"
 
@@ -80,14 +82,16 @@ bool PortraitView::init(uint16 x, uint16 y, Font *f, Party *p, Player *player, T
 
  portrait = port;
 
- // Check for Korean 4x mode
+ // Check for Korean scaling mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int init_scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
+ // Note: Keep full area.w for proper background clearing, but center portrait in left portion
  doll_widget = new DollWidget(config, this);
- // Original: (0, 16), 4x mode: (0, 16*4=64)
- int doll_y = use_4x ? 16 * 4 : 16;
+ int doll_y = 16 * init_scale;
  doll_widget->init(NULL, 0, doll_y, tile_manager, obj_manager, true);
 
  AddWidget(doll_widget);
@@ -95,13 +99,17 @@ bool PortraitView::init(uint16 x, uint16 y, Font *f, Party *p, Player *player, T
 
  if(gametype == NUVIE_GAME_U6)
  {
-   SunMoonStripWidget *sun_moon_widget = new SunMoonStripWidget(player, tile_manager);
-   // In 4x mode, scale the SunMoon position
-   if(use_4x)
-     sun_moon_widget->init(-8 * 4, -2 * 4);
-   else
-     sun_moon_widget->init(-8, -2);
-   AddWidget(sun_moon_widget);
+   // In compact_ui mode, sun/moon widget is handled by PartyView, not PortraitView
+   if(!(use_korean && compact_ui))
+   {
+     SunMoonStripWidget *sun_moon_widget = new SunMoonStripWidget(player, tile_manager);
+     // Scale the SunMoon position
+     if(use_korean)
+       sun_moon_widget->init(-8 * init_scale, -2 * init_scale);
+     else
+       sun_moon_widget->init(-8, -2);
+     AddWidget(sun_moon_widget);
+   }
  }
  else if(gametype == NUVIE_GAME_MD)
  {
@@ -130,15 +138,19 @@ void PortraitView::load_background(const char *f, uint8 lib_offset)
 
 void PortraitView::Display(bool full_redraw)
 {
- // Check for Korean 4x mode
+ // Check for Korean scaling mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
  KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
- bool use_4x = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
- int scale = use_4x ? 4 : 1;
+ bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
- // In Korean 4x mode or new_style/full_map, always fill background
- if(Game::get_game()->is_new_style() || Game::get_game()->is_original_plus_full_map() || use_4x)
+ // In Korean mode or new_style/full_map, always fill background
+ if(Game::get_game()->is_new_style() || Game::get_game()->is_original_plus_full_map() || use_korean)
+ {
+   // Always fill full area to clear previous view contents
    screen->fill(bg_color, area.x, area.y, area.w, area.h);
+ }
  if(portrait_data != NULL/* && (full_redraw || update_display)*/)
   {
    update_display = false;
@@ -146,19 +158,29 @@ void PortraitView::Display(bool full_redraw)
    {
      if(display_doll)
      {
-       if(use_4x) {
-         // 4x mode: portrait at 72*4, 16*4 from area origin
-         screen->blit4x(area.x+72*scale, area.y+16*scale, portrait_data, 8, portrait_width, portrait_height, portrait_width, false);
+       if(use_korean) {
+         if(compact_ui)
+           screen->blit3x(area.x+72*scale, area.y+16*scale, portrait_data, 8, portrait_width, portrait_height, portrait_width, false);
+         else
+           screen->blit4x(area.x+72*scale, area.y+16*scale, portrait_data, 8, portrait_width, portrait_height, portrait_width, false);
        } else {
          screen->blit(area.x+72,area.y+16,portrait_data,8,portrait_width,portrait_height,portrait_width,false);
        }
      }
      else
      {
-       if(use_4x) {
-         // 4x mode: centered portrait
-         screen->blit4x(area.x+(area.w-portrait_width*scale)/2, area.y+(area.h-portrait_height*scale)/2,
-                        portrait_data, 8, portrait_width, portrait_height, portrait_width, true);
+       if(use_korean) {
+         if(compact_ui) {
+           // In compact_ui, center portrait in left 80*scale area with right offset (30 pixels at 1x)
+           int portrait_area_width = 80 * scale;
+           int portrait_x = area.x + (portrait_area_width - portrait_width * scale) / 2 + 30 * scale;
+           int portrait_y = area.y + (portrait_area_width - portrait_height * scale) / 2;
+           screen->blit3x(portrait_x, portrait_y,
+                          portrait_data, 8, portrait_width, portrait_height, portrait_width, true);
+         }
+         else
+           screen->blit4x(area.x+(area.w-portrait_width*scale)/2, area.y+(area.h-portrait_height*scale)/2,
+                          portrait_data, 8, portrait_width, portrait_height, portrait_width, true);
        } else {
          screen->blit(area.x+(area.w-portrait_width)/2,area.y+(area.h-portrait_height)/2,portrait_data,8,portrait_width,portrait_height,portrait_width,true);
        }
@@ -190,7 +212,9 @@ void PortraitView::Display(bool full_redraw)
     Game::get_game()->get_scroll()->drawCursor(area.x, area.y + area.h - 8 * scale);
    }
    DisplayChildren(full_redraw);
-   screen->update(area.x, area.y, area.w, area.h);
+   // In compact_ui, limit update area to not overlap party view
+   int update_width = (use_korean && compact_ui) ? 80 * scale : area.w;
+   screen->update(area.x, area.y, update_width, area.h);
 }
 
 bool PortraitView::set_portrait(Actor *actor, const char *name)
@@ -200,11 +224,12 @@ bool PortraitView::set_portrait(Actor *actor, const char *name)
  cur_actor_num = actor->get_actor_num();
  int doll_x_offset = 0;
 
- // Check for Korean 4x mode
+ // Check for Korean scaling mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                font_manager->get_korean_font() && Game::get_game()->is_original_plus();
- int scale = use_4x ? 4 : 1;
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
  if(portrait_data != NULL)
    free(portrait_data);
@@ -216,7 +241,7 @@ bool PortraitView::set_portrait(Actor *actor, const char *name)
     if(portrait_data == NULL)
       doll_x_offset = 34 * scale;
 
-    // Original: (0, 16), 4x mode: (0, 16*4=64)
+    // Scaled doll position
     int doll_y = 16 * scale;
     doll_widget->MoveRelativeToParent(doll_x_offset, doll_y);
 
@@ -229,7 +254,7 @@ bool PortraitView::set_portrait(Actor *actor, const char *name)
     display_doll = false;
     doll_widget->Hide();
     doll_widget->set_actor(NULL);
-    
+
     if(portrait_data == NULL)
       return false;
    }
@@ -242,8 +267,11 @@ bool PortraitView::set_portrait(Actor *actor, const char *name)
    name_string->assign(name);
  
  if(screen)
+ {
+   // Always fill full area to clear previous view contents
    screen->fill(bg_color, area.x, area.y, area.w, area.h);
-   
+ }
+
  Redraw();
  return true;
 }
@@ -254,19 +282,27 @@ void PortraitView::display_name(uint16 y_offset)
 
  name = name_string->c_str();
 
- // Check for Korean 4x mode
+ // Check for Korean scaling mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
- bool use_4x = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ KoreanFont *korean_font_32 = font_manager ? font_manager->get_korean_font() : NULL;
+ KoreanFont *korean_font_24 = font_manager ? font_manager->get_korean_font_24() : NULL;
+ bool use_korean = korean_font_32 && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
- if(use_4x) {
+ if(use_korean) {
    // Translate name to Korean if available
    KoreanTranslation *korean = Game::get_game()->get_korean_translation();
    std::string display_name = (korean && korean->isEnabled()) ? korean->translate(name) : name;
 
-   // 4x mode: use Korean font, scale y_offset
-   uint16 name_width = korean_font->getStringWidthUTF8(display_name.c_str(), 1);
-   korean_font->drawStringUTF8(screen, display_name.c_str(), area.x + (area.w - name_width) / 2, area.y + y_offset * 4, 0x48, 0, 1);
+   // Use appropriate font at native size (scale 1)
+   KoreanFont *active_font = (compact_ui && korean_font_24) ? korean_font_24 : korean_font_32;
+   int font_scale = 1;
+   uint16 name_width = active_font->getStringWidthUTF8(display_name.c_str(), font_scale);
+   // In compact_ui, center name under the portrait (which has 30 pixel offset)
+   int center_width = compact_ui ? (80 * scale) : area.w;
+   int name_x_offset = compact_ui ? (30 * scale) : 0;
+   active_font->drawStringUTF8(screen, display_name.c_str(), area.x + (center_width - name_width) / 2 + name_x_offset, area.y + y_offset * scale, 0x48, 0, font_scale);
  } else {
    font->drawString(screen, name, area.x + (area.w - strlen(name) * 8) / 2, area.y+y_offset);
  }
@@ -283,14 +319,64 @@ GUI_status PortraitView::HandleEvent(const SDL_Event *event)
     if(waiting
        && (event->type == SDL_MOUSEBUTTONDOWN || event->type == SDL_KEYDOWN))
     {
-        // Check for Korean 4x mode
+        // Check for Korean scaling mode
         FontManager *font_manager = Game::get_game()->get_font_manager();
-        bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+        bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                       font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+        bool compact_ui = Game::get_game()->is_compact_ui();
+
+        // In compact_ui mode with Korean, check if click is on party view area
+        if(use_korean && compact_ui && event->type == SDL_MOUSEBUTTONDOWN)
+        {
+            int scale = 3;
+            int click_x = event->button.x;
+            int click_y = event->button.y;
+
+            ViewManager *vm = Game::get_game()->get_view_manager();
+            PartyView *pv = vm->get_party_view();
+            if(pv)
+            {
+                // Get actual PartyView position using public accessors
+                int pv_x = pv->X();
+                int pv_y = pv->Y();
+                int pv_w = pv->W();
+                int pv_h = pv->H();
+
+                // Check if click is within PartyView bounds
+                if(click_x >= pv_x && click_x < pv_x + pv_w &&
+                   click_y >= pv_y && click_y < pv_y + pv_h)
+                {
+                    // Calculate which party member was clicked
+                    int local_x = click_x - pv_x;
+                    int local_y = click_y - pv_y;
+
+                    int y_offset = 18 * scale;
+                    int rowH = 16 * scale;
+                    int x_offset = 7 * scale;
+
+                    // Switch portrait for any click in party member area (icon or name)
+                    if(local_y >= y_offset && local_x >= x_offset)
+                    {
+                        int clicked_member = (local_y - y_offset) / rowH;
+                        Party *party = Game::get_game()->get_party();
+                        if(clicked_member >= 0 && clicked_member < (int)party->get_party_size())
+                        {
+                            Actor *clicked_actor = party->get_actor(clicked_member);
+                            if(clicked_actor)
+                            {
+                                set_portrait(clicked_actor, NULL);
+                                Redraw();
+                                return(GUI_YUM);
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         if(Game::get_game()->is_new_style())
             this->Hide();
-        else if(!use_4x) // In Korean 4x mode, don't switch away from portrait view
+        else if(!use_korean) // In Korean mode, don't switch away from portrait view
             Game::get_game()->get_view_manager()->set_inventory_mode();
         // Game::get_game()->get_scroll()->set_input_mode(false);
         Game::get_game()->get_scroll()->message("\n");

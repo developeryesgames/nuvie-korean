@@ -47,7 +47,7 @@
 #include "MsgScroll.h"
 
 #define VD_WIDTH 311
-#define VD_HEIGHT 210 // add or subtract 13 if you add/remove a row
+#define VD_HEIGHT 223 // add or subtract 13 if you add/remove a row
 
 // Helper to get translated text for VideoDialog
 static std::string get_vd_text(const char *english_text) {
@@ -343,6 +343,18 @@ bool VideoDialog::init() {
 	if (menu_scale > 1) { smooth_movement_button->SetTextScale(menu_scale); smooth_movement_button->ChangeTextButton(-1,-1,-1,-1,smooth_movement_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(smooth_movement_button);
 	button_index[last_index+=1] = smooth_movement_button;
+// compact_ui (3x scale UI with always-visible party view, needs reset)
+	txt = get_vd_text("Compact UI:");
+	widget = (GUI_Widget *) new GUI_Text(colX[0], textY += row_h, 0, 0, 0, txt.c_str(), gui->get_font());
+	if (menu_scale > 1) ((GUI_Text*)widget)->SetTextScale(menu_scale);
+	AddWidget(widget);
+	bool compact_ui_val;
+	config->value("config/video/compact_ui", compact_ui_val, false);
+	old_compact_ui = compact_ui_val ? 1 : 0;
+	compact_ui_button = new GUI_TextToggleButton(this, colX[4], buttonY += row_h, yesno_width, height, tr_yesno_text, 2, old_compact_ui, font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	if (menu_scale > 1) { compact_ui_button->SetTextScale(menu_scale); compact_ui_button->ChangeTextButton(-1,-1,-1,-1,compact_ui_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
+	AddWidget(compact_ui_button);
+	button_index[last_index+=1] = compact_ui_button;
 // cancel/save buttons
 	std::string cancel_txt = get_vd_text("Cancel");
 	std::string save_txt = get_vd_text("Save");
@@ -559,6 +571,9 @@ GUI_status VideoDialog::callback(uint16 msg, GUI_CallBack *caller, void *data) {
 		bool smooth_movement = smooth_movement_button->GetSelection() == 1;
 		config->set("config/video/smooth_movement", smooth_movement ? "yes" : "no");
 		game->get_map_window()->set_smooth_movement(smooth_movement);
+	// compact_ui (needs restart)
+		bool compact_ui = compact_ui_button->GetSelection() == 1;
+		config->set("config/video/compact_ui", compact_ui ? "yes" : "no");
 
 		config->write();
 
@@ -566,7 +581,8 @@ GUI_status VideoDialog::callback(uint16 msg, GUI_CallBack *caller, void *data) {
 		bool restart_needed = (lighting_button->GetSelection() != old_lighting ||
 		                       sprites_b->GetSelection() != old_sprites ||
 		                       dither_button->GetSelection() != old_dither ||
-		                       map_tile_scale_button->GetSelection() != old_map_tile_scale);
+		                       map_tile_scale_button->GetSelection() != old_map_tile_scale ||
+		                       compact_ui_button->GetSelection() != old_compact_ui);
 		if(restart_needed) {
 			MsgScroll *scroll = game->get_scroll();
 			if(scroll) {

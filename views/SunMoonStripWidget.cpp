@@ -29,6 +29,9 @@
 #include "Weather.h"
 #include "GameClock.h"
 #include "FontManager.h"
+#include "GamePalette.h"
+#include "Background.h"
+#include "U6Shape.h"
 #include "SunMoonStripWidget.h"
 
 
@@ -46,15 +49,17 @@ SunMoonStripWidget::~SunMoonStripWidget()
 
 void SunMoonStripWidget::init(sint16 x, sint16 y)
 {
-  // Check for Korean 4x mode
+  // Check for Korean scaling mode (4x normal, 3x compact_ui)
   FontManager *font_manager = Game::get_game()->get_font_manager();
-  bool use_korean_4x = font_manager && font_manager->is_korean_enabled() &&
-                       font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+  bool use_korean = font_manager && font_manager->is_korean_enabled() &&
+                    font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+  bool compact_ui = Game::get_game()->is_compact_ui();
+  int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
-  if(use_korean_4x)
+  if(scale > 1)
   {
-    // 4x scaled: 100x20 -> 400x80
-    GUI_Widget::Init(NULL, x, y, 100*4, 20*4);
+    // Scaled: 100x20 -> scale * dimensions
+    GUI_Widget::Init(NULL, x, y, 100*scale, 20*scale);
   }
   else
   {
@@ -88,11 +93,52 @@ void SunMoonStripWidget::display_surface_strip()
  Weather *weather = Game::get_game()->get_weather();
  bool eclipse = weather->is_eclipse();
 
- // Check for Korean 4x mode
+ // Check for Korean scaling mode (4x normal, 3x compact_ui)
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_korean_4x = font_manager && font_manager->is_korean_enabled() &&
-                      font_manager->get_korean_font() && Game::get_game()->is_original_plus();
- int scale = use_korean_4x ? 4 : 1;
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
+                   font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
+
+ // Clear the sky strip area where sun/moon can appear
+ uint16 strip_x = area.x + 8 * scale;
+ uint16 strip_w = 144 * scale;  // 9 tiles * 16 pixels, scaled
+
+ if(compact_ui) {
+   // In compact_ui mode, fill with background color
+   // Only clear the strip area itself (no extra above to avoid overlapping UI)
+   uint16 strip_y = area.y;
+   uint16 strip_h = 16 * scale;  // Just the strip height
+   uint8 bg_color = Game::get_game()->get_palette()->get_bg_color();
+   screen->fill(bg_color, strip_x, strip_y, strip_w, strip_h);
+ } else {
+   uint16 strip_y = area.y - 4 * scale;
+   uint16 strip_h = (4 + 16) * scale;  // 4 pixels above + 16 pixels strip height, scaled
+   // For non-compact modes, redraw with paper texture
+   Background *bg = Game::get_game()->get_background();
+   if(bg && bg->get_bg_shape()) {
+     U6Shape *bg_shape = bg->get_bg_shape();
+     uint16 bg_w = bg->get_bg_w();
+     unsigned char *bg_data = bg_shape->get_data();
+
+     uint16 game_x_off = Game::get_game()->get_game_x_offset();
+     uint16 game_y_off = Game::get_game()->get_game_y_offset();
+
+     // Source position in 1x background texture
+     uint16 src_x = (strip_x - game_x_off) / scale;
+     uint16 src_y = (strip_y - game_y_off) / scale;
+
+     // Point to the correct row in background data
+     unsigned char *src_ptr = bg_data + (src_y * bg_w) + src_x;
+
+     if(scale >= 4)
+       screen->blit4x(strip_x, strip_y, src_ptr, 8, 144, 20, bg_w, true);
+     else if(scale == 3)
+       screen->blit3x(strip_x, strip_y, src_ptr, 8, 144, 20, bg_w, true);
+     else
+       screen->blit(strip_x, strip_y, src_ptr, 8, 144, 20, bg_w, true);
+   }
+ }
 
  display_sun(clock->get_hour(), 0/*minutes*/, eclipse);
 
@@ -102,8 +148,10 @@ void SunMoonStripWidget::display_surface_strip()
  for(i=0;i<9;i++)
    {
     tile = tile_manager->get_tile(352+i);
-    if(use_korean_4x)
+    if(scale >= 4)
       screen->blit4x(area.x + 8*scale + i*16*scale, area.y, tile->data, 8, 16, 16, 16, true);
+    else if(scale == 3)
+      screen->blit3x(area.x + 8*scale + i*16*scale, area.y, tile->data, 8, 16, 16, 16, true);
     else
       screen->blit(area.x+8 +i*16,area.y,tile->data,8,16,16,16,true);
    }
@@ -116,15 +164,18 @@ void SunMoonStripWidget::display_dungeon_strip()
  uint8 i;
  Tile *tile;
 
- // Check for Korean 4x mode
+ // Check for Korean scaling mode (4x normal, 3x compact_ui)
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_korean_4x = font_manager && font_manager->is_korean_enabled() &&
-                      font_manager->get_korean_font() && Game::get_game()->is_original_plus();
- int scale = use_korean_4x ? 4 : 1;
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
+                   font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
  tile = tile_manager->get_tile(372);
- if(use_korean_4x)
+ if(scale >= 4)
    screen->blit4x(area.x + 8*scale, area.y, tile->data, 8, 16, 16, 16, true);
+ else if(scale == 3)
+   screen->blit3x(area.x + 8*scale, area.y, tile->data, 8, 16, 16, 16, true);
  else
    screen->blit(area.x+8,area.y,tile->data,8,16,16,16,true);
 
@@ -132,15 +183,19 @@ void SunMoonStripWidget::display_dungeon_strip()
 
  for(i=1;i<8;i++)
    {
-    if(use_korean_4x)
+    if(scale >= 4)
       screen->blit4x(area.x + 8*scale + i*16*scale, area.y, tile->data, 8, 16, 16, 16, true);
+    else if(scale == 3)
+      screen->blit3x(area.x + 8*scale + i*16*scale, area.y, tile->data, 8, 16, 16, 16, true);
     else
       screen->blit(area.x+8 +i*16,area.y,tile->data,8,16,16,16,true);
    }
 
  tile = tile_manager->get_tile(374);
- if(use_korean_4x)
+ if(scale >= 4)
    screen->blit4x(area.x + 8*scale + 7*16*scale + 8*scale, area.y, tile->data, 8, 16, 16, 16, true);
+ else if(scale == 3)
+   screen->blit3x(area.x + 8*scale + 7*16*scale + 8*scale, area.y, tile->data, 8, 16, 16, 16, true);
  else
    screen->blit(area.x+8 +7*16+8,area.y,tile->data,8,16,16,16,true);
 
@@ -149,11 +204,12 @@ void SunMoonStripWidget::display_dungeon_strip()
 // <SB-X>
 void SunMoonStripWidget::display_sun_moon(Tile *tile, uint8 pos)
 {
-    // Check for Korean 4x mode
+    // Check for Korean scaling mode (4x normal, 3x compact_ui)
     FontManager *font_manager = Game::get_game()->get_font_manager();
-    bool use_korean_4x = font_manager && font_manager->is_korean_enabled() &&
-                         font_manager->get_korean_font() && Game::get_game()->is_original_plus();
-    int scale = use_korean_4x ? 4 : 1;
+    bool use_korean = font_manager && font_manager->is_korean_enabled() &&
+                      font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+    bool compact_ui = Game::get_game()->is_compact_ui();
+    int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
     struct { sint16 x, y; } skypos[15] = // sky positions relative to area
     {
@@ -180,8 +236,10 @@ void SunMoonStripWidget::display_sun_moon(Tile *tile, uint8 pos)
     if (skypos[pos].y == 6) // goes through the bottom if not reduced
       height = 10;
 
-    if(use_korean_4x)
+    if(scale >= 4)
       screen->blit4x(x, y, tile->data, 8, 16, height, 16, true);
+    else if(scale == 3)
+      screen->blit3x(x, y, tile->data, 8, 16, height, 16, true);
     else
       screen->blit(x, y, tile->data, 8, 16, height, 16, true);
 }
@@ -219,5 +277,4 @@ void SunMoonStripWidget::display_moons(uint8 day, uint8 hour, uint8 minute)
     if(posB >= 5 && posB <= 19)
         display_sun_moon(tileB, posB - 5);
 }
-
 

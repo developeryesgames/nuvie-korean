@@ -42,6 +42,10 @@
 #include "MapWindow.h"
 #include "SunMoonStripWidget.h"
 #include "KoreanTranslation.h"
+#include "ViewManager.h"
+#include "ActorView.h"
+#include "InventoryView.h"
+#include "PortraitView.h"
 
 extern GUI_status inventoryViewButtonCallback(void *data);
 extern GUI_status actorViewButtonCallback(void *data);
@@ -65,22 +69,47 @@ PartyView::~PartyView()
 
 }
 
+void PartyView::Hide(void)
+{
+    // In compact_ui Korean mode, party view should never be hidden
+    FontManager *font_manager = Game::get_game()->get_font_manager();
+    bool use_korean = font_manager && font_manager->is_korean_enabled() &&
+                      font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+    bool compact_ui = Game::get_game()->is_compact_ui();
+
+    if(use_korean && compact_ui)
+    {
+        // Don't hide - just return without changing status
+        return;
+    }
+
+    // Normal behavior - call parent Hide
+    View::Hide();
+}
+
 bool PartyView::init(void *vm, uint16 x, uint16 y, Font *f, Party *p, Player *pl, TileManager *tm, ObjManager *om)
 {
  View::init(x,y,f,p,tm,om);
 
- // Check for Korean 4x mode
+ // Check for Korean scaling mode (4x normal, 3x compact_ui)
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_korean_4x = font_manager && font_manager->is_korean_enabled();
+ bool use_korean = font_manager && font_manager->is_korean_enabled();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = (use_korean && Game::get_game()->is_original_plus()) ? (compact_ui ? 3 : 4) : 1;
 
  // PartyView is 8px wider than other Views, for the arrows
  // ...and 3px taller, for the sky (SB-X)
+ // In compact_ui mode, add extra height for 8 party members instead of 5
+ // Extra 3 rows * 16px = 48px at 1x scale
  if(U6)
  {
-   if(use_korean_4x && Game::get_game()->is_original_plus())
+   if(scale > 1)
    {
-     // 4x scaled: add 8*4 width and 3*4 height
-     SetRect(area.x, area.y, area.w + 8*4, area.h + 3*4);
+     // Scaled: add 8*scale width and 3*scale height
+     int extra_height = (use_korean && compact_ui) ? (3 * 16 * scale) : 0;  // 3 extra rows for 8 members
+     // In compact_ui mode, reduce width by 1/2 + 8 pixels to bring name and HP closer and avoid overlap
+     int width_reduction = (use_korean && compact_ui) ? (area.w / 2 + 8 * scale) : 0;
+     SetRect(area.x, area.y, area.w + 8*scale - width_reduction, area.h + 3*scale + extra_height);
    }
    else
    {
@@ -96,14 +125,11 @@ bool PartyView::init(void *vm, uint16 x, uint16 y, Font *f, Party *p, Player *pl
  if(U6)
  {
    sun_moon_widget = new SunMoonStripWidget(player, tile_manager);
-   if(use_korean_4x && Game::get_game()->is_original_plus())
-   {
-     sun_moon_widget->init(area.x, area.y); // Will need to handle 4x in SunMoonStripWidget
-   }
-   else
-   {
-     sun_moon_widget->init(area.x,area.y);
-   }
+   // In compact_ui Korean mode, shift sun/moon strip to compensate for party view movement
+   // PartyView moved 8 pixels left, SunMoon needs +12 pixels right (8+3+1)
+   int sun_moon_x_offset = (use_korean && compact_ui) ? (56 * scale + 56 * scale + 12 * scale + 12 * scale) : 0;  // adjusted for party left shift + 4 extra (left 1 more)
+   int sun_moon_y_offset = (use_korean && compact_ui) ? (9 * scale) : 0;  // +9 (down 2 more)
+   sun_moon_widget->init(area.x - sun_moon_x_offset, area.y + sun_moon_y_offset);
    AddWidget(sun_moon_widget);
  }
 
@@ -142,11 +168,12 @@ GUI_status PartyView::MouseUp(int x,int y,int button)
  x -= area.x;
  y -= area.y;
 
- // Check for Korean 4x mode
+ // Check for Korean scaling mode (4x normal, 3x compact_ui)
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_korean_4x = font_manager && font_manager->is_korean_enabled() &&
-                      font_manager->get_korean_font() && Game::get_game()->is_original_plus();
- int scale = use_korean_4x ? 4 : 1;
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
+                   font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
  if(y < 18 * scale && U6) // clicked on skydisplay
    return GUI_PASS;
@@ -158,11 +185,13 @@ GUI_status PartyView::MouseUp(int x,int y,int button)
      rowH = 24;
 
  uint8 party_size = party->get_party_size();
+ // In compact_ui mode with Korean, can display up to 8 members
+ uint8 max_visible_click = 5;
  if(SE)
- {
-     if(party_size > 7) party_size = 7;
- }
- else if(party_size > 5) party_size = 5; // can only display/handle 5 at a time
+     max_visible_click = 7;
+ else if(use_korean && compact_ui)
+     max_visible_click = 8;
+ if(party_size > max_visible_click) party_size = max_visible_click;
 
  SDL_Rect arrow_rects_U6[2] = {{0, (Sint16)(18*scale), (Uint16)(8*scale), (Uint16)(8*scale)},
                                {0, (Sint16)(90*scale), (Uint16)(8*scale), (Uint16)(8*scale)}};
@@ -217,15 +246,65 @@ GUI_status PartyView::MouseUp(int x,int y,int button)
          return GUI_YUM;
       }
    }
-   set_party_member(((y - y_offset) / rowH) + row_offset);
-   if(x >= x_offset + 17 * scale) // clicked an actor name
+   uint8 clicked_member = ((y - y_offset) / rowH) + row_offset;
+   set_party_member(clicked_member);
+
+   // In party_view_permanent mode, directly set the party member on the target view
+   // Keep same view type - just change the character regardless of click position (icon or name)
+   ViewManager *vm = (ViewManager *)view_manager;
+   if(vm->is_party_view_permanent())
+   {
+     View *cur_view = vm->get_current_view();
+     PortraitView *pv = vm->get_portrait_view();
+     InventoryView *iv = vm->get_inventory_view();
+     ActorView *av = vm->get_actor_view();
+
+     // Check if portrait is currently active (waiting for input during conversation)
+     bool portrait_active = (pv && pv->get_waiting());
+     // Check current view type
+     bool is_portrait_view = (pv && cur_view == (View *)pv);
+     bool is_actor_view = (av && cur_view == (View *)av);
+
+     DEBUG(0, LEVEL_INFORMATIONAL, "PartyView click: cur_view=%p, pv=%p, iv=%p, av=%p, waiting=%d\n",
+           cur_view, pv, iv, av, portrait_active);
+
+     if(portrait_active || is_portrait_view)
      {
-      actorViewButtonCallback(view_manager);
+       // Currently in portrait mode -> show clicked character's portrait
+       DEBUG(0, LEVEL_INFORMATIONAL, "PartyView: switching to portrait for member %d\n", clicked_member);
+       Actor *clicked_actor = party->get_actor(clicked_member);
+       if(clicked_actor)
+       {
+         pv->set_portrait(clicked_actor, NULL);
+         pv->Redraw();
+       }
      }
-   else // clicked an actor icon
+     else if(is_actor_view)
      {
-      inventoryViewButtonCallback(view_manager);
+       // Currently in actor view (stats) -> show clicked character's stats
+       DEBUG(0, LEVEL_INFORMATIONAL, "PartyView: switching to actor view for member %d\n", clicked_member);
+       av->set_party_member(clicked_member);
+       av->Redraw();
      }
+     else
+     {
+       // Currently in inventory/other mode -> show clicked character's inventory
+       DEBUG(0, LEVEL_INFORMATIONAL, "PartyView: switching to inventory for member %d\n", clicked_member);
+       iv->set_party_member(clicked_member);
+       inventoryViewButtonCallback(view_manager);
+     }
+   }
+   else
+   {
+     if(x >= x_offset + 17 * scale) // clicked an actor name
+     {
+       actorViewButtonCallback(view_manager);
+     }
+     else // clicked an actor icon
+     {
+       inventoryViewButtonCallback(view_manager);
+     }
+   }
   }
  return GUI_YUM;
 }
@@ -235,24 +314,35 @@ Actor *PartyView::get_actor(int x, int y)
     x -= area.x;
     y -= area.y;
 
+    // Check for Korean scaling mode
+    FontManager *font_manager = Game::get_game()->get_font_manager();
+    bool use_korean = font_manager && font_manager->is_korean_enabled() &&
+                      font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+    bool compact_ui = Game::get_game()->is_compact_ui();
+    int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
+
     uint8 party_size = party->get_party_size();
-    int rowH = 16;
-    int y_offset = 18;
+    int rowH = 16 * scale;
+    int y_offset = 18 * scale;
     if(MD)
     {
         rowH = 24; y_offset = 0;
     }
+    // Max visible: 8 for compact_ui Korean, 7 for SE, 5 otherwise
+    uint8 max_visible = 5;
     if(SE)
     {
         y_offset = 2;
-        if(party_size > 7) party_size = 7;
+        max_visible = 7;
     }
-    else if(party_size > 5) party_size = 5; // can only display/handle 5 at a time
+    else if(use_korean && compact_ui)
+        max_visible = 8;
+    if(party_size > max_visible) party_size = max_visible;
 
     if(y > party_size * rowH + y_offset) // clicked below actors
       return NULL;
 
-    if(x >= 8)
+    if(x >= 8 * scale)
      {
     	return party->get_actor(((y - y_offset) / rowH) + row_offset);
      }
@@ -344,25 +434,39 @@ void PartyView::Display(bool full_redraw)
    char hp_string[4];
    uint8 party_size = party->get_party_size();
 
-   // Check for Korean 4x mode (UI is 4x, font is 32x32 native)
+   // Check for Korean scaling mode (4x normal, 3x compact_ui)
    FontManager *font_manager = Game::get_game()->get_font_manager();
-   KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
-   bool use_korean_4x = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+   KoreanFont *korean_font_32 = font_manager ? font_manager->get_korean_font() : NULL;
+   KoreanFont *korean_font_24 = font_manager ? font_manager->get_korean_font_24() : NULL;
+   bool use_korean = korean_font_32 && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+   bool compact_ui = Game::get_game()->is_compact_ui();
+
+   // Select active font: 48x48 for 3x UI, 32x32 for 4x UI
+   KoreanFont *korean_font = (compact_ui && korean_font_24) ? korean_font_24 : korean_font_32;
 
    int rowH = 16;
    int scale = 1;
    int font_scale = 1;
-   if(use_korean_4x)
+   if(use_korean)
    {
-     rowH = 16 * 4; // 64px per row at 4x UI scale
-     scale = 4;     // UI scale
-     font_scale = 1; // Korean font: 32x32 native
+     scale = compact_ui ? 3 : 4;
+     rowH = 16 * scale; // row height at UI scale
+     // Use font at native size (scale 1) - fonts are already sized for the UI scale
+     font_scale = 1;
+     static int pv_font_debug = 0;
+     if(pv_font_debug < 3) {
+       DEBUG(0, LEVEL_INFORMATIONAL, "PartyView: compact_ui=%d, korean_font_24=%p, scale=%d, font_scale=%d\n",
+             compact_ui, korean_font_24, scale, font_scale);
+       pv_font_debug++;
+     }
    }
    else if(MD)
       rowH = 24;
 
    update_display = false;
-   uint8 end_offset = row_offset + 5;
+   // In compact_ui mode with Korean, show up to 8 members; otherwise 5
+   uint8 max_visible = (use_korean && compact_ui) ? 8 : 5;
+   uint8 end_offset = row_offset + max_visible;
 
    static int pv_debug = 0;
    if(pv_debug < 3) {
@@ -373,9 +477,21 @@ void PartyView::Display(bool full_redraw)
    if(MD)
       fill_md_background(bg_color, area);
    else
-      screen->fill(bg_color, area.x, area.y, area.w, area.h);
-   //if(U6)
-     // display_sun_moon_strip();
+   {
+      // In compact_ui Korean mode, reduce background area from top by 10*scale and bottom by 6*scale
+      // Also reduce 2*scale from right side to avoid covering other UI elements
+      int bg_y_offset = (use_korean && compact_ui) ? (10 * scale) : 0;
+      int bg_bottom_reduction = (use_korean && compact_ui) ? (6 * scale) : 0;
+      int bg_right_reduction = (use_korean && compact_ui) ? (2 * scale) : 0;
+      screen->fill(bg_color, area.x, area.y + bg_y_offset, area.w - bg_right_reduction, area.h - bg_y_offset - bg_bottom_reduction);
+   }
+
+   // In compact_ui Korean mode, draw sun/moon widget BEFORE party members
+   // so character sprites appear on top of sun/moon
+   if(use_korean && compact_ui && sun_moon_widget)
+   {
+      sun_moon_widget->Display(full_redraw);
+   }
 
    display_arrows();
 
@@ -390,7 +506,8 @@ void PartyView::Display(bool full_redraw)
       actor_tile = tile_manager->get_tile(actor->get_downward_facing_tile_num());
 
       int x_offset = 8 * scale;
-      int y_offset = 18 * scale;
+      // In compact_ui Korean mode, move content up by 5 pixels
+      int y_offset = (use_korean && compact_ui) ? (13 * scale) : (18 * scale);
       hp_text_color = 0; //standard text color
 
       if(U6)
@@ -419,10 +536,14 @@ void PartyView::Display(bool full_redraw)
 
       }
 
-      // Draw actor tile (sprite) - use 4x scaling in Korean mode
-      if(use_korean_4x)
+      // Draw actor tile (sprite) - use scaling in Korean mode
+      if(scale >= 4)
       {
         screen->blit4x(area.x+x_offset, area.y + y_offset + (i-row_offset)*rowH, actor_tile->data, 8, 16, 16, 16, true);
+      }
+      else if(scale == 3)
+      {
+        screen->blit3x(area.x+x_offset, area.y + y_offset + (i-row_offset)*rowH, actor_tile->data, 8, 16, 16, 16, true);
       }
       else
       {
@@ -433,7 +554,7 @@ void PartyView::Display(bool full_redraw)
       // Translate actor name if Korean mode is enabled
       // But don't translate player's avatar name (party member 0) - it's user input
       const char *display_name = actor_name;
-      if(use_korean_4x && i > 0)  // Skip translation for avatar (i==0)
+      if(use_korean && i > 0)  // Skip translation for avatar (i==0)
       {
         KoreanTranslation *korean = Game::get_game()->get_korean_translation();
         if(korean && korean->isEnabled())
@@ -451,11 +572,12 @@ void PartyView::Display(bool full_redraw)
         y_offset = -3;
 
       // Draw actor name - use Korean font with 2x scaling (16x16*2=32)
-      if(use_korean_4x)
+      if(use_korean)
       {
-        // In 4x mode: name position is (x_offset + 24*4) from area.x
+        // In compact_ui mode: position name closer to sprite (18 instead of 24)
+        int name_x_offset = compact_ui ? 18 : 24;
         korean_font->drawStringUTF8(screen, display_name,
-          area.x + x_offset + 24 * scale,
+          area.x + x_offset + name_x_offset * scale,
           area.y + y_offset + (i-row_offset) * rowH + 8 * scale,
           font->getDefaultColor(), 0, font_scale);
       }
@@ -479,7 +601,7 @@ void PartyView::Display(bool full_redraw)
       // Draw HP string
       // For U6: x_offset stays at initial value (8*scale), y_offset stays at 18*scale
       // SE/MD modify x_offset and y_offset above
-      if(use_korean_4x)
+      if(use_korean)
       {
         // U6 Korean: Right-align HP at right edge of view
         // Calculate string width and position from right edge
@@ -496,7 +618,12 @@ void PartyView::Display(bool full_redraw)
         font->drawString(screen, hp_string, strlen(hp_string), area.x + x_offset + 112, area.y + y_offset + (i-row_offset) * rowH, hp_text_color, 0);
       }
      }
-   DisplayChildren(full_redraw);
+
+   // For non-compact_ui modes, draw children (including sun_moon_widget) normally
+   if(!(use_korean && compact_ui))
+   {
+      DisplayChildren(full_redraw);
+   }
    screen->update(area.x, area.y, area.w, area.h);
   }
 
@@ -516,7 +643,14 @@ bool PartyView::up_arrow()
 
 bool PartyView::down_arrow()
 {
-    if((row_offset+ (SE? 7:5)) < party->get_party_size())
+    // Max visible: 8 for compact_ui Korean, 7 for SE, 5 otherwise
+    FontManager *font_manager = Game::get_game()->get_font_manager();
+    bool use_korean = font_manager && font_manager->is_korean_enabled() &&
+                      font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+    bool compact_ui = Game::get_game()->is_compact_ui();
+    uint8 max_visible = SE ? 7 : ((use_korean && compact_ui) ? 8 : 5);
+
+    if((row_offset + max_visible) < party->get_party_size())
     {
         row_offset++;
         return(true);
@@ -527,34 +661,42 @@ bool PartyView::down_arrow()
 
 void PartyView::display_arrows()
 {
-    // Check for Korean 4x mode
+    // Check for Korean scaling mode (4x normal, 3x compact_ui)
     FontManager *font_manager = Game::get_game()->get_font_manager();
     KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
-    bool use_korean_4x = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+    bool use_korean = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+    bool compact_ui = Game::get_game()->is_compact_ui();
 
     int x_offset = 0; int y_offset = 0;
-    int scale = use_korean_4x ? 4 : 1;
-    int font_scale = use_korean_4x ? 1 : 1; // Korean font: 32x32 native
+    int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
+    int font_scale = use_korean ? 1 : 1; // Korean font: native size
 
     if(SE || MD)
     {
         x_offset = 2;
         y_offset = 12;
     }
+    // Max visible: 8 for compact_ui Korean, 7 for SE, 5 otherwise
     uint8 max_party_size = 5;
-    uint8 party_size = party->get_party_size();
     if(SE)
         max_party_size = 7;
+    else if(use_korean && compact_ui)
+        max_party_size = 8;
+    uint8 party_size = party->get_party_size();
     if(party_size <= max_party_size) // reset
         row_offset = 0;
 
+    // Calculate bottom arrow Y position based on max visible members
+    // For 8 members: 18 + 8*16 = 18 + 128 = 146 (in 1x scale)
+    int bottom_arrow_y = (use_korean && compact_ui) ? (18 + max_party_size * 16) : 90;
+
     if((party_size - row_offset) > max_party_size) // display bottom arrow
     {
-        if(use_korean_4x)
+        if(use_korean)
         {
-            // Use U6 font's special arrow character with 4x scaling
+            // Use U6 font's special arrow character with scaling
             U6Font *u6font = static_cast<U6Font*>(font);
-            u6font->drawCharScaled(screen, 25, area.x - x_offset, area.y + 90 * scale + y_offset, font->getDefaultColor(), scale);
+            u6font->drawCharScaled(screen, 25, area.x - x_offset, area.y + bottom_arrow_y * scale + y_offset, font->getDefaultColor(), scale);
         }
         else
             font->drawChar(screen, 25, area.x - x_offset, area.y + 90 + y_offset);
@@ -563,7 +705,7 @@ void PartyView::display_arrows()
         y_offset = 3;
     if(row_offset > 0) // display top arrow
     {
-        if(use_korean_4x)
+        if(use_korean)
         {
             // Use U6 font's special arrow character with 4x scaling
             U6Font *u6font = static_cast<U6Font*>(font);

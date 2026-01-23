@@ -45,6 +45,7 @@
 #include "FontManager.h"
 #include "KoreanTranslation.h"
 #include "SaveManager.h"
+#include "U6objects.h"
 
 uint8 walk_frame_tbl[4] = {0,1,2,1};
 
@@ -669,6 +670,15 @@ void Actor::finish_smooth_move()
     visual_x = (float)(x * 16);
     visual_y = (float)(y * 16);
     smooth_moving = false;
+
+    // For slimes, update frame connections after smooth move completes
+    // Slimes use frame-based visual connection to adjacent slimes
+    if(obj_n == OBJ_U6_SLIME)
+    {
+        Script *script = Game::get_game()->get_script();
+        if(script)
+            script->run_script("slime_update_frames()");
+    }
 }
 
 void Actor::update()

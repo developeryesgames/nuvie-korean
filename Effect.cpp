@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "Configuration.h"
 #include "FontManager.h"
+#include "KoreanTranslation.h"
 
 #include "Actor.h"
 #include "Map.h"
@@ -153,8 +154,13 @@ uint16 CannonballEffect::callback(uint16 msg, CallBack *caller, void *msg_data)
                     {
                         if(hit_ent->obj->qty < 20) hit_ent->obj->qty = 0;
                         else                      hit_ent->obj->qty -= 20;
-                        if(hit_ent->obj->qty == 0)
-                            game->get_scroll()->display_string("Ship broke!\n");
+                        if(hit_ent->obj->qty == 0) {
+                            KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+                            if (kt && kt->isEnabled())
+                                game->get_scroll()->display_string("배가 부서졌다!\n");
+                            else
+                                game->get_scroll()->display_string("Ship broke!\n");
+                        }
                         stop_effect = true;
                     }
                 }
@@ -732,7 +738,11 @@ void DropEffect::hit_target()
     		delete_obj(throw_obj);
     	}
 
-        Game::get_game()->get_scroll()->display_string("\nIt broke!\n");
+        KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+        if (kt && kt->isEnabled())
+            Game::get_game()->get_scroll()->display_string("\n깨졌다!\n");
+        else
+            Game::get_game()->get_scroll()->display_string("\nIt broke!\n");
         Game::get_game()->get_sound_manager()->playSfx(NUVIE_SFX_BROKEN_GLASS);
     }
     else

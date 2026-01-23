@@ -375,7 +375,7 @@ void ConverseInterpret::do_text()
       // Handle $P with particle processing (여/이여)
       while ((pos = korean_text.find("$P")) != std::string::npos)
       {
-        std::string player_name = converse->player->get_name();
+        std::string player_name = korean->translate(converse->player->get_name());
         // Check if followed by 여 (0xEC 0x97 0xAC) and player name has jongseong
         if (pos + 2 + 3 <= korean_text.length() &&
             (unsigned char)korean_text[pos+2] == 0xEC &&

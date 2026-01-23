@@ -170,13 +170,14 @@ bool Cursor::display(sint32 px, sint32 py)
     }
     MousePointer *ptr = cursors[cursor_id];
 
-    // Check for Korean 4x mode
+    // Check for Korean 4x mode (or 3x in compact_ui)
     uint8 cursor_scale = 1;
     Game *game = Game::get_game();
     if(game) {
         uint16 ui_scale = game->get_game_width() / 320;
         if(ui_scale >= 4) {
-            cursor_scale = 4;
+            bool compact_ui = game->is_compact_ui();
+            cursor_scale = compact_ui ? 3 : 4;
         }
     }
 

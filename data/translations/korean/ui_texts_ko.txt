@@ -53,6 +53,7 @@ Game style:|게임 스타일:
 Video graphics:|비디오 그래픽:
 Map tile scale:|맵 타일 스케일:
 Smooth movement:|부드러운 이동:
+Compact UI:|소형 UI:
 
 # InputDialog
 Interface:|인터페이스:
@@ -961,8 +962,8 @@ Silver snakes are generated!\n|은 뱀이 생성되었다!\n
 # Rest messages (TimedEvent.cpp)
 Mealtime!\n|식사 시간!\n
  plays a tune.\n| 연주를 한다.\n
- has food.\n| 식량이 있다.\n
- has no food.\n| 식량이 없다.\n
+ has food.\n|, 식량을 먹는다.\n
+ has no food.\n|, 식량이 없다.\n
  stands guard while the party rests.\n| 파티가 쉬는 동안 경계를 선다.\n
 
 # Magic messages

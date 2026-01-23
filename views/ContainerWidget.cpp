@@ -252,11 +252,12 @@ inline uint16 ContainerWidget::get_list_position(int x, int y)
 {
  uint16 list_pos;
 
- // Check for Korean 4x mode
+ // Check for Korean scaling mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                font_manager->get_korean_font() && Game::get_game()->is_original_plus();
- int tile_size = use_4x ? 64 : 16;
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int tile_size = use_korean ? (compact_ui ? 48 : 64) : 16;
 
  list_pos = (y / tile_size) * cols + x / tile_size;
  list_pos += row_offset * cols;

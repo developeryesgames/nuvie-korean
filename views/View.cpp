@@ -49,13 +49,15 @@ View::~View()
 
 bool View::init(uint16 x, uint16 y, Font *f, Party *p, TileManager *tm, ObjManager *om)
 {
- // Check for Korean scaling mode (original_plus uses 4x, new_style uses 3x)
+ // Check for Korean scaling mode (original_plus uses 4x or 3x with compact_ui, new_style uses 3x)
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool korean_enabled = font_manager && font_manager->is_korean_enabled();
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
+                   font_manager->get_korean_font();
+ bool compact_ui = Game::get_game()->is_compact_ui();
  int scale = 1;
- if(korean_enabled && Game::get_game()->is_original_plus())
-   scale = 4;
- else if(korean_enabled && Game::get_game()->is_new_style())
+ if(use_korean && Game::get_game()->is_original_plus())
+   scale = compact_ui ? 3 : 4;
+ else if(use_korean && Game::get_game()->is_new_style())
    scale = 3;
 
  if(Game::get_game()->get_game_type()==NUVIE_GAME_U6)

@@ -977,7 +977,8 @@ void TimedRest::eat(Actor *actor)
         if(korean && korean->isEnabled())
         {
             std::string actor_name = korean->translate(actor->get_name());
-            scroll->display_fmt_string("%s%s", actor_name.c_str(), korean->translate(" has food.\n").c_str());
+            std::string particle = KoreanTranslation::getParticle_iga(actor_name);
+            scroll->display_fmt_string("%s%s 식량을 먹는다.\n", actor_name.c_str(), particle.c_str());
         }
         else
             scroll->display_fmt_string("%s has food.\n", actor->get_name());
@@ -990,7 +991,8 @@ void TimedRest::eat(Actor *actor)
         if(korean && korean->isEnabled())
         {
             std::string actor_name = korean->translate(actor->get_name());
-            scroll->display_fmt_string("%s%s", actor_name.c_str(), korean->translate(" has no food.\n").c_str());
+            std::string particle = KoreanTranslation::getParticle_eunneun(actor_name);
+            scroll->display_fmt_string("%s%s 식량이 없다.\n", actor_name.c_str(), particle.c_str());
         }
         else
             scroll->display_fmt_string("%s has no food.\n", actor->get_name());
@@ -1014,7 +1016,8 @@ void TimedRest::bard_play()
             if(korean && korean->isEnabled())
             {
                 std::string bard_name = korean->translate(actor->get_name());
-                scroll->display_fmt_string("%s%s", bard_name.c_str(), korean->translate(" plays a tune.\n").c_str());
+                std::string particle = KoreanTranslation::getParticle_iga(bard_name);
+                scroll->display_fmt_string("%s%s 연주를 한다.\n", bard_name.c_str(), particle.c_str());
             }
             else
                 scroll->display_fmt_string("%s plays a tune.\n", actor->get_name());
@@ -1046,7 +1049,8 @@ void TimedRest::sleep()
             if(korean && korean->isEnabled())
             {
                 std::string actor_name = korean->translate(actor->get_name());
-                scroll->display_fmt_string("\n%s%s", actor_name.c_str(), korean->translate(" stands guard while the party rests.\n").c_str());
+                std::string particle = KoreanTranslation::getParticle_iga(actor_name);
+                scroll->display_fmt_string("\n%s%s 파티가 쉬는 동안 경계를 선다.\n", actor_name.c_str(), particle.c_str());
             }
             else
                 scroll->display_fmt_string("\n%s stands guard while the party rests.\n", actor->get_name());

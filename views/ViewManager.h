@@ -84,6 +84,8 @@ class ViewManager
  SunMoonRibbon *ribbon;
  MDSkyStripWidget *mdSkyWidget;
 
+ bool party_view_permanent;  // In compact_ui Korean mode, party_view is always visible
+
  std::string DollDataDirString;
 
  public:
@@ -132,6 +134,8 @@ class ViewManager
  bool set_current_view(View *view);
  void double_click_obj(Obj *obj);
  unsigned int get_display_weight(float weight);
+
+ bool is_party_view_permanent() { return party_view_permanent; }
 
 // custom doll functions shared between DollWidget and DollViewGump
  std::string getDollDataDirString();

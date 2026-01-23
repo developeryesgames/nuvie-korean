@@ -65,6 +65,7 @@ ViewManager::ViewManager(Configuration *cfg)
  doll_next_party_member = 0;
  ribbon = NULL;
  mdSkyWidget = NULL;
+ party_view_permanent = false;
 }
 
 ViewManager::~ViewManager()
@@ -90,24 +91,51 @@ bool ViewManager::init(GUI *g, Font *f, Party *p, Player *player, TileManager *t
  uint16 x_off = Game::get_game()->get_game_x_offset();
  uint16 y_off = Game::get_game()->get_game_y_offset();
 
- // Check for Korean 4x mode
+ // Check for Korean mode and compact_ui
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_korean_4x = font_manager && font_manager->is_korean_enabled() &&
-                      font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
+                   font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int ui_scale = (use_korean ? (compact_ui ? 3 : 4) : 1);
 
  // Calculate view positions
  uint16 view_x, view_y, party_x, party_y;
- if(use_korean_4x)
+ uint16 inv_x, inv_y;  // Separate inventory view position for compact_ui
+ if(use_korean)
  {
-   // 4x scaled positions
+   // Scaled positions (3x for compact_ui, 4x for normal)
    // Original: view at 176,8 within 320x200, party at 168,6
-   // Panel starts at screen_width - 152*4 = screen_width - 608
+   // Panel starts at screen_width - 152*scale
    uint16 screen_width = Game::get_game()->get_screen()->get_width();
-   uint16 panel_start = screen_width - 152 * 4;
-   view_x = panel_start + (176 - 168) * 4; // 8 pixels from panel edge * 4
-   view_y = 8 * 4; // 8 pixels from top * 4
-   party_x = panel_start; // party view starts at panel edge
-   party_y = 6 * 4; // 6 pixels from top * 4
+   uint16 panel_start = screen_width - 152 * ui_scale;
+   view_x = panel_start + (176 - 168) * ui_scale; // 8 pixels from panel edge
+   view_y = 8 * ui_scale; // 8 pixels from top
+
+   if(compact_ui)
+   {
+     // In compact_ui, party view width is reduced by half + 8 pixels
+     // PartyView should move LEFT by 8 pixels total (6+2)
+     int party_width_reduction = (116 * ui_scale) / 2;
+     party_x = panel_start + party_width_reduction + 12 * ui_scale + 8 * ui_scale;  // shift left 8 pixels
+     party_y = 0;  // keep at top edge (negative y causes clipping issues)
+
+     // In compact_ui (3x scale), use bottom-right alignment instead of top-left
+     // 4x mode inventory bottom edge: 8*4 + 104*4 = 448 pixels from top
+     // 3x mode: keep same bottom edge, so y = 448 - 104*3 = 136
+     // For x: 4x mode panel_start was at screen_width - 152*4
+     // 3x mode panel_start is at screen_width - 152*3, which is further right
+     // We need to offset by the difference: (152*4 - 152*3) = 152
+     // Move up by 12 pixels (1x basis) to better align with party view
+     inv_x = panel_start - 152;  // Shift left to match 4x visual position
+     inv_y = 448 - 104 * ui_scale - 12 * ui_scale;  // Bottom-align with 4x mode, up 12 pixels
+   }
+   else
+   {
+     party_x = panel_start; // party view starts at panel edge
+     party_y = 6 * ui_scale; // 6 pixels from top
+     inv_x = view_x;
+     inv_y = view_y;
+   }
  }
  else
  {
@@ -117,20 +145,29 @@ bool ViewManager::init(GUI *g, Font *f, Party *p, Player *player, TileManager *t
    view_y = 8 + y_off;
    party_x = 168 + x_off;
    party_y = 6 + y_off;
+   inv_x = view_x;
+   inv_y = view_y;
  }
 
  inventory_view = new InventoryView(config);
- inventory_view->init(gui->get_screen(), this, view_x, view_y, font, party, tile_manager, obj_manager);
+ inventory_view->init(gui->get_screen(), this, inv_x, inv_y, font, party, tile_manager, obj_manager);
 
  portrait_view = new PortraitView(config);
- portrait_view->init(view_x, view_y, font, party, player, tile_manager, obj_manager, portrait);
+ // In compact_ui Korean mode, use same position as inventory (left-bottom aligned)
+ portrait_view->init((use_korean && compact_ui) ? inv_x : view_x,
+                     (use_korean && compact_ui) ? inv_y : view_y,
+                     font, party, player, tile_manager, obj_manager, portrait);
 
  if(!Game::get_game()->is_new_style())
  {
 	 //inventory_view = new InventoryView(config);
 	 //inventory_view->init(gui->get_screen(), this, 176+x_off,8+y_off, font, party, tile_manager, obj_manager);
 	 actor_view = new ActorView(config);
-	 actor_view->init(gui->get_screen(), this, view_x, view_y, font, party, tile_manager, obj_manager, portrait);
+	 // In compact_ui Korean mode, use same position as inventory (left-bottom aligned)
+	 actor_view->init(gui->get_screen(), this,
+	                  (use_korean && compact_ui) ? inv_x : view_x,
+	                  (use_korean && compact_ui) ? inv_y : view_y,
+	                  font, party, tile_manager, obj_manager, portrait);
 
 	 party_view = new PartyView(config);
 	 if(game_type==NUVIE_GAME_U6)
@@ -153,7 +190,15 @@ bool ViewManager::init(GUI *g, Font *f, Party *p, Player *player, TileManager *t
 		     mdSkyWidget->Hide();
 		 }
 	 }
+
+	 // In compact_ui Korean mode, party_view is always visible
+	 if(use_korean && compact_ui)
+	 {
+	   party_view_permanent = true;
+	 }
+
  }
+
  else
  {
 	 //inventory_view = new InventoryViewGump(config);
@@ -174,19 +219,29 @@ bool ViewManager::init(GUI *g, Font *f, Party *p, Player *player, TileManager *t
  {
 	spell_x_offset = Game::get_game()->get_game_width() - SPELLVIEWGUMP_WIDTH + x_off;
  }
- else if(use_korean_4x)
+ else if(use_korean)
  {
-   // 4x scaled position for SpellView
-   uint16 screen_width = Game::get_game()->get_screen()->get_width();
-   uint16 panel_start = screen_width - 152 * 4;
-   spell_x_offset = panel_start; // Spell view starts at panel edge
-   spell_y_offset = 6 * 4; // 6 pixels from top * 4
+   if(compact_ui)
+   {
+     // In compact_ui Korean mode, use same position as inventory (left-bottom aligned)
+     spell_x_offset = inv_x;
+     spell_y_offset = inv_y;
+   }
+   else
+   {
+     // Scaled position for SpellView (4x for normal Korean mode)
+     uint16 screen_width = Game::get_game()->get_screen()->get_width();
+     uint16 panel_start = screen_width - 152 * ui_scale;
+     spell_x_offset = panel_start; // Spell view starts at panel edge
+     spell_y_offset = 6 * ui_scale; // 6 pixels from top
+   }
  }
 
  if(spell_view)
  {
    spell_view->init(gui->get_screen(), this, spell_x_offset, spell_y_offset, font, party, tile_manager, obj_manager);
  }
+
  //set_current_view((View *)party_view);
 
  return true;
@@ -199,7 +254,16 @@ void ViewManager::reload()
  inventory_view->lock_to_actor(false);
  inventory_view->set_party_member(0);
 
- set_party_mode();
+ // In compact_ui mode, default to inventory view (party view is drawn separately)
+ if(party_view_permanent)
+ {
+   // Add party_view to GUI first (behind current view)
+   party_view->Show();
+   gui->AddWidget((GUI_Widget *)party_view);
+   set_inventory_mode();
+ }
+ else
+   set_party_mode();
  update();
 }
 
@@ -226,6 +290,7 @@ bool ViewManager::set_current_view(View *view)
  view->Show();
  gui->AddWidget((GUI_Widget *)view);
  view->Redraw();
+
  gui->Display();
 
   if(actor_view)
@@ -303,7 +368,13 @@ void ViewManager::set_party_mode()
 	 event->moveCursorToMapWindow();
 
  if(!Game::get_game()->is_new_style())
-	 set_current_view((View *)party_view);
+ {
+   // In compact_ui mode, party_view is always visible separately, so show inventory instead
+   if(party_view_permanent)
+     set_current_view((View *)inventory_view);
+   else
+     set_current_view((View *)party_view);
+ }
  return;
 }
 
@@ -317,6 +388,7 @@ void ViewManager::set_actor_mode()
 	actor_view->set_show_cursor(true);
 	actor_view->moveCursorToButton(2);
  }
+
 }
 
 void ViewManager::set_spell_mode(Actor *caster, Obj *spell_container, bool eventMode)

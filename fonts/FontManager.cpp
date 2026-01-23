@@ -51,6 +51,7 @@ FontManager::FontManager(Configuration *cfg)
 
  // Korean support
  korean_font = NULL;
+ korean_font_24 = NULL;
  korean_enabled = false;
 }
 
@@ -82,6 +83,10 @@ FontManager::~FontManager()
  if(korean_font)
  {
    delete korean_font;
+ }
+ if(korean_font_24)
+ {
+   delete korean_font_24;
  }
 }
 
@@ -276,6 +281,34 @@ bool FontManager::initKoreanFont()
   {
     korean_font->setAntialiasing(true);
     ConsoleAddInfo("FontManager: Korean font anti-aliasing enabled");
+  }
+
+  // Also load 24x24 font for compact_ui mode (3x scale: 8px * 3 = 24px)
+  std::string bmp_path_24;
+  build_path(datadir, "korean_font_24x24.bmp", bmp_path_24);
+  // Use same charmap as 32x32 font
+
+  if(test_file.open(bmp_path_24))
+  {
+    test_file.close();
+    korean_font_24 = new KoreanFont();
+    if(korean_font_24->init(bmp_path_24, charmap_path))
+    {
+      if(aa_enabled_str == "yes")
+        korean_font_24->setAntialiasing(true);
+      ConsoleAddInfo("FontManager: 24x24 Korean font loaded successfully!");
+    }
+    else
+    {
+      delete korean_font_24;
+      korean_font_24 = NULL;
+      ConsoleAddInfo("FontManager: Failed to init 24x24 Korean font (will use 32x32)");
+    }
+  }
+  else
+  {
+    korean_font_24 = NULL;
+    ConsoleAddInfo("FontManager: 24x24 Korean font not found (will use 32x32)");
   }
 
   korean_enabled = true;

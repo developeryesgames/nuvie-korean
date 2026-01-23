@@ -39,6 +39,7 @@
 #include "MapWindow.h"
 #include "UseCode.h"
 #include "ViewManager.h"
+#include "PartyView.h"
 #include "Keys.h"
 
 static const char combat_mode_tbl[][8] = {"COMMAND", " FRONT", "  REAR", " FLANK", "BERSERK", "RETREAT", "ASSAULT"};
@@ -137,19 +138,23 @@ bool InventoryView::init(Screen *tmp_screen, void *view_manager, uint16 x, uint1
  else
 	View::init(x,y-2,f,p,tm,om);
 
- // Check for Korean 4x mode
+ // Check for Korean scaling mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                font_manager->get_korean_font() && Game::get_game()->is_original_plus();
- int scale = use_4x ? 4 : 1;
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
+ // Widget positions (no shift in compact_ui mode)
+ int doll_x = 0;
+ int inv_x = 64 * scale;
 
  doll_widget = new DollWidget(config, this);
- doll_widget->init(party->get_actor(cur_party_member), 0, 8 * scale, tile_manager, obj_manager, true);
+ doll_widget->init(party->get_actor(cur_party_member), doll_x, 8 * scale, tile_manager, obj_manager, true);
 
  AddWidget(doll_widget);
 
  inventory_widget = new InventoryWidget(config, this);
- inventory_widget->init(party->get_actor(cur_party_member), 64 * scale, 8 * scale, tile_manager, obj_manager, font);
+ inventory_widget->init(party->get_actor(cur_party_member), inv_x, 8 * scale, tile_manager, obj_manager, font);
 
  AddWidget(inventory_widget);
 
@@ -177,7 +182,35 @@ void InventoryView::Display(bool full_redraw)
     if(MD)
         fill_md_background(lock_actor ? 7 : bg_color, area);
     else
-        screen->fill(bg_color, area.x, area.y, area.w, area.h);
+    {
+        // Check for compact_ui Korean mode - limit background fill to avoid covering party view
+        FontManager *fm_bg = Game::get_game()->get_font_manager();
+        bool use_korean_bg = fm_bg && fm_bg->is_korean_enabled() &&
+                             fm_bg->get_korean_font() && Game::get_game()->is_original_plus();
+        bool compact_ui_bg = Game::get_game()->is_compact_ui();
+
+        if(use_korean_bg && compact_ui_bg)
+        {
+            // In compact_ui, party view occupies right side of the panel
+            // Only fill the left portion that doesn't overlap with party view
+            // Party view starts at roughly x = screen_width - 152*3 + 58*3 + 12*3 = screen_width - 246
+            // We need to limit our fill width
+            int ui_scale_bg = 3;
+            uint16 screen_width = Game::get_game()->get_screen()->get_width();
+            uint16 party_view_x = screen_width - 152 * ui_scale_bg + (116 * ui_scale_bg) / 2 + 12 * ui_scale_bg;
+
+            // Fill only up to the party view x position
+            int fill_width = party_view_x - area.x;
+            if(fill_width > 0 && fill_width < area.w)
+                screen->fill(bg_color, area.x, area.y, fill_width, area.h);
+            else
+                screen->fill(bg_color, area.x, area.y, area.w, area.h);
+        }
+        else
+        {
+            screen->fill(bg_color, area.x, area.y, area.w, area.h);
+        }
+    }
 
     if(is_party_member)
         display_combat_mode();
@@ -195,15 +228,21 @@ void InventoryView::Display(bool full_redraw)
 
  if(show_cursor && cursor_tile != NULL)
    {
-    // Check for Korean 4x mode
+    // Check for Korean scaling mode
     FontManager *fm = Game::get_game()->get_font_manager();
-    bool use_4x_cursor = fm && fm->is_korean_enabled() &&
+    bool use_korean = fm && fm->is_korean_enabled() &&
                          fm->get_korean_font() && Game::get_game()->is_original_plus();
+    bool compact_ui_cursor = Game::get_game()->is_compact_ui();
+    int cursor_scale = use_korean ? (compact_ui_cursor ? 3 : 4) : 1;
 
-    if(use_4x_cursor) {
+    if(cursor_scale >= 4) {
       screen->blit4x(cursor_pos.px, cursor_pos.py, (unsigned char *)cursor_tile->data,
                      8, 16, 16, 16, true, NULL);
       screen->update(cursor_pos.px, cursor_pos.py, 64, 64);
+    } else if(cursor_scale == 3) {
+      screen->blit3x(cursor_pos.px, cursor_pos.py, (unsigned char *)cursor_tile->data,
+                     8, 16, 16, 16, true, NULL);
+      screen->update(cursor_pos.px, cursor_pos.py, 48, 48);
     } else {
       screen->blit(cursor_pos.px, cursor_pos.py, (unsigned char *)cursor_tile->data,
                    8, 16, 16, 16, true, NULL);
@@ -229,18 +268,24 @@ void InventoryView::display_name()
  if(name == NULL)
   return;
 
- // Check for Korean 4x mode
+ // Check for Korean scaling mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
- bool use_4x = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ KoreanFont *korean_font_32 = font_manager ? font_manager->get_korean_font() : NULL;
+ KoreanFont *korean_font_24 = font_manager ? font_manager->get_korean_font_24() : NULL;
+ bool use_korean = korean_font_32 && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ bool compact_ui_name = Game::get_game()->is_compact_ui();
+ int name_scale = use_korean ? (compact_ui_name ? 3 : 4) : 1;
 
- if(use_4x) {
+ if(use_korean) {
    // Translate name to Korean
    KoreanTranslation *korean = Game::get_game()->get_korean_translation();
    std::string display_name = (korean && korean->isEnabled()) ? korean->translate(name) : name;
 
-   uint16 name_width = korean_font->getStringWidthUTF8(display_name.c_str(), 1);
-   korean_font->drawStringUTF8(screen, display_name.c_str(), area.x + (area.w - name_width) / 2, area.y + y_off * 4, 0x48, 0, 1);
+   // Use appropriate font at native size (scale 1)
+   KoreanFont *active_font = (compact_ui_name && korean_font_24) ? korean_font_24 : korean_font_32;
+   int font_scale = 1;
+   uint16 name_width = active_font->getStringWidthUTF8(display_name.c_str(), font_scale);
+   active_font->drawStringUTF8(screen, display_name.c_str(), area.x + (area.w - name_width) / 2, area.y + y_off * name_scale, 0x48, 0, font_scale);
  } else {
    font->drawString(screen, name, area.x + ((136) - strlen(name) * 8) / 2, area.y + y_off);
  }
@@ -259,43 +304,115 @@ void InventoryView::add_command_icons(Screen *tmp_screen, void *view_manager)
  SDL_Surface *button_image;
  SDL_Surface *button_image2;
 
- // Check for Korean 4x mode
+ // Check for Korean scaling mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ bool compact_ui_btn = Game::get_game()->is_compact_ui();
+ int btn_scale = use_korean ? (compact_ui_btn ? 3 : 4) : 1;
 
- if(use_4x) {
-   y = 80 * 4; // 320px from top
-   int spacing = 64; // 16 * 4
+ if(use_korean) {
+   y = 80 * btn_scale;
+   int spacing = 16 * btn_scale;
+   // In compact_ui, shift buttons left by 8 pixels (scaled)
+   int btn_start_x = compact_ui_btn ? 0 : 0;  // buttons start at x=0
 
    tile = tile_manager->get_tile(387); //left arrow icon
-   button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
-   button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
-   left_button = new GUI_Button(this, 0, y, button_image, button_image2, this);
+   if(btn_scale >= 4) {
+     button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+     button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   } else {
+     button_image = tmp_screen->create_sdl_surface_from(tile->data, 8, 16, 16, 16);
+     button_image2 = tmp_screen->create_sdl_surface_from(tile->data, 8, 16, 16, 16);
+     if(btn_scale == 3) {
+       SDL_Surface *scaled = SDL_CreateRGBSurface(0, 48, 48, 32, 0, 0, 0, 0);
+       SDL_BlitScaled(button_image, NULL, scaled, NULL);
+       SDL_FreeSurface(button_image); button_image = scaled;
+       scaled = SDL_CreateRGBSurface(0, 48, 48, 32, 0, 0, 0, 0);
+       SDL_BlitScaled(button_image2, NULL, scaled, NULL);
+       SDL_FreeSurface(button_image2); button_image2 = scaled;
+     }
+   }
+   left_button = new GUI_Button(this, btn_start_x, y, button_image, button_image2, this);
    this->AddWidget(left_button);
 
    tile = tile_manager->get_tile(384); //party view icon
-   button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
-   button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
-   party_button = new GUI_Button(view_manager, spacing, y, button_image, button_image2, this);
+   if(btn_scale >= 4) {
+     button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+     button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   } else {
+     button_image = tmp_screen->create_sdl_surface_from(tile->data, 8, 16, 16, 16);
+     button_image2 = tmp_screen->create_sdl_surface_from(tile->data, 8, 16, 16, 16);
+     if(btn_scale == 3) {
+       SDL_Surface *scaled = SDL_CreateRGBSurface(0, 48, 48, 32, 0, 0, 0, 0);
+       SDL_BlitScaled(button_image, NULL, scaled, NULL);
+       SDL_FreeSurface(button_image); button_image = scaled;
+       scaled = SDL_CreateRGBSurface(0, 48, 48, 32, 0, 0, 0, 0);
+       SDL_BlitScaled(button_image2, NULL, scaled, NULL);
+       SDL_FreeSurface(button_image2); button_image2 = scaled;
+     }
+   }
+   party_button = new GUI_Button(view_manager, btn_start_x + spacing, y, button_image, button_image2, this);
    this->AddWidget(party_button);
+   // In compact_ui mode, hide party button (party view is always visible)
+   if(compact_ui_btn)
+     party_button->Hide();
 
    tile = tile_manager->get_tile(385); //actor view icon
-   button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
-   button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
-   actor_button = new GUI_Button(view_manager, 2*spacing, y, button_image, button_image2, this);
+   if(btn_scale >= 4) {
+     button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+     button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   } else {
+     button_image = tmp_screen->create_sdl_surface_from(tile->data, 8, 16, 16, 16);
+     button_image2 = tmp_screen->create_sdl_surface_from(tile->data, 8, 16, 16, 16);
+     if(btn_scale == 3) {
+       SDL_Surface *scaled = SDL_CreateRGBSurface(0, 48, 48, 32, 0, 0, 0, 0);
+       SDL_BlitScaled(button_image, NULL, scaled, NULL);
+       SDL_FreeSurface(button_image); button_image = scaled;
+       scaled = SDL_CreateRGBSurface(0, 48, 48, 32, 0, 0, 0, 0);
+       SDL_BlitScaled(button_image2, NULL, scaled, NULL);
+       SDL_FreeSurface(button_image2); button_image2 = scaled;
+     }
+   }
+   actor_button = new GUI_Button(view_manager, btn_start_x + 2*spacing, y, button_image, button_image2, this);
    this->AddWidget(actor_button);
 
    tile = tile_manager->get_tile(388); //right arrow icon
-   button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
-   button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
-   right_button = new GUI_Button(this, 3*spacing, y, button_image, button_image2, this);
+   if(btn_scale >= 4) {
+     button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+     button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   } else {
+     button_image = tmp_screen->create_sdl_surface_from(tile->data, 8, 16, 16, 16);
+     button_image2 = tmp_screen->create_sdl_surface_from(tile->data, 8, 16, 16, 16);
+     if(btn_scale == 3) {
+       SDL_Surface *scaled = SDL_CreateRGBSurface(0, 48, 48, 32, 0, 0, 0, 0);
+       SDL_BlitScaled(button_image, NULL, scaled, NULL);
+       SDL_FreeSurface(button_image); button_image = scaled;
+       scaled = SDL_CreateRGBSurface(0, 48, 48, 32, 0, 0, 0, 0);
+       SDL_BlitScaled(button_image2, NULL, scaled, NULL);
+       SDL_FreeSurface(button_image2); button_image2 = scaled;
+     }
+   }
+   right_button = new GUI_Button(this, btn_start_x + 3*spacing, y, button_image, button_image2, this);
    this->AddWidget(right_button);
 
    tile = tile_manager->get_tile(391); //combat icon
-   button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
-   button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
-   combat_button = new GUI_Button(this, 4*spacing, y, button_image, button_image2, this);
+   if(btn_scale >= 4) {
+     button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+     button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
+   } else {
+     button_image = tmp_screen->create_sdl_surface_from(tile->data, 8, 16, 16, 16);
+     button_image2 = tmp_screen->create_sdl_surface_from(tile->data, 8, 16, 16, 16);
+     if(btn_scale == 3) {
+       SDL_Surface *scaled = SDL_CreateRGBSurface(0, 48, 48, 32, 0, 0, 0, 0);
+       SDL_BlitScaled(button_image, NULL, scaled, NULL);
+       SDL_FreeSurface(button_image); button_image = scaled;
+       scaled = SDL_CreateRGBSurface(0, 48, 48, 32, 0, 0, 0, 0);
+       SDL_BlitScaled(button_image2, NULL, scaled, NULL);
+       SDL_FreeSurface(button_image2); button_image2 = scaled;
+     }
+   }
+   combat_button = new GUI_Button(this, btn_start_x + 4*spacing, y, button_image, button_image2, this);
    this->AddWidget(combat_button);
 
    return;
@@ -360,19 +477,27 @@ void InventoryView::display_inventory_weights()
  inv_weight = vm->get_display_weight(actor->get_inventory_weight());
  equip_weight = vm->get_display_weight(actor->get_inventory_equip_weight());
 
- // Check for Korean 4x mode
+ // Check for Korean scaling mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
- bool use_4x = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ KoreanFont *korean_font_32 = font_manager ? font_manager->get_korean_font() : NULL;
+ KoreanFont *korean_font_24 = font_manager ? font_manager->get_korean_font_24() : NULL;
+ bool use_korean = korean_font_32 && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ bool compact_ui_wt = Game::get_game()->is_compact_ui();
+ int wt_scale = use_korean ? (compact_ui_wt ? 3 : 4) : 1;
 
- if(use_4x) {
+ if(use_korean) {
    // Korean mode: "장착:" and "소지:"
+   // Use appropriate font at native size (scale 1)
+   KoreanFont *active_font = (compact_ui_wt && korean_font_24) ? korean_font_24 : korean_font_32;
+   int font_scale = 1;
+   // "소지:" position (4*16+8 = 72)
+   int soji_x = (4*16+8) * wt_scale;
    char ko_string[32];
    snprintf(ko_string, 32, "장착:%u/%us", equip_weight, strength);
-   korean_font->drawStringUTF8(screen, ko_string, area.x, area.y + 72 * 4, 0x48, 0, 1);
+   active_font->drawStringUTF8(screen, ko_string, area.x, area.y + 72 * wt_scale, 0x48, 0, font_scale);
 
    snprintf(ko_string, 32, "소지:%u/%us", inv_weight, strength*2);
-   korean_font->drawStringUTF8(screen, ko_string, area.x + (4*16+8) * 4, area.y + 72 * 4, 0x48, 0, 1);
+   active_font->drawStringUTF8(screen, ko_string, area.x + soji_x, area.y + 72 * wt_scale, 0x48, 0, font_scale);
  } else {
    snprintf(string,9,"E:%u/%us", equip_weight,strength);
    font->drawString(screen, string, area.x, area.y+72);
@@ -390,10 +515,13 @@ void InventoryView::display_combat_mode()
 {
  Actor *actor = party->get_actor(cur_party_member);
 
- // Check for Korean 4x mode
+ // Check for Korean scaling mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
- bool use_4x = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ KoreanFont *korean_font_32 = font_manager ? font_manager->get_korean_font() : NULL;
+ KoreanFont *korean_font_24 = font_manager ? font_manager->get_korean_font_24() : NULL;
+ bool use_korean = korean_font_32 && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ bool compact_ui_cm = Game::get_game()->is_compact_ui();
+ int cm_scale = use_korean ? (compact_ui_cm ? 3 : 4) : 1;
 
  uint8 index = get_combat_mode_index(actor);
  if(Game::get_game()->get_game_type() != NUVIE_GAME_U6)
@@ -431,14 +559,16 @@ void InventoryView::display_combat_mode()
 		font->drawString(screen, combat_mode_tbl_se[index], area.x+5*16, area.y+98);
  }
  else {
-   if(use_4x) {
-     // 4x mode: draw combat mode text with Korean font, centered in the triangle area
-     // Triangle area is from 5*16*4 (320) to end of area, center the text
-     uint16 text_width = korean_font->getStringWidthUTF8(combat_mode_tbl_ko[index], 1);
-     int combat_area_start = 5 * 16 * 4;  // 320px
-     int combat_area_width = area.w - combat_area_start;  // remaining width
+   if(use_korean) {
+     // Korean mode: draw combat mode text with Korean font, centered in the triangle area
+     // Use appropriate font at native size (scale 1)
+     KoreanFont *active_font = (compact_ui_cm && korean_font_24) ? korean_font_24 : korean_font_32;
+     int font_scale = 1;
+     uint16 text_width = active_font->getStringWidthUTF8(combat_mode_tbl_ko[index], font_scale);
+     int combat_area_start = 5 * 16 * cm_scale;
+     int combat_area_width = area.w - combat_area_start;
      int text_x = area.x + combat_area_start + (combat_area_width - text_width) / 2;
-     korean_font->drawStringUTF8(screen, combat_mode_tbl_ko[index], text_x, area.y + 88*4, 0x48, 0, 1);
+     active_font->drawStringUTF8(screen, combat_mode_tbl_ko[index], text_x, area.y + 88*cm_scale, 0x48, 0, font_scale);
    } else {
      font->drawString(screen, combat_mode_tbl[index], area.x+5*16, area.y+88);
    }
@@ -647,27 +777,29 @@ void InventoryView::update_cursor()
     SDL_Rect *ready_loc;
     nuvie_game_t gametype = Game::get_game()->get_game_type();
 
-    // Check for Korean 4x mode
+    // Check for Korean scaling mode
     FontManager *fm = Game::get_game()->get_font_manager();
-    bool use_4x = fm && fm->is_korean_enabled() &&
+    bool use_korean_uc = fm && fm->is_korean_enabled() &&
                   fm->get_korean_font() && Game::get_game()->is_original_plus();
-    int tile_size = use_4x ? 64 : 16;
+    bool compact_ui_uc = Game::get_game()->is_compact_ui();
+    int uc_scale = use_korean_uc ? (compact_ui_uc ? 3 : 4) : 1;
+    int tile_size = 16 * uc_scale;
 
     switch(cursor_pos.area)
     {
         case INVAREA_LIST:
           if(gametype == NUVIE_GAME_U6)
           {
-            cursor_pos.px = area.x + (4 * tile_size + (use_4x ? 32 : 8)) + cursor_pos.x * tile_size;
+            cursor_pos.px = area.x + (4 * tile_size + (use_korean_uc ? 8 * uc_scale : 8)) + cursor_pos.x * tile_size;
           }
           else
           {
             cursor_pos.px = inventory_widget->area.x + cursor_pos.x * tile_size;
           }
-            cursor_pos.py = area.y + tile_size + (use_4x ? 32 : 8) + cursor_pos.y * tile_size;
+            cursor_pos.py = area.y + tile_size + (use_korean_uc ? 8 * uc_scale : 8) + cursor_pos.y * tile_size;
             break;
         case INVAREA_TOP:
-            cursor_pos.px = inventory_widget->area.x + (gametype == NUVIE_GAME_U6 ? (use_4x ? 128 : 32) : (inventory_widget->area.w-tile_size)/2);
+            cursor_pos.px = inventory_widget->area.x + (gametype == NUVIE_GAME_U6 ? (use_korean_uc ? 32 * uc_scale : 32) : (inventory_widget->area.w-tile_size)/2);
             cursor_pos.py = inventory_widget->area.y;
             break;
         case INVAREA_DOLL:
@@ -709,7 +841,8 @@ void InventoryView::show_buttons()
 //	if(left_button) left_button->Show(); //   these two shouldn't be needed
 //	if(right_button) right_button->Show(); // and cause problems
 	if(actor_button) actor_button->Show();
-	if(party_button) party_button->Show();
+	// In compact_ui mode, keep party button hidden (party view is always visible)
+	if(party_button && !Game::get_game()->is_compact_ui()) party_button->Show();
 	if(combat_button) combat_button->Show();
 }
 
@@ -756,7 +889,7 @@ void InventoryView::select_objAtCursor()
     	{
     		if(cursor_pos.x == 0) // left
     			View::callback(BUTTON_CB, left_button, view_manager);
-    		if(cursor_pos.x == 1) // party
+    		if(cursor_pos.x == 1 && party_button) // party (skip if NULL in compact_ui mode)
     			View::callback(BUTTON_CB, party_button, view_manager);
     		if(cursor_pos.x == 2) // status
     			View::callback(BUTTON_CB, actor_button, view_manager);

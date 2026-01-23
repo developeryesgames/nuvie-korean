@@ -78,11 +78,21 @@ bool SpellView::init(Screen *tmp_screen, void *view_manager, uint16 x, uint16 y,
 
  // Check for Korean 4x mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                font_manager->get_korean_font() && Game::get_game()->is_original_plus();
- int scale = use_4x ? 4 : 1;
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
- SetRect(area.x, area.y, NEWMAGIC_BMP_W * scale, (NEWMAGIC_BMP_H+16) * scale);
+ // Set area dimensions (position is handled in PlaceOnScreen)
+ if(use_korean && compact_ui)
+ {
+   // In compact_ui mode: reduce width by 6 pixels (scaled)
+   SetRect(area.x, area.y, (NEWMAGIC_BMP_W - 6) * scale, (NEWMAGIC_BMP_H+16) * scale);
+ }
+ else
+ {
+   SetRect(area.x, area.y, NEWMAGIC_BMP_W * scale, (NEWMAGIC_BMP_H+16) * scale);
+ }
  string filename;
 
  config_get_path(config,"newmagic.bmp",filename);
@@ -98,6 +108,20 @@ bool SpellView::init(Screen *tmp_screen, void *view_manager, uint16 x, uint16 y,
 
 void SpellView::PlaceOnScreen(Screen *s, GUI_DragManager *dm, int x, int y)
 {
+ // Check for Korean compact_ui mode adjustments
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
+
+ if(use_korean && compact_ui)
+ {
+   // Adjust position: left 3 pixels, up 3 pixels (scaled)
+   x -= 3 * scale;
+   y -= 3 * scale;
+ }
+
  GUI_Widget::PlaceOnScreen(s,dm,x,y);
 }
 
@@ -130,18 +154,24 @@ void SpellView::Display(bool full_redraw)
 {
  // Check for Korean 4x mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                font_manager->get_korean_font() && Game::get_game()->is_original_plus();
- int scale = use_4x ? 4 : 1;
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
  if(full_redraw || update_display)
    {
+    // In compact_ui mode, reduce width by 6 pixels
+    int bmp_w = (use_korean && compact_ui) ? (NEWMAGIC_BMP_W - 6) : NEWMAGIC_BMP_W;
+
     screen->fill(bg_color, area.x, area.y + NEWMAGIC_BMP_H * scale, area.w, area.h - NEWMAGIC_BMP_H * scale);
 
-    if(use_4x)
-      screen->blit4x(area.x, area.y, background->get_data(), 8, NEWMAGIC_BMP_W, NEWMAGIC_BMP_H, NEWMAGIC_BMP_W, true);
+    if(scale >= 4)
+      screen->blit4x(area.x, area.y, background->get_data(), 8, bmp_w, NEWMAGIC_BMP_H, NEWMAGIC_BMP_W, true);
+    else if(scale == 3)
+      screen->blit3x(area.x, area.y, background->get_data(), 8, bmp_w, NEWMAGIC_BMP_H, NEWMAGIC_BMP_W, true);
     else
-      screen->blit(area.x, area.y, background->get_data(), 8, NEWMAGIC_BMP_W, NEWMAGIC_BMP_H, NEWMAGIC_BMP_W, true);
+      screen->blit(area.x, area.y, background->get_data(), 8, bmp_w, NEWMAGIC_BMP_H, NEWMAGIC_BMP_W, true);
    }
 
  display_level_text();
@@ -325,14 +355,19 @@ void SpellView::display_level_text()
 {
  // Check for Korean 4x mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
- bool use_4x = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
- int scale = use_4x ? 4 : 1;
+ KoreanFont *korean_font_32 = font_manager ? font_manager->get_korean_font() : NULL;
+ KoreanFont *korean_font_24 = font_manager ? font_manager->get_korean_font_24() : NULL;
+ bool use_korean = korean_font_32 && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
- if(use_4x)
+ if(use_korean)
  {
+   // Use appropriate font at native size (scale 1)
+   KoreanFont *active_font = (compact_ui && korean_font_24) ? korean_font_24 : korean_font_32;
+   int font_scale = 1;
    // Korean: Display "1써클" in single line instead of "1ST" + "level"
-   korean_font->drawStringUTF8(screen, circle_num_tbl_ko[level-1], area.x + 96 * scale, area.y + (NEWMAGIC_BMP_H + 4) * scale, 0x48, 0, 1);
+   active_font->drawStringUTF8(screen, circle_num_tbl_ko[level-1], area.x + 96 * scale, area.y + (NEWMAGIC_BMP_H + 4) * scale, 0x48, 0, font_scale);
  }
  else
  {
@@ -370,11 +405,13 @@ void SpellView::display_spell_text(Spell *spell, uint16 line_num, uint8 selected
 	char num_str[4];
 	line_num++;
 
-	// Check for Korean 4x mode
+	// Check for Korean scaling mode
 	FontManager *font_manager = Game::get_game()->get_font_manager();
-	KoreanFont *korean_font = font_manager ? font_manager->get_korean_font() : NULL;
-	bool use_4x = korean_font && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
-	int scale = use_4x ? 4 : 1;
+	KoreanFont *korean_font_32 = font_manager ? font_manager->get_korean_font() : NULL;
+	KoreanFont *korean_font_24 = font_manager ? font_manager->get_korean_font_24() : NULL;
+	bool use_korean = korean_font_32 && font_manager->is_korean_enabled() && Game::get_game()->is_original_plus();
+	bool compact_ui = Game::get_game()->is_compact_ui();
+	int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
 	snprintf(num_str, 3, "%d", get_available_spell_count(spell));
 
@@ -389,13 +426,16 @@ void SpellView::display_spell_text(Spell *spell, uint16 line_num, uint8 selected
 			spell_name = korean_spell_name.c_str();
 	}
 
-	if(use_4x)
+	if(use_korean)
 	{
-		korean_font->drawStringUTF8(screen, spell_name, area.x + 16 * scale, area.y + (line_num * 8) * scale, 0x48, 0, 1);
-		korean_font->drawStringUTF8(screen, num_str, area.x + (NEWMAGIC_BMP_W - 24) * scale, area.y + (line_num * 8) * scale, 0x48, 0, 1);
+		// Use appropriate font at native size (scale 1)
+		KoreanFont *active_font = (compact_ui && korean_font_24) ? korean_font_24 : korean_font_32;
+		int font_scale = 1;
+		active_font->drawStringUTF8(screen, spell_name, area.x + 16 * scale, area.y + (line_num * 8) * scale, 0x48, 0, font_scale);
+		active_font->drawStringUTF8(screen, num_str, area.x + (NEWMAGIC_BMP_W - 24) * scale, area.y + (line_num * 8) * scale, 0x48, 0, font_scale);
 
 		if(spell->num == selected_spell)
-			korean_font->drawChar(screen, '>', area.x + 8 * scale, area.y + (line_num * 8) * scale, 0x48);
+			active_font->drawChar(screen, '>', area.x + 8 * scale, area.y + (line_num * 8) * scale, 0x48);
 	}
 	else
 	{
@@ -439,13 +479,14 @@ void SpellView::add_command_icons(Screen *tmp_screen, void *view_manager)
 
  // Check for Korean 4x mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                font_manager->get_korean_font() && Game::get_game()->is_original_plus();
- int scale = use_4x ? 4 : 1;
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
  int tile_size = 16 * scale;
 
  tile = tile_manager->get_tile(412); //left arrow icon
- if(use_4x)
+ if(scale >= 4)
  {
    button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
    button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
@@ -454,12 +495,20 @@ void SpellView::add_command_icons(Screen *tmp_screen, void *view_manager)
  {
    button_image = tmp_screen->create_sdl_surface_from(tile->data, 8, 16, 16, 16);
    button_image2 = tmp_screen->create_sdl_surface_from(tile->data, 8, 16, 16, 16);
+   if(scale == 3) {
+     SDL_Surface *scaled = SDL_CreateRGBSurface(0, 48, 48, 32, 0, 0, 0, 0);
+     SDL_BlitScaled(button_image, NULL, scaled, NULL);
+     SDL_FreeSurface(button_image); button_image = scaled;
+     scaled = SDL_CreateRGBSurface(0, 48, 48, 32, 0, 0, 0, 0);
+     SDL_BlitScaled(button_image2, NULL, scaled, NULL);
+     SDL_FreeSurface(button_image2); button_image2 = scaled;
+   }
  }
  left_button = new GUI_Button(this, 2*tile_size, NEWMAGIC_BMP_H * scale, button_image, button_image2, this);
  this->AddWidget(left_button);
 
  tile = tile_manager->get_tile(413); //right arrow icon
- if(use_4x)
+ if(scale >= 4)
  {
    button_image = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
    button_image2 = tmp_screen->create_sdl_surface_from_4x(tile->data, 8, 16, 16, 16);
@@ -468,6 +517,14 @@ void SpellView::add_command_icons(Screen *tmp_screen, void *view_manager)
  {
    button_image = tmp_screen->create_sdl_surface_from(tile->data, 8, 16, 16, 16);
    button_image2 = tmp_screen->create_sdl_surface_from(tile->data, 8, 16, 16, 16);
+   if(scale == 3) {
+     SDL_Surface *scaled = SDL_CreateRGBSurface(0, 48, 48, 32, 0, 0, 0, 0);
+     SDL_BlitScaled(button_image, NULL, scaled, NULL);
+     SDL_FreeSurface(button_image); button_image = scaled;
+     scaled = SDL_CreateRGBSurface(0, 48, 48, 32, 0, 0, 0, 0);
+     SDL_BlitScaled(button_image2, NULL, scaled, NULL);
+     SDL_FreeSurface(button_image2); button_image2 = scaled;
+   }
  }
  right_button = new GUI_Button(this, 3*tile_size, NEWMAGIC_BMP_H * scale, button_image, button_image2, this);
  this->AddWidget(right_button);
@@ -561,11 +618,12 @@ GUI_status SpellView::MouseWheel(sint32 x, sint32 y)
 
 GUI_status SpellView::MouseDown(int x, int y, int button)
 {
-	// Check for Korean 4x mode
+	// Check for Korean scaling mode
 	FontManager *font_manager = Game::get_game()->get_font_manager();
-	bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+	bool use_korean = font_manager && font_manager->is_korean_enabled() &&
 	              font_manager->get_korean_font() && Game::get_game()->is_original_plus();
-	int scale = use_4x ? 4 : 1;
+	bool compact_ui = Game::get_game()->is_compact_ui();
+	int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
 	y -= area.y;
 	x -= area.x;

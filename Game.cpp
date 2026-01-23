@@ -135,6 +135,8 @@ Game::Game(Configuration *cfg, Screen *scr, GUI *g, nuvie_game_t type, SoundMana
  config->value("config/general/use_text_gumps", using_text_gumps, false);
  config->value(config_get_game_key(config) + "/roof_mode", roof_mode, false);
  config->value("config/input/doubleclick_opens_containers", open_containers, false);
+ config->value("config/video/compact_ui", compact_ui, false);
+ ConsoleAddInfo("Game: compact_ui = %s", compact_ui ? "YES" : "NO");
  int value;
  uint16 screen_width = gui->get_width();
  uint16 screen_height = gui->get_height();

@@ -128,7 +128,11 @@ bool Magic::start_new_spell()
 
   if (Game::get_game()->get_clock()->get_timer(GAMECLOCK_TIMER_U6_STORM) > 0 && !Game::get_game()->has_unlimited_casting())
   {
-	  event->scroll->display_string("No magic at this time!\n\n");
+	  KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+	  if (kt && kt->isEnabled())
+	      event->scroll->display_string("지금은 마법을 사용할 수 없습니다!\n\n");
+	  else
+	      event->scroll->display_string("No magic at this time!\n\n");
   }
   else if (spellbook_obj != NULL)
   {
@@ -140,7 +144,13 @@ bool Magic::start_new_spell()
     return true;
   }
   else
-    event->scroll->display_string("\nNo spellbook is readied.\n\n");
+  {
+    KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+    if (kt && kt->isEnabled())
+        event->scroll->display_string("\n마법서를 장착하지 않았습니다.\n\n");
+    else
+        event->scroll->display_string("\nNo spellbook is readied.\n\n");
+  }
 
   state=MAGIC_STATE_READY;
   return false;
@@ -184,7 +194,11 @@ bool Magic::cast()
 
   if (index>=256) {
     DEBUG(0,LEVEL_DEBUGGING,"didn't find spell in spell list\n");
-    event->scroll->display_string("\nThat spell is not in thy spellbook!\n"); 
+    KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+    if (kt && kt->isEnabled())
+        event->scroll->display_string("\n그 마법은 마법서에 없습니다!\n");
+    else
+        event->scroll->display_string("\nThat spell is not in thy spellbook!\n");
     return false;
   }
 //20110701 Pieter Luteijn: add an assert(spell[index]) to be sure it's not NULL?
@@ -252,8 +266,12 @@ bool Magic::cast()
     left = NULL;
   
   if(right == NULL && left == NULL)
-  { 
-    event->scroll->display_string("\nNo spellbook is readied.\n"); 
+  {
+    KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+    if (kt && kt->isEnabled())
+        event->scroll->display_string("\n마법서를 장착하지 않았습니다.\n");
+    else
+        event->scroll->display_string("\nNo spellbook is readied.\n");
     return false;
   }
 
@@ -269,14 +287,22 @@ bool Magic::cast()
   }
   if (!spells)
   {
-    event->scroll->display_string("\nNo spells in the spellbook.\n"); 
+    KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+    if (kt && kt->isEnabled())
+        event->scroll->display_string("\n마법서에 마법이 없습니다.\n");
+    else
+        event->scroll->display_string("\nNo spells in the spellbook.\n");
     return false;
   }
   
-  // spell (or catch all spell 255) in (one of the) book(s)? 
-  if(spellbook_has_spell(right,index) == false && spellbook_has_spell(left,index) == false) 
+  // spell (or catch all spell 255) in (one of the) book(s)?
+  if(spellbook_has_spell(right,index) == false && spellbook_has_spell(left,index) == false)
   {
-    event->scroll->display_string("\nThat spell is not in thy spellbook!\n"); 
+    KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+    if (kt && kt->isEnabled())
+        event->scroll->display_string("\n그 마법은 마법서에 없습니다!\n");
+    else
+        event->scroll->display_string("\nThat spell is not in thy spellbook!\n");
     return false;
   }
 
@@ -284,14 +310,22 @@ bool Magic::cast()
   uint8 spell_level=MIN(8,(index/16)+1); 
   if (caster->get_level()<spell_level)
   {
-    event->scroll->display_string("\nYour level is not high enough.\n"); 
+    KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+    if (kt && kt->isEnabled())
+        event->scroll->display_string("\n레벨이 부족합니다.\n");
+    else
+        event->scroll->display_string("\nYour level is not high enough.\n");
     return false;
   }
   
   // enough Magic Points available
   if (caster->get_magic()<spell_level)
   {
-    event->scroll->display_string("\nNot enough magic points.\n");
+    KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+    if (kt && kt->isEnabled())
+        event->scroll->display_string("\n마력이 부족합니다.\n");
+    else
+        event->scroll->display_string("\nNot enough magic points.\n");
     return false;
   }
 
@@ -303,7 +337,11 @@ bool Magic::cast()
       if (!caster->inventory_has_object(obj_n_reagent[shift],0,false))
       {
 	DEBUG(0,LEVEL_DEBUGGING,"Didn't have %s\n",reagent[shift]);
-	event->scroll->display_string("\nNo Reagents.\n");
+	KoreanTranslation *kt = Game::get_game()->get_korean_translation();
+	if (kt && kt->isEnabled())
+	    event->scroll->display_string("\n마법재료가 없습니다.\n");
+	else
+	    event->scroll->display_string("\nNo Reagents.\n");
 	Game::get_game()->get_sound_manager()->playSfx(NUVIE_SFX_FAILURE);
 	return false;
       }

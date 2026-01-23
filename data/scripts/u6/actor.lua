@@ -267,15 +267,19 @@ function actor_move(actor, direction, flag)
    
    actor.direction = direction
    local did_move = Actor.move(actor, x, y, z)
-   
+
    --actor.direction = direction
-      
+
    if did_move then
-      if actor.obj_n == 0x177 then slime_update_frames() end
+      -- For slimes, skip frame update if smooth movement is enabled
+      -- (it will be called from C++ when smooth movement finishes)
+      if actor.obj_n == 0x177 and not is_smooth_movement_enabled() then
+         slime_update_frames()
+      end
       subtract_map_movement_pts(actor)
       ----dgb("actor_move() did move actor("..actor.x..","..actor.y..")\n");
    end
-   
+
    return did_move and 1 or 0
 end
 
@@ -303,15 +307,19 @@ function actor_move_diagonal(actor, x_direction, y_direction)
    ----dgb("actor_move_diagonal("..actor.name..", "..direction_string(direction)..")\n");
    actor.direction = y_direction
    local did_move = Actor.move(actor, x, y, z)
-   
+
    if did_move then
       ----dgb("did move\n");
-      if actor.obj_n == 0x177 then slime_update_frames() end
+      -- For slimes, skip frame update if smooth movement is enabled
+      -- (it will be called from C++ when smooth movement finishes)
+      if actor.obj_n == 0x177 and not is_smooth_movement_enabled() then
+         slime_update_frames()
+      end
       subtract_map_movement_pts(actor)
 
       --dgb("set dir = "..direction_string(direction).." y_dir ="..direction_string(y_direction).." ")
    end
-   
+
    return did_move and 1 or 0
 end
 
@@ -3249,15 +3257,18 @@ function actor_wt_attack(actor)
             return
          end
 
+         -- Sidestep calculation (original U6 COMBAT_AI_Assault)
+         -- if can't hit, try to move to the side
          if math.random(0, 1) == 0 then
-         
-            target_x = g_obj.y - actor_y + actor_x
-            target_y = actor_y - g_obj.x - actor_x
-         
-         else
-         
-            target_x = actor_x - g_obj.y - actor_y
+            -- opp_x = x - (GetY(Selection.obj) - y) = x - opp_y + y
+            -- opp_y = GetX(Selection.obj) - x + y
+            target_x = actor_x - (g_obj.y - actor_y)
             target_y = g_obj.x - actor_x + actor_y
+         else
+            -- opp_x = (GetY(Selection.obj) - y) + x
+            -- opp_y = y - (GetX(Selection.obj) - x)
+            target_x = (g_obj.y - actor_y) + actor_x
+            target_y = actor_y - (g_obj.x - actor_x)
          end
 
          actor_move_towards_loc(actor, target_x, target_y)
@@ -3529,32 +3540,32 @@ function actor_find_target(actor)
    local player_loc = player_get_location()
    local player_x = player_loc.x
    local player_y = player_loc.y
-               
+
    for i=0,0xff do
 
       local tmp_actor = Actor.get(i)
 
       if tmp_actor.obj_n ~= 0 and tmp_actor.alive == true and tmp_actor.actor_num ~= actor.actor_num and actor_ok_to_attack(actor, tmp_actor) == true then
-      
+
          if actor.wt == WT_FLEE or
-            actor.wt == WT_MOUSE or 
+            actor.wt == WT_MOUSE or
             actor.wt == WT_UNK_13 or
             actor.wt == WT_RETREAT or
-            actor.wt == WT_BRAWLING or 
+            actor.wt == WT_BRAWLING or
             (align ~= ALIGNMENT_NEUTRAL or actor.wt == WT_ATTACK_PARTY and tmp_actor.align == ALIGNMENT_GOOD) and
             (align ~= ALIGNMENT_CHAOTIC or tmp_actor.align ~= ALIGNMENT_CHAOTIC) and
             tmp_actor.align ~= ALIGNMENT_NEUTRAL and
             (align ~= ALIGNMENT_GOOD or alignment_is_evil(tmp_actor.align) == true) and
             (align ~= ALIGNMENT_EVIL or tmp_actor.align == ALIGNMENT_GOOD or tmp_actor.align == ALIGNMENT_CHAOTIC) then
-         
+
             local target_x = tmp_actor.x
             local target_y = tmp_actor.y
 
             if actor_find_max_xy_distance(actor, target_x, target_y) <= 8 and (tmp_actor.wt ~= WT_RETREAT or abs(target_x - player_x) <= 5 and abs(target_y - player_y) <= 5) then
-            
-               local var_6 = (target_x - actor_x)^2 + (target_y - actor_y)^2 
+
+               local var_6 = (target_x - actor_x)^2 + (target_y - actor_y)^2
                if var_6 < var_2 or var_6 == var_2 and math.random(0, 1) ~= 0 then
-               
+
                   var_2 = var_6
                   target_actor = tmp_actor
                end

@@ -78,11 +78,12 @@ bool InventoryWidget::init(Actor *a, uint16 x, uint16 y, TileManager *tm, ObjMan
  bg_color = Game::get_game()->get_palette()->get_bg_color();
  obj_font_color = 0;
 
- // Check for Korean 4x mode
+ // Check for Korean scaling mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                font_manager->get_korean_font() && Game::get_game()->is_original_plus();
- int scale = use_4x ? 4 : 1;
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
  if(Game::get_game()->get_game_type()==NUVIE_GAME_U6)
  {
@@ -100,8 +101,8 @@ bool InventoryWidget::init(Actor *a, uint16 x, uint16 y, TileManager *tm, ObjMan
  if(Game::get_game()->get_game_type() == NUVIE_GAME_U6)
  {
 	empty_tile = tile_manager->get_tile(410);
-	if(use_4x) {
-	  GUI_Widget::Init(NULL, x, y, 72 * 4, 64 * 4); //72 =  4 * 16 + 8
+	if(use_korean) {
+	  GUI_Widget::Init(NULL, x, y, 72 * scale, 64 * scale);
 	} else {
 	  GUI_Widget::Init(NULL, x, y, 72, 64); //72 =  4 * 16 + 8
 	}
@@ -153,17 +154,29 @@ void InventoryWidget::set_prev_container()
 
 void InventoryWidget::Display(bool full_redraw)
 {
+ // Check for Korean scaling mode
+ FontManager *font_manager = Game::get_game()->get_font_manager();
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
+               font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
+ int tile_size = 16 * scale;
+ int max_rows = (Game::get_game()->get_game_type() == NUVIE_GAME_U6) ? 3 : 4;
+
  if(full_redraw || update_display)
   {
-//   screen->fill(bg_color, area.x, area.y, area.w, area.h);
+   // Clear entire widget area including arrow region (needed for scroll and Korean scaling)
+   screen->fill(bg_color, area.x, area.y, area.w, area.h);
    display_inventory_container();
    if(Game::get_game()->get_game_type() == NUVIE_GAME_U6)
      display_arrows();
   }
-   //screen->blit(area.x+40,area.y+16,portrait_data,8,56,64,56,false);
+ else
+  {
+   // Clear only the inventory list area for partial updates
+   screen->fill(bg_color, area.x + objlist_offset_x, area.y + objlist_offset_y, tile_size * 4, tile_size * max_rows);
+  }
 
- //clear the screen first inventory icons, 4 x 3 tiles
-// screen->fill(bg_color, area.x +objlist_offset_x, area.y + objlist_offset_y, 16 * 4, 16 * 3); // doesn't seem to be needed
  display_inventory_list();
 
  if(full_redraw || update_display)
@@ -187,13 +200,17 @@ void InventoryWidget::display_inventory_container()
  else // display container object
    tile = tile_manager->get_tile(obj_manager->get_obj_tile_num(container_obj)+container_obj->frame_n);
 
- // Check for Korean 4x mode
+ // Check for Korean scaling mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
- if(use_4x) {
+ if(scale >= 4) {
    screen->blit4x(area.x+icon_x, area.y, tile->data, 8, 16, 16, 16, true);
+ } else if(scale == 3) {
+   screen->blit3x(area.x+icon_x, area.y, tile->data, 8, 16, 16, 16, true);
  } else {
    screen->blit(area.x+icon_x, area.y, tile->data, 8, 16, 16, 16, true);
  }
@@ -213,11 +230,13 @@ void InventoryWidget::display_inventory_list()
  if(Game::get_game()->get_game_type() == NUVIE_GAME_U6)
    max_rows = 3;
 
- // Check for Korean 4x mode
+ // Check for Korean scaling mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                font_manager->get_korean_font() && Game::get_game()->is_original_plus();
- int tile_size = use_4x ? 64 : 16;
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
+ int tile_size = 16 * scale;
 
  if(container_obj)
    inventory = container_obj->container;
@@ -268,16 +287,20 @@ void InventoryWidget::display_inventory_list()
 
        //tile = tile_manager->get_tile(actor->indentory_tile());
        if(tile == empty_tile) {
-         if(use_4x) {
+         if(scale >= 4) {
            screen->blit4x((area.x+objlist_offset_x)+j*tile_size,area.y+objlist_offset_y+i*tile_size,(unsigned char *)empty_tile->data,8,16,16,16,true);
+         } else if(scale == 3) {
+           screen->blit3x((area.x+objlist_offset_x)+j*tile_size,area.y+objlist_offset_y+i*tile_size,(unsigned char *)empty_tile->data,8,16,16,16,true);
          } else {
            screen->blit((area.x+objlist_offset_x)+j*tile_size,area.y+objlist_offset_y+i*tile_size,(unsigned char *)empty_tile->data,8,16,16,16,true);
          }
        }
 
        // Draw tile first
-       if(use_4x) {
+       if(scale >= 4) {
          screen->blit4x((area.x+objlist_offset_x)+j*tile_size,area.y+objlist_offset_y+i*tile_size,(unsigned char *)tile->data,8,16,16,16,true);
+       } else if(scale == 3) {
+         screen->blit3x((area.x+objlist_offset_x)+j*tile_size,area.y+objlist_offset_y+i*tile_size,(unsigned char *)tile->data,8,16,16,16,true);
        } else {
          screen->blit((area.x+objlist_offset_x)+j*tile_size,area.y+objlist_offset_y+i*tile_size,(unsigned char *)tile->data,8,16,16,16,true);
        }
@@ -302,21 +325,26 @@ void InventoryWidget::display_qty_string(uint16 x, uint16 y, uint16 qty)
  uint8 len, i, offset;
  char buf[6];
 
- // Check for Korean 4x mode
+ // Check for Korean scaling mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                font_manager->get_korean_font() && Game::get_game()->is_original_plus();
- int scale = use_4x ? 4 : 1;
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
  sprintf(buf,"%d",qty);
  len = strlen(buf);
 
  offset = ((16 - len*4) / 2) * scale;
 
- if(use_4x) {
+ if(scale >= 4) {
    // 4x scaled: each 3x5 bitmap becomes 12x20
    for(i=0;i<len;i++)
-    screen->blitbitmap4x(x+offset+4*4*i,y+11*4,inventory_font[buf[i]-48],3,5,obj_font_color,bg_color);
+    screen->blitbitmap4x(x+offset+4*scale*i,y+11*scale,inventory_font[buf[i]-48],3,5,obj_font_color,bg_color);
+ } else if(scale == 3) {
+   // 3x scaled: each 3x5 bitmap becomes 9x15
+   for(i=0;i<len;i++)
+    screen->blitbitmap3x(x+offset+4*scale*i,y+11*scale,inventory_font[buf[i]-48],3,5,obj_font_color,bg_color);
  } else {
    for(i=0;i<len;i++)
     screen->blitbitmap(x+offset+4*i,y+11,inventory_font[buf[i]-48],3,5,obj_font_color,bg_color);
@@ -330,15 +358,19 @@ void InventoryWidget::display_special_char(uint16 x, uint16 y, uint8 quality)
  if(quality + 9 >= NUVIE_MICRO_FONT_COUNT)
    return;
 
- // Check for Korean 4x mode
+ // Check for Korean scaling mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
- if(use_4x) {
-   screen->blitbitmap4x(x+6*4,y+11*4,inventory_font[quality + 9],3,5,obj_font_color,bg_color);
+ if(scale >= 4) {
+   screen->blitbitmap4x(x+6*scale,y+11*scale,inventory_font[quality + 9],3,5,obj_font_color,bg_color);
+ } else if(scale == 3) {
+   screen->blitbitmap3x(x+6*scale,y+11*scale,inventory_font[quality + 9],3,5,obj_font_color,bg_color);
  } else {
-   screen->blitbitmap(x+6,y+11,inventory_font[quality + 9],3,5,obj_font_color,bg_color);
+   screen->blitbitmap(x+6*scale,y+11*scale,inventory_font[quality + 9],3,5,obj_font_color,bg_color);
  }
 }
 
@@ -364,11 +396,12 @@ void InventoryWidget::display_arrows()
 {
  uint32 num_objects;
 
- // Check for Korean 4x mode
+ // Check for Korean scaling mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                font_manager->get_korean_font() && Game::get_game()->is_original_plus();
- int scale = use_4x ? 4 : 1;
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
  if(is_showing_container())
  {
@@ -383,13 +416,20 @@ void InventoryWidget::display_arrows()
  if(num_objects <= 12) //reset row_offset if we only have one page of objects
    row_offset = 0;
 
- if(use_4x) {
+ if(scale >= 4) {
    // 4x mode: use scaled bitmap arrows
    if(row_offset > 0) //display top arrow
-      screen->blitbitmap4x(area.x, area.y + 16 * 4 + 4, up_arrow_bitmap, 5, 5, obj_font_color, bg_color);
+      screen->blitbitmap4x(area.x, area.y + 16 * scale + scale, up_arrow_bitmap, 5, 5, obj_font_color, bg_color);
 
    if(num_objects - row_offset * 4 > 12) //display bottom arrow
-      screen->blitbitmap4x(area.x, area.y + (3 * 16 + 8) * 4 + 4, down_arrow_bitmap, 5, 5, obj_font_color, bg_color);
+      screen->blitbitmap4x(area.x, area.y + (3 * 16 + 8) * scale + scale, down_arrow_bitmap, 5, 5, obj_font_color, bg_color);
+ } else if(scale == 3) {
+   // 3x mode: use 3x scaled bitmap arrows
+   if(row_offset > 0) //display top arrow
+      screen->blitbitmap3x(area.x, area.y + 16 * scale + scale, up_arrow_bitmap, 5, 5, obj_font_color, bg_color);
+
+   if(num_objects - row_offset * 4 > 12) //display bottom arrow
+      screen->blitbitmap3x(area.x, area.y + (3 * 16 + 8) * scale + scale, down_arrow_bitmap, 5, 5, obj_font_color, bg_color);
  } else {
    if(row_offset > 0) //display top arrow
       font->drawChar(screen, 24, area.x, area.y + 16);
@@ -412,11 +452,12 @@ GUI_status InventoryWidget::MouseDown(int x, int y, int button)
  x *= coord_scale;
  y *= coord_scale;
 
- // Check for Korean 4x mode for hit test sizes
+ // Check for Korean scaling mode for hit test sizes
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                font_manager->get_korean_font() && Game::get_game()->is_original_plus();
- int hit_scale = use_4x ? 4 : 1;
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int hit_scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
  x -= area.x;
  y -= area.y;
@@ -465,11 +506,13 @@ inline uint16 InventoryWidget::get_list_position(int x, int y)
 {
  uint16 list_pos;
 
- // Check for Korean 4x mode
+ // Check for Korean scaling mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                font_manager->get_korean_font() && Game::get_game()->is_original_plus();
- int tile_size = use_4x ? 64 : 16;
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
+ int tile_size = 16 * scale;
 
  list_pos = ((y - objlist_offset_y) / tile_size) * 4 + (x - objlist_offset_x) / tile_size;
  list_pos += row_offset * 4;
@@ -553,11 +596,12 @@ GUI_status InventoryWidget::MouseUp(int x,int y,int button)
  x *= coord_scale;
  y *= coord_scale;
 
- // Check for Korean 4x mode for hit test sizes
+ // Check for Korean scaling mode for hit test sizes
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                font_manager->get_korean_font() && Game::get_game()->is_original_plus();
- int hit_scale = use_4x ? 4 : 1;
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int hit_scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
  if(button == USE_BUTTON || (button == ACTION_BUTTON
     && command_bar->get_selected_action() > 0)) // Exclude attack mode too
@@ -595,11 +639,11 @@ GUI_status InventoryWidget::MouseUp(int x,int y,int button)
       }
 	if(Game::get_game()->get_game_type() == NUVIE_GAME_U6)
 	{
-		// Scale arrow hit rects for Korean 4x mode
+		// Scale arrow hit rects for Korean scaling mode
 		SDL_Rect up_rect, down_rect;
-		if(use_4x) {
-			up_rect = {0, 16*4, 8*4, 8*4};
-			down_rect = {0, (3*16+8)*4, 8*4, 8*4};
+		if(use_korean) {
+			up_rect = {0, 16*hit_scale, 8*hit_scale, 8*hit_scale};
+			down_rect = {0, (3*16+8)*hit_scale, 8*hit_scale, 8*hit_scale};
 		} else {
 			up_rect = arrow_rects[0];
 			down_rect = arrow_rects[1];

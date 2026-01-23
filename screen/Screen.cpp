@@ -1877,6 +1877,64 @@ void Screen::blitbitmap32(uint16 dest_x, uint16 dest_y, const unsigned char *src
  return;
 }
 
+void Screen::blitbitmap3x(uint16 dest_x, uint16 dest_y, const unsigned char *src_buf, uint16 src_w, uint16 src_h, uint8 fg_color, uint8 bg_color)
+{
+ uint16 i, j, di, dj;
+
+ // Each source pixel becomes 3x3 destination pixels
+ // Only draw foreground pixels (transparent background)
+ if(surface->bits_per_pixel == 16)
+ {
+   uint16 *pixels = (uint16 *)surface->pixels;
+   uint16 color = (uint16)surface->colour32[fg_color];
+
+   for(i=0; i<src_h; i++)
+   {
+     for(j=0; j<src_w; j++)
+     {
+       if(src_buf[j]) { // Only draw foreground, skip background (transparent)
+         // Fill 3x3 block
+         for(di=0; di<3; di++)
+         {
+           for(dj=0; dj<3; dj++)
+           {
+             uint16 *dest = pixels + (dest_y + i*3 + di) * surface->w + (dest_x + j*3 + dj);
+             *dest = color;
+           }
+         }
+       }
+     }
+     src_buf += src_w;
+   }
+ }
+ else // 32-bit
+ {
+   uint32 *pixels = (uint32 *)surface->pixels;
+   uint32 color = surface->colour32[fg_color];
+
+   for(i=0; i<src_h; i++)
+   {
+     for(j=0; j<src_w; j++)
+     {
+       if(src_buf[j]) { // Only draw foreground, skip background (transparent)
+         // Fill 3x3 block
+         for(di=0; di<3; di++)
+         {
+           for(dj=0; dj<3; dj++)
+           {
+             uint32 *dest = pixels + (dest_y + i*3 + di) * surface->w + (dest_x + j*3 + dj);
+             *dest = color;
+           }
+         }
+       }
+     }
+     src_buf += src_w;
+   }
+ }
+
+ return;
+}
+
 void Screen::blitbitmap4x(uint16 dest_x, uint16 dest_y, const unsigned char *src_buf, uint16 src_w, uint16 src_h, uint8 fg_color, uint8 bg_color)
 {
  uint16 i, j, di, dj;

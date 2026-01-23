@@ -87,8 +87,9 @@
       <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /E /Y /I "$(ProjectDir)..\data\translations" "$(OutDir)data\translations\"</Command>
-      <Message>Copying translation files to output directory...</Message>
+      <Command>xcopy /E /Y /I "$(ProjectDir)..\data\translations" "$(OutDir)data\translations\"
+xcopy /E /Y /I "$(ProjectDir)..\data\scripts" "$(OutDir)data\scripts\"</Command>
+      <Message>Copying translation and script files to output directory...</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

@@ -156,11 +156,13 @@ bool DollWidget::init(Actor *a, uint16 x, uint16 y, TileManager *tm, ObjManager 
 
  // Check for Korean 4x mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
- if(use_4x) {
-   GUI_Widget::Init(NULL, x, y, 64 * 4, 64 * 4);
+ if(use_korean) {
+   GUI_Widget::Init(NULL, x, y, 64 * scale, 64 * scale);
  } else {
    GUI_Widget::Init(NULL, x, y, 64, 64);
  }
@@ -279,13 +281,15 @@ SDL_Rect *DollWidget::get_item_hit_rect(uint8 location)
     if(location < 8) {
         // Check for Korean 4x mode
         FontManager *font_manager = Game::get_game()->get_font_manager();
-        bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+        bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                       font_manager->get_korean_font() && Game::get_game()->is_original_plus();
-        if(use_4x) {
-            scaled_rect.x = item_hit_rects[location].x * 4;
-            scaled_rect.y = item_hit_rects[location].y * 4;
-            scaled_rect.w = item_hit_rects[location].w * 4;
-            scaled_rect.h = item_hit_rects[location].h * 4;
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
+        if(use_korean) {
+            scaled_rect.x = item_hit_rects[location].x * scale;
+            scaled_rect.y = item_hit_rects[location].y * scale;
+            scaled_rect.w = item_hit_rects[location].w * scale;
+            scaled_rect.h = item_hit_rects[location].h * scale;
             return &scaled_rect;
         }
         return(&item_hit_rects[location]);
@@ -312,12 +316,13 @@ inline void DollWidget::display_new_doll()
 	if(doll_bg) {
 		// Check for Korean 4x mode
 		FontManager *font_manager = Game::get_game()->get_font_manager();
-		bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+		bool use_korean = font_manager && font_manager->is_korean_enabled() &&
 		              font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
-		if(use_4x) {
-			// Scale 4x for Korean mode
-			int scale = 4;
+		if(use_korean) {
+			// Scale for Korean mode
 			SDL_Rect dst;
 			dst.x = area.x + 15 * scale;
 			dst.y = area.y + 15 * scale;
@@ -354,11 +359,12 @@ inline void DollWidget::display_old_doll()
 			tilenum = 400;
 	}
 
-	// Check for Korean 4x mode
+	// Check for Korean scaling mode
 	FontManager *font_manager = Game::get_game()->get_font_manager();
-	bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+	bool use_korean = font_manager && font_manager->is_korean_enabled() &&
 	              font_manager->get_korean_font() && Game::get_game()->is_original_plus();
-	int scale = use_4x ? 4 : 1;
+	bool compact_ui = Game::get_game()->is_compact_ui();
+	int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
 //	 screen->fill(bg_color, area.x, area.y, area.w, area.h); // should be taken care of by the main view
 	 for(i=0;i<2;i++)
@@ -366,8 +372,10 @@ inline void DollWidget::display_old_doll()
 		 for(j=0;j<2;j++) // draw doll
 		 {
 			 tile = tile_manager->get_tile(tilenum+i*2+j);
-			 if(use_4x) {
+			 if(scale >= 4) {
 			   screen->blit4x(area.x+16*scale+j*16*scale,area.y+16*scale+i*16*scale,tile->data,8,16,16,16,true);
+			 } else if(scale == 3) {
+			   screen->blit3x(area.x+16*scale+j*16*scale,area.y+16*scale+i*16*scale,tile->data,8,16,16,16,true);
 			 } else {
 			   screen->blit(area.x+16+j*16,area.y+16+i*16,tile->data,8,16,16,16,true);
 			 }
@@ -383,11 +391,12 @@ inline void DollWidget::display_old_doll()
 
 inline void DollWidget::display_doll()
 {
- // Check for Korean 4x mode
+ // Check for Korean scaling mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                font_manager->get_korean_font() && Game::get_game()->is_original_plus();
- int scale = use_4x ? 4 : 1;
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
  if(!Game::get_game()->is_new_style() || is_in_portrait_view) {
 	if(use_new_dolls)
@@ -396,8 +405,8 @@ inline void DollWidget::display_doll()
 		display_old_doll();
  }
 
- if(use_4x) {
-   // 4x scaled positions
+ if(use_korean) {
+   // Scaled positions
    display_readied_object(ACTOR_NECK, area.x, (area.y+8*scale) + 0 * 16*scale, actor, empty_tile);
    display_readied_object(ACTOR_BODY, area.x+3*16*scale, (area.y+8*scale) + 0 * 16*scale, actor, empty_tile);
 
@@ -440,11 +449,15 @@ inline void DollWidget::display_readied_object(uint8 location, uint16 x, uint16 
 
  // Check for Korean 4x mode
  FontManager *font_manager = Game::get_game()->get_font_manager();
- bool use_4x = font_manager && font_manager->is_korean_enabled() &&
+ bool use_korean = font_manager && font_manager->is_korean_enabled() &&
                font_manager->get_korean_font() && Game::get_game()->is_original_plus();
+ bool compact_ui = Game::get_game()->is_compact_ui();
+ int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
 
- if(use_4x) {
+ if(scale >= 4) {
    screen->blit4x(x, y, tile->data, 8, 16, 16, 16, true);
+ } else if(scale == 3) {
+   screen->blit3x(x, y, tile->data, 8, 16, 16, 16, true);
  } else {
    screen->blit(x, y, tile->data, 8, 16, 16, 16, true);
  }

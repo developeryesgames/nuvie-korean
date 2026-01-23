@@ -332,6 +332,7 @@ static int nscript_mapwindow_center_at_loc(lua_State *L);
 static int nscript_mapwindow_get_loc(lua_State *L);
 static int nscript_mapwindow_set_loc(lua_State *L);
 static int nscript_mapwindow_set_enable_blacking(lua_State *L);
+static int nscript_is_smooth_movement_enabled(lua_State *L);
 
 static int nscript_load_text_from_lzc(lua_State *L);
 
@@ -922,6 +923,9 @@ Script::Script(Configuration *cfg, GUI *gui, SoundManager *sm, nuvie_game_t type
 
    lua_pushcfunction(L, nscript_mapwindow_set_enable_blacking);
    lua_setglobal(L, "mapwindow_set_enable_blacking");
+
+   lua_pushcfunction(L, nscript_is_smooth_movement_enabled);
+   lua_setglobal(L, "is_smooth_movement_enabled");
 
    lua_pushcfunction(L, nscript_load_text_from_lzc);
    lua_setglobal(L, "load_text_from_lzc");
@@ -5044,6 +5048,20 @@ static int nscript_mapwindow_set_enable_blacking(lua_State *L)
   map_window->set_enable_blacking(enable_blacking);
 
   return 0;
+}
+
+/***
+Check if smooth movement is enabled for actors.
+Used by slimes to defer frame updates until smooth movement completes.
+@function is_smooth_movement_enabled
+@treturn bool true if smooth movement is enabled
+@within mapwindow
+ */
+static int nscript_is_smooth_movement_enabled(lua_State *L)
+{
+  MapWindow *map_window = Game::get_game()->get_map_window();
+  lua_pushboolean(L, map_window && map_window->is_smooth_movement_enabled());
+  return 1;
 }
 
 /***

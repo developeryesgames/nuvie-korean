@@ -48,6 +48,7 @@ class PartyView : public View {
  ~PartyView();
 
  bool init(void *vm, uint16 x, uint16 y, Font *f, Party *p, Player *pl, TileManager *tm, ObjManager *om);
+ virtual void Hide(void);  // Override to prevent hiding in compact_ui mode
  GUI_status MouseUp(int x,int y,int button);
  GUI_status MouseDown(int x,int y,int button) { return(GUI_YUM); }
  GUI_status MouseWheel(sint32 x, sint32 y);
