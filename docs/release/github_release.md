@@ -1,8 +1,13 @@
-# Ultima VI Korean Localization Patch v1.5.1
+# Ultima VI Korean Localization Patch v1.5.2
 
 ## Nuvie Korean Translation - AI-Assisted Localization
 
 A complete Korean localization for Ultima VI: The False Prophet, powered by Nuvie engine.
+
+### v1.5.2 Changes
+
+**Bug Fixes:**
+- Fixed party followers not following through swamps and dangerous terrain (implemented original U6 danger tile handling with eager scoring)
 
 ### v1.5.1 Changes
 

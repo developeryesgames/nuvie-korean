@@ -6,6 +6,8 @@
 #include "SeekPath.h"
 #include "ActorPathFinder.h"
 #include "PartyPathFinder.h"
+#include "Game.h"
+#include "Map.h"
 
 using std::vector;
 
@@ -126,8 +128,15 @@ bool PartyPathFinder::leader_moved_diagonally()
 }
 
 /* Original U6-style eager-based direction selection for narrow passages.
- * Try all 8 directions and pick the one with highest "eager" score.
- * eager = base_score + contiguous_bonus - manhattan_distance_to_target
+ * Based on original U6 MoveFollowers() function in seg_1E0F.c
+ *
+ * Original U6 logic (seg_1E0F.c:560-587):
+ * - C_1E0F_000F() checks if move is possible AND sets D_17A9 if tile is damaging
+ * - If D_17A9 (danger tile): eager = 128, and skip if already contiguous
+ * - If safe tile: eager = 256
+ * - Contiguous bonus: +256
+ * - If currently contiguous but move breaks it: eager = 0
+ * - Subtract manhattan distance to target
  */
 bool PartyPathFinder::follow_passA(uint32 p)
 {
@@ -140,17 +149,21 @@ bool PartyPathFinder::follow_passA(uint32 p)
     MapCoord member_loc = party->get_location(p);
     MapCoord target_loc = party->get_formation_coords(p);
 
-    // Original U6 algorithm: try all 8 directions with eager scoring
-    // Direction offsets (N, NE, E, SE, S, SW, W, NW)
+    // Direction offsets (N, NE, E, SE, S, SW, W, NW) - same as original U6 DirIncrX/Y
     static const sint8 dir_x[] = { 0, 1, 1, 1, 0, -1, -1, -1 };
     static const sint8 dir_y[] = { -1, -1, 0, 1, 1, 1, 0, -1 };
 
-    sint32 max_eager = -9999;
+    sint32 max_eager = 0;  // Original U6 uses 0 as initial max_eager
     sint8 best_dir = -1;
     sint8 best_dx = 0, best_dy = 0;
 
     Actor *actor = get_member(p).actor;
     if(!actor) return true;
+
+    Game *game = Game::get_game();
+    if(!game) return true;
+    Map *map = game->get_game_map();
+    if(!map) return true;
 
     for(int dir = 0; dir < 8; dir++)
     {
@@ -158,19 +171,33 @@ bool PartyPathFinder::follow_passA(uint32 p)
         sint8 dy = dir_y[dir];
         MapCoord try_loc = member_loc.abs_coords(dx, dy);
 
-        // Check if move is possible (don't ignore danger for scoring, but move() will handle it)
-        ActorMoveFlags flags = ACTOR_IGNORE_MOVES;
+        // Check if move is possible - use ACTOR_IGNORE_DANGER to allow dangerous tiles
+        // Original U6 C_1E0F_000F() allows move but sets D_17A9 flag for danger
+        ActorMoveFlags flags = ACTOR_IGNORE_MOVES | ACTOR_IGNORE_DANGER;
         if(!actor->check_move(try_loc.x, try_loc.y, try_loc.z, flags))
             continue;
 
-        // Calculate eager score (based on original U6)
-        sint32 eager = 256; // base score for passable tile
+        // Check if this is a damaging tile (original U6: D_17A9 flag)
+        bool is_danger = map->is_damaging(try_loc.x, try_loc.y, try_loc.z);
 
-        // Big bonus if this move makes/keeps us contiguous
+        sint32 eager;
+        if(is_danger)
+        {
+            // Original U6: if danger tile and already contiguous, skip this direction
+            if(contiguous)
+                continue;
+            eager = 128;  // Lower base score for danger tiles
+        }
+        else
+        {
+            eager = 256;  // Normal base score for safe tiles
+        }
+
+        // Contiguous bonus: +256 if this move keeps/makes us contiguous
         if(is_contiguous(p, try_loc))
             eager += 256;
         else if(contiguous)
-            eager = 0; // Don't break contiguity in first pass
+            eager = 0;  // Don't break contiguity in first pass
 
         // Subtract manhattan distance to target
         eager -= abs((sint32)try_loc.x - (sint32)target_loc.x);
@@ -185,11 +212,12 @@ bool PartyPathFinder::follow_passA(uint32 p)
         }
     }
 
-    // Make the best move if found
-    if(best_dir >= 0 && max_eager > 0)
+    // Make the best move if found (original U6: if new_dir >= 0)
+    if(best_dir >= 0)
     {
         MapCoord dest = member_loc.abs_coords(best_dx, best_dy);
-        if(actor->move(dest.x, dest.y, dest.z, ACTOR_IGNORE_MOVES))
+        // Use ACTOR_IGNORE_DANGER for actual move too - let the game handle damage
+        if(actor->move(dest.x, dest.y, dest.z, ACTOR_IGNORE_MOVES | ACTOR_IGNORE_DANGER))
         {
             actor->set_direction(best_dx, best_dy);
             return true;
@@ -199,14 +227,21 @@ bool PartyPathFinder::follow_passA(uint32 p)
     // Fallback: try moving towards target with original logic
     sint8 rel_x = 0, rel_y = 0;
     get_target_dir(p, rel_x, rel_y);
-    if(move_member(p, rel_x, rel_y, !contiguous)) // allow non-contiguous if already non-contiguous
+    if(move_member(p, rel_x, rel_y, !contiguous))
         return true;
 
     return false;
 }
 
 /* Second pass with relaxed conditions - allows non-contiguous moves to catch up.
- * Based on original U6 algorithm where pass 2 has looser constraints.
+ * Based on original U6 MoveFollowers() second pass (seg_1E0F.c:523, pass == 1)
+ *
+ * Original U6 pass 2 conditions (line 552-555):
+ * - If aFlag: move if not at target position
+ * - If !aFlag: move if target is ahead in facing direction
+ *
+ * Pass 2 uses same eager calculation but allows movement even when
+ * already contiguous, to help catch up to the party.
  */
 bool PartyPathFinder::follow_passB(uint32 p)
 {
@@ -218,24 +253,28 @@ bool PartyPathFinder::follow_passB(uint32 p)
 
     MapCoord member_loc = party->get_location(p);
     MapCoord target_loc = party->get_formation_coords(p);
-    MapCoord leader_loc = party->get_leader_location();
 
-    // Second pass: more aggressive movement, allow non-contiguous moves
+    // Direction offsets (N, NE, E, SE, S, SW, W, NW)
     static const sint8 dir_x[] = { 0, 1, 1, 1, 0, -1, -1, -1 };
     static const sint8 dir_y[] = { -1, -1, 0, 1, 1, 1, 0, -1 };
 
-    sint32 max_eager = -9999;
+    sint32 max_eager = 0;
     sint8 best_dir = -1;
     sint8 best_dx = 0, best_dy = 0;
 
     Actor *actor = get_member(p).actor;
     if(!actor) return true;
 
-    // In pass 2, we're more aggressive - try to catch up even if breaking contiguity
-    bool need_catchup = !contiguous ||
-                        (leader_moved_away(p) && !is_at_target(p));
+    Game *game = Game::get_game();
+    if(!game) return true;
+    Map *map = game->get_game_map();
+    if(!map) return true;
 
-    if(need_catchup)
+    // Pass 2: check if we need to move (original U6 pass 2 conditions)
+    // Move if not contiguous OR not at target position
+    bool need_move = !contiguous || !is_at_target(p);
+
+    if(need_move)
     {
         for(int dir = 0; dir < 8; dir++)
         {
@@ -243,26 +282,36 @@ bool PartyPathFinder::follow_passB(uint32 p)
             sint8 dy = dir_y[dir];
             MapCoord try_loc = member_loc.abs_coords(dx, dy);
 
-            ActorMoveFlags flags = ACTOR_IGNORE_MOVES;
+            // Check if move is possible - allow dangerous tiles
+            ActorMoveFlags flags = ACTOR_IGNORE_MOVES | ACTOR_IGNORE_DANGER;
             if(!actor->check_move(try_loc.x, try_loc.y, try_loc.z, flags))
                 continue;
 
-            // In pass 2, use lower base score but still allow non-contiguous
-            sint32 eager = 128;
+            // Check if this is a damaging tile
+            bool is_danger = map->is_damaging(try_loc.x, try_loc.y, try_loc.z);
 
+            sint32 eager;
+            if(is_danger)
+            {
+                // In pass 2, still skip danger tiles if currently contiguous
+                if(contiguous)
+                    continue;
+                eager = 128;
+            }
+            else
+            {
+                eager = 256;
+            }
+
+            // Contiguous bonus
             if(is_contiguous(p, try_loc))
                 eager += 256;
-            // In pass 2, don't set eager to 0 for non-contiguous - allow it
+            else if(contiguous)
+                eager = 0;  // Still don't break contiguity unnecessarily
 
-            // Prefer moves towards target
+            // Subtract manhattan distance to target
             eager -= abs((sint32)try_loc.x - (sint32)target_loc.x);
             eager -= abs((sint32)try_loc.y - (sint32)target_loc.y);
-
-            // Small bonus for getting closer to leader
-            uint32 old_dist = member_loc.distance(leader_loc);
-            uint32 new_dist = try_loc.distance(leader_loc);
-            if(new_dist < old_dist)
-                eager += 64;
 
             if(eager > max_eager)
             {
@@ -273,10 +322,10 @@ bool PartyPathFinder::follow_passB(uint32 p)
             }
         }
 
-        if(best_dir >= 0 && max_eager > 0)
+        if(best_dir >= 0)
         {
             MapCoord dest = member_loc.abs_coords(best_dx, best_dy);
-            if(actor->move(dest.x, dest.y, dest.z, ACTOR_IGNORE_MOVES))
+            if(actor->move(dest.x, dest.y, dest.z, ACTOR_IGNORE_MOVES | ACTOR_IGNORE_DANGER))
             {
                 actor->set_direction(best_dx, best_dy);
                 return true;
