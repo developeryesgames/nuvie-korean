@@ -314,7 +314,7 @@ protected:
  inline void drawTile(Tile *tile, uint16 x, uint16 y, bool toptile, bool use_tile_data=false);
  inline void drawNewTile(Tile *tile, uint16 x, uint16 y, bool toptile);
  void drawBorder();
- inline void drawTopTile(Tile *tile, uint16 x, uint16 y, bool toptile);
+ inline void drawTopTile(Tile *tile, uint16 x, uint16 y, bool toptile, bool force_draw=false);
  inline void blitTileAtScreen(Tile *tile, sint16 draw_x, sint16 draw_y);
  inline void drawTileAtWorldPixel(Tile *tile, float world_px, float world_py, bool toptile);
  inline void drawActor(Actor *actor);

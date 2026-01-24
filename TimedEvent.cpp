@@ -1,5 +1,4 @@
 #include <cassert>
-#include <set>
 #include "nuvieDefs.h"
 
 #include "Game.h"
@@ -100,9 +99,12 @@ bool TimeQueue::call_timer(uint32 now)
     TimedEvent *tevent = tq.front();
     if(tevent->defunct)
     {
-        assert(pop_timer() == tevent);
-        delete_timer(tevent);
-        return(false);
+        bool can_delete = tevent->tq_can_delete;
+        pop_timer();
+        if(can_delete) {
+            delete tevent;
+        }
+        return(false); // return false to let call_timers() exit, process rest next frame
     }
     if(tevent->time > now)
         return(false);
@@ -132,9 +134,6 @@ bool TimeQueue::call_timer(uint32 now)
 }
 
 
-// Track deleted pointers to prevent double-free
-static std::set<void*> deleted_timers;
-
 /* Delete a timer, if its can_delete flag is true. Remove from the queue first!
  */
 bool TimeQueue::delete_timer(TimedEvent *tevent)
@@ -142,12 +141,7 @@ bool TimeQueue::delete_timer(TimedEvent *tevent)
     if(tevent == NULL) {
         return false;
     }
-    // Check for double-free
-    if(deleted_timers.find(tevent) != deleted_timers.end()) {
-        return false;
-    }
     if(tevent->tq_can_delete) {
-        deleted_timers.insert(tevent);
         delete tevent;
         return true;
     }
@@ -217,7 +211,10 @@ void TimedEvent::set_time()
  * milliseconds between each step.
  */
 TimedPartyMove::TimedPartyMove(MapCoord *d, MapCoord *t, uint32 step_delay)
-                              : TimedEvent(step_delay, true)
+                              : TimedEvent(step_delay, true),
+                                map_window(NULL), party(NULL), dest(NULL), target(NULL),
+                                moves_left(0), moongate(NULL), wait_for_effect(0),
+                                actor_to_hide(NULL), falling_in(false)
 {
     init(d, t, NULL);
 }
@@ -225,27 +222,32 @@ TimedPartyMove::TimedPartyMove(MapCoord *d, MapCoord *t, uint32 step_delay)
 /* Movement through temporary moongate.
  */
 TimedPartyMove::TimedPartyMove(MapCoord *d, MapCoord *t, Obj *use_obj, uint32 step_delay)
-                              : TimedEvent(step_delay, true)
+                              : TimedEvent(step_delay, true),
+                                map_window(NULL), party(NULL), dest(NULL), target(NULL),
+                                moves_left(0), moongate(NULL), wait_for_effect(0),
+                                actor_to_hide(NULL), falling_in(false)
 {
     init(d, t, use_obj);
 }
 
 TimedPartyMove::TimedPartyMove(uint32 step_delay)
-                              : TimedEvent(step_delay, true)
+                              : TimedEvent(step_delay, true),
+                                map_window(NULL), party(NULL), dest(NULL), target(NULL),
+                                moves_left(0), moongate(NULL), wait_for_effect(0),
+                                actor_to_hide(NULL), falling_in(false)
 {
-    map_window = NULL;
-    party = NULL;
-    dest = NULL;
-    target = NULL;
-    moongate = NULL;
-    actor_to_hide = NULL;
-    moves_left = 0;
-    wait_for_effect = 0;
-    falling_in = false;
 }
 
 TimedPartyMove::~TimedPartyMove()
 {
+    // Unwatch any effects that may still be watching this object
+    // to prevent callbacks to deleted object
+    EffectManager *effect_mgr = Game::get_game()->get_effect_manager();
+    if(effect_mgr)
+    {
+        effect_mgr->unwatch_effect(this, NULL); // remove all watches for this target
+    }
+
     delete dest;
     delete target;
 }
@@ -256,13 +258,18 @@ void TimedPartyMove::init(MapCoord *d, MapCoord *t, Obj *use_obj)
 {
     map_window = Game::get_game()->get_map_window();
     party = Game::get_game()->get_party();
-    target = NULL;
-    moves_left = party->get_party_size() * 2; // step timeout
+
+    // Clear old allocations if reinitializing
+    if(dest) { delete dest; dest = NULL; }
+    if(target) { delete target; target = NULL; }
+
+    moves_left = party ? party->get_party_size() * 2 : 0; // step timeout
     wait_for_effect = 0;
     actor_to_hide = NULL;
     falling_in = false;
 
-    dest = new MapCoord(*d);
+    if(d)
+        dest = new MapCoord(*d);
     if(t)
         target = new MapCoord(*t);
     moongate = use_obj;
@@ -276,6 +283,12 @@ void TimedPartyMove::init(MapCoord *d, MapCoord *t, Obj *use_obj)
  */
 void TimedPartyMove::timed(uint32 evtime)
 {
+    if(party == NULL)
+    {
+        stop_timer();
+        return;
+    }
+
     if(wait_for_effect != 0) // ignores "falling_in"
     {
         repeat(); // repeat once more (callback() must call stop())
@@ -287,14 +300,18 @@ void TimedPartyMove::timed(uint32 evtime)
     {
         if(((falling_in == false) && move_party())
            || ((falling_in == true) && fall_in()))
+        {
             repeat(); // still moving
+        }
     }
     else // timed out, make sure nobody is walking
+    {
         for(uint32 m = 0; m < party->get_party_size(); m++)
         {
             Actor *a = party->get_actor(m);
             if(a) a->delete_pathfinder();
         }
+    }
 
     // NOTE: set by repeat() or stop()
     if(repeat_count == 0) // everyone is in position
@@ -302,6 +319,11 @@ void TimedPartyMove::timed(uint32 evtime)
         if(falling_in == false) // change location, get in formation
         {
             change_location(); // fade map, move and show party
+            if(party == NULL)
+            {
+                stop_timer();
+                return;
+            }
             party->stop_walking(true); // return control (and change viewpoint)
 
             // wait for effect or line up now; Party called unpause_user()
@@ -350,19 +372,41 @@ uint16 TimedPartyMove::callback(uint16 msg, CallBack *caller, void *data)
  */
 bool TimedPartyMove::move_party()
 {
+    if(party == NULL || map_window == NULL || dest == NULL)
+    {
+        return false;
+    }
+
     bool moving = false; // moving or waiting
     Actor *used_gate = NULL; // someone just stepped into the gate (for effect)
 
     if(actor_to_hide)
     {
-        hide_actor(actor_to_hide);
-        moving = true; // allow at least one more tick so we see last actor hide
+        // Verify actor is still valid (in party) before using
+        bool actor_valid = false;
+        for(uint32 i = 0; i < party->get_party_size(); i++)
+        {
+            if(party->get_actor(i) == actor_to_hide)
+            {
+                actor_valid = true;
+                break;
+            }
+        }
+        if(actor_valid)
+        {
+            hide_actor(actor_to_hide);
+            moving = true; // allow at least one more tick so we see last actor hide
+        }
     }
     actor_to_hide = NULL;
 
     for(uint32 a = 0; a < party->get_party_size(); a++)
     {
         Actor *person = party->get_actor(a);
+        if(person == NULL)
+        {
+            continue;
+        }
 
         if(person->is_visible())
         {
@@ -398,6 +442,7 @@ bool TimedPartyMove::move_party()
 
     if(used_gate) // wait until now (instead of in loop) so others can catch up before effect
         hide_actor(used_gate);
+
     return(moving);
 }
 
@@ -405,6 +450,9 @@ bool TimedPartyMove::move_party()
  */
 void TimedPartyMove::hide_actor(Actor *person)
 {
+    if(person == NULL || target == NULL)
+        return;
+
     EffectManager *effect_mgr = Game::get_game()->get_effect_manager();
     if(wait_for_effect != 2)
     {
@@ -423,6 +471,11 @@ void TimedPartyMove::hide_actor(Actor *person)
  */
 void TimedPartyMove::change_location()
 {
+    if(target == NULL || party == NULL || map_window == NULL)
+    {
+        return;
+    }
+
     EffectManager *effect_mgr = Game::get_game()->get_effect_manager();
     SDL_Surface *mapwindow_capture = NULL;
     if(wait_for_effect != 1)
@@ -444,11 +497,9 @@ void TimedPartyMove::change_location()
             party->move(target->x, target->y, target->z);
         party->show(); // unhide everyone
 
-        DEBUG(0, LEVEL_INFORMATIONAL, "TimedPartyMove::change_location - about to update views\n");
         ViewManager *vm = Game::get_game()->get_view_manager();
         if(vm)
             vm->update(); // we do this to update party view sun moon display if visible.
-        DEBUG(0, LEVEL_INFORMATIONAL, "TimedPartyMove::change_location - view update done\n");
 
         if(mapwindow_capture) // could check this or moongate again
         {
@@ -468,11 +519,18 @@ void TimedPartyMove::change_location()
  * Returns true if party needs to move more to get into formation. */
 bool TimedPartyMove::fall_in()
 {
+    if(party == NULL)
+    {
+        return false;
+    }
+
     bool not_in_position = false; // assume false until someone checks true
     party->follow(0, 0);
     for(uint8 p = 1; p < party->get_party_size(); p++)
     {
         Actor *follower = party->get_actor(p);
+        if(follower == NULL)
+            continue;
         MapCoord at = follower->get_location(),
                  desired = party->get_formation_coords(p);
         follower->update();
@@ -490,7 +548,7 @@ bool TimedPartyMove::fall_in()
  */
 TimedPartyMoveToVehicle::TimedPartyMoveToVehicle(MapCoord *d, Obj *obj,
                                                  uint32 step_delay)
-: TimedPartyMove(d, NULL, step_delay)
+: TimedPartyMove(d, NULL, step_delay), ship_obj(NULL)
 {
     ship_obj = obj;
 }
@@ -504,6 +562,8 @@ void TimedPartyMoveToVehicle::timed(uint32 evtime)
     for(uint32 a = 0; a < party->get_party_size(); a++)
     {
         Actor *person = party->get_actor(a);
+        if(person == NULL)
+            continue;
         MapCoord loc(person->get_location());
         // not at boat location
         if(loc != *dest)

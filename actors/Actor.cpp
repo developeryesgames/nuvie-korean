@@ -1497,9 +1497,9 @@ bool Actor::updateSchedule(uint8 hour, bool teleport)
 
  new_pos = getSchedulePos(hour);
 
- if(new_pos == sched_pos) // schedules are the same so we do nothing.
-  return false;
-
+ // Original U6 always applies schedule even if sched_pos is the same.
+ // Original code: NPCMode[si] = AI_FINDPATH (always set, triggers path finding)
+ // This ensures NPCs wake up properly and move to their scheduled location.
  sched_pos = new_pos;
 
  if(sched[sched_pos] == NULL)
@@ -1512,10 +1512,11 @@ bool Actor::updateSchedule(uint8 hour, bool teleport)
    return(false);
   }
 
+ // Always set worktype like original U6 (fixes NPC not waking up bug)
  set_worktype(sched[sched_pos]->worktype);
  if(teleport)
    move(sched[sched_pos]->x, sched[sched_pos]->y, sched[sched_pos]->z, ACTOR_FORCE_MOVE);
- return true;
+ return true; // Always return true like original U6 (always triggers path finding in U6Actor)
 }
 
 // returns the current schedule entry based on hour

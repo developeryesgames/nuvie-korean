@@ -648,7 +648,7 @@ bool Event::perform_talk(Actor *actor) {
     // always display look-string on failure
     scroll->display_string(actor_name.c_str());
     scroll->display_string("\n");
-    scroll->display_string((korean && korean->isEnabled()) ? "솔로 모드가 아님.\n" : "Not in solo mode.\n");
+    scroll->display_string((korean && korean->isEnabled()) ? "솔로 모드에서 불가.\n" : "Not in solo mode.\n");
   } else if (actor->is_sleeping() || actor->is_paralyzed() || actor->get_corpser_flag()
       || actor->get_alignment() == ACTOR_ALIGNMENT_EVIL
       || actor->get_alignment() == ACTOR_ALIGNMENT_CHAOTIC
@@ -2692,7 +2692,7 @@ bool Event::toggle_combat() {
   bool use_korean = korean && korean->isEnabled();
 
   if (!player->in_party_mode()) {
-    scroll->display_string(use_korean ? "솔로 모드가 아님.\n\n" : "Not in solo mode.\n\n");
+    scroll->display_string(use_korean ? "솔로 모드에서 불가.\n\n" : "Not in solo mode.\n\n");
     scroll->display_prompt();
   } else if (party->is_in_vehicle()) {
     display_not_aboard_vehicle();

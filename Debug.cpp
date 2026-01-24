@@ -94,6 +94,7 @@ DebugLevelType debug(const char * func, const char * file, const int line, const
 #endif
   }
   vfprintf(stderr,format,ap);
+  fflush(stderr);  // Flush immediately to catch crash location
   va_end(ap);
 
   return CurrentDebugLevel;

@@ -881,6 +881,9 @@ void InventoryWidget::drag_draw(int x, int y, int message, void* data)
 	if (coord_scale < 1) coord_scale = 1;
 	int tile_scale = screen_w / 320;  // For tile size: 1280/320=4
 	if (tile_scale < 1) tile_scale = 1;
+	// In compact_ui mode, UI is drawn at 3x
+	if (tile_scale >= 4 && Game::get_game()->is_compact_ui())
+		tile_scale = 3;
 
 	int tile_size = 16 * tile_scale;
 	int half_tile = 8 * tile_scale;

@@ -843,6 +843,13 @@ bool Party::move(uint16 dx, uint16 dy, uint8 dz)
  */
 void Party::walk(MapCoord *walkto, MapCoord *teleport, uint32 step_delay)
 {
+    // Prevent starting new walk while already walking (causes crash)
+    if(autowalk)
+    {
+        DEBUG(0, LEVEL_WARNING, "Party::walk - already walking, ignoring new walk request\n");
+        return;
+    }
+
     if(step_delay)
         new TimedPartyMove(walkto, teleport, step_delay);
     else
@@ -861,6 +868,13 @@ void Party::walk(MapCoord *walkto, MapCoord *teleport, uint32 step_delay)
  */
 void Party::walk(Obj *moongate, MapCoord *teleport, uint32 step_delay)
 {
+    // Prevent starting new walk while already walking (causes crash)
+    if(autowalk)
+    {
+        DEBUG(0, LEVEL_WARNING, "Party::walk(moongate) - already walking, ignoring new walk request\n");
+        return;
+    }
+
     MapCoord walkto(moongate->x, moongate->y, moongate->z);
     if(step_delay)
         new TimedPartyMove(&walkto, teleport, moongate, step_delay);
@@ -880,6 +894,13 @@ void Party::walk(Obj *moongate, MapCoord *teleport, uint32 step_delay)
  */
 void Party::enter_vehicle(Obj *ship_obj, uint32 step_delay)
 {
+    // Prevent starting new walk while already walking (causes crash)
+    if(autowalk)
+    {
+        DEBUG(0, LEVEL_WARNING, "Party::enter_vehicle - already walking, ignoring new walk request\n");
+        return;
+    }
+
     MapCoord walkto(ship_obj->x, ship_obj->y, ship_obj->z);
 
     dismount_from_horses();

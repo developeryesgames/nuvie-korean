@@ -1,8 +1,19 @@
-# Ultima VI Korean Localization Patch v1.0
+# Ultima VI Korean Localization Patch v1.5.1
 
 ## Nuvie Korean Translation - AI-Assisted Localization
 
 A complete Korean localization for Ultima VI: The False Prophet, powered by Nuvie engine.
+
+### v1.5.1 Changes
+
+**Bug Fixes:**
+- Fixed NPC scheduler bug where NPCs keep sleeping while being watched
+- Fixed game freeze during camping (duplicate party movement prevention)
+- Fixed multi-tile corpse (cyclops, etc.) Z-order rendering bug
+- Fixed crash when entering dungeons (TimedPartyMove memory management)
+
+**Translation:**
+- Improved some system messages
 
 ### Features
 

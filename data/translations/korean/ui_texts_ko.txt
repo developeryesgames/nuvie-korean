@@ -560,11 +560,11 @@ On Whom: |누구에게:
 Searching here, you find |수색하니  
 
 # System Messages
-Not in vehicle.\n|이동 수단에 타고 있지 않습니다.\n
+Not in vehicle.\n|탈것 안에서는 불가.\n
 Talking to yourself?\n|혼잣말인가요?\n
 Not on screen.\n|화면에 없습니다.\n
-Not in solo mode.\n|혼자 모드가 아닙니다.\n
-Not in solo mode.\n\n|혼자 모드가 아닙니다.\n\n
+Not in solo mode.\n|솔로 모드에서 불가.\n
+Not in solo mode.\n\n|솔로 모드에서 불가.\n\n
 No response\n|응답 없음\n
 Funny, no response.\n|이상하군요, 응답이 없습니다.\n
 pass.\n|통과.\n
@@ -592,8 +592,8 @@ Failed.\n\n|실패했습니다.\n\n
 \nOnly moonstones can go into the vortex cube.\n\n|\n문스톤만 소용돌이 큐브에 넣을 수 있습니다.\n\n
 \nThe spellbook already has this spell.\n\n|\n마법서에 이미 이 주문이 있습니다.\n\n
 \nOnly spells can go into the spellbook.\n\n|\n주문만 마법서에 넣을 수 있습니다.\n\n
-Not in combat mode!\n\n|전투 모드가 아닙니다!\n\n
-Not in combat mode!\n|전투 모드가 아닙니다!\n
+Not in combat mode!\n\n|전투 모드에서는 불가!\n\n
+Not in combat mode!\n|전투 모드에서는 불가!\n
 Solo mode\n\n|혼자 모드\n\n
 Party mode\n|파티 모드\n
 Not everyone is here.\n|모두 여기 있지 않습니다.\n
@@ -788,7 +788,7 @@ Can't be readied!|장착할 수 없습니다!
 \nNot now!\n|\n지금은 안됨!\n
 \nclosed!\n|\n닫힘!\n
 \nopened!\n|\n열림!\n
-\nNot in solo mode.\n|\n솔로 모드가 아님.\n
+\nNot in solo mode.\n|\n솔로 모드에서 불가.\n
 a secret door|비밀문
 \nNo effect\n|\n효과 없음\n
 \nNot usable\n|\n사용 불가\n
@@ -857,7 +857,7 @@ You're already on a horse!\n|이미 말에 타고 있습니다!\n
 \nHorse not boardable!\n|\n말에 탈 수 없습니다!\n
 \nYou feel a breeze.\n|\n바람이 느껴집니다.\n
 \nYou can see yourself!|\n자신이 보입니다!
-\n\nNot in solo mode.\n|\n\n솔로 모드가 아님.\n
+\n\nNot in solo mode.\n|\n\n솔로 모드에서 불가.\n
 \nYou must be in party mode to enter.\n\n|\n입장하려면 파티 모드여야 합니다.\n\n
 \nYou forgot the Orb of the Moons!\n|\n달의 오브를 잊었습니다!\n
 \nNo free hand to hold the torch.\n|\n횃불을 들 빈 손이 없습니다.\n

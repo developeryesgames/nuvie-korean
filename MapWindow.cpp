@@ -1600,7 +1600,7 @@ inline void MapWindow::drawObj(Obj *obj, bool draw_lowertiles, bool toptile)
    }
  }
 
- //don't show invisible objects. 
+ //don't show invisible objects.
  if(obj->status & OBJ_STATUS_INVISIBLE)
     return;
 
@@ -1681,8 +1681,19 @@ inline void MapWindow::drawTile(Tile *tile, uint16 x, uint16 y, bool toptile,
  dbl_width = tile->dbl_width;
  dbl_height = tile->dbl_height;
 
+ // Check if base tile matches current pass
+ // Extension tiles should ONLY be drawn in the same pass as base tile
+ bool base_toptile = tile->toptile;
+ bool base_matches_pass = (toptile == base_toptile);
+
  if(x < win_width && y < win_height)
    drawTopTile(use_tile_data?tile:tile_manager->get_tile(tile_num),x,y,toptile);
+
+ // Only draw extension tiles if base tile matches this pass
+ // This ensures multi-tile objects are drawn together and prevents
+ // extension tiles from being drawn in the wrong pass
+ if(!base_matches_pass)
+   return;
 
  if(dbl_width)
    {
@@ -1690,7 +1701,8 @@ inline void MapWindow::drawTile(Tile *tile, uint16 x, uint16 y, bool toptile,
     if(x > 0 && y < win_height)
       {
        tile = tile_manager->get_tile(tile_num);
-       drawTopTile(tile,x-1,y,toptile);
+       // Force draw to ignore extension tile's own toptile property
+       drawTopTile(tile,x-1,y,toptile, true);
       }
    }
 
@@ -1700,7 +1712,8 @@ inline void MapWindow::drawTile(Tile *tile, uint16 x, uint16 y, bool toptile,
     if(y > 0 && x < win_width)
       {
        tile = tile_manager->get_tile(tile_num);
-       drawTopTile(tile,x,y-1,toptile);
+       // Force draw to ignore extension tile's own toptile property
+       drawTopTile(tile,x,y-1,toptile, true);
       }
    }
 
@@ -1708,7 +1721,8 @@ inline void MapWindow::drawTile(Tile *tile, uint16 x, uint16 y, bool toptile,
    {
     tile_num--;
     tile = tile_manager->get_tile(tile_num);
-    drawTopTile(tile,x-1,y-1,toptile);
+    // Force draw to ignore extension tile's own toptile property
+    drawTopTile(tile,x-1,y-1,toptile, true);
    }
 
 }
@@ -1718,7 +1732,7 @@ inline void MapWindow::drawNewTile(Tile *tile, uint16 x, uint16 y, bool toptile)
     drawTile(tile, x,y, toptile, true);
 }
 
-inline void MapWindow::drawTopTile(Tile *tile, uint16 x, uint16 y, bool toptile)
+inline void MapWindow::drawTopTile(Tile *tile, uint16 x, uint16 y, bool toptile, bool force_draw)
 {
  uint16 tile_size = 16 * map_tile_scale;
  sint16 draw_x = area.x + (x * tile_size) - (cur_x_add * map_tile_scale);
@@ -1736,34 +1750,26 @@ inline void MapWindow::drawTopTile(Tile *tile, uint16 x, uint16 y, bool toptile)
 //    screen->blit(cursor_tile->data,8,x*16,y*16,16,16,false);
 //   }
 // FIXME: Don't use pixel offset (x_add,y_add) here, pass it via params?
- if(toptile)
-    {
-     if(tile->toptile)
-       {
-        if(map_tile_scale == 4)
-          screen->blit4x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-        else if(map_tile_scale == 3)
-          screen->blit3x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-        else if(map_tile_scale == 2)
-          screen->blit2x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-        else
-          screen->blit(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-       }
-    }
- else
-    {
-     if(!tile->toptile)
-       {
-        if(map_tile_scale == 4)
-          screen->blit4x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-        else if(map_tile_scale == 3)
-          screen->blit3x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-        else if(map_tile_scale == 2)
-          screen->blit2x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-        else
-          screen->blit(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-       }
-    }
+ bool should_draw = force_draw;
+ if(!should_draw)
+ {
+    if(toptile)
+       should_draw = tile->toptile;
+    else
+       should_draw = !tile->toptile;
+ }
+
+ if(should_draw)
+ {
+    if(map_tile_scale == 4)
+       screen->blit4x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+    else if(map_tile_scale == 3)
+       screen->blit3x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+    else if(map_tile_scale == 2)
+       screen->blit2x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+    else
+       screen->blit(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+ }
 }
 
 // Helper to blit a single tile at screen coordinates

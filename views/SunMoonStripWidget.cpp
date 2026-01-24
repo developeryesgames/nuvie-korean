@@ -109,7 +109,8 @@ void SunMoonStripWidget::display_surface_strip()
    // Only clear the strip area itself (no extra above to avoid overlapping UI)
    uint16 strip_y = area.y;
    uint16 strip_h = 16 * scale;  // Just the strip height
-   uint8 bg_color = Game::get_game()->get_palette()->get_bg_color();
+   GamePalette *palette = Game::get_game()->get_palette();
+   uint8 bg_color = palette ? palette->get_bg_color() : 0;
    screen->fill(bg_color, strip_x, strip_y, strip_w, strip_h);
  } else {
    uint16 strip_y = area.y - 4 * scale;
@@ -170,6 +171,17 @@ void SunMoonStripWidget::display_dungeon_strip()
                    font_manager->get_korean_font() && Game::get_game()->is_original_plus();
  bool compact_ui = Game::get_game()->is_compact_ui();
  int scale = use_korean ? (compact_ui ? 3 : 4) : 1;
+
+ // Clear the strip area first (fixes sun/moon strip showing when entering dungeon)
+ if(compact_ui) {
+   uint16 strip_x = area.x + 8 * scale;
+   uint16 strip_w = 144 * scale;
+   uint16 strip_y = area.y;
+   uint16 strip_h = 16 * scale;
+   GamePalette *palette = Game::get_game()->get_palette();
+   uint8 bg_color = palette ? palette->get_bg_color() : 0;
+   screen->fill(bg_color, strip_x, strip_y, strip_w, strip_h);
+ }
 
  tile = tile_manager->get_tile(372);
  if(scale >= 4)
