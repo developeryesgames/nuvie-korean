@@ -11,6 +11,7 @@ A complete Korean localization for Ultima VI: The False Prophet, powered by Nuvi
 - Fixed game freeze during camping (duplicate party movement prevention)
 - Fixed multi-tile corpse (cyclops, etc.) Z-order rendering bug
 - Fixed crash when entering dungeons (TimedPartyMove memory management)
+- Fixed party followers not following well in narrow dungeon corridors (implemented original U6 eager-based movement algorithm)
 
 **Translation:**
 - Improved some system messages

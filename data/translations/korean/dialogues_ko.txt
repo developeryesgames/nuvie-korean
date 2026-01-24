@@ -7747,16 +7747,16 @@
 185|"Yes, @food! The last thing I ate was my @belt."|"그래, @음식(food) ! 내가 마지막으로 먹은 건 내 @벨트(belt) 였어."
 185|"You already got it from me."|"이미 나한테 받아갔잖아."
 185|"You must! I'll die! Just a little bit of @food for the map?"|"제발! 난 죽을 거야! 지도를 줄 테니 @음식(food) 을 조금만이라도 줄 수 없나?"
-185|$Y shares|$Y(이)가 나눈다
+185|$Y shares|$Y(이)가 
 185|After finishing the offered meal, however, Ybarra still seemes starved.|제공된 식사를 마친 후에도, 이바라는 여전히 굶주린 것처럼 보인다.
 185|He hands you the map piece and rubs his hands, eagerly awaiting his food.|그는 당신에게 지도 조각을 건네주고는 음식을 간절히 기다리며 손을 비빈다.
 185|His last shred of hope torn away from him, the withered man leaps at you, screaming "@Food! @Food!"|마지막 희망 한 자락마저 찢겨 나간 듯, 수척한 남자가 "@음식(food)! @음식(food)!"이라고 비명을 지르며 당신에게 달려든다.
 185|It takes a few moments for the man to notice you.|사내가 당신을 알아차리는 데 몇 분의 시간이 걸린다.
 185|Suddenly, you realize that you have no food to give him!|갑자기, 당신은 그에게 줄 음식이 전혀 없다는 것을 깨닫는다!
 185|The man collapses, the last of his energy gone.|사내는 마지막 기력마저 다한 듯 쓰러진다.
-185|You share|당신은 나눈다
+185|You share|당신은 
 185|s|을
-185|some food with the pathetic man.|이 불쌍한 사내와 음식을 조금.
+185|some food with the pathetic man.|이 불쌍한 사내와 음식을 조금 나눈다.
 185|t|를
 185|u|를
 

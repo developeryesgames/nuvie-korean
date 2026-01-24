@@ -125,82 +125,168 @@ bool PartyPathFinder::leader_moved_diagonally()
            && party->prev_leader_y != leader_loc.y);
 }
 
+/* Original U6-style eager-based direction selection for narrow passages.
+ * Try all 8 directions and pick the one with highest "eager" score.
+ * eager = base_score + contiguous_bonus - manhattan_distance_to_target
+ */
 bool PartyPathFinder::follow_passA(uint32 p)
 {
     bool contiguous = is_contiguous(p);
-    bool try_again = false;
-    sint8 vec_x=0, vec_y=0; // previous direction of party leader's movement
-    sint8 rel_x=0, rel_y=0; // direction to target
 
-    get_target_dir(p, rel_x, rel_y);
-    if(contiguous)
-    {
-        if(is_at_target(p))
-            return true;
+    // If already at target and contiguous, nothing to do
+    if(contiguous && is_at_target(p))
+        return true;
 
-        // Move towards target, and see if we get to try again.
-        // If you always get an extra move, distant followers move towards the
-        // leader instead of forward. Only get an extra move if we stopped, or
-        // blocked square is in the same direction the leader moved.
-        get_last_move(vec_x, vec_y);
-        if(!leader_moved() && !try_moving_to_target(p))
-            try_again = true;
-        else if(leader_moved() && leader_moved_away(p) && !try_moving_to_target(p))
-            if(is_behind_target(p))
-                try_again = true;
-    }
-    else
-    {
-        if(!move_member(p, rel_x, rel_y))
-            try_again = true;
-    }
+    MapCoord member_loc = party->get_location(p);
+    MapCoord target_loc = party->get_formation_coords(p);
 
-    // get another move chance here
-    if(try_again)
+    // Original U6 algorithm: try all 8 directions with eager scoring
+    // Direction offsets (N, NE, E, SE, S, SW, W, NW)
+    static const sint8 dir_x[] = { 0, 1, 1, 1, 0, -1, -1, -1 };
+    static const sint8 dir_y[] = { -1, -1, 0, 1, 1, 1, 0, -1 };
+
+    sint32 max_eager = -9999;
+    sint8 best_dir = -1;
+    sint8 best_dx = 0, best_dy = 0;
+
+    Actor *actor = get_member(p).actor;
+    if(!actor) return true;
+
+    for(int dir = 0; dir < 8; dir++)
     {
-        MapCoord target_loc = party->get_formation_coords(p);
-        if(!try_all_directions(p, target_loc)) // turn towards target
+        sint8 dx = dir_x[dir];
+        sint8 dy = dir_y[dir];
+        MapCoord try_loc = member_loc.abs_coords(dx, dy);
+
+        // Check if move is possible (don't ignore danger for scoring, but move() will handle it)
+        ActorMoveFlags flags = ACTOR_IGNORE_MOVES;
+        if(!actor->check_move(try_loc.x, try_loc.y, try_loc.z, flags))
+            continue;
+
+        // Calculate eager score (based on original U6)
+        sint32 eager = 256; // base score for passable tile
+
+        // Big bonus if this move makes/keeps us contiguous
+        if(is_contiguous(p, try_loc))
+            eager += 256;
+        else if(contiguous)
+            eager = 0; // Don't break contiguity in first pass
+
+        // Subtract manhattan distance to target
+        eager -= abs((sint32)try_loc.x - (sint32)target_loc.x);
+        eager -= abs((sint32)try_loc.y - (sint32)target_loc.y);
+
+        if(eager > max_eager)
         {
-            if(contiguous)
-                return false;
-            if(!move_member(p, rel_x, rel_y, true)) // allow non-contiguous moves
-                return false;
+            max_eager = eager;
+            best_dir = dir;
+            best_dx = dx;
+            best_dy = dy;
         }
     }
-    return true;
+
+    // Make the best move if found
+    if(best_dir >= 0 && max_eager > 0)
+    {
+        MapCoord dest = member_loc.abs_coords(best_dx, best_dy);
+        if(actor->move(dest.x, dest.y, dest.z, ACTOR_IGNORE_MOVES))
+        {
+            actor->set_direction(best_dx, best_dy);
+            return true;
+        }
+    }
+
+    // Fallback: try moving towards target with original logic
+    sint8 rel_x = 0, rel_y = 0;
+    get_target_dir(p, rel_x, rel_y);
+    if(move_member(p, rel_x, rel_y, !contiguous)) // allow non-contiguous if already non-contiguous
+        return true;
+
+    return false;
 }
 
+/* Second pass with relaxed conditions - allows non-contiguous moves to catch up.
+ * Based on original U6 algorithm where pass 2 has looser constraints.
+ */
 bool PartyPathFinder::follow_passB(uint32 p)
 {
-    if(is_contiguous(p))
-    {
-        if(is_at_target(p))
-            return true;
+    bool contiguous = is_contiguous(p);
 
-        if(leader_moved_away(p)) // only move if leader walked away from us
+    // If already at target and contiguous, done
+    if(contiguous && is_at_target(p))
+        return true;
+
+    MapCoord member_loc = party->get_location(p);
+    MapCoord target_loc = party->get_formation_coords(p);
+    MapCoord leader_loc = party->get_leader_location();
+
+    // Second pass: more aggressive movement, allow non-contiguous moves
+    static const sint8 dir_x[] = { 0, 1, 1, 1, 0, -1, -1, -1 };
+    static const sint8 dir_y[] = { -1, -1, 0, 1, 1, 1, 0, -1 };
+
+    sint32 max_eager = -9999;
+    sint8 best_dir = -1;
+    sint8 best_dx = 0, best_dy = 0;
+
+    Actor *actor = get_member(p).actor;
+    if(!actor) return true;
+
+    // In pass 2, we're more aggressive - try to catch up even if breaking contiguity
+    bool need_catchup = !contiguous ||
+                        (leader_moved_away(p) && !is_at_target(p));
+
+    if(need_catchup)
+    {
+        for(int dir = 0; dir < 8; dir++)
         {
-            // move forward (direction leader moved) if target is ahead of us
-            if(leader_moved() && is_behind_target(p))
-                try_moving_forward(p);
-            if(leader_moved_diagonally()) // extra move
-                try_moving_sideways(p);
+            sint8 dx = dir_x[dir];
+            sint8 dy = dir_y[dir];
+            MapCoord try_loc = member_loc.abs_coords(dx, dy);
+
+            ActorMoveFlags flags = ACTOR_IGNORE_MOVES;
+            if(!actor->check_move(try_loc.x, try_loc.y, try_loc.z, flags))
+                continue;
+
+            // In pass 2, use lower base score but still allow non-contiguous
+            sint32 eager = 128;
+
+            if(is_contiguous(p, try_loc))
+                eager += 256;
+            // In pass 2, don't set eager to 0 for non-contiguous - allow it
+
+            // Prefer moves towards target
+            eager -= abs((sint32)try_loc.x - (sint32)target_loc.x);
+            eager -= abs((sint32)try_loc.y - (sint32)target_loc.y);
+
+            // Small bonus for getting closer to leader
+            uint32 old_dist = member_loc.distance(leader_loc);
+            uint32 new_dist = try_loc.distance(leader_loc);
+            if(new_dist < old_dist)
+                eager += 64;
+
+            if(eager > max_eager)
+            {
+                max_eager = eager;
+                best_dir = dir;
+                best_dx = dx;
+                best_dy = dy;
+            }
+        }
+
+        if(best_dir >= 0 && max_eager > 0)
+        {
+            MapCoord dest = member_loc.abs_coords(best_dx, best_dy);
+            if(actor->move(dest.x, dest.y, dest.z, ACTOR_IGNORE_MOVES))
+            {
+                actor->set_direction(best_dx, best_dy);
+                return true;
+            }
         }
     }
-    else
-    {
-        if(!try_moving_forward(p))
-        {
-            sint8 vec_x, vec_y;
-            get_forward_dir(vec_x, vec_y);
-            MapCoord member_loc = party->get_location(p);
-            MapCoord forward_loc = member_loc.abs_coords(vec_x, vec_y);
-            try_all_directions(p, forward_loc); // turn towards forward
-        }
-    }
 
-    if(!is_contiguous(p)) // critical; still not contiguous
-        if(!try_moving_to_leader(p, true))
-            return false;
+    // Still not contiguous after pass 2 - will trigger seek mode in Party::follow()
+    if(!is_contiguous(p))
+        return false;
 
     return true;
 }
