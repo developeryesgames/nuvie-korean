@@ -22,7 +22,7 @@
 20|Sleep|수면
 21|Telekinesis|염력
 22|Trap|함정
-23|Unlock Magic|마법 해제
+23|Unlock Magic|잠금 해제
 24|Untrap|함정 해제
 25|Vanish|소멸
 

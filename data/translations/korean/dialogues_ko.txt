@@ -2433,7 +2433,7 @@
 58|Sulfurous Ash|유황 재
 58|The old man hands $Y a yew staff.|노인이 $Y에게 주목 지팡이를 건네준다.
 58|U|U
-58|Unlock Magic|마법 해제
+58|Unlock Magic|잠금 해제
 58|Untrap|함정 제거
 58|Web|거미줄 생성
 58|Y|Y
@@ -3942,7 +3942,7 @@
 88|Those I also sell."|그런 것들도 내가 판다네."
 88|Trap|함정
 88|Twice they came to see,|그들이 두 번 보러 왔었지,
-88|Unlock Magic|마법 잠금 해제
+88|Unlock Magic|잠금 해제
 88|W|W
 88|What can evil be?|악이란 무엇일 수 있는가?
 88|What comes before a fall."|몰락 전에 무엇이 오는가."

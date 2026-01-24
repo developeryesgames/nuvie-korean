@@ -1856,7 +1856,7 @@
 9114|Sleep|수면
 9115|Telekinesis|염력
 9116|Trap|함정
-9117|Unlock Magic|마법 해제
+9117|Unlock Magic|잠금 해제
 9118|Untrap|함정 해제
 9119|Vanish|소멸
 # Circle 3

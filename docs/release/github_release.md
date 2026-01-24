@@ -9,6 +9,9 @@ A complete Korean localization for Ultima VI: The False Prophet, powered by Nuvi
 **Bug Fixes:**
 - Fixed party followers not following through swamps and dangerous terrain (implemented original U6 danger tile handling with eager scoring)
 
+**Translation:**
+- Fixed Unlock Magic spell name: "마법 해제" → "잠금 해제" (was same as Dispel Magic, causing confusion)
+
 ### v1.5.1 Changes
 
 **Bug Fixes:**
