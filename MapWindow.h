@@ -311,10 +311,10 @@ protected:
  void drawObjs();
  void drawObjSuperBlock(bool draw_lowertiles, bool toptile);
  inline void drawObj(Obj *obj, bool draw_lowertiles, bool toptile);
- inline void drawTile(Tile *tile, uint16 x, uint16 y, bool toptile, bool use_tile_data=false, bool skip_extension=false);
+ inline void drawTile(Tile *tile, uint16 x, uint16 y, bool toptile, bool use_tile_data=false, bool skip_extension=false, bool force_draw_extensions=false, bool force_draw_base=false);
  inline void drawNewTile(Tile *tile, uint16 x, uint16 y, bool toptile);
  void drawBorder();
- inline void drawTopTile(Tile *tile, uint16 x, uint16 y, bool toptile, bool force_draw=false);
+ inline void drawTopTile(Tile *tile, uint16 x, uint16 y, bool toptile);
  inline void blitTileAtScreen(Tile *tile, sint16 draw_x, sint16 draw_y);
  inline void drawTileAtWorldPixel(Tile *tile, float world_px, float world_py, bool toptile);
  inline void drawActor(Actor *actor);

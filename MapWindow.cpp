@@ -1646,24 +1646,31 @@ inline void MapWindow::drawObj(Obj *obj, bool draw_lowertiles, bool toptile)
       }
   }
 
-  // For multi-tile corpses, skip extension tiles in toptile pass to prevent Z-order issues
-  // (extension tiles would otherwise appear above actors standing on the corpse)
-  bool skip_ext = false;
-  if(toptile && (tile->dbl_width || tile->dbl_height) && obj_manager->is_corpse(obj))
+  // Check if this is a multi-tile corpse
+  bool is_multitile_corpse = (tile->dbl_width || tile->dbl_height) && obj_manager->is_corpse(obj);
+
+  // For multi-tile corpses in toptile pass, skip entirely (don't draw base or extensions)
+  // They should only be drawn in non-toptile (background) pass
+  if(toptile && is_multitile_corpse)
   {
-      skip_ext = true;
+      return;
   }
 
-  drawTile(tile, x, obj->y - cur_y, toptile, false, skip_ext);
+  // For multi-tile corpses, force draw all tiles regardless of toptile flag
+  // This ensures the corpse is fully visible even if some tiles have toptile=true
+  drawTile(tile, x, obj->y - cur_y, toptile, false, false, is_multitile_corpse, is_multitile_corpse);
 
 }
 
 /* The pixeldata in the passed Tile pointer will be used if use_tile_data is
  * true, otherwise the current tile is derived from tile_num. This can't be
  * used with animated tiles. It only applies to the base tile in multi-tiles.
+ * force_draw_extensions: if true, extension tiles are drawn directly (bypassing toptile check)
+ * force_draw_base: if true, base tile is drawn directly (bypassing toptile check)
  */
 inline void MapWindow::drawTile(Tile *tile, uint16 x, uint16 y, bool toptile,
-                                bool use_tile_data, bool skip_extension)
+                                bool use_tile_data, bool skip_extension, bool force_draw_extensions,
+                                bool force_draw_base)
 {
  bool dbl_width, dbl_height;
  uint16 tile_num;
@@ -1689,12 +1696,39 @@ inline void MapWindow::drawTile(Tile *tile, uint16 x, uint16 y, bool toptile,
  dbl_width = tile->dbl_width;
  dbl_height = tile->dbl_height;
 
+ // Draw base tile
  if(x < win_width && y < win_height)
-   drawTopTile(use_tile_data?tile:tile_manager->get_tile(tile_num),x,y,toptile);
+   {
+    if(force_draw_base)
+      {
+       // Force draw base tile regardless of toptile flag (used for corpses)
+       uint16 tile_size = 16 * map_tile_scale;
+       sint16 draw_x = area.x + (x * tile_size) - (cur_x_add * map_tile_scale);
+       sint16 draw_y = area.y + (y * tile_size) - (cur_y_add * map_tile_scale);
+       if(smooth_scrolling)
+         {
+          draw_x += (sint16)(scroll_offset_x * map_tile_scale);
+          draw_y += (sint16)(scroll_offset_y * map_tile_scale);
+         }
+       blitTileAtScreen(use_tile_data?tile:tile_manager->get_tile(tile_num), draw_x, draw_y);
+      }
+    else
+      {
+       drawTopTile(use_tile_data?tile:tile_manager->get_tile(tile_num),x,y,toptile);
+      }
+   }
 
- // Skip extension tiles if requested (used for corpses to prevent Z-order issues)
+ // skip_extension is used when we don't want to draw extension tiles at all
  if(skip_extension)
    return;
+
+ // Calculate smooth scroll offset for force_draw_extensions
+ sint16 smooth_x = 0, smooth_y = 0;
+ if(force_draw_extensions && smooth_scrolling)
+   {
+    smooth_x = (sint16)(scroll_offset_x * map_tile_scale);
+    smooth_y = (sint16)(scroll_offset_y * map_tile_scale);
+   }
 
  if(dbl_width)
    {
@@ -1702,8 +1736,11 @@ inline void MapWindow::drawTile(Tile *tile, uint16 x, uint16 y, bool toptile,
     if(x > 0 && y < win_height)
       {
        tile = tile_manager->get_tile(tile_num);
-       // Force draw to ignore extension tile's own toptile property
-       drawTopTile(tile,x-1,y,toptile, true);
+       if(force_draw_extensions)
+         blitTileAtScreen(tile, area.x + ((x-1) * 16 * map_tile_scale) - (cur_x_add * map_tile_scale) + smooth_x,
+                                area.y + (y * 16 * map_tile_scale) - (cur_y_add * map_tile_scale) + smooth_y);
+       else
+         drawTopTile(tile,x-1,y,toptile);
       }
    }
 
@@ -1713,8 +1750,11 @@ inline void MapWindow::drawTile(Tile *tile, uint16 x, uint16 y, bool toptile,
     if(y > 0 && x < win_width)
       {
        tile = tile_manager->get_tile(tile_num);
-       // Force draw to ignore extension tile's own toptile property
-       drawTopTile(tile,x,y-1,toptile, true);
+       if(force_draw_extensions)
+         blitTileAtScreen(tile, area.x + (x * 16 * map_tile_scale) - (cur_x_add * map_tile_scale) + smooth_x,
+                                area.y + ((y-1) * 16 * map_tile_scale) - (cur_y_add * map_tile_scale) + smooth_y);
+       else
+         drawTopTile(tile,x,y-1,toptile);
       }
    }
 
@@ -1722,8 +1762,11 @@ inline void MapWindow::drawTile(Tile *tile, uint16 x, uint16 y, bool toptile,
    {
     tile_num--;
     tile = tile_manager->get_tile(tile_num);
-    // Force draw to ignore extension tile's own toptile property
-    drawTopTile(tile,x-1,y-1,toptile, true);
+    if(force_draw_extensions)
+      blitTileAtScreen(tile, area.x + ((x-1) * 16 * map_tile_scale) - (cur_x_add * map_tile_scale) + smooth_x,
+                             area.y + ((y-1) * 16 * map_tile_scale) - (cur_y_add * map_tile_scale) + smooth_y);
+    else
+      drawTopTile(tile,x-1,y-1,toptile);
    }
 
 }
@@ -1733,7 +1776,7 @@ inline void MapWindow::drawNewTile(Tile *tile, uint16 x, uint16 y, bool toptile)
     drawTile(tile, x,y, toptile, true);
 }
 
-inline void MapWindow::drawTopTile(Tile *tile, uint16 x, uint16 y, bool toptile, bool force_draw)
+inline void MapWindow::drawTopTile(Tile *tile, uint16 x, uint16 y, bool toptile)
 {
  uint16 tile_size = 16 * map_tile_scale;
  sint16 draw_x = area.x + (x * tile_size) - (cur_x_add * map_tile_scale);
@@ -1751,26 +1794,34 @@ inline void MapWindow::drawTopTile(Tile *tile, uint16 x, uint16 y, bool toptile,
 //    screen->blit(cursor_tile->data,8,x*16,y*16,16,16,false);
 //   }
 // FIXME: Don't use pixel offset (x_add,y_add) here, pass it via params?
- bool should_draw = force_draw;
- if(!should_draw)
- {
-    if(toptile)
-       should_draw = tile->toptile;
-    else
-       should_draw = !tile->toptile;
- }
-
- if(should_draw)
- {
-    if(map_tile_scale == 4)
-       screen->blit4x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-    else if(map_tile_scale == 3)
-       screen->blit3x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-    else if(map_tile_scale == 2)
-       screen->blit2x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
-    else
-       screen->blit(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
- }
+ if(toptile)
+    {
+     if(tile->toptile)
+       {
+        if(map_tile_scale == 4)
+          screen->blit4x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+        else if(map_tile_scale == 3)
+          screen->blit3x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+        else if(map_tile_scale == 2)
+          screen->blit2x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+        else
+          screen->blit(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+       }
+    }
+ else
+    {
+     if(!tile->toptile)
+       {
+        if(map_tile_scale == 4)
+          screen->blit4x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+        else if(map_tile_scale == 3)
+          screen->blit3x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+        else if(map_tile_scale == 2)
+          screen->blit2x(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+        else
+          screen->blit(draw_x,draw_y,tile->data,8,16,16,16,tile->transparent,&clip_rect);
+       }
+    }
 }
 
 // Helper to blit a single tile at screen coordinates
