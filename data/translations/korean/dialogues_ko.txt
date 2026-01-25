@@ -2141,11 +2141,11 @@
 53|#2) $Y|#2) $Y
 53|$N turns to $Y. "It'll cost you #4 gold for the deed. Interested?"|$N이 $Y(을)를 돌아본다. "증서 가격은 #4금화라네. 관심 있나?"
 53|."|"
-53|@ships|@배(ships)
+53|@ships|@배(ships)와
 53|@skiffs."|@소형배(skiffs)를 판다네."
 53|He squints at you. "We've met, haven't we?"|그가 당신을 가늘게 뜨고 쳐다본다. "우리 만난 적 있지 않나?"
 53|Your party takes up a collection to purchase the vessel.|일행이 배를 사기 위해 돈을 모은다.
-53|and| 그리고 
+53|and|
 
 54|a man as large as the trees that surround his cottage.|오두막을 둘러싼 나무들만큼이나 거대한 체격의 사내다.
 54|"'Tis my name. Don't wear it out." He laughs resoundingly at his wit.|"내 이름이라네. 너무 불러서 닳게 하지 말라고." 그는 자신의 재치에 껄껄 웃는다.
@@ -3060,11 +3060,11 @@
 72|#2. $Y|#2. $Y
 72|$N turns to $Y. "It'll cost you #4 gold for the deed. Interested?"|$N이 $Y(을)를 돌아본다. "증서 가격은 #4금화라네. 관심 있나?"
 72|."|"
-72|@ships|@배(ships)
+72|@ships|@배(ships)와
 72|@skiffs."|@소형배(skiffs)를 판다네."
 72|He squints at you. "We've met, haven't we?"|그가 당신을 가늘게 뜨고 쳐다본다. "우리 만난 적 있지 않나?"
 72|Your party takes up a collection to purchase the vessel.|일행이 배를 사기 위해 돈을 모은다.
-72|and| 그리고 
+72|and|
 
 73|a spidery looking man with delicate hands.|섬세한 손을 가진 거미처럼 생긴 남자다.
 73|"@Ephemerides is going to build a model of the whole system."|"@에페메리데스(Ephemerides) 가 전체 시스템 모델을 만들 계획이라오."
@@ -5236,7 +5236,7 @@
 121|"Excellent!" After accepting the gold, $N hands $Y the deed.|"훌륭해!" 금화를 받은 후, $N이 $Y에게 증서를 건네준다.
 121|"Have a good one." She bows, hands on her hips.|"좋은 하루 되쇼." 그녀가 두 손을 엉덩이에 얹고 고개를 숙여 인사한다.
 121|"I have @ships for sale, but I sold you my last @skiff."|"판매용 @배(ships) 는 있지만, @소형배(skiff) 는 방금 마지막 물량을 팔아치웠소."
-121|"I sell|"나는 판다오
+121|"I sell|"나는
 121|"I sell @ships and @skiffs."|"나는 @배(ships) 와 @소형배(skiffs) 를 판다오."
 121|"I sold you my last @ship, but I still have some @skiffs left."|"마지막 @배(ship) 를 당신에게 팔아버렸구먼. 하지만 @소형배(skiffs) 는 아직 좀 남았소."
 121|"I'm out of work after selling you all my ships and skiffs."|"배랑 작은 배를 당신한테 다 팔아버려서 이제 일거리가 없구먼."
@@ -5255,9 +5255,9 @@
 121|#2. $Y|#2. $Y
 121|$N looks at $Y. "You look pretty full to me."|$N이 $Y(을)를 본다. "내가 보기엔 짐이 꽉 찬 것 같소만."
 121|$N turns to $Y, "It'll cost you #4 gold for the deed. Interested?"|$N이 $Y(을)를 보며 말한다. "증서 가격은 #4금화요. 관심 있소?"
-121|@ships and @skiffs."|@배(ships) 와 @소형배(skiffs) 를."
-121|@ships."|@배(ships) 를."
-121|@skiffs."|@소형배(skiffs) 를."
+121|@ships and @skiffs."|@배(ships)와 @소형배(skiffs)를 판다오."
+121|@ships."|@배(ships)를 판다오."
+121|@skiffs."|@소형배(skiffs)를 판다오."
 121|Your party takes up a collection for the deed.|일행이 증서를 사기 위해 돈을 모은다.
 121|^|^
 121|a strong, sinewy woman with a hard look about her.|강인하고 근육질인, 매서운 눈매의 여인이다.
@@ -6571,7 +6571,7 @@
 157|"It is on the north-eastern tip of Britannia. Look it up on a map."|"브리타니아의 북동쪽 끝에 있네. 지도에서 한번 찾아보게나."
 157|"Or unless one happens to be the @Avatar, I imagine."|"아니면 자네가 @아바타(Avatar) 라면 이야기가 다르겠지만 말이야."
 157|"That I cannot help ye with."|"그 부분은 도와줄 수가 없군."
-157|"Then surely Koronada has heard of ye. Tell him your name and he may invite ye to join the Silver Serpent @guild."|"그렇다면 분명 코라나다도 자네에 대해 들었겠군. 그에게 이름을 말하게, 그럼 그가 은빛 뱀 @길드(guild) 에 자네를 초대할지도 모르지."
+157|"Then surely Koronada has heard of ye.  Tell him your name and he may invite ye to join the Silver Serpent @guild."|"그렇다면 분명 코라나다도 자네에 대해 들었겠군. 그에게 이름을 말하게, 그럼 그가 은빛 뱀 @길드(guild) 에 자네를 초대할지도 모르지."
 157|"Then why hast thou come to Serpent's Hold?"|"그럼 왜 서펀트 홀드(Serpent's Hold)까지 온 건가?"
 157|"Well, `$Z, I am Baron de Hugh."|"그래, `$Z, 나는 드 휴(de Hugh) 남작이라네."
 157|"Well, actually, neither have I!"|"음, 사실 나도 본 적은 없네!"
@@ -8605,3 +8605,94 @@
 187|a rugged looking lady farmer.|거친 외모의 여성 농부다.
 201|a strange, glowing ball of energy.|이상하게 빛나는 에너지 구체다.
 5|"Take this key."|"이 열쇠를 받으시오."
+
+# === Auto-added entries (matching original keys) ===
+2|a ruggedly handsome man, wearing a gleaming suit of armor.\n*|빛나는 갑옷을 입은 거칠게 잘생긴 남자다.
+3|a quiet man, who almost seems to be a creature of the forest.\n*|숲의 생물처럼 보이는 조용한 남자다.
+4|"That's too heavy for you... But I'll let you have it anyway!"\n*|"자네에게는 너무 무겁구먼... 그래도 일단 자네에게 주겠네!"
+4|your old friend Iolo.\n*|당신의 오랜 친구 아이올로다.
+5|the noble ruler of Britannia.\n*|브리타니아의 고귀한 통치자다.
+8|a preoccupied man holding a ledger under one arm.\n*|한쪽 팔 아래에 장부를 끼고 있는 골똘한 표정의 남자다.
+10|"Let's try it again."\n*|"다시 해 봅시다." *
+10|a carefree fellow in a ludicrous costume.\n*|우스꽝스러운 복장을 한 태평한 사내다.
+11|a lively bard with laughter in his eyes.\n*|눈에 웃음기를 머금은 활기찬 음유시인이다.
+12|a nervous young bard.\n*|긴장한 젊은 음유시인이다.
+13|a cute little girl with short hair.\n*|짧은 머리의 귀여운 어린 소녀다.
+24|a sleepy looking young lady.\n*|졸린 표정의 젊은 아가씨다.
+30|"I get most of my gold from people who bring in nuggets to @exchange them for coins."\n*|"전 주로 금덩이를 동전으로 @교환(exchange) 하러 오는 사람들로부터 금을 얻는답니다."
+30|"I know you're very busy, saving Britannia and all that, but I hope you'll come and visit me again...\n*|"브리타니아를 구하느라 아주 바쁘시겠지만, 가끔은 저를 보러 다시 와주셨으면 좋겠어요...
+30|a sharply dressed, very voluptuous woman.\n*|단정하게 차려입은 매우 풍만한 여인이다.
+31|a slender woman wearing a leather glove on her left hand.\n*|왼손에 가죽 장갑을 낀 날씬한 여인이다.
+32|*\n"I wish it were still there, so I could invite you to come spend an evening by the @fireplace with me...|"그 오두막이 아직 거기 있었다면 좋았을 텐데요. 그랬다면 당신을 초대해서 저랑 같이 @벽난로(fireplace) 옆에서 저녁 시간을 보냈을 텐데...
+33|a freckled young lady with an enchanting smile.\n*|매혹적인 미소를 가진 주근깨 투성이 젊은 아가씨다.
+34|a busy looking man wearing a blue robe.\n*|바빠 보이는 파란 로브를 입은 남자다.
+46|Sing ho eyo he hum!"|흥겨운 노래를 부르세!
+66|a plainly dressed bard.\n*|수수하게 차려입은 음유시인이다.
+73|a spidery looking man with delicate hands.\n*|섬세한 손을 가진 거미 같은 외모의 남자다.
+84|"Yeah. Maybe you want to buy some."\n*|"그래. 어쩌면 좀 사고 싶을지도 모르겠군."
+88|Just pretend that they are eels."|그냥 뱀장어라고 생각하게나.
+88|Of constant night they pray."|끝없는 밤을 위해 그들은 기도하네.
+88|That seperates ourselves.|우리 자신을 갈라놓는 것.
+89|"Yorl gave it back to me after he was @killed.|"욜 아저씨가 아버지가 @살해당한(killed) 후에 그걸 제게 돌려주셨어요."
+92|a gentleman of slight build and refined manners.\n*|호리호리한 체격에 세련된 매너를 가진 신사다.
+93|an old farmer who looks to have has made his peace with life.\n*|인생과 화해한 것처럼 보이는 늙은 농부다.
+94|a stalwart fellow, with a look of placid concentration.\n*|차분하게 집중하는 표정의 건장한 사내다.
+106|*\n"Now you be still, they won't hurt us." She hugs her doll close.|"이제 가만히 있어, 저 사람들은 우릴 해치지 않을 거야." 그녀가 인형을 더 꽉 껴안는다.
+110|"A friend of Taynith's, are you? Here, have one on the house." He hands you an ale.\n*|"테이니스(Taynith)의 친구요? 자, 이건 서비스요." 그가 에일 맥주를 건네준다.
+110|"Don't worry, I was just kidding... Any friend of Lord British is a friend of mine."\n*|"걱정 마시오, 그냥 농담이었소... 로드 브리티시의 친구라면 누구든 나의 친구라오."
+110|"I think I've got time for a quick game of Nim..."\n*|"가벼운 님(Nim) 게임 한 판 정도는 할 시간이 있을 것 같구려..."
+110|"I'll let you play first this time."\n*|"이번엔 당신이 먼저 하게 해주겠소."
+110|"I'll play first this time."\n*|"이번엔 내가 먼저 하겠소."
+110|"I'll put your money someplace safe, in case you want to come and win it back later."\n*|"당신이 나중에 와서 다시 따고 싶을지 모르니, 당신 돈은 안전한 곳에 잘 보관해 두겠소."
+110|"I'll take #1 bead\s."\n*|"내가 구슬 #1개(을)를 가져가겠소."
+110|"That's a little steep for a friendly game. Let's just make it 50 crowns."\n*|"친선 게임치고는 판돈이 좀 크구려. 그냥 50크라운으로 합시다."
+110|"Well, maybe after you've had a few practice games."\n*|"음, 연습 게임을 몇 판 더 해보신 뒤에 하는 게 좋겠소."
+110|*\n"Would you like to @play again?"|"게임을 다시 @플레이(play)하고 싶소?"
+110|an amused looking gentleman.\n*|재미있어 보이는 신사다.
+115|"One last thing... It\nwould be an embarassment for the guild to have bodies turning up inconveniently."|"마지막으로 하나 더... 시체가 엉뚱한 곳에서 발견되는 건 길드 입장에서 아주 곤혹스러운 일이라오."
+123|a heavily scarred man with a look of agony on his face.\n*|얼굴에 고통스러운 표정을 띤 흉터투성이 남자다.
+124|a burly man, who looks a little healthier than the other patients.\n*|다른 환자들보다 조금 더 건강해 보이는 덩치 큰 남자다.
+125|an unconcious man, his face twisted with pain.\n*|고통으로 얼굴이 일그러진 의식불명의 남자다.
+127|"Greetings, $G, and welcome to the town of Cove."\n*|"반갑소, $G. 코브(Cove) 마을에 오신 걸 환영하오."
+127|a distinguished looking gentleman.\n*|품위 있어 보이는 신사다.
+130|"And if, perhaps, you've solved our riddle,"\n*|"그리고 만약, 혹시라도, 당신이 우리의 수수께끼를 풀었다면,"
+130|"If my partner said 'Go @east.' to you, then he'd have said that which is true."\n*|"내 파트너가 당신에게 '@동쪽(east) 으로 가세요.'라고 했다면, 그는 진실을 말한 거겠죠."
+130|"If my partner said you should go @east, then he would be a lying beast!"\n*|"내 파트너가 당신더러 @동쪽(east) 으로 가라고 했다면, 그는 거짓말쟁이 짐승일 거예요!"
+130|"If my partner said you should go @west, then he would be a lying pest!"\n*|"내 파트너가 당신더러 @서쪽(west) 으로 가라고 했다면, 그는 거짓말쟁이 해충일 거예요!"
+130|"Is that a @lie, or is it @true?"\n*|"그게 @거짓말(lie) 일까요, 아니면 @진실(true) 일까요?"
+130|"So soon to leave?"\n*|"벌써 가시나요?" *
+130|"Stand over here!"\n*|"이쪽에 서세요!" *
+130|"Stand over there!"\n*|"저쪽에 서세요!" *
+130|"Take three blind mice, a dish and spoon!"\n*|"세 마리 눈먼 생쥐와 접시, 그리고 숟가락을 챙기세요!"
+130|"You'd leave so soon?"\n*|"벌써 떠나시게요?"
+131|a burly barbarian warrior.\n*|덩치 큰 야만 전사다.
+133|a lively soul of a gypsy, with a bit of a wild look to him.\n*|약간 거친 눈빛을 가진 활기찬 집시 영혼이다.
+134|*\n"How could you be so mean to Kador! You go and apologize to my poor little dog this instant!"|"어떻게 카도르에게 그렇게 못되게 굴 수 있어요! 당장 우리 불쌍한 강아지한테 가서 사과하세요!"
+136|*\n"If you consult the tiles another time, perhaps they will have more to say of your @future."|"나중에 다시 패를 고른다면, 그때는 당신의 @미래(future) 에 대해 더 많은 걸 말해줄지도 몰라요."
+136|a mysterious gypsy woman wearing an ankh pendant.\n*|앙크 펜던트를 착용한 신비로운 집시 여인이다.
+137|a slightly built gypsy lad.\n*|작은 체구의 집시 소년이다.
+142|a short, barefooted crazy man.\n*|맨발의 키 작은 미치광이다.
+146|"Help yourself."\n*|"마음껏 드십시오." *
+146|a quiet, pale, almost motionless gentleman.\n*|조용하고 창백하며 거의 움직이지 않는 신사다.
+157|a commanding presence: a tall warrior in black armor.\n*|위엄 있는 존재감: 검은 갑옷을 입은 키 큰 전사다.
+163|"Broke, are you? Well, come by after I'm done with this disguise,*\nand I'll give you a loan from the royal @treasury."|"빈털터리라고? 뭐, 내가 이 변장을 끝내고 나면 들르게나."
+170|"To have been told by @Naxatilor, long ago, that the you would one day come to me, wearing the Amulet of Submission."|"오래전 @낙사틸로(Naxatilor) 로부터, 당신이 언젠가 굴복의 아뮬렛을 걸고 나를 찾아올 것이라는 말을 들은 것."
+182|a graceful, silver haired woman in robes of blue.\n*|파란 로브를 입은 우아한 은발의 여인이다.
+184|a skinny, awkward looking man, wearing boots that come up past his knees.\n*|무릎 위까지 올라오는 장화를 신은 깡마르고 어색해 보이는 남자다.
+186|a handsome warrior.\n*|잘생긴 전사다.
+187|a rugged looking lady farmer.\n*|거친 외모의 여성 농부다.
+201|a strange, glowing ball of energy.\n*|이상하게 빛나는 에너지 구체다.
+157|"Then surely Koronada has heard of ye. Tell him your name and he may invite ye to join the Silver Serpent @guild."|"그렇다면 분명 코라나다도 자네에 대해 들었겠군. 그에게 이름을 말하게, 그럼 그가 은빛 뱀 @길드(guild) 에 자네를 초대할지도 모르지."
+
+# === 누락된 번역 추가 ===
+121|"Beautiful thing, but a @jealous man he is."|"아름다운 것이지만, 그는 @질투(jealous) 가 심한 사람이라네."
+66|"It's a lively place."|"활기찬 곳이지."
+175|"To wish to hear no more about that creature."|"그 괴물에 대해서는 더 이상 듣고 싶지 않소."
+131|, but ve are at sea!|, 하지만 우린 바다 위에 있무니다!
+130|Dupre is staring at them, his jaw hanging wide open.|듀프레가 그들을 바라보며 입을 떡 벌리고 있다.
+4|Npc #1.\n*|Npc #1.\n*
+4|#1|#1
+4|#2|#2
+44|1) Arrows\n2) Bolts|1) 화살\n2) 석궁살
+146|.\n*|.\n*
+178|.\n*|.\n*

@@ -804,7 +804,7 @@ bool U6UseCode::use_container(Obj *obj, UseCodeEvent ev)
             {
             	{ KoreanTranslation *kt = game->get_korean_translation(); scroll->display_string((kt && kt->isEnabled()) ? "\n수색하니 " : "\nSearching here, you find "); }
             	bool found_objects = search_obj(obj, items.actor_ref);
-            	{ KoreanTranslation *kt = game->get_korean_translation(); scroll->display_string(found_objects ? ".\n" : ((kt && kt->isEnabled()) ? "아무것도 없음.\n" : "nothing.\n")); }
+            	{ KoreanTranslation *kt = game->get_korean_translation(); scroll->display_string(found_objects ? ((kt && kt->isEnabled()) ? "발견했다.\n" : ".\n") : ((kt && kt->isEnabled()) ? "아무것도 없음.\n" : "nothing.\n")); }
             }
         }
         return(true);

@@ -1646,7 +1646,15 @@ inline void MapWindow::drawObj(Obj *obj, bool draw_lowertiles, bool toptile)
       }
   }
 
-  drawTile(tile, x, obj->y - cur_y, toptile);
+  // For multi-tile corpses, skip extension tiles in toptile pass to prevent Z-order issues
+  // (extension tiles would otherwise appear above actors standing on the corpse)
+  bool skip_ext = false;
+  if(toptile && (tile->dbl_width || tile->dbl_height) && obj_manager->is_corpse(obj))
+  {
+      skip_ext = true;
+  }
+
+  drawTile(tile, x, obj->y - cur_y, toptile, false, skip_ext);
 
 }
 
@@ -1655,7 +1663,7 @@ inline void MapWindow::drawObj(Obj *obj, bool draw_lowertiles, bool toptile)
  * used with animated tiles. It only applies to the base tile in multi-tiles.
  */
 inline void MapWindow::drawTile(Tile *tile, uint16 x, uint16 y, bool toptile,
-                                bool use_tile_data)
+                                bool use_tile_data, bool skip_extension)
 {
  bool dbl_width, dbl_height;
  uint16 tile_num;
@@ -1681,18 +1689,11 @@ inline void MapWindow::drawTile(Tile *tile, uint16 x, uint16 y, bool toptile,
  dbl_width = tile->dbl_width;
  dbl_height = tile->dbl_height;
 
- // Check if base tile matches current pass
- // Extension tiles should ONLY be drawn in the same pass as base tile
- bool base_toptile = tile->toptile;
- bool base_matches_pass = (toptile == base_toptile);
-
  if(x < win_width && y < win_height)
    drawTopTile(use_tile_data?tile:tile_manager->get_tile(tile_num),x,y,toptile);
 
- // Only draw extension tiles if base tile matches this pass
- // This ensures multi-tile objects are drawn together and prevents
- // extension tiles from being drawn in the wrong pass
- if(!base_matches_pass)
+ // Skip extension tiles if requested (used for corpses to prevent Z-order issues)
+ if(skip_extension)
    return;
 
  if(dbl_width)

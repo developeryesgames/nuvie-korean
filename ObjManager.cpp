@@ -1557,7 +1557,7 @@ uint16 ObjManager::get_obj_tile_num(uint16 obj_num) //assume obj_num is < 1024 :
     return obj_to_tile[obj_num];
 }
 
-inline bool ObjManager::is_corpse(Obj *obj)
+bool ObjManager::is_corpse(Obj *obj)
 {
 	if(game_type == NUVIE_GAME_U6) {
 		switch(obj->obj_n) {
