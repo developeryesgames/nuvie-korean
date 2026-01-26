@@ -1439,7 +1439,7 @@
 36|Animate|생명 주입
 36|Black Pearl|흑진주
 36|C|C
-36|Clone|복제
+36|Clone|분신
 36|D|D
 36|Death Wind|죽음의 바람
 36|Detect Magic|마법 탐지
@@ -1468,7 +1468,7 @@
 36|Mass Kill|집단 학살
 36|Negate Magic|마법 무효화
 36|Nightshade|나이트쉐이드
-36|Peer|투시
+36|Peer|원시
 36|Poison Field|독 안개 장막
 36|Q|Q
 36|Reappear|재출현
@@ -2410,7 +2410,7 @@
 58|C|C
 58|Charm|매혹
 58|Confuse|혼란
-58|Conjure|창조
+58|Conjure|강령
 58|D|D
 58|Detect Trap|함정 탐지
 58|Enchant|부여
@@ -7205,23 +7205,22 @@
 173|"To wish to help you however I can."|"할 수 있는 한 당신을 돕고 싶은 것."
 173|"Yes, during the cataclysms."|"그렇다, 대재앙 동안에."
 173|#2) $Y|#2) $Y
-173|#2) $Y\n"Which of you?"|#2) $Y\n"어느 분이시죠?"
-173|$Y drinks the potion and feels|$Y(이)가 물약을 마시고 느낀다
+173|#2) $Y\n"Which of you?"|#2) $Y\n"누구인 것?"
+173|$Y drinks the potion and feels|$Y(이)가 물약을 마시고 
 173|$Y drinks the potion and feels restored!|$Y(이)가 물약을 마시고 회복됨을 느낀다!
 173|, An-bal-sil-fer."|, 안-발-실-퍼."
-173|Do|하시겠습니까
+173|Do| 
 173|The gargoyle mixes a different drink that somehow smells worse than the last.|가고일이 이전보다 왠지 냄새가 더 고약한 다른 음료를 섞는다.
 173|The gargoyle mixes strange powders into a foul-smelling brew.|가고일이 고약한 냄새가 나는 액체에 이상한 가루들을 섞는다.
 173|The gargoyle says nothing else.|가고일은 더 이상 아무 말도 하지 않는다.
 173|The gargoyle shrugs.\n\n"To assure you that it is safe and invigorating."|가고일이 어깨를 으쓱한다.\n\n"이것이 안전하고 기운을 북돋워 줄 것임을 확신시키기."
-173|You drink the potion and feel|당신은 물약을 마시고 느낀다
+173|You drink the potion and feel|당신은 물약을 마시고 
 173|You drink the potion and feel restored!|당신은 물약을 마시고 회복됨을 느낀다!
-173|deathly ill!|죽을 듯이 괴로움을!
-173|drink it?|그것을 마시겠습니까?
-173|es $Y|는 $Y
-173|lem|렘
-173|slightly dizzy.|약간의 어지러움을.
-173|you|당신은
+173|deathly ill!|죽을 것 같은 고통을 느낀다!
+173|drink it?|마시겠습니까?
+173|es $Y|$Y(이)가 그것을 
+173|slightly dizzy.|약간 어지러움을 느낀다.
+173|you|당신은 그것을 
 
 174|a young, nervous-looking gargoyle.|초조해 보이는 젊은 가고일이다.
 174|"Ah, to see you admire these boomerangs, the work of my @master."|"아, 나의 @스승(master) 의 작품인 이 부메랑들을 당신이 감탄하며 보는 것."

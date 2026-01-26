@@ -34,13 +34,13 @@
 36|Lock|잠금
 37|Mass Awaken|대량 각성
 38|Mass Sleep|대량 수면
-39|Peer|투시
+39|Peer|원시
 40|Protection|보호
 41|Repel Undead|언데드 퇴치
 
 # Circle 4 (48-57)
 48|Animate|생명 주입
-49|Conjure|소환
+49|Conjure|강령
 50|Disable|무력화
 51|Fire Field|화염 장막
 52|Great Heal|대치유
@@ -64,7 +64,7 @@
 
 # Circle 6 (80-89)
 80|Charm|매혹
-81|Clone|복제
+81|Clone|분신
 82|Confuse|혼란
 83|Flame Wind|화염 바람
 84|Hail Storm|우박 폭풍

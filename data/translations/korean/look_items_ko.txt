@@ -1867,12 +1867,12 @@
 9124|Lock|잠금
 9125|Mass Awaken|대량 각성
 9126|Mass Sleep|대량 수면
-9127|Peer|투시
+9127|Peer|원시
 9128|Protection|보호
 9129|Repel Undead|언데드 퇴치
 # Circle 4
 9130|Animate|생명 주입
-9131|Conjure|소환
+9131|Conjure|강령
 9132|Disable|무력화
 9133|Fire Field|화염 장막
 9134|Great Heal|대치유
@@ -1894,7 +1894,7 @@
 9149|X-ray|투시
 # Circle 6
 9150|Charm|매혹
-9151|Clone|복제
+9151|Clone|분신
 9152|Confuse|혼란
 9153|Flame Wind|화염 바람
 9154|Hail Storm|우박 폭풍
