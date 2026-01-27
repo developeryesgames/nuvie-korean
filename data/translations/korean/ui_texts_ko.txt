@@ -1051,9 +1051,9 @@ Covetous|코베터스
 Shame|셰임
 Hythloth|히슬로스
 GSA|GSA
-Control|컨트롤
-Passion|패션
-Diligence|딜리전스
+Control|통제
+Passion|열정
+Diligence|근면
 Tomb of Kings|왕들의 무덤
 Ant Mound|개미굴
 Swamp Cave|늪지 동굴
@@ -1065,8 +1065,10 @@ Pirate Cave|해적 동굴
 Buccaneer's Cave|해적단 동굴
 
 # Dungeon message prefixes
-dungeon |던전
-shrine of |의 사당
+dungeon |던전 
+shrine of Control|통제의 사당
+shrine of Passion|열정의 사당
+shrine of Diligence|근면의 사당
 
 # Shamino dungeon message
 Shamino says, "This is the |샤미노 : "여기는

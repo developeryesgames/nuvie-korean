@@ -323,6 +323,15 @@ void ViewManager::close_current_view()
 	current_view = NULL;
 }
 
+void ViewManager::hide_party_view()
+{
+	if(party_view)
+	{
+		party_view->Hide();
+		gui->removeWidget((GUI_Widget *)party_view);
+	}
+}
+
 void ViewManager::update()
 {
  if(current_view)

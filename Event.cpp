@@ -1889,16 +1889,10 @@ void Event::alt_code(const char *cs) {
       active_alt_code = 0;
       break;
 
-    case 777: { // spawn slime for testing
-      MapCoord loc = player->get_actor()->get_location();
-      Actor *slime = NULL;
-      bool success = Game::get_game()->get_actor_manager()->create_temp_actor(0x177, NO_OBJ_STATUS, loc.x + 1, loc.y, loc.z, ACTOR_ALIGNMENT_EVIL, ACTOR_WT_ASSAULT, &slime);
-      if (success && slime) {
-        scroll->display_string("\nSlime spawned!\n");
-      } else {
-        scroll->display_string("\nFailed to spawn slime.\n");
-      }
-      scroll->display_prompt();
+    case 777: { // play ending for testing
+      Game::get_game()->hide_all_for_cutscene();
+      Game::get_game()->get_script()->play_cutscene("/ending.lua");
+      Game::get_game()->quit();
       active_alt_code = 0;
       break;
     }

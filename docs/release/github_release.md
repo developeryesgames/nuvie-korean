@@ -1,28 +1,58 @@
-# Ultima VI Korean Localization Patch v1.5.2
+# Ultima VI Korean Localization Patch v1.5.6
 
 ## Nuvie Korean Translation - AI-Assisted Localization
 
 A complete Korean localization for Ultima VI: The False Prophet, powered by Nuvie engine.
 
+### v1.5.6 Changes
+
+**Bug Fixes:**
+- Fixed party view visible during ending sequence in compact UI mode
+
+**Translation:**
+- Fixed gargoyle statue dialogue spacing and awkward expressions
+- Fixed gargoyle shrine names (Control/Passion/Diligence)
+
+### v1.5.5 Changes
+
+**Translation:**
+- Fixed duplicate spell names:
+  - Clone → 분신 (Replicate remains 복제)
+  - Peer → 원시 (X-ray remains 투시)
+  - Conjure → 강령 (Summon remains 소환)
+- Fixed NPC 173 gargoyle healer translation
+
+### v1.5.4 Changes
+
+**Bug Fixes:**
+- Fixed fountain not rendering properly
+
+### v1.5.3 Changes
+
+**Bug Fixes:**
+- Fixed multi-tile objects (white pillars, etc.) Z-order rendering bug
+
+**Translation:**
+- Fixed missing "Found it" message when searching
+- Fixed 3 ship merchant NPC dialogues
+- Added missing translations due to whitespace differences
+
 ### v1.5.2 Changes
 
 **Bug Fixes:**
-- Fixed party followers not following through swamps and dangerous terrain (implemented original U6 danger tile handling with eager scoring)
+- Fixed party followers not following through swamps and dangerous terrain
 
 **Translation:**
-- Fixed Unlock Magic spell name: "마법 해제" → "잠금 해제" (was same as Dispel Magic, causing confusion)
+- Fixed Unlock Magic spell name: "마법 해제" → "잠금 해제"
 
 ### v1.5.1 Changes
 
 **Bug Fixes:**
 - Fixed NPC scheduler bug where NPCs keep sleeping while being watched
-- Fixed game freeze during camping (duplicate party movement prevention)
-- Fixed multi-tile corpse (cyclops, etc.) Z-order rendering bug
-- Fixed crash when entering dungeons (TimedPartyMove memory management)
-- Fixed party followers not following well in narrow dungeon corridors (implemented original U6 eager-based movement algorithm)
-
-**Translation:**
-- Improved some system messages
+- Fixed game freeze during camping
+- Fixed multi-tile corpse Z-order rendering bug
+- Fixed crash when entering dungeons
+- Fixed party followers not following well in narrow dungeon corridors
 
 ### Features
 
@@ -60,23 +90,11 @@ Edit `nuvie.cfg` to toggle Korean mode:
 </config>
 ```
 
-### Screenshots
-
-[Add screenshots here]
-
 ### Credits
 
 - **Translation**: AI-assisted (Claude) + human review
 - **Engine**: Nuvie (GPL v2)
 - **Original Game**: Origin Systems / EA
-
-### Technical Notes
-
-This project demonstrates AI-assisted game localization workflow:
-- Dialogue extraction and analysis
-- Context-aware translation with Korean particle system (을/를, 이/가, 은/는)
-- Custom font rendering for Korean characters
-- Keyword mapping system for Korean input
 
 ### License
 
@@ -91,4 +109,4 @@ This project demonstrates AI-assisted game localization workflow:
 
 ---
 
-*This localization was created in approximately 40 hours using AI-assisted translation tools.*
+*This localization was created using AI-assisted translation tools.*

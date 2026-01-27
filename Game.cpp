@@ -733,6 +733,18 @@ void Game::quit()
   game_play = false;
 }
 
+void Game::hide_all_for_cutscene()
+{
+  map_window->Hide();
+  scroll->Hide();
+  background->Hide();
+  command_bar->Hide();
+  event->close_gumps();
+  if(view_manager->get_current_view())
+      view_manager->get_current_view()->Hide();
+  view_manager->hide_party_view();
+}
+
 void Game::update_until_converse_finished()
 {
   while(converse->running())

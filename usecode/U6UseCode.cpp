@@ -967,13 +967,7 @@ bool U6UseCode::use_vortex_cube(Obj *obj, UseCodeEvent ev)
 
              //FIXME put weird swirl effect in here.
 
-             game->get_map_window()->Hide();
-             game->get_scroll()->Hide();
-             game->get_background()->Hide();
-             game->get_command_bar()->Hide();
-             game->get_event()->close_gumps();
-             if(game->get_view_manager()->get_current_view())
-                 game->get_view_manager()->get_current_view()->Hide();
+             game->hide_all_for_cutscene();
 
              game->get_script()->play_cutscene("/ending.lua");
              game->quit();
@@ -2941,8 +2935,14 @@ bool U6UseCode::enter_dungeon(Obj *obj, UseCodeEvent ev)
                 // Korean: 샤미노 : "여기는 [던전 이름/이름의 사당][이오/요]."\n\n
                 scroll->display_string(kt->getUIText("Shamino says, \"This is the ").c_str());
                 scroll->display_string(" ");  // space after "여기는"
-                scroll->display_string(kt->getUIText(prefix).c_str());
-                std::string dungeon_ko = kt->getUIText(dungeon_name);
+                // Try to get combined translation first (e.g., "shrine of Passion" -> "열정의 사당")
+                std::string combined = std::string(prefix) + dungeon_name;
+                std::string dungeon_ko = kt->getUIText(combined);
+                if (dungeon_ko == combined) {
+                    // No combined translation, try separately
+                    scroll->display_string(kt->getUIText(prefix).c_str());
+                    dungeon_ko = kt->getUIText(dungeon_name);
+                }
                 scroll->display_string(dungeon_ko.c_str());
                 scroll->display_string(KoreanTranslation::getParticle_io(dungeon_ko).c_str());
                 scroll->display_string(".\"\n\n");

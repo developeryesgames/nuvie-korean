@@ -4165,11 +4165,16 @@ The file ending.lua is used from the relevant game's script directory.
  */
 static int nscript_play_end_sequence(lua_State *L)
 {
+  Game *game = Game::get_game();
+
+  // Hide all UI elements before playing ending
+  game->hide_all_for_cutscene();
+
   get_cutscene()->moveToFront();
 
   Script::get_script()->play_cutscene("/ending.lua");
 
-  Game::get_game()->quit();
+  game->quit();
 
   return 0;
 }

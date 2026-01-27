@@ -111,6 +111,7 @@ class ViewManager
  InventoryView *get_inventory_view() { return(inventory_view); }
  PortraitView *get_portrait_view() { return(portrait_view); }
  PartyView *get_party_view() { return(party_view); }
+ void hide_party_view();
  SpellView *get_spell_view() { return(spell_view); }
  MDSkyStripWidget *get_mdSkyWidget() { return mdSkyWidget; }
 

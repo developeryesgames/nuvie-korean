@@ -266,6 +266,9 @@ class Game
 
  Book *get_book()                  { return(book); }
  KeyBinder *get_keybinder()        { return(keybinder); }
+
+ void hide_all_for_cutscene();
+
  protected:
 	void init_converse();
 	void init_converse_gump_settings();

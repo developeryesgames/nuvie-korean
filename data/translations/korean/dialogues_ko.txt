@@ -7813,7 +7813,7 @@
 189|"Contemplate what thou hast learned. Repeat after me the Mantra of Control."|"그대가 배운 것을 명상하라. 나를 따라 통제의 만트라를 읊조려라."
 189|"Control must start with the self and expand outward."|"통제는 자신으로부터 시작되어 밖으로 확장되어야 하느니라."
 189|"Control was the essence of my soul--control of self and control of others."|"통제는 내 영혼의 본질이었다--자신에 대한 통제와 타인에 대한 통제 말이다."
-189|"Farewell, Avatar."|"잘 가라, 아바타여."
+189|"Farewell, Avatar."|"가거라, 아바타여."
 189|"Fear not! I have but one @task now, and am no threat."|"두려워 마라! 나는 이제 단 하나의 @할일(task) 만을 수행할 뿐, 아무런 위협도 되지 않노라."
 189|"For what dost thou return, Avatar?"|"아바타여, 무엇을 위해 돌아왔느냐?"
 189|"I am enshrined here in eternal contemplation of the principle of @control."|"나는 @통제(control) 의 원칙을 영원히 고찰하기 위해 이곳에 안치되었노라."
@@ -7837,8 +7837,8 @@
 189|Thy deeds show a lack of|그대의 행적은 부족함을 보여주는구나,
 189|Thy deeds show a need for more|그대의 행적은 더 많은 필요성을 보여주는구나,
 189|Thy deeds show understanding of|그대의 행적은 이해를 보여주는구나,
-189|Un....|언....
-189|Un.... $0|언.... $0
+189|Un....|언(Un)....
+189|Un.... $0|언(Un).... $0 
 189|Using the four stones, you went back in time to smash his power-gem.|네 개의 돌을 사용하여, 당신은 과거로 돌아가 그의 마력 보석을 산산조각 냈다.
 189|You remember as if it were yesterday how you defeated Mondain in your first visit to Brittania.|당신은 브리타니아에 처음 방문했을 때 몬데인을 어떻게 물리쳤는지 마치 어제의 일처럼 기억한다.
 
@@ -7847,7 +7847,7 @@
 190|"But that passion knew no bounds."|"하지만 그 열정은 끝을 몰랐노라."
 190|"But thou must limit thy passion, lest balance and order be lost."|"하지만 균형과 질서를 잃지 않도록 그대의 열정을 제한해야 하느니라."
 190|"Contemplate what thou hast learned. Repeat after me the Mantra of Passion."|"그대가 배운 것을 명상하라. 나를 따라 열정의 만트라를 읊조려라."
-190|"Farewell, Avatar."|"잘 가라, 아바타여."
+190|"Farewell, Avatar."|"가거라, 아바타여."
 190|"Fear not! I have but one @task now, and am no threat."|"두려워 마라! 나는 이제 단 하나의 @할일(task) 만을 수행할 뿐, 아무런 위협도 되지 않노라."
 190|"For what dost thou return, Avatar?"|"아바타여, 무엇을 위해 돌아왔느냐?"
 190|"I am enshrined here in eternal contemplation of the principle of @passion."|"나는 @열정(passion) 의 원칙을 영원히 고찰하기 위해 이곳에 안치되었노라."
@@ -7869,8 +7869,8 @@
 190|"We meet again, Avatar."|"다시 만났구나, 아바타여."
 190|#|#
 190|I admire thy deeds and thy|나는 그대의 행적과
-190|Or....|오르....
-190|Or.... $0|오르.... $0
+190|Or....|오르(Or)....
+190|Or.... $0|오르(Or).... $0 
 190|The statue speaks!|석상이 말을 한다!
 190|Thy deeds show misguided but strong|그대의 행적은 잘못되었으나 강렬함을 보여주는구나,
 190|Thy deeds show nought but unlimited|그대의 행적은 무한함 외에는 아무것도 보여주지 않는구나,
@@ -7885,7 +7885,7 @@
 191|"Contemplate what thou hast learned. Repeat after me the Mantra of Diligence."|"그대가 배운 것을 명상하라. 나를 따라 근면의 만트라를 읊조려라."
 191|"Diligence was the essence of my soul--cold, unswerving diligence in my path of conquest."|"근면은 내 영혼의 본질이었다--정복의 길에서 보여준 차갑고 흔들림 없는 근면함 말이다."
 191|"Diligence without a goal is as worthless as a goal without diligence."|"목표 없는 근면은 근면 없는 목표만큼이나 가치가 없느니라."
-191|"Farewell, Avatar."|"잘 가라, 아바타여."
+191|"Farewell, Avatar."|"가거라, 아바타여."
 191|"Fear not! I have but one @task now, and am no threat."|"두려워 마라! 나는 이제 단 하나의 @할일(task) 만을 수행할 뿐, 아무런 위협도 되지 않노라."
 191|"For what dost thou return, Avatar?"|"아바타여, 무엇을 위해 돌아왔느냐?"
 191|"I am enshrined here in eternal contemplation of the principle of @diligence."|"나는 @근면(diligence) 의 원칙을 영원히 고찰하기 위해 이곳에 안치되었노라."
@@ -7908,8 +7908,8 @@
 191|Thy deeds show a lack of|그대의 행적은 부족함을 보여주는구나,
 191|Thy deeds show misguided|그대의 행적은 잘못 인도되었음을 보여주는구나,
 191|Thy deeds show the value of thy|그대의 행적은 가치를 보여주는구나,
-191|Us....|어스....
-191|Us.... $0|어스.... $0
+191|Us....|어스(Us)....
+191|Us.... $0|어스(Us).... $0 
 191|Using the four cards, you tricked the accursed machine into destroying itself.|네 장의 카드를 사용하여, 당신은 그 저주받은 기계가 스스로 파괴되도록 속였다.
 191|You still remember vividly how you defeated Exodus in your third visit to Brittania.|당신은 브리타니아에 세 번째 방문했을 때 엑소더스를 어떻게 물리쳤는지 여전히 생생하게 기억한다.
 
