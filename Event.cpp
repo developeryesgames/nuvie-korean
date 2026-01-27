@@ -1889,13 +1889,13 @@ void Event::alt_code(const char *cs) {
       active_alt_code = 0;
       break;
 
-    case 777: { // play ending for testing
-      Game::get_game()->hide_all_for_cutscene();
-      Game::get_game()->get_script()->play_cutscene("/ending.lua");
-      Game::get_game()->quit();
-      active_alt_code = 0;
-      break;
-    }
+    // case 777: { // play ending for testing
+    //   Game::get_game()->hide_all_for_cutscene();
+    //   Game::get_game()->get_script()->play_cutscene("/ending.lua");
+    //   Game::get_game()->quit();
+    //   active_alt_code = 0;
+    //   break;
+    // }
 
     default: // attempt to handle the altcode with lua script.
       Game::get_game()->get_script()->call_handle_alt_code(c);
