@@ -636,13 +636,29 @@ bool Actor::move(uint16 new_x, uint16 new_y, uint8 new_z, ActorMoveFlags flags)
 // Start smooth movement interpolation from one tile to another
 void Actor::start_smooth_move(uint16 from_x, uint16 from_y, uint16 to_x, uint16 to_y)
 {
+    // Don't start smooth move if start and end positions are the same
+    if(from_x == to_x && from_y == to_y)
+        return;
+
+    // If already in smooth move within same frame (same tick), just update end position
+    // This handles passA->passB case where actor moves twice in one turn
+    uint32 current_time = clock->get_ticks();
+    if(smooth_moving && current_time == smooth_move_start_time)
+    {
+        // Same frame - keep start, update end only
+        smooth_end_x = (float)(to_x * 16);
+        smooth_end_y = (float)(to_y * 16);
+        return;
+    }
+
+    // New smooth move - always start from specified position
     smooth_start_x = (float)(from_x * 16);  // 16 pixels per tile
     smooth_start_y = (float)(from_y * 16);
     smooth_end_x = (float)(to_x * 16);
     smooth_end_y = (float)(to_y * 16);
     visual_x = smooth_start_x;
     visual_y = smooth_start_y;
-    smooth_move_start_time = clock->get_ticks();
+    smooth_move_start_time = current_time;
     smooth_moving = true;
 }
 

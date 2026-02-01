@@ -528,6 +528,10 @@ void Party::follow(sint8 rel_x, sint8 rel_y)
         return;
     }
 
+    // If leader didn't move (pass action), don't move party members
+    if(rel_x == 0 && rel_y == 0)
+        return;
+
     defer_removing_dead_members = true;
 
     // set previous leader location first, just in case the leader changed
