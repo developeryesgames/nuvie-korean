@@ -323,6 +323,9 @@ MsgScroll::MsgScroll(Configuration *cfg, Font *f) : GUI_Widget(NULL, 0, 0, 0, 0)
    // At scale: multiply by scale
    area_width = scroll_width * 8 * ui_scale;  // 18 * 8 * scale
    area_height = scroll_height * 8 * ui_scale; // 10 * 8 * scale
+   // Compact UI: reduce width by 2 pixels (1x scale) to prevent text overflow
+   if(Game::get_game()->is_compact_ui())
+     area_width -= 2 * ui_scale;
    // Korean mode: x is already screen-relative (from panel_start), y includes y_off
    // Don't add x_off again, but add y_off for vertical centering
    DEBUG(0, LEVEL_INFORMATIONAL, "MsgScroll Init: x=%d, y=%d, x_off=%d, y_off=%d, final_x=%d, final_y=%d\n",
@@ -1117,10 +1120,16 @@ GUI_status MsgScroll::KeyDown(SDL_Keysym key)
                           input_buf_add_char(get_char_from_input_char());
                         break;
         case SDLK_DOWN:
-                       increase_input_char();
+                       // Disable arrow key number input in Korean mode
+                       if(!(Game::get_game()->get_font_manager() &&
+                            Game::get_game()->get_font_manager()->is_korean_enabled()))
+                         increase_input_char();
                        break;
         case SDLK_UP:
-                     decrease_input_char();
+                     // Disable arrow key number input in Korean mode
+                     if(!(Game::get_game()->get_font_manager() &&
+                          Game::get_game()->get_font_manager()->is_korean_enabled()))
+                       decrease_input_char();
                      break;
         case SDLK_LEFT :
         case SDLK_BACKSPACE :
@@ -1581,8 +1590,8 @@ void MsgScroll::Display(bool full_redraw)
      uint16 cursor_size = 8 * cursor_scale;
      // Check if cursor fits within area bounds
      bool x_ok = (cursor_draw_x + cursor_size <= area.x + area.w);
-     // For y check, use font_height instead of cursor_size since cursor sits on the text line
-     bool y_ok = (cursor_draw_y + font_height <= area.y + area.h);
+     // For y check, use cursor_size since cursor is smaller than font height
+     bool y_ok = (cursor_draw_y + cursor_size <= area.y + area.h);
      if(x_ok && y_ok)
        drawCursor(cursor_draw_x, cursor_draw_y);
    }
