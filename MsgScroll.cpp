@@ -1530,17 +1530,16 @@ void MsgScroll::Display(bool full_redraw)
   {
    if(use_korean)
    {
-     // Clear a wider area to ensure cursor and composing text are fully erased
-     // Cursor draws at: area.x + left_margin + cursor_x + text_padding + composing_width + 4 + 8 (internal offset)
-     // We need to clear from cursor_x position with enough width for both composing text and cursor
-     uint8 cursor_scale = compact_ui ? 2 : 4;
+     // Clear cursor and composing text area
+     uint8 cursor_scale = compact_ui ? 2 : 3;
      uint16 cursor_size = 8 * cursor_scale;
      uint16 text_padding = compact_ui ? 8 : 0;
-     // Clear starting from same position as cursor (with +8 internal offset)
-     uint16 clear_x = area.x + left_margin + cursor_x + text_padding + 4 + 8;
-     uint16 clear_y = area.y + cursor_y * font_height + 4;
-     // Clear width: composing area (up to 64px) + cursor_size
-     screen->fill(bg_color, clear_x, clear_y, 64 + cursor_size, cursor_size);
+     // Clear from cursor_x position (where composing text starts)
+     uint16 clear_x = area.x + left_margin + cursor_x + text_padding;
+     uint16 clear_y = area.y + cursor_y * font_height;
+     // Clear width: composing text area + cursor (use font height for full clear)
+     uint16 clear_width = korean_font->getStringWidthUTF8(composing_text.c_str(), 1) + cursor_size + 4;
+     screen->fill(bg_color, clear_x, clear_y, clear_width, font_height);
    }
    else
      clearCursor(area.x + 8 * cursor_x, area.y + cursor_y * 8);

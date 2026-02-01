@@ -104,9 +104,24 @@ bool KoreanFont::init(const std::string &bmp_path, const std::string &charmap_pa
     if (dat_file.open(dat_path))
     {
         uint32 bytes_read;
-        char_widths = dat_file.readBuf(total_chars, &bytes_read);
+        uint32 dat_size = dat_file.get_size();
+        // Read min of dat file size and total_chars to avoid buffer overrun
+        uint32 read_count = (dat_size < total_chars) ? dat_size : total_chars;
+
+        // Allocate buffer for total_chars and initialize with default width
+        char_widths = (uint8 *)malloc(total_chars);
+        memset(char_widths, cell_width, total_chars);
+
+        // Read available width data from file
+        uint8 *temp_buf = dat_file.readBuf(read_count, &bytes_read);
+        if (temp_buf && bytes_read > 0)
+        {
+            memcpy(char_widths, temp_buf, bytes_read);
+            free(temp_buf);
+        }
         dat_file.close();
-        DEBUG(0, LEVEL_INFORMATIONAL, "KoreanFont: Loaded %d width values\n", bytes_read);
+        DEBUG(0, LEVEL_INFORMATIONAL, "KoreanFont: Loaded %d width values (dat_size=%d, total_chars=%d)\n",
+              bytes_read, dat_size, total_chars);
     }
     else
     {
@@ -325,8 +340,9 @@ uint16 KoreanFont::getStringWidthUTF8(const char *str, uint8 scale)
                 char_width = (cell_width * 3) / 4;
             }
         }
-        // Add extra letter spacing (4 pixels) to match drawCharUnicode
-        width += (char_width + 4) * scale;
+        // Add extra letter spacing (2 for ASCII, 4 for Korean) - must match drawCharUnicode
+        uint16 spacing = (codepoint >= 0xAC00 && codepoint <= 0xD7A3) ? 4 : 2;
+        width += (char_width + spacing) * scale;
     }
 
     return width;
@@ -360,10 +376,32 @@ uint16 KoreanFont::drawCharUnicode(Screen *screen, uint32 codepoint, uint16 x, u
     uint16 src_x = (index % chars_per_row) * cell_width;
     uint16 src_y = (index / chars_per_row) * cell_height;
 
+    // Get character width first (needed for buffer sizing)
+    uint16 char_advance;
+    if (char_widths && index < total_chars)
+    {
+        char_advance = char_widths[index];
+    }
+    else
+    {
+        // Default spacing: 75% for Korean (24px for 32px cell), 50% for ASCII
+        if (codepoint >= 0xAC00 && codepoint <= 0xD7A3) {
+            char_advance = (cell_width * 3) / 4;
+        } else if (codepoint >= 0x20 && codepoint < 0x7F) {
+            char_advance = cell_width / 2;
+        } else {
+            char_advance = (cell_width * 3) / 4;
+        }
+    }
+
+    // Blit width: use full cell_width for rendering (character is centered in cell)
+    // but return char_advance for text positioning
+    uint16 blit_width = cell_width;
+
     // Create buffer for the character (0xff = transparent)
     // Support up to 64x64 cells (for 48x48 font and potential larger fonts)
     unsigned char buf[64 * 64];
-    memset(buf, 0xff, cell_width * cell_height);
+    memset(buf, 0xff, blit_width * cell_height);
 
     // Lock font surface to read pixels
     if (SDL_MUSTLOCK(font_surface))
@@ -377,7 +415,7 @@ uint16 KoreanFont::drawCharUnicode(Screen *screen, uint32 codepoint, uint16 x, u
 
     for (int py = 0; py < cell_height; py++)
     {
-        for (int px = 0; px < cell_width; px++)
+        for (int px = 0; px < blit_width; px++)
         {
             uint8 *pixel = src_pixels + (src_y + py) * pitch + (src_x + px) * bpp;
 
@@ -410,7 +448,7 @@ uint16 KoreanFont::drawCharUnicode(Screen *screen, uint32 codepoint, uint16 x, u
             bool is_magenta = (r > 180 && g < 60 && b > 150);
             if (!is_magenta && (r > 50 || g > 50 || b > 50))
             {
-                buf[py * cell_width + px] = color;
+                buf[py * blit_width + px] = color;
             }
             // else: leave as 0xff (transparent)
         }
@@ -419,39 +457,22 @@ uint16 KoreanFont::drawCharUnicode(Screen *screen, uint32 codepoint, uint16 x, u
     if (SDL_MUSTLOCK(font_surface))
         SDL_UnlockSurface(font_surface);
 
-    // Blit using appropriate scale function
+    // Blit using appropriate scale function with transparency
     if (scale >= 4) {
-        screen->blit4x(x, y, buf, 8, cell_width, cell_height, cell_width, true, NULL);
+        screen->blit4x(x, y, buf, 8, blit_width, cell_height, blit_width, true, NULL);
     } else if (scale == 3) {
-        screen->blit3x(x, y, buf, 8, cell_width, cell_height, cell_width, true, NULL);
+        screen->blit3x(x, y, buf, 8, blit_width, cell_height, blit_width, true, NULL);
     } else if (scale >= 2) {
-        screen->blit2x(x, y, buf, 8, cell_width, cell_height, cell_width, true);
+        screen->blit2x(x, y, buf, 8, blit_width, cell_height, blit_width, true);
     } else {
-        screen->blit(x, y, buf, 8, cell_width, cell_height, cell_width, true);
+        screen->blit(x, y, buf, 8, blit_width, cell_height, blit_width, true);
     }
 
-    // Return character width (scaled)
-    // For 32x32 font, use 75% of cell width for Korean, half for ASCII
-    uint16 width;
-    if (char_widths && index < total_chars)
-    {
-        // Use width from .dat file
-        width = char_widths[index];
-    }
-    else
-    {
-        // Default spacing: 75% for Korean (24px for 32px cell), 50% for ASCII
-        if (codepoint >= 0xAC00 && codepoint <= 0xD7A3) {
-            width = (cell_width * 3) / 4;  // Korean: 24px for 32px cell
-        } else if (codepoint >= 0x20 && codepoint < 0x7F) {
-            width = cell_width / 2;  // ASCII: 16px for 32px cell
-        } else {
-            width = (cell_width * 3) / 4;
-        }
-    }
-    // Add extra letter spacing (4 pixels)
-    width += 4;
-    return width * scale;
+    // Add extra letter spacing (2 pixels for ASCII, 4 for Korean)
+    uint16 spacing = (codepoint >= 0xAC00 && codepoint <= 0xD7A3) ? 4 : 2;
+    uint16 final_width = char_advance + spacing;
+
+    return final_width * scale;
 }
 
 bool KoreanFont::hasChar(uint32 codepoint)
