@@ -600,10 +600,16 @@ bool MsgScroll::can_fit_token_on_msgline(MsgLine *msg_line, MsgText *token)
   if(use_korean)
   {
     // Use pixel-based width calculation for Korean
+    // Use same threshold as cursor position calculation to avoid text jumping between lines
+    uint8 cursor_scale = compact_ui ? 2 : 4;
+    uint16 cursor_size = 8 * cursor_scale;
+    uint16 text_pad = compact_ui ? 8 : 0;
+    uint16 cursor_offset = text_pad + cursor_size;
+    uint16 scroll_width_px = area.w - left_margin - cursor_offset;
+
     uint16 line_width_px = msg_line->get_display_width();
     uint16 token_width_px = korean_font->getStringWidthUTF8(token->s.c_str(), 1);
-    // area.w is the actual scroll area width (scaled in Korean mode)
-    if(line_width_px + token_width_px > area.w)
+    if(line_width_px + token_width_px > scroll_width_px)
     {
       return false;
     }
@@ -703,9 +709,15 @@ bool MsgScroll::parse_token(MsgText *token)
         bool line_full = false;
         if(use_korean)
         {
-          // Korean font: 16px wide per character
+          // Use same threshold as cursor position calculation
+          uint8 cursor_scale = compact_ui ? 2 : 4;
+          uint16 cursor_size = 8 * cursor_scale;
+          uint16 text_pad = compact_ui ? 8 : 0;
+          uint16 cursor_offset = text_pad + cursor_size;
+          uint16 scroll_width_px = area.w - left_margin - cursor_offset;
+
           uint16 line_width_px = msg_line->get_display_width();
-          line_full = (line_width_px >= area.w);
+          line_full = (line_width_px >= scroll_width_px);
         }
         else
         {
