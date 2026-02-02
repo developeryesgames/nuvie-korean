@@ -580,6 +580,16 @@ void Party::follow(sint8 rel_x, sint8 rel_y)
               DEBUG(0,LEVEL_DEBUGGING,"%s is looking for %s.\n", get_actor_name(p), get_actor_name(l));
             }
             pathfinder->seek_leader(p); // enter/update seek mode
+            // Party members are excluded from ActorManager's normal update loop,
+            // so we need to explicitly call update() to execute walk_path()
+            member[p].actor->update();
+
+            // If still not contiguous after pathfinder move, try all directions as fallback
+            if(!pathfinder->is_contiguous(p))
+            {
+                MapCoord target = get_formation_coords(p);
+                pathfinder->try_all_directions(p, target);
+            }
         }
         else if(member[p].actor->get_pathfinder())
             pathfinder->end_seek(p);

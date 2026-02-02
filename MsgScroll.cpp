@@ -376,8 +376,15 @@ bool MsgScroll::init(char *player_name)
 {
  std::string prompt_string;
 
- // Player name should not be translated - it's user input
- prompt_string.append(player_name);
+ // Translate player name for Korean mode
+ std::string name_str = player_name;
+ KoreanTranslation *korean = Game::get_game()->get_korean_translation();
+ if(korean && korean->isEnabled())
+ {
+   name_str = korean->translate(name_str);
+ }
+
+ prompt_string.append(name_str);
  if(game_type==NUVIE_GAME_U6)
  {
    prompt_string.append(":\n");

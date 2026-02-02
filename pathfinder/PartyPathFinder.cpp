@@ -306,8 +306,8 @@ bool PartyPathFinder::follow_passB(uint32 p)
             // Contiguous bonus
             if(is_contiguous(p, try_loc))
                 eager += 256;
-            else if(contiguous)
-                eager = 0;  // Still don't break contiguity unnecessarily
+            else if(contiguous && is_at_target(p))
+                eager = 0;  // Only refuse to break contiguity if already at target
 
             // Subtract manhattan distance to target
             eager -= abs((sint32)try_loc.x - (sint32)target_loc.x);
@@ -462,7 +462,8 @@ bool PartyPathFinder::try_all_directions(uint32 p, MapCoord target_loc)
         for(uint32 dir=0; dir<8; dir++)
         {
             MapCoord dest = member_loc.abs_coords(to_leader_x, to_leader_y);
-            if(move_member(p, to_leader_x, to_leader_y))
+            // Use ignore_position=true to allow non-contiguous moves for separated party members
+            if(move_member(p, to_leader_x, to_leader_y, true))
                 return true;
             DirFinder::get_adjacent_dir(to_leader_x, to_leader_y, rot);
         }

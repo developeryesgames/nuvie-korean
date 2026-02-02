@@ -45,11 +45,12 @@ public:
     void get_forward_dir(sint8 &vec_x, sint8 &vec_y);
     void get_last_move(sint8 &vec_x, sint8 &vec_y);
 
+    bool try_all_directions(uint32 p, MapCoord target_loc);
+
 protected:
     bool try_moving_to_leader(uint32 p, bool ignore_position);
     bool try_moving_forward(uint32 p);
     bool try_moving_to_target(uint32 p, bool avoid_damage_tiles=false);
-    bool try_all_directions(uint32 p, MapCoord target_loc);
     bool try_moving_sideways(uint32 p);
 
     bool leader_moved_away(uint32 p);
