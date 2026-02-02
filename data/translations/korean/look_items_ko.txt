@@ -309,7 +309,7 @@
 543|floor|바닥
 544|sling|투석기
 545|club|곤봉
-546|main gauche|마인 고슈
+546|main gauche|망고슈
 547|spear|창
 548|throwing axe|투척 도끼
 549|dagger|단검

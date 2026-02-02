@@ -173,7 +173,7 @@
 딸아이|girl
 떠나|leav
 떠돌이|trav
-라이케움|lyca
+리케움|lyca
 레노라|leno
 레오나|leon
 레오돈|leod
@@ -188,7 +188,7 @@
 마님|maam
 마르타|mart
 마리사|mari
-마리아|mari
+머라이어|mari
 마법|magi
 마법사|mage
 마진시아|magi
