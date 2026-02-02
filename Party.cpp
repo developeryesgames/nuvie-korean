@@ -577,6 +577,8 @@ void Party::follow(sint8 rel_x, sint8 rel_y)
         {
             a->set_moves_left(a->get_moves_left() - 10);
             a->set_worktype(0x01); // revert to normal worktype
+            // Sync direction with leader (without changing walk animation frame)
+            a->set_direction_no_frame(leader_actor->get_direction());
         }
     }
 

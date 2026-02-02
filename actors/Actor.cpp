@@ -297,6 +297,18 @@ void Actor::set_direction(uint8 d)
 
 }
 
+// Set direction without changing walk frame (for syncing direction only)
+void Actor::set_direction_no_frame(uint8 d)
+{
+ if(is_alive() == false || is_immobile())
+	 return;
+
+ if(d < 4)
+   direction = d;
+
+ frame_n = direction * 4 + walk_frame_tbl[walk_frame];
+}
+
 /* Set direction as if moving in relative direction rel_x,rel_y. */
 void Actor::set_direction(sint16 rel_x, sint16 rel_y)
 {
