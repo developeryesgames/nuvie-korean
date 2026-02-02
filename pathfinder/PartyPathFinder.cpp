@@ -219,7 +219,7 @@ bool PartyPathFinder::follow_passA(uint32 p)
         // Use ACTOR_IGNORE_DANGER for actual move too - let the game handle damage
         if(actor->move(dest.x, dest.y, dest.z, ACTOR_IGNORE_MOVES | ACTOR_IGNORE_DANGER))
         {
-            actor->set_direction(best_dx, best_dy);
+            // Don't call set_direction here - Party::follow will call it once based on total movement
             return true;
         }
     }
@@ -327,7 +327,7 @@ bool PartyPathFinder::follow_passB(uint32 p)
             MapCoord dest = member_loc.abs_coords(best_dx, best_dy);
             if(actor->move(dest.x, dest.y, dest.z, ACTOR_IGNORE_MOVES | ACTOR_IGNORE_DANGER))
             {
-                actor->set_direction(best_dx, best_dy);
+                // Don't call set_direction here - Party::follow will call it once based on total movement
                 return true;
             }
         }
@@ -572,7 +572,7 @@ bool PartyPathFinder::move_member(uint32 member_num, sint16 relx, sint16 rely, b
     {
         if(actor->move(target.x, target.y, target.z, flags))
         {
-            actor->set_direction(relx, rely);
+            // Don't call set_direction here - Party::follow will call it once based on total movement
             return true;
         }
         if(actor->get_error()->err == ACTOR_BLOCKED_BY_ACTOR)
@@ -586,7 +586,7 @@ bool PartyPathFinder::move_member(uint32 member_num, sint16 relx, sint16 rely, b
             if(bump_member(uint32(blocking_member_num), member_num)
                && actor->move(target.x, target.y, target.z, flags|ACTOR_IGNORE_MOVES))
             {
-                actor->set_direction(relx, rely);
+                // Don't call set_direction here - Party::follow will call it once based on total movement
                 return true;
             }
         }

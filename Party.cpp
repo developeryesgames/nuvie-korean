@@ -543,6 +543,18 @@ void Party::follow(sint8 rel_x, sint8 rel_y)
     }
     prev_leader_x = WRAPPED_COORD(leader_actor->x - rel_x, leader_actor->z);
     prev_leader_y = leader_actor->y - rel_y;
+    // Save positions before movement
+    uint16 prev_x[PARTY_MAX_MEMBERS];
+    uint16 prev_y[PARTY_MAX_MEMBERS];
+    for(uint32 p = (leader+1); p < num_in_party; p++)
+    {
+        if(member[p].actor != NULL)
+        {
+            prev_x[p] = member[p].actor->x;
+            prev_y[p] = member[p].actor->y;
+        }
+    }
+
     // PASS 1: Keep actors chained together.
     for(uint32 p = (leader+1); p < num_in_party; p++)
     {
@@ -577,8 +589,11 @@ void Party::follow(sint8 rel_x, sint8 rel_y)
         {
             a->set_moves_left(a->get_moves_left() - 10);
             a->set_worktype(0x01); // revert to normal worktype
-            // Sync direction with leader (without changing walk animation frame)
-            a->set_direction_no_frame(leader_actor->get_direction());
+            // Set direction based on actual movement (prev position -> current position)
+            sint16 dx = a->x - prev_x[p];
+            sint16 dy = a->y - prev_y[p];
+            if(dx != 0 || dy != 0)
+                a->set_direction(dx, dy);
         }
     }
 
