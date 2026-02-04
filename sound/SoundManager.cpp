@@ -967,6 +967,9 @@ void SoundManager::update_map_sfx ()
   Player *p = Game::get_game ()->get_player ();
   MapWindow *mw = Game::get_game ()->get_map_window ();
 
+  DEBUG(0, LEVEL_INFORMATIONAL, "update_map_sfx: ViewableObjects=%d, SfxManager=%p, FallbackSfxManager=%p\n",
+        (int)mw->m_ViewableObjects.size(), m_SfxManager, m_FallbackSfxManager);
+
   vector < SfxIdType >currentlyActiveSounds;
   map < SfxIdType, float >volumeLevels;
 
@@ -1054,9 +1057,21 @@ void SoundManager::update_map_sfx ()
           //currentlyActiveSounds[i]->SetVolume (0);
           SoundManagerSfx sfx;
           sfx.sfx_id = currentlyActiveSounds[i];
+          DEBUG(0, LEVEL_INFORMATIONAL, "Trying to play ambient SFX: %d\n", sfx.sfx_id);
           if(m_SfxManager->playSfxLooping(sfx.sfx_id, &sfx.handle, 0))
           {
+        	  DEBUG(0, LEVEL_INFORMATIONAL, "Primary SfxManager played SFX: %d\n", sfx.sfx_id);
         	  m_ActiveSounds.push_back(sfx);//currentlyActiveSounds[i]);
+          }
+          // Try fallback manager if primary failed (for ambient sounds like fountain, fire, etc.)
+          else if(m_FallbackSfxManager && m_FallbackSfxManager->playSfxLooping(sfx.sfx_id, &sfx.handle, 0))
+          {
+        	  DEBUG(0, LEVEL_INFORMATIONAL, "Fallback SfxManager played SFX: %d\n", sfx.sfx_id);
+        	  m_ActiveSounds.push_back(sfx);
+          }
+          else
+          {
+        	  DEBUG(0, LEVEL_INFORMATIONAL, "No SfxManager could play SFX: %d (fallback=%p)\n", sfx.sfx_id, m_FallbackSfxManager);
           }
         }
     }
@@ -1230,6 +1245,7 @@ bool SoundManager::isSoundPLaying(Audio::SoundHandle handle)
 
 bool SoundManager::playSfx(uint16 sfx_id, bool async)
 {
+	DEBUG(0, LEVEL_INFORMATIONAL, "playSfx: id=%d async=%d\n", sfx_id, async);
 
 	if(m_SfxManager == NULL || audio_enabled == false || sfx_enabled == false)
 		return false;

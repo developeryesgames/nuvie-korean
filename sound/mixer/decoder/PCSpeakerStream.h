@@ -71,6 +71,7 @@ public:
 	~PCSpeakerFreqStream();
 	uint32 getLengthInMsec();
 	int readBuffer(sint16 *buffer, const int numSamples);
+	bool rewind();  // Support looping for ambient sounds
 
 protected:
 
@@ -123,6 +124,7 @@ public:
 	uint32 getLengthInMsec();
 	uint16 getNextFreqValue();
 	int readBuffer(sint16 *buffer, const int numSamples);
+	bool rewind();  // Support looping for ambient sounds
 
 protected:
 
@@ -175,5 +177,10 @@ Audio::AudioStream *makePCSpeakerAvatarDeathSfxStream(uint32 rate);
 Audio::AudioStream *makePCSpeakerKalLorSfxStream(uint32 rate);
 Audio::AudioStream *makePCSpeakerHailStoneSfxStream(uint32 rate);
 Audio::AudioStream *makePCSpeakerEarthQuakeSfxStream(uint32 rate);
+Audio::AudioStream *makePCSpeakerFountainSfxStream(uint32 rate);
+Audio::AudioStream *makePCSpeakerWaterWheelSfxStream(uint32 rate);
+Audio::AudioStream *makePCSpeakerFireSfxStream(uint32 rate);
+Audio::AudioStream *makePCSpeakerClockSfxStream(uint32 rate);
+Audio::AudioStream *makePCSpeakerProtectionFieldSfxStream(uint32 rate);
 
 #endif /* __PCSpeakerStream_h__ */

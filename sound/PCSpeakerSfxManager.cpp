@@ -30,18 +30,19 @@
 #include "PCSpeakerSfxManager.h"
 
 // Original U6 instrument frequency table (from decompiled seg_27a1.c:1533)
-// Scale frequencies for notes 0-9
+// These are Hz frequencies passed directly to OSI_sound() / SOUND_FREQ macro
+// Keys 1-9-0 play ascending scale (do-re-mi-fa-sol-la-si-do-re-mi)
 static const uint16 instrument_freq_table[10] = {
-	0x1EAB,  // 7851 - note 0
-	0x0C2C,  // 3116 - note 1
-	0x0DA9,  // 3497 - note 2
-	0x0F56,  // 3926 - note 3
-	0x103F,  // 4159 - note 4
-	0x123C,  // 4668 - note 5
-	0x1478,  // 5240 - note 6
-	0x16FA,  // 5882 - note 7
-	0x1857,  // 6231 - note 8
-	0x1B53   // 6995 - note 9
+	0x1EAB,  // 7851 Hz - note 0 (key '0', highest)
+	0x0C2C,  // 3116 Hz - note 1 (key '1', lowest)
+	0x0DA9,  // 3497 Hz - note 2 (key '2')
+	0x0F56,  // 3926 Hz - note 3 (key '3')
+	0x103F,  // 4159 Hz - note 4 (key '4')
+	0x123C,  // 4668 Hz - note 5 (key '5')
+	0x1478,  // 5240 Hz - note 6 (key '6')
+	0x16FA,  // 5882 Hz - note 7 (key '7')
+	0x1857,  // 6231 Hz - note 8 (key '8')
+	0x1B53   // 6995 Hz - note 9 (key '9')
 };
 
 
@@ -135,27 +136,50 @@ bool PCSpeakerSfxManager::playSfxLooping(SfxIdType sfx_id, Audio::SoundHandle *h
   {
     stream = makePCSpeakerEarthQuakeSfxStream(mixer->getOutputRate());
   }
+  else if(sfx_id == NUVIE_SFX_FOUNTAIN)
+  {
+    // Original: OSI_playNoise(10, 30 - (di << 2), 25000 - (di << 11))
+    DEBUG(0, LEVEL_INFORMATIONAL, "Creating fountain stream\n");
+    stream = makePCSpeakerFountainSfxStream(mixer->getOutputRate());
+    DEBUG(0, LEVEL_INFORMATIONAL, "Fountain stream created: %p\n", stream);
+  }
+  else if(sfx_id == NUVIE_SFX_WATER_WHEEL)
+  {
+    // Original: OSI_playNoise(20, 60 - (di << 2), 10000 - (di << 10))
+    stream = makePCSpeakerWaterWheelSfxStream(mixer->getOutputRate());
+  }
+  else if(sfx_id == NUVIE_SFX_FIRE)
+  {
+    // Original: OSI_sound(OSI_rand(2000, 15000))
+    stream = makePCSpeakerFireSfxStream(mixer->getOutputRate());
+  }
+  else if(sfx_id == NUVIE_SFX_CLOCK)
+  {
+    // Original: OSI_playNote(3000, 3 - (di >> 2))
+    stream = makePCSpeakerClockSfxStream(mixer->getOutputRate());
+  }
+  else if(sfx_id == NUVIE_SFX_PROTECTION_FIELD)
+  {
+    // Original: OSI_sound(OSI_rand(200, 1500 - (di << 8)))
+    stream = makePCSpeakerProtectionFieldSfxStream(mixer->getOutputRate());
+  }
   // Musical Instruments (based on original U6 decompiled code seg_2F1A.c)
-  // Using simple frequency streams since PCSpeakerStutterStream parameters
-  // don't map directly to OSI_playWavedNote behavior
+  // Table values are already Hz frequencies (not PIT counters)
+  // Keys 1-9-0 play ascending scale (3116Hz to 7851Hz)
   else if(NUVIE_SFX_IS_INSTRUMENT(sfx_id))
   {
     uint8 instrument_type = NUVIE_SFX_INSTRUMENT_TYPE(sfx_id);
     uint8 note = NUVIE_SFX_INSTRUMENT_NOTE(sfx_id);
-    uint16 counter = instrument_freq_table[note];
+    uint16 hz = instrument_freq_table[note];  // Already in Hz
 
-    // Convert PIT counter value to Hz: freq = 1193180 / counter
-    // The counter values are inverted: larger counter = lower frequency
-    uint32 hz = 1193180 / counter;
-
-    DEBUG(0, LEVEL_INFORMATIONAL, "Instrument SFX: id=%d, type=%d, note=%d, counter=%d, hz=%d\n",
-          sfx_id, instrument_type, note, counter, hz);
+    DEBUG(0, LEVEL_INFORMATIONAL, "Instrument SFX: id=%d, type=%d, note=%d, hz=%d\n",
+          sfx_id, instrument_type, note, hz);
 
     switch(instrument_type)
     {
       case NUVIE_SFX_INSTRUMENT_HARP:
         // Original: case 2: OSI_playWavedNote(di >> 1, 1, 6000, 30000, -5)
-        // Harp: lower frequency (counter >> 1 means double the counter = half freq), longer sustain
+        // Harp: half frequency for warmer tone, longer sustain
         stream = new PCSpeakerFreqStream(hz / 2, 300);
         break;
 
@@ -167,13 +191,13 @@ bool PCSpeakerSfxManager::playSfxLooping(SfxIdType sfx_id, Audio::SoundHandle *h
 
       case NUVIE_SFX_INSTRUMENT_LUTE:
         // Original: case 18: OSI_playWavedNote(di >> 1, 1, 2000, 20000, -20)
-        // Lute: warm tone, medium decay
+        // Lute: half frequency for warm tone, medium decay
         stream = new PCSpeakerFreqStream(hz / 2, 250);
         break;
 
       case NUVIE_SFX_INSTRUMENT_PANPIPES:
         // Original: case 19: OSI_playNote(di >> 2, 200)
-        // Panpipes: simple sustained tone (counter >> 2 = quarter freq)
+        // Panpipes: quarter frequency for breathy tone
         stream = new PCSpeakerFreqStream(hz / 4, 200);
         break;
 

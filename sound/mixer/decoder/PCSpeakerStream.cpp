@@ -76,6 +76,19 @@ int PCSpeakerFreqStream::readBuffer(sint16 *buffer, const int numSamples)
 	return samples;
 }
 
+bool PCSpeakerFreqStream::rewind()
+{
+	// Reset to beginning for looping ambient sounds (fire, clock, etc.)
+	total_samples_played = 0;
+	finished = false;
+
+	// Re-enable speaker for new loop iteration
+	pcspkr->SetOn();
+	if(frequency != 0)
+		pcspkr->SetFrequency(frequency);
+	return true;
+}
+
 //******** PCSpeakerSweepFreqStream
 
 PCSpeakerSweepFreqStream::PCSpeakerSweepFreqStream(uint32 start, uint32 end, uint16 d, uint16 s)
@@ -175,26 +188,53 @@ PCSpeakerRandomStream::PCSpeakerRandomStream(uint32 freq, uint16 d, uint16 s)
 {
 	rand_value = 0x7664;
 	base_val = freq;
-	/*
-	frequency = freq;
-
-	duration = d * (SPKR_OUTPUT_RATE / 1255);
-
-	pcspkr->SetFrequency(frequency);
-	pcspkr->SetOn();
-
-	total_samples_played = 0;
-	*/
+	duration = d;
+	stepping = s;
 
 	pcspkr->SetOn();
 	pcspkr->SetFrequency(getNextFreqValue());
 
 	cur_step = 0;
 	sample_pos = 0;
-	num_steps = d / s;
-	samples_per_step = s * (SPKR_OUTPUT_RATE / 20 / 800); //1255);
+
+	// Original ASM analysis:
+	// The loop generates random freq, plays for DELAY_CXAX cycles, repeats
+	// DELAY_CXAX is: CX = step value (from arg), AX = D_2FC6 >> 4 (CPU speed)
+	// The delay is extremely short - just a few CPU cycles per iteration
+	//
+	// For noise to sound like "shhh" instead of "beep", frequency must change
+	// VERY rapidly - every few samples (not every few hundred samples)
+	//
+	// For fountain: base_val=10 causes underflow -> wide freq range noise
+	// The key is rapid frequency changes to create white noise effect
+
+	if(s >= d)
+	{
+		// Noise mode (fountain, water wheel): step >= duration
+		// Original PC Speaker noise changes freq every few CPU cycles
+		// Balance between noise quality and performance
+		//
+		// 22050 Hz * 0.5 sec = 11025 samples total
+		// With samples_per_step=5, need 2200 steps
+		num_steps = 2200;  // Rapid frequency changes
+		samples_per_step = 5;  // Change freq every 5 samples (~0.2ms)
+		// Total length: 2200 * 5 = 11000 samples = ~0.5 sec
+	}
+	else
+	{
+		// Multi-step mode: generate new freq each step
+		num_steps = (s > 0) ? d / s : 1;
+		if(num_steps == 0)
+			num_steps = 1;
+		// Each step lasts approximately 'step' delay units
+		samples_per_step = (s > 0) ? (s * SPKR_OUTPUT_RATE) / 10000 : 20;
+		if(samples_per_step < 1)
+			samples_per_step = 1;
+	}
+
 	total_samples_played = 0;
-	DEBUG(0, LEVEL_DEBUGGING, "num_steps = %d samples_per_step = %d\n", num_steps, samples_per_step);
+	DEBUG(0, LEVEL_DEBUGGING, "RandomStream: base=%d d=%d s=%d num_steps=%d samples_per_step=%d\n",
+	      base_val, d, s, num_steps, samples_per_step);
 
 }
 
@@ -204,6 +244,22 @@ PCSpeakerRandomStream::~PCSpeakerRandomStream()
 
 }
 
+bool PCSpeakerRandomStream::rewind()
+{
+	// Reset to beginning for looping ambient sounds (fountain, water wheel)
+	// DON'T reset rand_value - keep it running to avoid repetitive patterns
+	cur_step = 0;
+	sample_pos = 0;
+	total_samples_played = 0;
+	finished = false;
+
+	// MUST call SetOn() to re-enable speaker after SetOff() was called
+	// This resets the PIT state and delay queue for clean looping
+	pcspkr->SetOn();
+	pcspkr->SetFrequency(getNextFreqValue());
+	return true;
+}
+
 uint32 PCSpeakerRandomStream::getLengthInMsec()
 {
 	return (uint32)((num_steps * samples_per_step) / (getRate()/1000.0f));
@@ -211,31 +267,52 @@ uint32 PCSpeakerRandomStream::getLengthInMsec()
 
 uint16 PCSpeakerRandomStream::getNextFreqValue()
 {
+	// Update random value using original U6 PRNG algorithm
 	rand_value += 0x9248;
-	rand_value = rand_value & 0xffff; //clamp_max(rand_value, 65535);
+	rand_value = rand_value & 0xffff;
 	uint16 bits = rand_value & 0x7;
-	rand_value = (rand_value >> 3) + (bits << 13); //rotate rand_value right (ror) by 3 bits
+	rand_value = (rand_value >> 3) + (bits << 13); // rotate right by 3 bits
 	rand_value = rand_value ^ 0x9248;
 	rand_value += 0x11;
-	rand_value = rand_value & 0xffff; //clamp_max(rand_value, 65535);
+	rand_value = rand_value & 0xffff;
 
-	uint16 freq = base_val - 0x64 + 1;
+	// Original U6 algorithm exactly as in SOUND4.ASM:
+	// range = base_val - 100 + 1 (with 16-bit unsigned arithmetic)
+	// pit_counter = rand_value % range + 100
+	// When base_val < 100, underflow creates large range -> wide freq spread
+	uint16 range = (uint16)(base_val - 0x64 + 1);
+	if(range == 0) range = 1;
+
 	uint16 tmp = rand_value;
-	freq = tmp - floor(tmp / freq) * freq;
-	freq += 0x64;
+	uint16 pit_counter = tmp - (tmp / range) * range;  // tmp % range
+	pit_counter += 0x64;  // Add 100
 
-	return freq;
+	// Clamp pit_counter to valid range
+	if(pit_counter < 19)  // Below 19 would be > 62kHz (inaudible and problematic)
+		pit_counter = 19;
+
+	// DOSBox style: Set PIT divisor directly instead of converting to Hz
+	// This is more accurate as it preserves the exact PIT timing behavior
+	pcspkr->SetPITDivisor(pit_counter);
+
+	// Return Hz for compatibility with legacy code paths
+	uint32 hz = 1193182 / pit_counter;
+	return (uint16)hz;
 }
 
 int PCSpeakerRandomStream::readBuffer(sint16 *buffer, const int numSamples)
 {
 	uint32 samples = (uint32)numSamples;
 	uint32 s = 0;
-	//if(total_samples_played >= duration)
-	//	return 0;
 
-	//if(total_samples_played + samples > duration)
-	//	samples = duration - total_samples_played;
+	// Debug: log first call info
+	static int call_count = 0;
+	if(call_count < 3)
+	{
+		DEBUG(0, LEVEL_DEBUGGING, "readBuffer: numSamples=%d cur_step=%d num_steps=%d samples_per_step=%d\n",
+		      numSamples, cur_step, num_steps, samples_per_step);
+		call_count++;
+	}
 
 	for(uint32 i=0;i < samples && cur_step <= num_steps;)
 	{
@@ -246,11 +323,18 @@ int PCSpeakerRandomStream::readBuffer(sint16 *buffer, const int numSamples)
 		pcspkr->PCSPEAKER_CallBack(&buffer[i], n);
 		sample_pos += n;
 		i += n;
-//		DEBUG(0, LEVEL_DEBUGGING, "n = %d\n", n);
+
 		if(sample_pos >= samples_per_step)
 		{
-			//DEBUG(0, LEVEL_DEBUGGING, "samples_per_step = %d period = %d\n", samples_per_step, period);
-			pcspkr->SetFrequency(getNextFreqValue());
+			uint16 freq = getNextFreqValue();
+			// Debug: log frequency changes (first few only)
+			static int freq_log_count = 0;
+			if(freq_log_count < 5)
+			{
+				DEBUG(0, LEVEL_DEBUGGING, "SetFrequency: %d Hz\n", freq);
+				freq_log_count++;
+			}
+			pcspkr->SetFrequency(freq);
 			sample_pos = 0;
 			cur_step++;
 		}
@@ -261,9 +345,9 @@ int PCSpeakerRandomStream::readBuffer(sint16 *buffer, const int numSamples)
 
 	total_samples_played += s;
 
-	if(cur_step >= num_steps) //total_samples_played >= duration)
+	if(cur_step >= num_steps)
 	{
-		DEBUG(0, LEVEL_DEBUGGING, "total_samples_played = %d\n", total_samples_played);
+		DEBUG(0, LEVEL_DEBUGGING, "Finished: total_samples_played = %d\n", total_samples_played);
 		finished = true;
 		pcspkr->SetOff();
 	}
@@ -288,6 +372,7 @@ PCSpeakerStutterStream::PCSpeakerStutterStream(sint16 a0, uint16 a2, uint16 a4, 
 	pcspkr->SetFrequency(22096);
 
 	delay = (SPKR_OUTPUT_RATE / 22050) * arg_6; //FIXME this needs to be refined.
+	if(delay < 1) delay = 1;  // Prevent zero delay issues
 	delay_remaining = 0;
 
 	//samples_per_step = s * (SPKR_OUTPUT_RATE / 20 / 800); //1255);
@@ -364,7 +449,8 @@ int PCSpeakerStutterStream::readBuffer(sint16 *buffer, const int numSamples)
 
 Audio::AudioStream *makePCSpeakerSlugDissolveSfxStream(uint32 rate)
 {
-	Audio::QueuingAudioStream *stream = Audio::makeQueuingAudioStream(rate, false);
+	// Always use SPKR_OUTPUT_RATE for queuing stream to match PCSpeakerStream::getRate()
+	Audio::QueuingAudioStream *stream = Audio::makeQueuingAudioStream(SPKR_OUTPUT_RATE, false);
 	for(uint16 i=0;i<20;i++)
 	{
 		stream->queueAudioStream(new PCSpeakerRandomStream((NUVIE_RAND() % 0x1068) + 0x258, 0x15e, 1), DisposeAfterUse::YES);
@@ -375,7 +461,7 @@ Audio::AudioStream *makePCSpeakerSlugDissolveSfxStream(uint32 rate)
 
 Audio::AudioStream *makePCSpeakerGlassSfxStream(uint32 rate)
 {
-	Audio::QueuingAudioStream *stream = Audio::makeQueuingAudioStream(rate, false);
+	Audio::QueuingAudioStream *stream = Audio::makeQueuingAudioStream(SPKR_OUTPUT_RATE, false);
 	for(uint16 i=0x7d0;i<0x4e20;i+=0x3e8)
 	{
 		stream->queueAudioStream(new PCSpeakerRandomStream(i,0x78, 0x28), DisposeAfterUse::YES);
@@ -396,7 +482,7 @@ Audio::AudioStream *makePCSpeakerMagicCastingP1SfxStream(uint32 rate, uint8 magi
 
 Audio::AudioStream *makePCSpeakerMagicCastingP2SfxStream(uint32 rate, uint8 magic_circle)
 {
-	Audio::QueuingAudioStream *stream = Audio::makeQueuingAudioStream(rate, false);
+	Audio::QueuingAudioStream *stream = Audio::makeQueuingAudioStream(SPKR_OUTPUT_RATE, false);
 
 	const sint16 word_30188[] = {3, 2, 2, 2, 1, 1, 1, 1, 1};
 
@@ -415,7 +501,7 @@ Audio::AudioStream *makePCSpeakerAvatarDeathSfxStream(uint32 rate)
 {
 	const uint16 avatar_death_tune[] = {0x12C, 0x119, 0x12C, 0xFA, 0x119, 0xDE, 0xFA, 0xFA};
 
-	Audio::QueuingAudioStream *stream = Audio::makeQueuingAudioStream(rate, false);
+	Audio::QueuingAudioStream *stream = Audio::makeQueuingAudioStream(SPKR_OUTPUT_RATE, false);
 	for(uint8 i=0;i<8;i++)
 	{
 		stream->queueAudioStream(new PCSpeakerStutterStream(3, 1, 0x4e20, 1, avatar_death_tune[i]));
@@ -426,7 +512,7 @@ Audio::AudioStream *makePCSpeakerAvatarDeathSfxStream(uint32 rate)
 
 Audio::AudioStream *makePCSpeakerKalLorSfxStream(uint32 rate)
 {
-	Audio::QueuingAudioStream *stream = Audio::makeQueuingAudioStream(rate, false);
+	Audio::QueuingAudioStream *stream = Audio::makeQueuingAudioStream(SPKR_OUTPUT_RATE, false);
 	for(uint8 i=0;i<0x32;i++)
 	{
 		stream->queueAudioStream(new PCSpeakerStutterStream((0x32 - i) << 2, 0x2710 - (i << 6), 0x3e8, 1, (i << 4) + 0x320));
@@ -440,7 +526,7 @@ Audio::AudioStream *makePCSpeakerKalLorSfxStream(uint32 rate)
 Audio::AudioStream *makePCSpeakerHailStoneSfxStream(uint32 rate)
 {
 	//FIXME This doesn't sound right. It should probably use a single pcspkr object. The original also plays the hailstones individually not all at once like we do. :(
-	Audio::QueuingAudioStream *stream = Audio::makeQueuingAudioStream(rate, false);
+	Audio::QueuingAudioStream *stream = Audio::makeQueuingAudioStream(SPKR_OUTPUT_RATE, false);
 
 	for(uint16 i=0;i<0x28;i++)
 	{
@@ -463,7 +549,7 @@ Audio::AudioStream *makePCSpeakerHailStoneSfxStream(uint32 rate)
 
 Audio::AudioStream *makePCSpeakerEarthQuakeSfxStream(uint32 rate)
 {
-  Audio::QueuingAudioStream *stream = Audio::makeQueuingAudioStream(rate, false);
+  Audio::QueuingAudioStream *stream = Audio::makeQueuingAudioStream(SPKR_OUTPUT_RATE, false);
 
   for(uint16 i=0;i<0x28;i++)
   {
@@ -471,4 +557,78 @@ Audio::AudioStream *makePCSpeakerEarthQuakeSfxStream(uint32 rate)
   }
 
   return stream;
+}
+
+// Fountain sound based on original U6:
+// OSI_playNoise(10, 30 - (di << 2), 25000 - (di << 11))
+// OSI_playNoise(max_freq, duration, step) - based on ASM analysis:
+//   [BP+06] = max_freq (1st arg) = 10
+//   [BP+08] = duration (2nd arg) = 30 - (di << 2)
+//   [BP+0Ah] = step (3rd arg) = 25000 - (di << 11)
+// With di=0: max_freq=10, duration=30, step=25000
+// base_val=10 < 100 causes underflow -> wide frequency noise (characteristic sound)
+Audio::AudioStream *makePCSpeakerFountainSfxStream(uint32 rate)
+{
+  // Original: OSI_playNoise(10, 30, 25000)
+  // base_val=10 triggers underflow handling in getNextFreqValue() for water sound
+  return new PCSpeakerRandomStream(10, 30, 25000);
+}
+
+// Water wheel sound based on original U6:
+// OSI_playNoise(20, 60 - (di << 2), 10000 - (di << 10))
+// With di=0: max_freq=20, duration=60, step=10000
+// base_val=20 < 100 causes underflow -> wide frequency noise
+Audio::AudioStream *makePCSpeakerWaterWheelSfxStream(uint32 rate)
+{
+  // Original: OSI_playNoise(20, 60, 10000)
+  // base_val=20 triggers underflow handling in getNextFreqValue() for water sound
+  return new PCSpeakerRandomStream(20, 60, 10000);
+}
+
+// Fire/fireplace sound based on original U6:
+// case OBJ_0A4: case OBJ_0C9: case OBJ_130: case OBJ_13D: /*Fire*/
+//   if(OSI_rand(0, 3) == 0) {
+//     for(bp_02 = 0; bp_02 < 5; bp_02++) {
+//       if(OSI_rand(0, di + 7) == 0)
+//         OSI_sound(OSI_rand(2000, 15000));  // PIT counter 2000-15000
+//       else
+//         OSI_nosound();
+//       OSI_sDelay(8, 1);
+//     }
+//   }
+Audio::AudioStream *makePCSpeakerFireSfxStream(uint32 rate)
+{
+  // Fire crackle: use RandomStream with low frequency range for crackling
+  // Similar to fountain but with different parameters
+  // base_val > 100 so no underflow, creates lower frequency range
+  return new PCSpeakerRandomStream(5000, 100, 50);  // Lower freq, sparse crackles
+}
+
+// Clock sound based on original U6:
+// Short tick sound - clock ticks are handled by game timing, not looping
+Audio::AudioStream *makePCSpeakerClockSfxStream(uint32 rate)
+{
+  // Clock tick: PIT counter 3000 -> Hz = 1193180 / 3000 = 398 Hz
+  // Just a short tick - game will call this periodically
+  uint16 hz = 1193180 / 3000;  // 398 Hz
+  return new PCSpeakerFreqStream(hz, 50);  // Short tick sound
+}
+
+// Protection field sound based on original U6:
+// if(OSI_rand(0, 1) == 0) {
+//   for(bp_02 = 0; bp_02 < 80; bp_02++) {
+//     if(OSI_rand(0, 15) == 0)
+//       OSI_sound(OSI_rand(200, 1500 - (di << 8)));  // PIT 200-1500
+//     else
+//       OSI_nosound();
+//     OSI_sDelay(8, 1);
+//   }
+// }
+Audio::AudioStream *makePCSpeakerProtectionFieldSfxStream(uint32 rate)
+{
+  // Simplified protection field: high-pitched buzz
+  // PIT counter range 200-1500 -> Hz range 795-5966
+  uint16 pit_counter = (NUVIE_RAND() % 1301) + 200;
+  uint16 hz = 1193180 / pit_counter;
+  return new PCSpeakerFreqStream(hz, 8);
 }

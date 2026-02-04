@@ -95,13 +95,17 @@ bool CustomSfxManager::playSfxLooping(SfxIdType sfx_id, Audio::SoundHandle *hand
 {
 	std::map < uint16, uint16 >::iterator it;
 
+	DEBUG(0, LEVEL_INFORMATIONAL, "CustomSfxManager::playSfxLooping sfx_id=%d\n", sfx_id);
+
 	it = sfx_map->find((uint16)sfx_id);
 	if (it != sfx_map->end())
 	{
+		DEBUG(0, LEVEL_INFORMATIONAL, "CustomSfxManager: Found mapping %d -> %d.wav\n", sfx_id, (*it).second);
 		playSoundSample((*it).second, handle, volume);
 		return true;
 	}
 
+	DEBUG(0, LEVEL_INFORMATIONAL, "CustomSfxManager: No mapping for sfx_id=%d\n", sfx_id);
 	return false;
 }
 
