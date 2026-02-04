@@ -1252,6 +1252,20 @@ bool SoundManager::playSfx(uint16 sfx_id, bool async)
 	return false;
 }
 
+bool SoundManager::playInstrumentNote(uint8 instrument_type, uint8 note)
+{
+	if(m_SfxManager == NULL || audio_enabled == false || sfx_enabled == false)
+		return false;
+
+	if(instrument_type > 4 || note > 9)
+		return false;
+
+	// Calculate SFX ID: base + (instrument_type * 10) + note
+	uint16 sfx_id = NUVIE_SFX_INSTRUMENT(instrument_type, note);
+
+	return m_SfxManager->playSfx(sfx_id, sfx_volume);
+}
+
 void SoundManager::set_audio_enabled(bool val)
 {
 	audio_enabled = val;

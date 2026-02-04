@@ -73,4 +73,26 @@ typedef uint16 SfxIdType;
 
 #define NUVIE_SFX_EARTH_QUAKE 39
 
+// Musical Instrument SFX (40-49 reserved for instruments)
+// Each instrument has 10 notes (0-9 keys), base ID + note number
+#define NUVIE_SFX_INSTRUMENT_BASE 40
+
+// Instrument type offsets (multiply by 10 and add to BASE)
+#define NUVIE_SFX_INSTRUMENT_HARP        0   // 40-49: Harp notes 0-9
+#define NUVIE_SFX_INSTRUMENT_HARPSICHORD 1   // 50-59: Harpsichord notes 0-9
+#define NUVIE_SFX_INSTRUMENT_LUTE        2   // 60-69: Lute notes 0-9
+#define NUVIE_SFX_INSTRUMENT_PANPIPES    3   // 70-79: Panpipes notes 0-9
+#define NUVIE_SFX_INSTRUMENT_XYLOPHONE   4   // 80-89: Xylophone notes 0-9
+
+// Helper macro: NUVIE_SFX_INSTRUMENT(type, note) -> sfx_id
+// Example: NUVIE_SFX_INSTRUMENT(NUVIE_SFX_INSTRUMENT_LUTE, 5) -> 65
+#define NUVIE_SFX_INSTRUMENT(type, note) (NUVIE_SFX_INSTRUMENT_BASE + (type) * 10 + (note))
+
+// Check if sfx_id is an instrument sound
+#define NUVIE_SFX_IS_INSTRUMENT(id) ((id) >= NUVIE_SFX_INSTRUMENT_BASE && (id) < NUVIE_SFX_INSTRUMENT_BASE + 50)
+
+// Extract instrument type and note from sfx_id
+#define NUVIE_SFX_INSTRUMENT_TYPE(id) (((id) - NUVIE_SFX_INSTRUMENT_BASE) / 10)
+#define NUVIE_SFX_INSTRUMENT_NOTE(id) (((id) - NUVIE_SFX_INSTRUMENT_BASE) % 10)
+
 #endif

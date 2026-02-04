@@ -1777,37 +1777,70 @@ bool U6UseCode::use_crystal_ball(Obj *obj, UseCodeEvent ev)
     return(false);
 }
 
-/* USE: Enter instrument playing mode, with sound for used object. */
+/* USE: Enter instrument playing mode, with sound for used object.
+ * Instrument types (matching sfx.h):
+ *   0 = Harp, 1 = Harpsichord, 2 = Lute, 3 = Panpipes, 4 = Xylophone
+ * Keys 0-9 play different notes based on original U6 frequency table.
+ */
 bool U6UseCode::play_instrument(Obj *obj, UseCodeEvent ev)
 {
-// FIXME: need intrument sounds AND a config option to simply change music
-// track when an instrument is played. Maybe NORTH_KEY and SOUTH_KEY can cycle through sounds/music and DO_ACTION_KEY can play it.
-/// FIXME: also some floating music note icons like in U7
     game->get_event()->close_gumps(); // gumps will steal input
-    const char *musicmsg = (obj->obj_n == OBJ_U6_PANPIPES) ? "panpipes"
-                 : (obj->obj_n == OBJ_U6_HARPSICHORD) ? "harpsichord"
-                 : (obj->obj_n == OBJ_U6_HARP) ? "harp"
-                 : (obj->obj_n == OBJ_U6_LUTE) ? "lute"
-                 : (obj->obj_n == OBJ_U6_XYLOPHONE) ? "xylophone"
-                 : "musical instrument";
+
+    // Determine instrument type for SoundManager
+    uint8 instrument_type;
+    const char *musicmsg;
+
+    switch(obj->obj_n)
+    {
+        case OBJ_U6_HARP:
+            instrument_type = 0;  // NUVIE_SFX_INSTRUMENT_HARP
+            musicmsg = "harp";
+            break;
+        case OBJ_U6_HARPSICHORD:
+            instrument_type = 1;  // NUVIE_SFX_INSTRUMENT_HARPSICHORD
+            musicmsg = "harpsichord";
+            break;
+        case OBJ_U6_LUTE:
+            instrument_type = 2;  // NUVIE_SFX_INSTRUMENT_LUTE
+            musicmsg = "lute";
+            break;
+        case OBJ_U6_PANPIPES:
+            instrument_type = 3;  // NUVIE_SFX_INSTRUMENT_PANPIPES
+            musicmsg = "panpipes";
+            break;
+        case OBJ_U6_XYLOPHONE:
+            instrument_type = 4;  // NUVIE_SFX_INSTRUMENT_XYLOPHONE
+            musicmsg = "xylophone";
+            break;
+        default:
+            instrument_type = 2;  // Default to lute
+            musicmsg = "musical instrument";
+            break;
+    }
+
     if(items.data_ref)
     {
-            SDL_Keycode key = ((EventInput*)items.data_ref)->key;
-            ActionKeyType key_type = ((EventInput*)items.data_ref)->action_key_type;
-            if(key == SDLK_0) DEBUG(0,LEVEL_WARNING,"FIXME: %s: modulate 0\n", musicmsg);
-            if(key == SDLK_1) DEBUG(0,LEVEL_WARNING,"FIXME: %s: modulate 1\n", musicmsg);
-            if(key == SDLK_2) DEBUG(0,LEVEL_WARNING,"FIXME: %s: modulate 2\n", musicmsg);
-            if(key == SDLK_3) DEBUG(0,LEVEL_WARNING,"FIXME: %s: modulate 3\n", musicmsg);
-            if(key == SDLK_4) DEBUG(0,LEVEL_WARNING,"FIXME: %s: modulate 4\n", musicmsg);
-            if(key == SDLK_5) DEBUG(0,LEVEL_WARNING,"FIXME: %s: modulate 5\n", musicmsg);
-            if(key == SDLK_6) DEBUG(0,LEVEL_WARNING,"FIXME: %s: modulate 6\n", musicmsg);
-            if(key == SDLK_7) DEBUG(0,LEVEL_WARNING,"FIXME: %s: modulate 7\n", musicmsg);
-            if(key == SDLK_8) DEBUG(0,LEVEL_WARNING,"FIXME: %s: modulate 8\n", musicmsg);
-            if(key == SDLK_9) DEBUG(0,LEVEL_WARNING,"FIXME: %s: modulate 9\n", musicmsg);
-            return(key_type != DO_ACTION_KEY && key_type != CANCEL_ACTION_KEY);
+        SDL_Keycode key = ((EventInput*)items.data_ref)->key;
+        ActionKeyType key_type = ((EventInput*)items.data_ref)->action_key_type;
+
+        // Play note if key 0-9 is pressed
+        if(key >= SDLK_0 && key <= SDLK_9)
+        {
+            uint8 note = (uint8)(key - SDLK_0);
+            SoundManager *sound = game->get_sound_manager();
+            if(sound)
+            {
+                sound->playInstrumentNote(instrument_type, note);
+                DEBUG(0, LEVEL_DEBUGGING, "%s: playing note %d\n", musicmsg, note);
+            }
+        }
+
+        return(key_type != DO_ACTION_KEY && key_type != CANCEL_ACTION_KEY);
     }
     else
+    {
         game->get_event()->key_redirect(this, obj);
+    }
     return false;
 }
 

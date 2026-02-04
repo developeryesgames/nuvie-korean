@@ -81,6 +81,12 @@ public:
     bool isSoundPLaying(Audio::SoundHandle handle);
 
     bool playSfx(uint16 sfx_id, bool async = false);
+
+    // Musical instrument interface - plays note with instrument type
+    // instrument_type: 0=Harp, 1=Harpsichord, 2=Lute, 3=Panpipes, 4=Xylophone
+    // note: 0-9 (keyboard keys)
+    bool playInstrumentNote(uint8 instrument_type, uint8 note);
+
     bool is_audio_enabled() { return audio_enabled; }
     void set_audio_enabled(bool val);
     bool is_music_enabled() { return music_enabled; }
