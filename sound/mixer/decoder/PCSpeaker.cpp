@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  PCSpeaker.cpp
  *  Nuvie
  *
@@ -117,10 +117,10 @@ void PCSpeaker::SetPITDivisor(uint32 divisor)
 	if(pit_divisor > 0)
 	{
 		// DOSBox Mode 3 timing calculation:
-		// pit_max = samples per full PIT cycle
-		// pit_half = samples per half cycle (when output toggles)
-		// Using same formula as DOSBox: (1000.0f/PIT_TICK_RATE)*cntr but scaled for our rate
-		double new_max = (double)pit_divisor * (double)rate / (double)PIT_TICK_RATE;
+		// pit_max = milliseconds per full PIT cycle
+		// pit_half = milliseconds per half cycle (when output toggles)
+		// Using same formula as DOSBox: (1000.0/PIT_TICK_RATE)*divisor
+		double new_max = ((double)pit_divisor * 1000.0) / (double)PIT_TICK_RATE;
 		double new_half = new_max / 2.0;
 
 		// DOSBox approach: update timing parameters
@@ -150,22 +150,20 @@ void PCSpeaker::AddDelayEntry(double index, float vol)
 			return;
 	}
 
+	// If the queue is full, drop the oldest entry to avoid overwrite
+	if(delay_write_index - delay_read_index >= SPKR_DELAY_ENTRIES)
+	{
+		delay_read_index = delay_write_index - (SPKR_DELAY_ENTRIES - 1);
+	}
+
 	delay_entries[delay_write_index % SPKR_DELAY_ENTRIES].index = index;
 	delay_entries[delay_write_index % SPKR_DELAY_ENTRIES].vol = vol;
 	delay_write_index++;
-
-	// Prevent overflow
-	if(delay_write_index >= SPKR_DELAY_ENTRIES * 2)
-	{
-		// Compact the queue
-		delay_write_index = delay_write_index % SPKR_DELAY_ENTRIES;
-		delay_read_index = delay_read_index % SPKR_DELAY_ENTRIES;
-	}
 }
 
-// Advance PIT by given amount of samples - DOSBox Mode 3 (square wave)
+// Advance PIT by given amount of time (milliseconds) - DOSBox Mode 3 (square wave)
 // In Mode 3, output toggles at HALF cycle, not full cycle
-void PCSpeaker::ForwardPIT(double amount)
+void PCSpeaker::ForwardPIT(double amount_ms)
 {
 	if(!enabled || pit_max <= 0 || pit_half <= 0)
 		return;
@@ -173,9 +171,9 @@ void PCSpeaker::ForwardPIT(double amount)
 	double done = 0;
 	double start_index = delay_base_index;
 
-	while(done < amount)
+	while(done < amount_ms)
 	{
-		double remaining = amount - done;
+		double remaining = amount_ms - done;
 
 		// Calculate time until next toggle (at pit_half boundary)
 		double time_to_toggle;
@@ -220,23 +218,24 @@ void PCSpeaker::ForwardPIT(double amount)
 		{
 			// No toggle in this period
 			pit_index += remaining;
-			done = amount;
+			done = amount_ms;
 		}
 	}
 }
 
-// DOSBox-style sample generation using delay queue
+// DOSBox-style sample generation using delay queue (time in milliseconds)
 void PCSpeaker::PCSPEAKER_CallBack(sint16 *stream, const uint32 len)
 {
+	const double sample_ms = 1000.0 / (double)rate;
 	for(uint32 i = 0; i < len; i++)
 	{
 		double sample_start = delay_base_index;
-		double sample_end = delay_base_index + 1.0;
+		double sample_end = delay_base_index + sample_ms;
 
 		// Advance PIT for this sample (this adds entries to delay queue)
 		if(enabled && pit_max > 0)
 		{
-			ForwardPIT(1.0);
+			ForwardPIT(sample_ms);
 		}
 
 		// Process delay queue entries within this sample period
@@ -276,12 +275,12 @@ void PCSpeaker::PCSPEAKER_CallBack(sint16 *stream, const uint32 len)
 			total_vol += last_vol * (sample_end - last_index);
 		}
 
-		// Total volume is weighted average over the sample period (which is 1.0)
-		// So total_vol is already the correct sample value
-		stream[i] = (sint16)total_vol;
+		// Total volume is weighted average over the sample period
+		const double sample_value = (sample_ms > 0.0) ? (total_vol / sample_ms) : 0.0;
+		stream[i] = (sint16)sample_value;
 
 		// Update cur_vol for fade-out when disabled
-		cur_vol = (float)total_vol;
+		cur_vol = (float)sample_value;
 
 		delay_base_index = sample_end;
 	}
@@ -298,3 +297,6 @@ void PCSpeaker::PCSPEAKER_CallBack(sint16 *stream, const uint32 len)
 		}
 	}
 }
+
+
+

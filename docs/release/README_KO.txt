@@ -1,8 +1,39 @@
 ================================================================================
-                    울티마 6 한글화 패치 v1.5.7
+                    울티마 6 한글화 패치 v1.6.0
 ================================================================================
 
-■ 패치 내용 (v1.5.7)
+■ 패치 내용 (v1.6.0)
+  - DOS/PC Speaker 사운드 효과 복원 (원본 U6 디컴파일 코드 기반)
+    * 환경 사운드:
+      - 분수대 (Fountain) - 물 흐르는 소리
+      - 물레방아 (Water Wheel) - 물 돌아가는 소리
+      - 벽난로/화덕/불 (Fire/Fireplace/Cook Fire/Forge) - 불타는 소리
+      - 시계 (Clock) - 시계 틱 소리
+      - 보호 필드 (Protection Field) - 전기 지직거리는 소리
+    * 악기 연주 사운드 (5종 × 10음계 = 50개):
+      - 하프 (Harp)
+      - 하프시코드 (Harpsichord)
+      - 류트 (Lute)
+      - 팬파이프 (Panpipes)
+      - 실로폰 (Xylophone)
+  - 커스텀 WAV 사운드 지원 추가
+    * nuvie.cfg의 <sfx>custom</sfx> 및 <sfxdir> 설정으로 사용
+    * WAV 파일이 없으면 자동으로 PC Speaker 음으로 폴백
+    * 별도 배포되는 Nuvie_Instrument_SoundPack 사용 가능 (SoundFont 기반 고품질 악기음)
+
+■ 커스텀 악기 사운드팩 설치 (선택사항)
+  SoundFont 기반 고품질 악기 WAV 파일을 별도 다운로드하여 사용할 수 있습니다.
+
+  1. Nuvie_Instrument_SoundPack.zip 다운로드
+  2. 압축 해제 후 sfx 폴더를 게임 폴더에 복사
+  3. nuvie.cfg에 다음 설정 추가:
+     <ultima6> 섹션 안에:
+       <sfx>custom</sfx>
+       <sfxdir>sfx</sfxdir>
+
+  ※ 사운드팩 없이도 DOS 원본과 동일한 PC Speaker 음으로 재생됩니다.
+
+■ v1.5.7 변경사항
   - 파티원 못따라오는 문제 추가 수정
     * 분리된 파티원 재합류 로직 개선
     * 좁은 공간에서 갇힌 파티원 탈출 로직 추가

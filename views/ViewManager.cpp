@@ -249,6 +249,8 @@ bool ViewManager::init(GUI *g, Font *f, Party *p, Player *player, TileManager *t
 
 void ViewManager::reload()
 {
+ static bool party_view_added = false;  // Track if party_view was already added to GUI
+
  if(!Game::get_game()->is_new_style())
    actor_view->set_party_member(0);
  inventory_view->lock_to_actor(false);
@@ -257,9 +259,13 @@ void ViewManager::reload()
  // In compact_ui mode, default to inventory view (party view is drawn separately)
  if(party_view_permanent)
  {
-   // Add party_view to GUI first (behind current view)
-   party_view->Show();
-   gui->AddWidget((GUI_Widget *)party_view);
+   // Only add party_view to GUI once (avoid duplicate on save load)
+   if(!party_view_added)
+   {
+     party_view->Show();
+     gui->AddWidget((GUI_Widget *)party_view);
+     party_view_added = true;
+   }
    set_inventory_mode();
  }
  else

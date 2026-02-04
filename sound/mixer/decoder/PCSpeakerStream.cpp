@@ -24,6 +24,33 @@
 
 #include "PCSpeakerStream.h"
 
+// Approximate OSI_sDelay timing (see DELAY2.ASM)
+// base tick uses SPKR_OUTPUT_RATE / 1255 (existing legacy constant in this file)
+static const uint8 pcspkr_delay_shifts[] = {0, 0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4};
+
+static uint32 pcspkr_delay_samples(uint16 a0, uint16 a2)
+{
+	const uint32 base = (SPKR_OUTPUT_RATE / 1255);
+	uint8 shift = 0;
+	if(a2 < (sizeof(pcspkr_delay_shifts) / sizeof(pcspkr_delay_shifts[0])))
+		shift = pcspkr_delay_shifts[a2];
+	uint32 samples = (a0 * base) >> shift;
+	if(samples < 1) samples = 1;
+	return samples;
+}
+
+// Game tick rate (~18.2065 Hz) used by U6 for clock cadence
+static uint32 pcspkr_tick_samples()
+{
+	return (uint32)(SPKR_OUTPUT_RATE / 18.2065f);
+}
+
+static uint32 pcspkr_clock_period_samples()
+{
+	return (uint32)((SPKR_OUTPUT_RATE * 16.0f) / 18.2065f);
+}
+
+
 
 PCSpeakerFreqStream::PCSpeakerFreqStream(uint32 freq, uint16 d)
 {
@@ -284,20 +311,10 @@ uint16 PCSpeakerRandomStream::getNextFreqValue()
 	if(range == 0) range = 1;
 
 	uint16 tmp = rand_value;
-	uint16 pit_counter = tmp - (tmp / range) * range;  // tmp % range
-	pit_counter += 0x64;  // Add 100
+	uint16 freq = tmp - (tmp / range) * range;  // tmp % range
+	freq += 0x64;  // Add 100 (16-bit wrap matches original)
 
-	// Clamp pit_counter to valid range
-	if(pit_counter < 19)  // Below 19 would be > 62kHz (inaudible and problematic)
-		pit_counter = 19;
-
-	// DOSBox style: Set PIT divisor directly instead of converting to Hz
-	// This is more accurate as it preserves the exact PIT timing behavior
-	pcspkr->SetPITDivisor(pit_counter);
-
-	// Return Hz for compatibility with legacy code paths
-	uint32 hz = 1193182 / pit_counter;
-	return (uint16)hz;
+	return freq;
 }
 
 int PCSpeakerRandomStream::readBuffer(sint16 *buffer, const int numSamples)
@@ -355,6 +372,294 @@ int PCSpeakerRandomStream::readBuffer(sint16 *buffer, const int numSamples)
 	return s;
 }
 
+//**************** PCSpeakerRandomPitStream
+
+// Same as PCSpeakerRandomStream but uses the same *frequency* values as OSI_playNoise.
+// The original ASM passes frequency (Hz) to SOUND_FREQ, which converts to PIT divisor.
+class PCSpeakerRandomPitStream : public PCSpeakerRandomStream
+{
+public:
+	PCSpeakerRandomPitStream(uint32 freq, uint16 d, uint16 s)
+		: PCSpeakerRandomStream(freq, d, s)
+	{
+		pcspkr->SetOn();
+		pcspkr->SetFrequency(getNextFreqValue());
+	}
+
+	bool rewind()
+	{
+		cur_step = 0;
+		sample_pos = 0;
+		total_samples_played = 0;
+		finished = false;
+
+		pcspkr->SetOn();
+		pcspkr->SetFrequency(getNextFreqValue());
+		return true;
+	}
+
+	int readBuffer(sint16 *buffer, const int numSamples)
+	{
+		uint32 samples = (uint32)numSamples;
+		uint32 s = 0;
+
+		for(uint32 i = 0; i < samples && cur_step <= num_steps;)
+		{
+			uint32 n = samples_per_step - sample_pos;
+			if(i + n > samples)
+				n = samples - i;
+
+			pcspkr->PCSPEAKER_CallBack(&buffer[i], n);
+			sample_pos += n;
+			i += n;
+
+			if(sample_pos >= samples_per_step)
+			{
+				uint16 pit = getNextFreqValue();
+				pcspkr->SetFrequency(pit);
+				sample_pos = 0;
+				cur_step++;
+			}
+
+			s += n;
+		}
+
+		total_samples_played += s;
+
+		if(cur_step >= num_steps)
+		{
+			finished = true;
+			pcspkr->SetOff();
+		}
+
+		return s;
+	}
+};
+
+//**************** PCSpeakerTickStream (clock)
+
+class PCSpeakerTickStream : public PCSpeakerStream
+{
+public:
+	PCSpeakerTickStream(uint32 pit_tick_div, uint32 pit_tock_div, uint32 tick_len_samples, uint32 period_len_samples)
+	{
+		pit_tick = pit_tick_div;
+		pit_tock = pit_tock_div;
+		tick_samples = tick_len_samples;
+		period_samples = period_len_samples;
+		if(period_samples == 0)
+			period_samples = 1;
+		if(tick_samples > period_samples)
+			tick_samples = period_samples;
+
+		tock_offset_samples = period_samples / 2;
+
+		total_samples_played = 0;
+		finished = false;
+		pcspkr->SetOff();
+	}
+
+	uint32 getLengthInMsec()
+	{
+		return (uint32)(period_samples / (getRate()/1000.0f));
+	}
+
+	int readBuffer(sint16 *buffer, const int numSamples)
+	{
+		uint32 samples = (uint32)numSamples;
+
+		if(total_samples_played >= period_samples)
+			return 0;
+
+		if(total_samples_played + samples > period_samples)
+			samples = period_samples - total_samples_played;
+
+		uint32 written = 0;
+		while(written < samples)
+		{
+			uint32 global_pos = total_samples_played + written;
+			uint32 segment_end = period_samples;
+
+			if(global_pos < tick_samples)
+			{
+				pcspkr->SetOn();
+				pcspkr->SetFrequency(pit_tick);
+				segment_end = tick_samples;
+			}
+			else if(global_pos < tock_offset_samples)
+			{
+				pcspkr->SetOff();
+				segment_end = tock_offset_samples;
+			}
+			else if(global_pos < tock_offset_samples + tick_samples)
+			{
+				pcspkr->SetOn();
+				pcspkr->SetFrequency(pit_tock);
+				segment_end = tock_offset_samples + tick_samples;
+			}
+			else
+			{
+				pcspkr->SetOff();
+				segment_end = period_samples;
+			}
+
+			uint32 n = segment_end - global_pos;
+			if(written + n > samples)
+				n = samples - written;
+
+			pcspkr->PCSPEAKER_CallBack(&buffer[written], n);
+			written += n;
+		}
+
+		total_samples_played += written;
+
+		if(total_samples_played >= period_samples)
+		{
+			finished = true;
+			pcspkr->SetOff();
+		}
+
+		return written;
+	}
+
+	bool rewind()
+	{
+		total_samples_played = 0;
+		finished = false;
+		pcspkr->SetOff();
+		return true;
+	}
+
+private:
+	uint32 pit_tick;
+	uint32 pit_tock;
+	uint32 tick_samples;
+	uint32 period_samples;
+	uint32 tock_offset_samples;
+	uint32 total_samples_played;
+};
+//**************** PCSpeakerFireStream (fire / fireplace)
+
+class PCSpeakerFireStream : public PCSpeakerStream
+{
+public:
+	PCSpeakerFireStream()
+	{
+		// U6 fire: occasionally play a short 5-step burst, each step delayed by OSI_sDelay(8,1)
+		// Run one cycle per game tick (~18.2 Hz) to match cadence of ambient updates.
+		step_samples = pcspkr_delay_samples(8, 1);
+		cycle_samples = pcspkr_tick_samples();
+		if(cycle_samples < step_samples)
+			cycle_samples = step_samples;
+
+		steps_per_cycle = (cycle_samples + step_samples - 1) / step_samples;
+		if(steps_per_cycle == 0)
+			steps_per_cycle = 1;
+
+		steps_per_burst = 5; // original loop count
+
+		startCycle();
+	}
+
+	uint32 getLengthInMsec()
+	{
+		return (uint32)(cycle_samples / (getRate()/1000.0f));
+	}
+
+	int readBuffer(sint16 *buffer, const int numSamples)
+	{
+		uint32 samples = (uint32)numSamples;
+		if(total_samples_played >= cycle_samples)
+			return 0;
+
+		if(total_samples_played + samples > cycle_samples)
+			samples = cycle_samples - total_samples_played;
+
+		uint32 written = 0;
+
+		while(written < samples)
+		{
+			uint32 n = samples - written;
+			if(n > step_remaining)
+				n = step_remaining;
+
+			// Always advance speaker state even during silence
+			pcspkr->PCSPEAKER_CallBack(&buffer[written], n);
+
+			written += n;
+			total_samples_played += n;
+			step_remaining -= n;
+
+			if(step_remaining == 0)
+			{
+				step_index++;
+				if(step_index >= steps_per_cycle)
+				{
+					finished = true;
+					pcspkr->SetOff();
+					break;
+				}
+
+				step_remaining = step_samples;
+				advanceStep();
+			}
+		}
+
+		return written;
+	}
+
+	bool rewind()
+	{
+		startCycle();
+		return true;
+	}
+
+private:
+	void startCycle()
+	{
+		total_samples_played = 0;
+		step_index = 0;
+		step_remaining = step_samples;
+		finished = false;
+
+		// 1/4 chance to start a crackle burst in this cycle (original)
+		// Burst starts immediately (no random offset) just like the U6 loop.
+		burst_start_step = (NUVIE_RAND() % 4 == 0) ? 0 : -1;
+
+		advanceStep();
+	}
+
+	void advanceStep()
+	{
+		bool in_burst = (burst_start_step >= 0 &&
+		                 step_index >= (uint32)burst_start_step &&
+		                 step_index < (uint32)burst_start_step + steps_per_burst);
+
+		if(in_burst && (NUVIE_RAND() % 8 == 0))
+		{
+			step_playing = true;
+			step_div = (uint16)((NUVIE_RAND() % 13001) + 2000); // frequency 2000-15000 Hz
+			pcspkr->SetOn();
+			pcspkr->SetFrequency(step_div);
+		}
+		else
+		{
+			step_playing = false;
+			pcspkr->SetOff();
+		}
+	}
+
+	uint32 cycle_samples;
+	uint32 total_samples_played;
+	uint32 step_samples;
+	uint32 steps_per_cycle;
+	uint32 step_index;
+	uint32 step_remaining;
+	int burst_start_step;
+	uint32 steps_per_burst;
+	bool step_playing;
+	uint16 step_div;
+};
 //**************** PCSpeakerStutterStream
 
 PCSpeakerStutterStream::PCSpeakerStutterStream(sint16 a0, uint16 a2, uint16 a4, uint16 a6, uint16 a8)
@@ -571,7 +876,7 @@ Audio::AudioStream *makePCSpeakerFountainSfxStream(uint32 rate)
 {
   // Original: OSI_playNoise(10, 30, 25000)
   // base_val=10 triggers underflow handling in getNextFreqValue() for water sound
-  return new PCSpeakerRandomStream(10, 30, 25000);
+  return new PCSpeakerRandomPitStream(10, 30, 25000);
 }
 
 // Water wheel sound based on original U6:
@@ -582,7 +887,7 @@ Audio::AudioStream *makePCSpeakerWaterWheelSfxStream(uint32 rate)
 {
   // Original: OSI_playNoise(20, 60, 10000)
   // base_val=20 triggers underflow handling in getNextFreqValue() for water sound
-  return new PCSpeakerRandomStream(20, 60, 10000);
+  return new PCSpeakerRandomPitStream(20, 60, 10000);
 }
 
 // Fire/fireplace sound based on original U6:
@@ -598,20 +903,19 @@ Audio::AudioStream *makePCSpeakerWaterWheelSfxStream(uint32 rate)
 //   }
 Audio::AudioStream *makePCSpeakerFireSfxStream(uint32 rate)
 {
-  // Fire crackle: use RandomStream with low frequency range for crackling
-  // Similar to fountain but with different parameters
-  // base_val > 100 so no underflow, creates lower frequency range
-  return new PCSpeakerRandomStream(5000, 100, 50);  // Lower freq, sparse crackles
+  // Fire crackle: sparse random bursts with silence (closer to U6 pattern)
+  return new PCSpeakerFireStream();
 }
 
 // Clock sound based on original U6:
-// Short tick sound - clock ticks are handled by game timing, not looping
+// Short tick sound with silence for looping ambient clock
 Audio::AudioStream *makePCSpeakerClockSfxStream(uint32 rate)
 {
-  // Clock tick: PIT counter 3000 -> Hz = 1193180 / 3000 = 398 Hz
-  // Just a short tick - game will call this periodically
-  uint16 hz = 1193180 / 3000;  // 398 Hz
-  return new PCSpeakerFreqStream(hz, 50);  // Short tick sound
+  // Clock tick/tock using frequencies (Hz)
+  // Tick/tock at ~18.2Hz game ticks: tick at 0, tock at 8 (period = 16 ticks)
+  const uint32 tick_len = pcspkr_delay_samples(1, 3); // OSI_playNote(..., 3)
+  const uint32 period_len = pcspkr_clock_period_samples();
+  return new PCSpeakerTickStream(3000, 2000, tick_len, period_len);
 }
 
 // Protection field sound based on original U6:
@@ -632,3 +936,6 @@ Audio::AudioStream *makePCSpeakerProtectionFieldSfxStream(uint32 rate)
   uint16 hz = 1193180 / pit_counter;
   return new PCSpeakerFreqStream(hz, 8);
 }
+
+
+

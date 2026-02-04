@@ -1,4 +1,4 @@
-#ifndef __PCSpeaker_h__
+﻿#ifndef __PCSpeaker_h__
 #define __PCSpeaker_h__
 /* Created by Eric Fry
  * Copyright (C) 2011 The Nuvie Team
@@ -29,11 +29,11 @@
 
 // DOSBox-style delay entry for tracking speaker state changes
 struct PCSpeakerDelayEntry {
-	double index;      // Time index (in samples)
+	double index;      // Time index (in milliseconds)
 	float vol;         // Volume level at this point
 };
 
-#define SPKR_DELAY_ENTRIES 1024
+#define SPKR_DELAY_ENTRIES 8192
 
 class PCSpeaker {
 private:
@@ -41,9 +41,9 @@ private:
 
 	// PIT Timer state (DOSBox style)
 	uint32 pit_divisor;             // PIT counter divisor (frequency = PIT_TICK_RATE / divisor)
-	double pit_index;               // Current position in PIT cycle
-	double pit_max;                 // PIT cycle length in samples (full cycle)
-	double pit_half;                // Half cycle length in samples (for Mode 3)
+	double pit_index;               // Current position in PIT cycle (milliseconds)
+	double pit_max;                 // PIT cycle length in milliseconds (full cycle)
+	double pit_half;                // Half cycle length in milliseconds (for Mode 3)
 	bool pit_output;                // Current PIT output state (high/low)
 	float pit_output_level;         // Current output level (+/- SPKR_VOLUME)
 
@@ -55,7 +55,7 @@ private:
 	PCSpeakerDelayEntry delay_entries[SPKR_DELAY_ENTRIES];
 	uint32 delay_write_index;
 	uint32 delay_read_index;
-	double delay_base_index;        // Base time index for delay queue
+	double delay_base_index;        // Base time index for delay queue (milliseconds)
 
 	// Volume state
 	float cur_vol;                  // Current output volume
@@ -67,7 +67,7 @@ private:
 
 	// Internal methods
 	void AddDelayEntry(double index, float vol);
-	void ForwardPIT(double amount);
+	void ForwardPIT(double amount_ms);
 	float GetVolume();
 
 public:
@@ -83,3 +83,4 @@ public:
 };
 
 #endif /* __PCSpeaker_h__ */
+
