@@ -149,6 +149,7 @@ private:
 
     SdlMixerManager *mixer;
     SfxManager *m_SfxManager;
+    SfxManager *m_FallbackSfxManager;  // For hybrid custom+pcspeaker mode
 
     CEmuopl *opl;
 

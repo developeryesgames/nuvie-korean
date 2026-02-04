@@ -90,6 +90,7 @@ SoundManager::SoundManager ()
 
   m_Config = NULL;
   m_SfxManager = NULL;
+  m_FallbackSfxManager = NULL;
   mixer = NULL;
 
   opl = NULL;
@@ -122,6 +123,8 @@ SoundManager::~SoundManager ()
     }
 
   delete opl;
+  delete m_SfxManager;
+  delete m_FallbackSfxManager;
 
   std::for_each(m_ObjectSampleMap.begin(), m_ObjectSampleMap.end(), SoundCollectionMapDeleter<int>());
   std::for_each(m_TileSampleMap.begin(), m_TileSampleMap.end(), SoundCollectionMapDeleter<int>());
@@ -780,6 +783,8 @@ bool SoundManager::LoadSfxManager(string sfx_style)
 	else if(sfx_style == "custom")
 	{
 		m_SfxManager = new CustomSfxManager(m_Config, mixer->getMixer());
+		// Create fallback PC Speaker manager for unmapped SFX
+		m_FallbackSfxManager = new PCSpeakerSfxManager(m_Config, mixer->getMixer());
 	}
 //FIXME what to do if unknown sfx_style is entered in config file.
 	return true;
@@ -1243,10 +1248,27 @@ bool SoundManager::playSfx(uint16 sfx_id, bool async)
 
 			return true;
 		}
+		// Try fallback manager if primary failed
+		else if(m_FallbackSfxManager && m_FallbackSfxManager->playSfx(sfx_id, sfx_volume))
+		{
+			uint32 duration = m_FallbackSfxManager->getLastSfxDuration();
+
+			TimedEffect *timer = new TimedEffect();
+
+			AsyncEffect *e = new AsyncEffect(timer);
+			timer->start_timer(duration);
+			e->run();
+
+			return true;
+		}
 	}
 	else
 	{
-		return m_SfxManager->playSfx(sfx_id, sfx_volume);
+		if(m_SfxManager->playSfx(sfx_id, sfx_volume))
+			return true;
+		// Try fallback manager if primary failed
+		if(m_FallbackSfxManager)
+			return m_FallbackSfxManager->playSfx(sfx_id, sfx_volume);
 	}
 
 	return false;
@@ -1263,7 +1285,12 @@ bool SoundManager::playInstrumentNote(uint8 instrument_type, uint8 note)
 	// Calculate SFX ID: base + (instrument_type * 10) + note
 	uint16 sfx_id = NUVIE_SFX_INSTRUMENT(instrument_type, note);
 
-	return m_SfxManager->playSfx(sfx_id, sfx_volume);
+	// Try primary manager first, then fallback
+	if(m_SfxManager->playSfx(sfx_id, sfx_volume))
+		return true;
+	if(m_FallbackSfxManager)
+		return m_FallbackSfxManager->playSfx(sfx_id, sfx_volume);
+	return false;
 }
 
 void SoundManager::set_audio_enabled(bool val)

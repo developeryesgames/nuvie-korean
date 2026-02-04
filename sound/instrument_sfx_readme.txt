@@ -36,11 +36,12 @@ Each instrument has 10 notes (keys 0-9) based on the original frequency table:
 
 To use custom WAV files for instruments:
 
-1) Set sfx_style to "custom" in nuvie.cfg:
-   <sfx_style>custom</sfx_style>
-
-2) Create a directory for custom SFX files and set it in nuvie.cfg:
-   <sfxdir>/path/to/your/sfx/</sfxdir>
+1) Set sfx to "custom" in the <ultima6> section of nuvie.cfg:
+   <ultima6>
+     ...
+     <sfx>custom</sfx>
+     <sfxdir>/path/to/your/sfx/</sfxdir>
+   </ultima6>
 
 3) Create sfx_map.cfg in that directory with instrument SFX mappings.
 
