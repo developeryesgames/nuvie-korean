@@ -1018,7 +1018,7 @@ Audio::AudioStream *makePCSpeakerFountainSfxStream(uint32 rate)
   // tick=3ms (same as clock), gap=7ms (clean separation between clicks)
   // ~6 clicks per cycle = ~60ms total
   // Low freq range (200-800 Hz) for water dripping "또로로록" character
-  return new PCSpeakerRapidClickStream(3, 20, 3, 200, 800);
+  return new PCSpeakerRapidClickStream(2, 50, 3, 200, 800);
 }
 
 // Water wheel sound based on original U6:
@@ -1027,7 +1027,7 @@ Audio::AudioStream *makePCSpeakerWaterWheelSfxStream(uint32 rate)
 {
   // Water wheel: similar to fountain but slightly more clicks
   // tick=3ms, gap=7ms, ~7 clicks = ~70ms total
-  return new PCSpeakerRapidClickStream(3, 20, 4, 200, 600);
+  return new PCSpeakerRapidClickStream(2, 50, 4, 200, 600);
 }
 
 // Fire/fireplace sound based on original U6:
