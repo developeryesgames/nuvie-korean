@@ -402,35 +402,40 @@ int PCSpeakerRandomStream::readBuffer(sint16 *buffer, const int numSamples)
 	return s;
 }
 
-//**************** PCSpeakerWaterNoiseStream
-
-// Generates filtered noise for water sounds (fountain, water wheel).
-// Original PC Speaker creates noise by rapidly changing PIT frequency.
-// The physical speaker can't keep up, resulting in filtered random noise.
-// We simulate this directly with lowpass filtered random samples.
-class PCSpeakerWaterNoiseStream : public PCSpeakerStream
+//**************** PCSpeakerRapidClickStream
+//
+// Exactly the same pattern as PCSpeakerTickStream (clock), but:
+// - Many clicks instead of just tick/tock
+// - Random frequency per click
+// - Short gap between clicks
+// Pattern per click: SetOn → SetFrequency → CallBack(tick_len) → SetOff → CallBack(gap_len)
+//
+class PCSpeakerRapidClickStream : public PCSpeakerStream
 {
 public:
-	PCSpeakerWaterNoiseStream(uint32 duration_ms, float cutoff_hz, float volume)
+	// tick_ms: duration of each audible click
+	// gap_ms: silence between clicks
+	// num_clicks: how many clicks total
+	// min_freq, max_freq: frequency range in Hz
+	PCSpeakerRapidClickStream(uint32 tick_ms, uint32 gap_ms, uint32 num_clicks_val, uint16 min_freq, uint16 max_freq)
 	{
-		total_samples = (SPKR_OUTPUT_RATE * duration_ms) / 1000;
-		if(total_samples < 1) total_samples = 1;
+		tick_len = (SPKR_OUTPUT_RATE * tick_ms) / 1000;
+		gap_len = (SPKR_OUTPUT_RATE * gap_ms) / 1000;
+		if(tick_len < 1) tick_len = 1;
+		if(gap_len < 1) gap_len = 1;
+
+		num_clicks = num_clicks_val;
+		click_period = tick_len + gap_len;
+		total_samples = click_period * num_clicks;
+
+		freq_min = min_freq;
+		freq_range = (max_freq > min_freq) ? (max_freq - min_freq) : 1;
+
+		rand_state = 0x7664;
+
 		total_samples_played = 0;
 		finished = false;
-
-		// Volume (0.0 - 1.0 scaled to output range)
-		vol_scale = volume * 8000.0f;  // Lower than full SPKR_VOLUME for softer sound
-
-		// Lowpass filter setup (same as PCSpeaker but with lower cutoff for water)
-		double timeInterval = 1.0 / (double)SPKR_OUTPUT_RATE;
-		double tau = 1.0 / (cutoff_hz * 2.0 * M_PI);
-		lp_alpha = timeInterval / (tau + timeInterval);
-
-		for(int i = 0; i < 3; i++)
-			lp_state[i] = 0.0;
-
-		// Random seed
-		rand_state = 0x7664;
+		pcspkr->SetOff();
 	}
 
 	uint32 getLengthInMsec()
@@ -447,50 +452,80 @@ public:
 		if(total_samples_played + samples > total_samples)
 			samples = total_samples - total_samples_played;
 
-		for(uint32 i = 0; i < samples; i++)
+		uint32 written = 0;
+		while(written < samples)
 		{
-			// Generate white noise (-1.0 to 1.0)
-			rand_state = rand_state * 1103515245 + 12345;
-			double noise = ((double)((rand_state >> 16) & 0x7FFF) / 16384.0) - 1.0;
+			uint32 pos = total_samples_played + written;
+			uint32 click_pos = pos % click_period;  // position within current click cycle
+			uint32 click_end = pos - click_pos + click_period;  // end of current click cycle
 
-			// Scale noise
-			double sample = noise * vol_scale;
-
-			// Apply 3rd order lowpass filter for "water" character
-			for(int j = 0; j < 3; j++)
+			if(click_pos < tick_len)
 			{
-				lp_state[j] += lp_alpha * (sample - lp_state[j]);
-				sample = lp_state[j];
+				// Audible part: SetOn + frequency
+				uint32 click_idx = pos / click_period;
+				pcspkr->SetOn();
+				// Deterministic freq per click: seed from click index
+				pcspkr->SetFrequency(getFreqForClick(click_idx));
+				uint32 seg_end = pos - click_pos + tick_len;
+				uint32 n = seg_end - pos;
+				if(written + n > samples)
+					n = samples - written;
+				pcspkr->PCSPEAKER_CallBack(&buffer[written], n);
+				written += n;
 			}
-
-			buffer[i] = (sint16)sample;
+			else
+			{
+				// Silent gap
+				pcspkr->SetOff();
+				uint32 n = click_end - pos;
+				if(written + n > samples)
+					n = samples - written;
+				pcspkr->PCSPEAKER_CallBack(&buffer[written], n);
+				written += n;
+			}
 		}
 
-		total_samples_played += samples;
+		total_samples_played += written;
 
 		if(total_samples_played >= total_samples)
+		{
 			finished = true;
+			pcspkr->SetOff();
+		}
 
-		return samples;
+		return written;
 	}
 
 	bool rewind()
 	{
 		total_samples_played = 0;
 		finished = false;
-		// Reset filter state for clean loop
-		for(int i = 0; i < 3; i++)
-			lp_state[i] = 0.0;
+		pcspkr->SetOff();
 		return true;
 	}
 
 private:
+	uint16 getFreqForClick(uint32 click_idx)
+	{
+		// Generate deterministic random freq for each click
+		// Using U6 PRNG seeded per click
+		uint16 r = (uint16)((rand_state + click_idx * 0x9248) & 0xffff);
+		uint16 bits = r & 0x7;
+		r = (r >> 3) + (bits << 13);
+		r ^= 0x9248;
+		r += 0x11;
+		return (r % freq_range) + freq_min;
+	}
+
 	uint32 total_samples;
 	uint32 total_samples_played;
-	float vol_scale;
-	double lp_alpha;
-	double lp_state[3];
-	uint32 rand_state;
+	uint32 tick_len;
+	uint32 gap_len;
+	uint32 click_period;
+	uint32 num_clicks;
+	uint16 freq_min;
+	uint16 freq_range;
+	uint16 rand_state;
 };
 
 //**************** PCSpeakerTickStream (clock)
@@ -595,84 +630,97 @@ private:
 	uint32 tock_offset_samples;
 	uint32 total_samples_played;
 };
-//**************** PCSpeakerFireStream (fire / fireplace)
-
-class PCSpeakerFireStream : public PCSpeakerStream
+//**************** PCSpeakerFireClickStream (fire / fireplace)
+//
+// Fire crackle: each cycle randomly produces 0~3 clicks with random gaps.
+// "탁", "타닥", "탁.." pattern. Volume scaled down.
+// Same SetOn/SetFrequency/CallBack/SetOff pattern as clock.
+//
+class PCSpeakerFireClickStream : public PCSpeakerStream
 {
 public:
-	PCSpeakerFireStream()
+	PCSpeakerFireClickStream()
 	{
-		// U6 fire: occasionally play a short 5-step burst, each step delayed by OSI_sDelay(8,1)
-		// Run one cycle per game tick (~18.2 Hz) to match cadence of ambient updates.
-		step_samples = pcspkr_delay_samples(8, 1);
-		cycle_samples = pcspkr_tick_samples();
-		if(cycle_samples < step_samples)
-			cycle_samples = step_samples;
+		// Total cycle length = ~55ms (one game tick)
+		total_samples = pcspkr_tick_samples();
+		total_samples_played = 0;
+		finished = false;
+		rand_state = 0x7664;
 
-		steps_per_cycle = (cycle_samples + step_samples - 1) / step_samples;
-		if(steps_per_cycle == 0)
-			steps_per_cycle = 1;
+		// Pre-generate this cycle's click pattern
+		generatePattern();
 
-		steps_per_burst = 5; // original loop count
-
-		startCycle();
+		pcspkr->SetOff();
 	}
 
 	uint32 getLengthInMsec()
 	{
-		return (uint32)(cycle_samples / (getRate()/1000.0f));
+		return (uint32)(total_samples / (getRate()/1000.0f));
 	}
 
 	int readBuffer(sint16 *buffer, const int numSamples)
 	{
 		uint32 samples = (uint32)numSamples;
-		if(total_samples_played >= cycle_samples)
-		{
-			finished = true;
-			pcspkr->SetOff();
+		if(total_samples_played >= total_samples)
 			return 0;
-		}
 
-		if(total_samples_played + samples > cycle_samples)
-			samples = cycle_samples - total_samples_played;
+		if(total_samples_played + samples > total_samples)
+			samples = total_samples - total_samples_played;
 
 		uint32 written = 0;
-
 		while(written < samples)
 		{
-			uint32 n = samples - written;
-			if(n > step_remaining)
-				n = step_remaining;
+			uint32 pos = total_samples_played + written;
 
-			// Always advance speaker state even during silence
-			pcspkr->PCSPEAKER_CallBack(&buffer[written], n);
-
-			written += n;
-			total_samples_played += n;
-			step_remaining -= n;
-
-			if(step_remaining == 0)
+			// Find which segment we're in
+			bool found = false;
+			for(int i = 0; i < click_count; i++)
 			{
-				step_index++;
-				if(step_index >= steps_per_cycle)
+				uint32 click_start = click_offsets[i];
+				uint32 click_end = click_start + click_len;
+
+				if(pos >= click_start && pos < click_end)
 				{
-					finished = true;
-					pcspkr->SetOff();
+					// In audible click
+					pcspkr->SetOn();
+					pcspkr->SetFrequency(click_freqs[i]);
+					uint32 n = click_end - pos;
+					if(written + n > samples)
+						n = samples - written;
+					pcspkr->PCSPEAKER_CallBack(&buffer[written], n);
+					written += n;
+					found = true;
 					break;
 				}
+			}
 
-				step_remaining = step_samples;
-				advanceStep();
+			if(!found)
+			{
+				// In silence - find next click or end
+				pcspkr->SetOff();
+				uint32 next_boundary = total_samples;
+				for(int i = 0; i < click_count; i++)
+				{
+					if(click_offsets[i] > pos && click_offsets[i] < next_boundary)
+						next_boundary = click_offsets[i];
+				}
+				uint32 n = next_boundary - pos;
+				if(written + n > samples)
+					n = samples - written;
+				pcspkr->PCSPEAKER_CallBack(&buffer[written], n);
+				written += n;
 			}
 		}
 
-		if(total_samples_played >= cycle_samples)
+		total_samples_played += written;
+
+		if(total_samples_played >= total_samples)
 		{
 			finished = true;
 			pcspkr->SetOff();
 		}
 
-		// Scale down to ~12% volume - fire should be very subtle in original
+		// Scale down volume - fire is subtle
 		for(uint32 i = 0; i < written; i++)
 			buffer[i] = (sint16)(buffer[i] / 8);
 
@@ -681,61 +729,80 @@ public:
 
 	bool rewind()
 	{
-		startCycle();
+		total_samples_played = 0;
+		finished = false;
+		generatePattern();
+		pcspkr->SetOff();
 		return true;
 	}
 
 private:
-	void startCycle()
+	void generatePattern()
 	{
-		total_samples_played = 0;
-		step_index = 0;
-		step_remaining = step_samples;
-		finished = false;
+		// 3ms per click (same as clock)
+		click_len = (SPKR_OUTPUT_RATE * 3) / 1000;
+		if(click_len < 1) click_len = 1;
 
-		// Always schedule a burst each cycle, but randomize its start position.
-		// The original engine calls this routine frequently, so skipping bursts
-		// entirely here makes crackle too sparse in Nuvie.
-		if(steps_per_cycle > steps_per_burst)
-			burst_start_step = (int)(NUVIE_RAND() % (steps_per_cycle - steps_per_burst + 1));
-		else
-			burst_start_step = 0;
+		// Random 0-3 clicks per cycle
+		advanceRand();
+		click_count = rand_state % 4;  // 0, 1, 2, or 3
 
-		advanceStep();
+		for(int i = 0; i < click_count; i++)
+		{
+			// Random position within the cycle
+			advanceRand();
+			click_offsets[i] = rand_state % (total_samples - click_len);
+
+			// Random freq 2000-15000 Hz
+			advanceRand();
+			click_freqs[i] = (rand_state % 13001) + 2000;
+		}
+
+		// Sort by offset to avoid overlap issues
+		for(int i = 0; i < click_count - 1; i++)
+		{
+			for(int j = i + 1; j < click_count; j++)
+			{
+				if(click_offsets[j] < click_offsets[i])
+				{
+					uint32 tmp = click_offsets[i];
+					click_offsets[i] = click_offsets[j];
+					click_offsets[j] = tmp;
+					uint16 tmp2 = click_freqs[i];
+					click_freqs[i] = click_freqs[j];
+					click_freqs[j] = tmp2;
+				}
+			}
+		}
+
+		// Remove overlapping clicks
+		for(int i = 1; i < click_count; i++)
+		{
+			if(click_offsets[i] < click_offsets[i-1] + click_len)
+			{
+				click_offsets[i] = click_offsets[i-1] + click_len + (SPKR_OUTPUT_RATE / 100); // 10ms gap
+			}
+		}
 	}
 
-	void advanceStep()
+	void advanceRand()
 	{
-		bool in_burst = (burst_start_step >= 0 &&
-		                 step_index >= (uint32)burst_start_step &&
-		                 step_index < (uint32)burst_start_step + steps_per_burst);
-
-		// Original U6: if(OSI_rand(0, di + 7) == 0) - roughly 1 in 8 chance
-		// Use lower probability for more silence periods
-		if(in_burst && (NUVIE_RAND() % 8 == 0))
-		{
-			step_playing = true;
-			step_div = (uint16)((NUVIE_RAND() % 13001) + 2000); // frequency 2000-15000 Hz
-			pcspkr->SetOn();
-			pcspkr->SetFrequency(step_div);
-		}
-		else
-		{
-			step_playing = false;
-			pcspkr->SetOff();
-		}
+		rand_state += 0x9248;
+		rand_state &= 0xffff;
+		uint16 bits = rand_state & 0x7;
+		rand_state = (rand_state >> 3) + (bits << 13);
+		rand_state ^= 0x9248;
+		rand_state += 0x11;
+		rand_state &= 0xffff;
 	}
 
-	uint32 cycle_samples;
+	uint32 total_samples;
 	uint32 total_samples_played;
-	uint32 step_samples;
-	uint32 steps_per_cycle;
-	uint32 step_index;
-	uint32 step_remaining;
-	int burst_start_step;
-	uint32 steps_per_burst;
-	bool step_playing;
-	uint16 step_div;
+	uint32 click_len;
+	int click_count;            // 0-3 clicks per cycle
+	uint32 click_offsets[4];    // sample offset for each click
+	uint16 click_freqs[4];      // frequency for each click
+	uint16 rand_state;
 };
 //**************** PCSpeakerStutterStream
 
@@ -942,42 +1009,35 @@ Audio::AudioStream *makePCSpeakerEarthQuakeSfxStream(uint32 rate)
 }
 
 // Fountain sound based on original U6:
-// OSI_playNoise(10, 30, 25000) creates noise by rapid PIT frequency changes.
-// The physical PC Speaker can't reproduce this accurately - it becomes
-// filtered noise with a "dripping water" character (또로로록).
-// We simulate this with lowpass filtered white noise.
+// OSI_playNoise(10, 30, 25000) - rapid frequency changes create "noise"
+// Using same PC Speaker click method as clock, just very fast with random freq.
+// Each click needs enough samples to form audible tone (~1-2ms per click)
 Audio::AudioStream *makePCSpeakerFountainSfxStream(uint32 rate)
 {
-  // Fountain: soft, high-cutoff filtered noise (~40ms burst)
-  // 800Hz cutoff gives gentle "water dripping" character
-  // Low volume (0.3) for subtle ambient sound
-  return new PCSpeakerWaterNoiseStream(45, 800.0f, 0.3f);
+  // Fountain: rapid random-frequency clicks, like fast clock ticks
+  // tick=3ms (same as clock), gap=7ms (clean separation between clicks)
+  // ~6 clicks per cycle = ~60ms total
+  // Low freq range (200-800 Hz) for water dripping "또로로록" character
+  return new PCSpeakerRapidClickStream(3, 20, 3, 200, 800);
 }
 
 // Water wheel sound based on original U6:
-// OSI_playNoise(20, 60, 10000) - similar to fountain but slightly different.
-// Longer duration, slightly lower cutoff for "churning" character.
+// OSI_playNoise(20, 60, 10000) - similar to fountain, slightly different.
 Audio::AudioStream *makePCSpeakerWaterWheelSfxStream(uint32 rate)
 {
-  // Water wheel: slightly longer (~55ms), lower cutoff (600Hz) for deeper sound
-  return new PCSpeakerWaterNoiseStream(55, 600.0f, 0.35f);
+  // Water wheel: similar to fountain but slightly more clicks
+  // tick=3ms, gap=7ms, ~7 clicks = ~70ms total
+  return new PCSpeakerRapidClickStream(3, 20, 4, 200, 600);
 }
 
 // Fire/fireplace sound based on original U6:
-// case OBJ_0A4: case OBJ_0C9: case OBJ_130: case OBJ_13D: /*Fire*/
-//   if(OSI_rand(0, 3) == 0) {
-//     for(bp_02 = 0; bp_02 < 5; bp_02++) {
-//       if(OSI_rand(0, di + 7) == 0)
-//         OSI_sound(OSI_rand(2000, 15000));  // frequency (Hz)
-//       else
-//         OSI_nosound();
-//       OSI_sDelay(8, 1);
-//     }
-//   }
+// OSI_sound(OSI_rand(2000, 15000)) with ~25% play / 75% silence
+// Using same PC Speaker click method as clock.
 Audio::AudioStream *makePCSpeakerFireSfxStream(uint32 rate)
 {
-  // Fire crackle: sparse random bursts with silence (closer to U6 pattern)
-  return new PCSpeakerFireStream();
+  // Fire: random 0-3 clicks per cycle, scattered throughout ~55ms
+  // "탁", "타닥", "탁.." random pattern, volume /8
+  return new PCSpeakerFireClickStream();
 }
 
 // Clock sound based on original U6:
