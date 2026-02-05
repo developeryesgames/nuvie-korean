@@ -1,28 +1,17 @@
-﻿/*
+/*
  *  PCSpeaker.cpp
  *  Nuvie
  *
- *  Created by Eric Fry on Sun Feb 13 2011.
- *  Copyright (c) 2011. All rights reserved.
+ *  DOSBox-X style PC Speaker emulation
+ *  Ported from DOSBox-X pcspeaker.cpp for accurate PC speaker sound
  *
- *  DOSBox-style PC Speaker emulation - 2026
- *  Based on DOSBox's PIT timer + delay queue approach
- *  This accurately emulates the noise effects used in original U6
+ *  Original DOSBox code Copyright (C) 2002-2021 The DOSBox Team
+ *  This port Copyright (C) 2026 The Nuvie Team
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; either version 2
+ *  of the License, or (at your option) any later version.
  */
 
 #include <math.h>
@@ -33,270 +22,249 @@
 #include "mixer.h"
 #include "decoder/PCSpeaker.h"
 
-#define SPKR_VOLUME 5000
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+#define SPKR_VOLUME 10000
 
 PCSpeaker::PCSpeaker(uint32 mixer_rate)
 {
 	rate = mixer_rate;
 
-	// PIT state initialization
 	pit_divisor = 0;
 	pit_index = 0.0;
 	pit_max = 0.0;
 	pit_half = 0.0;
-	pit_output = true;  // DOSBox starts with output high
-	pit_output_level = (float)SPKR_VOLUME;
+	pit_new_max = 0.0;
+	pit_new_half = 0.0;
+	pit_output_level = true;
+	pit_mode3_counting = false;
 
-	// Gate state
-	enabled = false;
-	pit_gate = false;
+	// DOSBox-X: minimum_counter = PIT_TICK_RATE/(rate*10)
+	// This prevents aliasing from ultrasonic frequencies
+	minimum_counter = (uint32)(PIT_TICK_RATE / (rate * 10));
+	if(minimum_counter < 2)
+		minimum_counter = 2;
 
-	// Delay queue initialization
-	delay_write_index = 0;
-	delay_read_index = 0;
-	delay_base_index = 0.0;
-	memset(delay_entries, 0, sizeof(delay_entries));
+	pit_output_enabled = false;
+	pit_clock_gate_enabled = false;
 
-	// Volume - start at current output level, not zero
-	cur_vol = 0.0f;
-	target_vol = 0.0f;
+	delay_used = 0;
+	last_index = 0.0;
+	last_output_level = false;
+
+	volcur = 0.0;
+	volwant = 0.0;
+	// DOSBox-X: SPKR_SPEED = (SPKR_VOLUME*2*44100)/(0.010*rate)
+	// This controls the volume slew rate for click removal
+	spkr_speed = (double)((SPKR_VOLUME * 2 * 44100) / (0.010 * rate));
+
+	// DOSBox-X style lowpass filter: SetLowpassFreq(10000, 3)
+	// 10kHz cutoff, 3rd order filter
+	// tau = 1.0 / (freq * 2 * PI)
+	// alpha = timeInterval / (tau + timeInterval)
+	// timeInterval = 1.0 / rate
+	double lowpass_freq = 10000.0;
+	double timeInterval = 1.0 / (double)rate;
+	double tau = 1.0 / (lowpass_freq * 2.0 * M_PI);
+	lowpass_alpha = timeInterval / (tau + timeInterval);
+
+	// Initialize filter state for all orders
+	for(int i = 0; i < LOWPASS_ORDER; i++)
+		lowpass_state[i] = 0.0;
 
 	wav_length = 0;
+}
+
+void PCSpeaker::AddDelayEntry(double index, float output_level)
+{
+	// DOSBox-X: deduplicate identical consecutive levels
+	bool level = (output_level > 0.5f);
+	if(level == last_output_level)
+		return;
+	last_output_level = level;
+
+	if(delay_used >= SPKR_DELAY_ENTRIES)
+		return;
+
+	delay_entries[delay_used].index = index;
+	delay_entries[delay_used].output_level = level ? 1.0f : 0.0f;
+	delay_used++;
+}
+
+void PCSpeaker::ForwardPIT(double new_index)
+{
+	// DOSBox-X Mode 3 square wave generator
+	double passed = (new_index - last_index);
+	double delay_base = last_index;
+	last_index = new_index;
+
+	if(!pit_mode3_counting || pit_half <= 0.0)
+		return;
+
+	while(passed > 0.0)
+	{
+		if((pit_index + passed) >= pit_half)
+		{
+			double delay = pit_half - pit_index;
+			delay_base += delay;
+			passed -= delay;
+			pit_output_level = !pit_output_level;
+			if(pit_output_enabled)
+				AddDelayEntry(delay_base, pit_output_level ? 1.0f : 0.0f);
+			pit_index = 0.0;
+
+			// Apply pending divisor on toggle (Mode 3 behavior)
+			if(pit_new_half > 0.0) {
+				pit_half = pit_new_half;
+				pit_max = pit_new_max;
+			}
+		}
+		else
+		{
+			pit_index += passed;
+			return;
+		}
+	}
 }
 
 void PCSpeaker::SetOn()
 {
 	wav_length = 0;
-	enabled = true;
-	pit_gate = true;
+	pit_output_enabled = true;
+	pit_clock_gate_enabled = true;
+	pit_output_level = true;
+	pit_index = 0.0;
 
-	// DOSBox Mode 3: On rising edge of gate, reset PIT and start high
-	pit_index = 0;
-	pit_output = true;
-	pit_output_level = (float)SPKR_VOLUME;
-
-	// Add delay entry for speaker on
-	AddDelayEntry(delay_base_index, pit_output_level);
+	if(pit_half > 0.0)
+		pit_mode3_counting = true;
 }
 
 void PCSpeaker::SetOff()
 {
-	enabled = false;
-	pit_gate = false;
-	pit_output_level = 0.0f;
+	pit_output_enabled = false;
+	pit_clock_gate_enabled = false;
+	pit_mode3_counting = false;
+}
 
-	// When speaker turns off, add a delay entry to go to zero
-	AddDelayEntry(delay_base_index, 0.0f);
+void PCSpeaker::SetPITDivisor(uint32 divisor)
+{
+	if(divisor < minimum_counter)
+		divisor = minimum_counter;
+
+	pit_divisor = divisor;
+
+	if(divisor == 0) {
+		pit_new_max = pit_new_half = pit_max = pit_half = 0.0;
+		pit_mode3_counting = false;
+		return;
+	}
+
+	// DOSBox-X: pit_new_max = (1000.0f/PIT_TICK_RATE)*cntr
+	// Convert PIT divisor to milliseconds
+	pit_new_max = (1000.0 * (double)divisor) / (double)PIT_TICK_RATE;
+	pit_new_half = pit_new_max / 2.0;
+
+	if(!pit_mode3_counting)
+	{
+		pit_index = 0.0;
+		pit_max = pit_new_max;
+		pit_half = pit_new_half;
+		if(pit_output_enabled && pit_clock_gate_enabled)
+			pit_mode3_counting = true;
+	}
 }
 
 void PCSpeaker::SetFrequency(uint16 freq, float offset)
 {
-	if(freq == 0)
-	{
-		pit_divisor = 0;
-		pit_max = 0;
+	if(freq == 0) {
+		SetPITDivisor(0);
 		return;
 	}
 
 	// Convert Hz to PIT divisor: divisor = PIT_TICK_RATE / freq
-	uint32 divisor = PIT_TICK_RATE / freq;
-	if(divisor < 2) divisor = 2;  // Minimum divisor
-
+	uint32 divisor = (uint32)((double)PIT_TICK_RATE / (double)freq);
+	if(divisor == 0)
+		divisor = 1;
 	SetPITDivisor(divisor);
+
+	(void)offset;
 }
 
-// DOSBox-style: Set PIT divisor directly (more accurate)
-// This is called when the counter is written (like port 42h writes)
-void PCSpeaker::SetPITDivisor(uint32 divisor)
-{
-	if(divisor == pit_divisor)
-		return;
-
-	pit_divisor = divisor;
-
-	if(pit_divisor > 0)
-	{
-		// DOSBox Mode 3 timing calculation:
-		// pit_max = milliseconds per full PIT cycle
-		// pit_half = milliseconds per half cycle (when output toggles)
-		// Using same formula as DOSBox: (1000.0/PIT_TICK_RATE)*divisor
-		double new_max = ((double)pit_divisor * 1000.0) / (double)PIT_TICK_RATE;
-		double new_half = new_max / 2.0;
-
-		// DOSBox approach: update timing parameters
-		// Don't reset pit_index on frequency change - this preserves phase continuity
-		pit_max = new_max;
-		pit_half = new_half;
-
-		// If pit_index exceeds new cycle length, wrap it
-		if(pit_index > pit_max)
-			pit_index = fmod(pit_index, pit_max);
-	}
-	else
-	{
-		pit_max = 0;
-		pit_half = 0;
-	}
-}
-
-// Add entry to delay queue (DOSBox style)
-void PCSpeaker::AddDelayEntry(double index, float vol)
-{
-	// Don't add duplicate consecutive entries
-	if(delay_write_index > 0)
-	{
-		uint32 prev_idx = (delay_write_index - 1) % SPKR_DELAY_ENTRIES;
-		if(delay_entries[prev_idx].vol == vol)
-			return;
-	}
-
-	// If the queue is full, drop the oldest entry to avoid overwrite
-	if(delay_write_index - delay_read_index >= SPKR_DELAY_ENTRIES)
-	{
-		delay_read_index = delay_write_index - (SPKR_DELAY_ENTRIES - 1);
-	}
-
-	delay_entries[delay_write_index % SPKR_DELAY_ENTRIES].index = index;
-	delay_entries[delay_write_index % SPKR_DELAY_ENTRIES].vol = vol;
-	delay_write_index++;
-}
-
-// Advance PIT by given amount of time (milliseconds) - DOSBox Mode 3 (square wave)
-// In Mode 3, output toggles at HALF cycle, not full cycle
-void PCSpeaker::ForwardPIT(double amount_ms)
-{
-	if(!enabled || pit_max <= 0 || pit_half <= 0)
-		return;
-
-	double done = 0;
-	double start_index = delay_base_index;
-
-	while(done < amount_ms)
-	{
-		double remaining = amount_ms - done;
-
-		// Calculate time until next toggle (at pit_half boundary)
-		double time_to_toggle;
-		if(pit_output)
-		{
-			// Currently high - toggle when we reach pit_half
-			time_to_toggle = pit_half - pit_index;
-		}
-		else
-		{
-			// Currently low - toggle when we complete the cycle (pit_max)
-			time_to_toggle = pit_max - pit_index;
-		}
-
-		if(time_to_toggle <= 0)
-		{
-			// Toggle immediately
-			pit_output = !pit_output;
-			pit_output_level = pit_output ? (float)SPKR_VOLUME : (float)(-SPKR_VOLUME);
-			AddDelayEntry(start_index + done, pit_output_level);
-
-			// Reset pit_index when going from low to high (completing cycle)
-			if(pit_output)
-				pit_index = 0;
-		}
-		else if(time_to_toggle <= remaining)
-		{
-			// We'll reach a toggle point within this amount
-			done += time_to_toggle;
-			pit_index += time_to_toggle;
-
-			// Toggle output
-			pit_output = !pit_output;
-			pit_output_level = pit_output ? (float)SPKR_VOLUME : (float)(-SPKR_VOLUME);
-			AddDelayEntry(start_index + done, pit_output_level);
-
-			// Reset pit_index when completing cycle (going back to high)
-			if(pit_output)
-				pit_index = 0;
-		}
-		else
-		{
-			// No toggle in this period
-			pit_index += remaining;
-			done = amount_ms;
-		}
-	}
-}
-
-// DOSBox-style sample generation using delay queue (time in milliseconds)
 void PCSpeaker::PCSPEAKER_CallBack(sint16 *stream, const uint32 len)
 {
-	const double sample_ms = 1000.0 / (double)rate;
+	if(len == 0)
+		return;
+
+	// Simplified direct square wave generation
+	// Instead of complex delay queue, generate samples directly
+	//
+	// pit_half is in milliseconds
+	// sample_period_ms = 1000/rate milliseconds per sample
+
+	double sample_period_ms = 1000.0 / (double)rate;
+
 	for(uint32 i = 0; i < len; i++)
 	{
-		double sample_start = delay_base_index;
-		double sample_end = delay_base_index + sample_ms;
+		double target_vol;
 
-		// Advance PIT for this sample (this adds entries to delay queue)
-		if(enabled && pit_max > 0)
+		if(!pit_output_enabled || !pit_mode3_counting || pit_half <= 0.0)
 		{
-			ForwardPIT(sample_ms);
+			// Speaker off - target silence
+			target_vol = 0.0;
 		}
-
-		// Process delay queue entries within this sample period
-		// Calculate average volume over the sample period (like DOSBox)
-		double total_vol = 0.0;
-		double last_index = sample_start;
-
-		// Use pit_output_level as the current volume state
-		// This ensures we have the correct volume even when no queue entries exist
-		float last_vol = pit_output_level;
-
-		// If speaker is disabled, volume is 0
-		if(!enabled)
-			last_vol = 0.0f;
-
-		while(delay_read_index < delay_write_index)
+		else
 		{
-			PCSpeakerDelayEntry& entry = delay_entries[delay_read_index % SPKR_DELAY_ENTRIES];
+			// Advance PIT counter by one sample period
+			pit_index += sample_period_ms;
 
-			if(entry.index >= sample_end)
-				break;
-
-			// Accumulate volume for the period before this entry
-			if(entry.index > last_index)
+			// Mode 3: toggle output at pit_half intervals
+			while(pit_index >= pit_half)
 			{
-				total_vol += last_vol * (entry.index - last_index);
-				last_index = entry.index;
+				pit_index -= pit_half;
+				pit_output_level = !pit_output_level;
+
+				// Apply pending divisor on toggle
+				if(pit_new_half > 0.0)
+				{
+					pit_half = pit_new_half;
+					pit_max = pit_new_max;
+				}
 			}
 
-			last_vol = entry.vol;
-			delay_read_index++;
+			target_vol = pit_output_level ? (double)SPKR_VOLUME : 0.0;
 		}
 
-		// Accumulate remaining period with current volume
-		if(sample_end > last_index)
+		// Volume slewing for click removal
+		// spkr_speed is volume change per 1ms (index unit)
+		// Scale to per-sample: max_change = spkr_speed * sample_period_ms
+		double vol_diff = target_vol - volcur;
+		if(vol_diff != 0.0)
 		{
-			total_vol += last_vol * (sample_end - last_index);
+			double max_change = spkr_speed * sample_period_ms;
+			if(fabs(vol_diff) <= max_change)
+			{
+				volcur = target_vol;
+			}
+			else if(vol_diff > 0)
+			{
+				volcur += max_change;
+			}
+			else
+			{
+				volcur -= max_change;
+			}
 		}
 
-		// Total volume is weighted average over the sample period
-		const double sample_value = (sample_ms > 0.0) ? (total_vol / sample_ms) : 0.0;
-		stream[i] = (sint16)sample_value;
-
-		// Update cur_vol for fade-out when disabled
-		cur_vol = (float)sample_value;
-
-		delay_base_index = sample_end;
-	}
-
-	// Compact delay queue periodically
-	if(delay_base_index > 100000)
-	{
-		double adjust = delay_base_index - 1000;
-		delay_base_index -= adjust;
-
-		for(uint32 j = delay_read_index; j < delay_write_index; j++)
+		// Apply 3rd order lowpass filter (DOSBox-X style)
+		double filtered = volcur;
+		for(int order = 0; order < LOWPASS_ORDER; order++)
 		{
-			delay_entries[j % SPKR_DELAY_ENTRIES].index -= adjust;
+			lowpass_state[order] += lowpass_alpha * (filtered - lowpass_state[order]);
+			filtered = lowpass_state[order];
 		}
+
+		stream[i] = (sint16)filtered;
 	}
 }
-
-
-

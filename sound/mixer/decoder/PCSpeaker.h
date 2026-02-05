@@ -29,8 +29,8 @@
 
 // DOSBox-style delay entry for tracking speaker state changes
 struct PCSpeakerDelayEntry {
-	double index;      // Time index (in milliseconds)
-	float vol;         // Volume level at this point
+	double index;       // Time index within a 1ms PIC tick (0.0 .. 1.0)
+	float output_level; // -1.0, 0.0, +1.0 (speaker output level)
 };
 
 #define SPKR_DELAY_ENTRIES 8192
@@ -44,31 +44,39 @@ private:
 	double pit_index;               // Current position in PIT cycle (milliseconds)
 	double pit_max;                 // PIT cycle length in milliseconds (full cycle)
 	double pit_half;                // Half cycle length in milliseconds (for Mode 3)
-	bool pit_output;                // Current PIT output state (high/low)
-	float pit_output_level;         // Current output level (+/- SPKR_VOLUME)
+	double pit_new_max;             // Pending cycle length (applied on next toggle)
+	double pit_new_half;            // Pending half-cycle length (applied on next toggle)
+	bool pit_output_level;          // Current PIT output state (high/low)
+	bool pit_mode3_counting;        // Mode 3 running state (DOSBox behavior)
+	uint32 minimum_counter;         // Clamp high frequencies to avoid aliasing
 
-	// Speaker gate state
-	bool enabled;                   // Speaker enabled (port 61h bit 1)
-	bool pit_gate;                  // PIT gate (port 61h bit 0)
+	// Speaker gate state (port 61h bits)
+	bool pit_output_enabled;        // Speaker output enabled (bit 1)
+	bool pit_clock_gate_enabled;    // PIT clock gate enabled (bit 0)
 
 	// DOSBox-style delay queue for smooth transitions
 	PCSpeakerDelayEntry delay_entries[SPKR_DELAY_ENTRIES];
-	uint32 delay_write_index;
-	uint32 delay_read_index;
-	double delay_base_index;        // Base time index for delay queue (milliseconds)
+	uint32 delay_used;
+	double last_index;              // Last PIC tick index (0.0 .. 1.0)
+	bool last_output_level;         // For de-duplication of delay entries
 
-	// Volume state
-	float cur_vol;                  // Current output volume
-	float target_vol;               // Target volume (for smooth transitions)
+	// Volume state (DOSBox-style)
+	double volcur;
+	double volwant;
+	double spkr_speed;
+
+	// Lowpass filter state (DOSBox-style multi-order RC filter)
+	static const int LOWPASS_ORDER = 3;  // 3rd order like DOSBox-X
+	double lowpass_state[LOWPASS_ORDER]; // Filter state per order
+	double lowpass_alpha;                // Filter coefficient (16.16 fixed point style)
 
 	// For WAV output (debug)
 	NuvieIOFileWrite dataFile;
 	uint32 wav_length;
 
 	// Internal methods
-	void AddDelayEntry(double index, float vol);
-	void ForwardPIT(double amount_ms);
-	float GetVolume();
+	void AddDelayEntry(double index, float output_level);
+	void ForwardPIT(double new_index);
 
 public:
 	PCSpeaker(uint32 mixer_rate);
