@@ -672,6 +672,10 @@ public:
 			pcspkr->SetOff();
 		}
 
+		// Scale down to ~12% volume - fire should be very subtle in original
+		for(uint32 i = 0; i < written; i++)
+			buffer[i] = (sint16)(buffer[i] / 8);
+
 		return written;
 	}
 
@@ -986,7 +990,7 @@ Audio::AudioStream *makePCSpeakerClockSfxStream(uint32 rate)
   // Tick/tock at ~18.2Hz game ticks: tick at 0, tock at 8 (period = 16 ticks)
   // Original delay depends on CPU speed calibration (D_2FC6).
   // Use longer duration for audible tick/tock (~20-30ms each)
-  const uint32 tick_len = (SPKR_OUTPUT_RATE * 25) / 1000;  // 25ms tick duration
+  const uint32 tick_len = (SPKR_OUTPUT_RATE * 3) / 1000;  // 3ms tick duration
   const uint32 period_len = pcspkr_clock_period_samples();
   // Hz frequencies: 3000 Hz (high tick), 2000 Hz (lower tock)
   return new PCSpeakerTickStream(3000, 2000, tick_len, period_len);
