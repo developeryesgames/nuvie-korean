@@ -243,12 +243,13 @@ bool PartyPathFinder::follow_passA(uint32 p)
  * Pass 2 uses same eager calculation but allows movement even when
  * already contiguous, to help catch up to the party.
  */
-bool PartyPathFinder::follow_passB(uint32 p)
+bool PartyPathFinder::follow_passB(uint32 p, bool pass_action)
 {
     bool contiguous = is_contiguous(p);
+    bool at_target = is_at_target(p);
 
-    // If already at target and contiguous, done
-    if(contiguous && is_at_target(p))
+    // Already in position and chained to the party.
+    if(contiguous && at_target)
         return true;
 
     MapCoord member_loc = party->get_location(p);
@@ -270,9 +271,16 @@ bool PartyPathFinder::follow_passB(uint32 p)
     Map *map = game->get_game_map();
     if(!map) return true;
 
-    // Pass 2: check if we need to move (original U6 pass 2 conditions)
-    // Move if not contiguous OR not at target position
-    bool need_move = !contiguous || !is_at_target(p);
+    // Original U6 second-pass behavior:
+    // - pass_action (aFlag=1): try to move if not already at target.
+    // - normal move (aFlag=0): try to move only if target is ahead.
+    bool need_move = false;
+    if(!contiguous)
+        need_move = true;
+    else if(pass_action)
+        need_move = !at_target;
+    else if(leader_moved_away(p) && is_behind_target(p))
+        need_move = true;
 
     if(need_move)
     {
@@ -282,18 +290,16 @@ bool PartyPathFinder::follow_passB(uint32 p)
             sint8 dy = dir_y[dir];
             MapCoord try_loc = member_loc.abs_coords(dx, dy);
 
-            // Check if move is possible - allow dangerous tiles
+            // Check if move is possible - allow dangerous tiles.
             ActorMoveFlags flags = ACTOR_IGNORE_MOVES | ACTOR_IGNORE_DANGER;
             if(!actor->check_move(try_loc.x, try_loc.y, try_loc.z, flags))
                 continue;
 
-            // Check if this is a damaging tile
             bool is_danger = map->is_damaging(try_loc.x, try_loc.y, try_loc.z);
 
             sint32 eager;
             if(is_danger)
             {
-                // In pass 2, still skip danger tiles if currently contiguous
                 if(contiguous)
                     continue;
                 eager = 128;
@@ -303,13 +309,11 @@ bool PartyPathFinder::follow_passB(uint32 p)
                 eager = 256;
             }
 
-            // Contiguous bonus
             if(is_contiguous(p, try_loc))
                 eager += 256;
-            else if(contiguous && is_at_target(p))
-                eager = 0;  // Only refuse to break contiguity if already at target
+            else if(contiguous)
+                eager = 0;
 
-            // Subtract manhattan distance to target
             eager -= abs((sint32)try_loc.x - (sint32)target_loc.x);
             eager -= abs((sint32)try_loc.y - (sint32)target_loc.y);
 
@@ -327,13 +331,13 @@ bool PartyPathFinder::follow_passB(uint32 p)
             MapCoord dest = member_loc.abs_coords(best_dx, best_dy);
             if(actor->move(dest.x, dest.y, dest.z, ACTOR_IGNORE_MOVES | ACTOR_IGNORE_DANGER))
             {
-                // Don't call set_direction here - Party::follow will call it once based on total movement
+                // Don't call set_direction here - Party::follow handles final direction.
                 return true;
             }
         }
     }
 
-    // Still not contiguous after pass 2 - will trigger seek mode in Party::follow()
+    // Still not contiguous after pass 2 - Party::follow will trigger seek mode.
     if(!is_contiguous(p))
         return false;
 

@@ -528,9 +528,9 @@ void Party::follow(sint8 rel_x, sint8 rel_y)
         return;
     }
 
-    // If leader didn't move (pass action), don't move party members
-    if(rel_x == 0 && rel_y == 0)
-        return;
+    // Pass action (or stationary regroup) still needs follow logic.
+    // This is used by pass/teleport/level-change fall-in behavior.
+    bool pass_action = (rel_x == 0 && rel_y == 0);
 
     defer_removing_dead_members = true;
 
@@ -571,7 +571,7 @@ void Party::follow(sint8 rel_x, sint8 rel_y)
 
         if(try_again[p])
             pathfinder->follow_passA(p);
-        pathfinder->follow_passB(p);
+        pathfinder->follow_passB(p, pass_action);
         if(!pathfinder->is_contiguous(p))
         {
             sint8 l = get_leader();

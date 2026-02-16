@@ -29,7 +29,7 @@ public:
     ~PartyPathFinder();
 
     bool follow_passA(uint32 p); // returns true if party member p moved
-    bool follow_passB(uint32 p);
+    bool follow_passB(uint32 p, bool pass_action);
     void seek_leader(uint32 p);
     void end_seek(uint32 p);
 

@@ -576,7 +576,27 @@ void Player::move(sint16 new_x, sint16 new_y, uint8 new_level, bool teleport)
            return;
        }
        party->move(new_x, new_y, new_level); // center everyone first
-       party->follow(0, 0); // then try to move them to correct positions
+
+       // Original U6 PartyExit() behavior runs multiple follower passes after teleport.
+       for(uint8 fall_in_pass = 0; fall_in_pass < 5; ++fall_in_pass)
+       {
+           party->follow(0, 0);
+
+           bool all_in_position = true;
+           for(uint8 p = 1; p < party->get_party_size(); ++p)
+           {
+               Actor *follower = party->get_actor(p);
+               if(follower == NULL)
+                   continue;
+
+               follower->update();
+               if(follower->get_location() != party->get_formation_coords(p))
+                   all_in_position = false;
+           }
+
+           if(all_in_position)
+               break;
+       }
       }
     actor_manager->updateActors(new_x, new_y, new_level);
     if(teleport && new_level != 0 && new_level != 5)
