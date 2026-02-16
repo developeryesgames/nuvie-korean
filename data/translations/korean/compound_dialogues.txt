@@ -44,7 +44,7 @@
 75|*\n\n"That big, carefully wrapped bundle could only be a dragon's egg!"|*\n\n"그렇게 크고 조심스럽게 싸인 보따리는 용의 알이 분명해!"
 76|"All right! If thou wouldst but promise to keep my secret, I'll give thee the map!"\n\n"Agreed?"|"좋소! 내 비밀을 지켜주겠다고 약속만 한다면, 지도를 드리겠소!"\n\n"동의하겠소?"
 79|"Excellent!"\n\nAfter accepting $Y's gold, $N hands over the $1.|"훌륭해요!"\n\n$Y의 금화를 받은 후, $N이 $1(을)를 건네주었다.
-92|"I govern @New Magincia."\n\n*"Fortunately the fine people of this town have few disputes to settle, leaving me plenty of time for my @hobby."|"나는 @뉴 마진시아(New Magincia) 를 다스리고 있소."\n\n*"다행히 이 마을의 선량한 백성들은 다툼이 거의 없어, 내 @취미(hobby) 에 쏟을 시간이 아주 많다오."
+92|"I govern @New Magincia."\n\n*"Fortunately the fine people of this town have few disputes to settle, leaving me plenty of time for my @hobby."|"나는 @뉴마진시아(New Magincia) 를 다스리고 있소."\n\n*"다행히 이 마을의 선량한 백성들은 다툼이 거의 없어, 내 @취미(hobby) 에 쏟을 시간이 아주 많다오."
 92|"Splendid!" Antonio reaches into his pocket and takes out a balloon.\n*\nHe blows it up until it bursts, and four doves appear from inside it, flying off towards the four points of the compass.*\n\n"Did you enjoy that?"|"훌륭하군!" 안토니오가 주머니에서 풍선을 하나 꺼낸다.\n*\n그가 풍선을 불자 펑 하고 터지더니, 안에서 네 마리의 비둘기가 나타나 동서남북 사방으로 날아간다.*\n\n"즐거우셨소?"
 95|"Many thanks!"\n\nAfter accepting $Y's gold, $N hands over the cloth.|"정말 고마워요!"\n\n$Y의 금화를 받은 후, $N이 천을 건네준다.
 110|*\n\n"Drink up and enjoy, for who knows what tomorrow may bring?"|*\n\n"맛있게 드시오, 내일 무슨 일이 벌어질지 누가 알겠소?"

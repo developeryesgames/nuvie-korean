@@ -1048,6 +1048,20 @@ std::string KoreanTranslation::getDialogueTranslation(uint16 npc_num, const std:
     while (!trimmed.empty() && (trimmed.back() == ' ' || trimmed.back() == '\n' || trimmed.back() == '\r' || trimmed.back() == '*' || trimmed.back() == '\'' || trimmed.back() == '"'))
         trimmed.pop_back();
 
+    // FM Towns page break: remove all '{' characters before lookup
+    // In FM Towns, '{' acts as a page break marker within dialogue text.
+    // These are embedded in the text stream and must be stripped for translation matching.
+    {
+        size_t brace_pos;
+        while ((brace_pos = trimmed.find('{')) != std::string::npos)
+            trimmed.erase(brace_pos, 1);
+        // Re-trim after brace removal (may leave trailing whitespace/newlines)
+        while (!trimmed.empty() && (trimmed.back() == ' ' || trimmed.back() == '\n' || trimmed.back() == '\r' || trimmed.back() == '*'))
+            trimmed.pop_back();
+        while (!trimmed.empty() && (trimmed[0] == ' ' || trimmed[0] == '\n' || trimmed[0] == '\r'))
+            trimmed.erase(0, 1);
+    }
+
     // Try direct lookup first (for complete text)
     std::string result = lookupSingleDialogue(npc_num, trimmed);
     if (!result.empty())

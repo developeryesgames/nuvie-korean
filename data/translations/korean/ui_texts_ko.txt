@@ -876,7 +876,8 @@ courage|용기
 \nSwitch the lever, strange, nothing happened.\n|\n레버를 당겼지만, 이상하게 아무 일도 없습니다.\n
 \nOperate the switch, you hear a noise.\n|\n스위치를 작동하니 소리가 납니다.\n
 \nOperate the switch, strange, nothing happened.\n|\n스위치를 작동했지만, 이상하게 아무 일도 없습니다.\n
- the passthrough.\n| 통로.\n
+\nOpen the passthrough.\n|\n통로를 엽니다.\n
+\nClose the passthrough.\n|\n통로를 닫습니다.\n
 
 # Horse messages
 Sherry says: "Eeek!!! I'm afraid of horses!"\n|셰리가 말합니다: "으악!!! 말이 무서워요!"\n

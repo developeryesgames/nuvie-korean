@@ -619,9 +619,9 @@ bool U6UseCode::use_passthrough(Obj *obj, UseCodeEvent ev)
      obj->frame_n = new_frame_n;
      if(print)
        {
-        scroll->display_string("\n");
-        scroll->display_string(action_string);
-        scroll->display_string(" the passthrough.\n");
+        char msg[64];
+        snprintf(msg, sizeof(msg), "\n%s the passthrough.\n", action_string);
+        scroll->display_string(msg);
        }
     }
  else if(print)

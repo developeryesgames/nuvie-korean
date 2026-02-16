@@ -1028,9 +1028,6 @@ void SoundManager::update_map_sfx ()
   Player *p = Game::get_game ()->get_player ();
   MapWindow *mw = Game::get_game ()->get_map_window ();
 
-  DEBUG(0, LEVEL_INFORMATIONAL, "update_map_sfx: ViewableObjects=%d, ActiveSounds=%d, SfxManager=%p\n",
-        (int)mw->m_ViewableObjects.size(), (int)m_ActiveSounds.size(), m_SfxManager);
-
   vector < SfxIdType >currentlyActiveSounds;
   map < SfxIdType, float >volumeLevels;
 
@@ -1052,7 +1049,6 @@ void SoundManager::update_map_sfx ()
           float vol = (8.0f - dist) / 8.0f;
           if (vol <= 0)
             continue;  // Too far away, skip this sound
-          DEBUG(0, LEVEL_DEBUGGING, "Found SFX object: obj_n=%d -> sfx_id=%d dist=%.1f\n", obj_n, sfx_id, dist);
           //sp->SetVolume(vol);
           //need the map to adjust volume according to number of active elements
           std::map < SfxIdType, float >::iterator it;
@@ -1113,7 +1109,6 @@ void SoundManager::update_map_sfx ()
           //currentlyActiveSounds[i]->SetVolume (0);
           SoundManagerSfx sfx;
           sfx.sfx_id = currentlyActiveSounds[i];
-          DEBUG(0, LEVEL_INFORMATIONAL, "Trying to play ambient SFX: %d\n", sfx.sfx_id);
           SfxManager *first_mgr = m_SfxManager;
           SfxManager *second_mgr = NULL;
           if(custom_sfx_enabled && m_FallbackSfxManager)
@@ -1123,17 +1118,11 @@ void SoundManager::update_map_sfx ()
           }
           if(first_mgr->playSfxLooping(sfx.sfx_id, &sfx.handle, 0))
           {
-        	  DEBUG(0, LEVEL_INFORMATIONAL, "First SfxManager played SFX: %d\n", sfx.sfx_id);
         	  m_ActiveSounds.push_back(sfx);
           }
           else if(second_mgr && second_mgr->playSfxLooping(sfx.sfx_id, &sfx.handle, 0))
           {
-        	  DEBUG(0, LEVEL_INFORMATIONAL, "Second SfxManager played SFX: %d\n", sfx.sfx_id);
         	  m_ActiveSounds.push_back(sfx);
-          }
-          else
-          {
-        	  DEBUG(0, LEVEL_INFORMATIONAL, "No SfxManager could play SFX: %d (fallback=%p)\n", sfx.sfx_id, m_FallbackSfxManager);
           }
         }
     }
@@ -1148,7 +1137,6 @@ void SoundManager::update_map_sfx ()
       if (fit == currentlyActiveSounds.end ())
         {                       //its not, stop this sound from playing.
           //sfx_id->Stop ();
-          DEBUG(0, LEVEL_INFORMATIONAL, "Stopping ambient SFX: %d\n", sfx.sfx_id);
     	  mixer->getMixer()->stopHandle(sfx.handle);
           it = m_ActiveSounds.erase (it);
         }
@@ -1322,8 +1310,6 @@ bool SoundManager::isSoundPLaying(Audio::SoundHandle handle)
 
 bool SoundManager::playSfx(uint16 sfx_id, bool async)
 {
-	DEBUG(0, LEVEL_INFORMATIONAL, "playSfx: id=%d async=%d\n", sfx_id, async);
-
 	if(m_SfxManager == NULL || audio_enabled == false || sfx_enabled == false)
 		return false;
 

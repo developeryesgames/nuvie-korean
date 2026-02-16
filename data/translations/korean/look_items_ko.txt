@@ -307,7 +307,7 @@
 541|floor|바닥
 542|floor|바닥
 543|floor|바닥
-544|sling|투석기
+544|sling|투석구
 545|club|곤봉
 546|main gauche|망고슈
 547|spear|창

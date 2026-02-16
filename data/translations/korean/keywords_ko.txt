@@ -860,3 +860,23 @@
 우스개|joke
 노래하기|sing
 도로|road
+
+# 복합 한글 키워드 (공백 없이 붙여쓴 것)
+이올로활|iolo
+정직의성소|shri
+정직의룬|rune
+검과통|pub
+정의의룬|rune
+희생의룬|rune
+아이버회랑|iver
+날개없는자|wing
+사자휴버트|hube
+겸손의신전|shri
+씨없는포도|seed
+지식의전당|hall
+특이점의사원|temp
+닥터캣|cat
+죽은자|dead
+말도안되는구려|absu
+옴두야프|omdu
+린|lynn
