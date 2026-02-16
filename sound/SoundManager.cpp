@@ -59,16 +59,63 @@ typedef struct // obj sfx lookup
     SfxIdType sfx_id;
 } ObjSfxLookup;
 
-#define SOUNDMANANGER_OBJSFX_TBL_SIZE 5
+typedef struct // tile sfx lookup
+{
+    uint16 tile_num;
+    SfxIdType sfx_id;
+} TileSfxLookup;
+
+#define SOUNDMANANGER_OBJSFX_TBL_SIZE 14
+#define SOUNDMANAGER_TILESFX_TBL_SIZE 28
 
 static const ObjSfxLookup u6_obj_lookup_tbl[] = {
 		{OBJ_U6_FOUNTAIN, NUVIE_SFX_FOUNTAIN},
 		{OBJ_U6_FIREPLACE, NUVIE_SFX_FIRE},
+		{OBJ_U6_FIREPLACE_LIT, NUVIE_SFX_FIRE},
+		{OBJ_U6_CAMPFIRE, NUVIE_SFX_FIRE},
+		{OBJ_U6_COOK_FIRE, NUVIE_SFX_FIRE},
+		{OBJ_U6_FORGE_FIRE, NUVIE_SFX_FIRE},
+		{OBJ_U6_FIRE_FIELD, NUVIE_SFX_FIRE},
+		{OBJ_U6_TORCH, NUVIE_SFX_FIRE},
+		{OBJ_U6_CANDLE, NUVIE_SFX_FIRE},
+		{OBJ_U6_CANDELABRA, NUVIE_SFX_FIRE},
+		{OBJ_U6_BRAZIER, NUVIE_SFX_FIRE},
 		{OBJ_U6_CLOCK, NUVIE_SFX_CLOCK},
 		{OBJ_U6_PROTECTION_FIELD, NUVIE_SFX_PROTECTION_FIELD},
 		{OBJ_U6_WATER_WHEEL, NUVIE_SFX_WATER_WHEEL}
 };
 
+// Tile-based ambient SFX (tile numbers from U6 tile index)
+static const TileSfxLookup u6_tile_lookup_tbl[] = {
+		{698, NUVIE_SFX_CLOCK},
+		{699, NUVIE_SFX_CLOCK},
+		{716, NUVIE_SFX_FIRE}, // fireplace
+		{717, NUVIE_SFX_FIRE},
+		{718, NUVIE_SFX_FIRE},
+		{719, NUVIE_SFX_FIRE},
+		{788, NUVIE_SFX_FIRE}, // fire
+		{789, NUVIE_SFX_FIRE},
+		{790, NUVIE_SFX_FIRE},
+		{791, NUVIE_SFX_FIRE},
+		{796, NUVIE_SFX_FIRE}, // brazier
+		{797, NUVIE_SFX_FIRE},
+		{798, NUVIE_SFX_FIRE},
+		{799, NUVIE_SFX_FIRE},
+		{860, NUVIE_SFX_FOUNTAIN},
+		{889, NUVIE_SFX_FIRE}, // campfire
+		{890, NUVIE_SFX_FIRE},
+		{1008, NUVIE_SFX_WATER_WHEEL},
+		{1122, NUVIE_SFX_FIRE}, // cookfire
+		{1123, NUVIE_SFX_FIRE},
+		{1126, NUVIE_SFX_FIRE},
+		{1127, NUVIE_SFX_FIRE},
+		{1128, NUVIE_SFX_FIRE},
+		{1129, NUVIE_SFX_FIRE},
+		{1132, NUVIE_SFX_FIRE},
+		{1133, NUVIE_SFX_FIRE},
+		{1164, NUVIE_SFX_FIRE}, // fire field
+		{1166, NUVIE_SFX_PROTECTION_FIELD}
+};
 
 
 bool SoundManager::g_MusicFinished;
@@ -87,6 +134,7 @@ SoundManager::SoundManager ()
   audio_enabled = false;
   music_enabled = false;
   sfx_enabled = false;
+  custom_sfx_enabled = false;
 
   m_Config = NULL;
   m_SfxManager = NULL;
@@ -176,6 +224,9 @@ bool SoundManager::nuvieStartup (Configuration * config)
   config_key = config_get_game_key(config);
   config_key.append("/sfx");
   config->value (config_key, sfx_style, "native");
+
+  // Custom SFX toggle: default off unless explicitly set in config
+  m_Config->value("config/audio/custom_sfx_enabled", custom_sfx_enabled, false);
 
   config_key = config_get_game_key(config);
   config_key.append("/sounddir");
@@ -771,7 +822,7 @@ bool SoundManager::LoadSfxManager(string sfx_style)
 	{
 		m_SfxManager = new PCSpeakerSfxManager(m_Config, mixer->getMixer());
 	}
-	if(sfx_style == "adlib")
+	else if(sfx_style == "adlib")
 	{
 		m_SfxManager = new AdLibSfxManager(m_Config, mixer->getMixer());
 	}
@@ -782,11 +833,21 @@ bool SoundManager::LoadSfxManager(string sfx_style)
 	}
 	else if(sfx_style == "custom")
 	{
-		m_SfxManager = new CustomSfxManager(m_Config, mixer->getMixer());
-		// Create fallback PC Speaker manager for unmapped SFX
-		m_FallbackSfxManager = new PCSpeakerSfxManager(m_Config, mixer->getMixer());
+		m_SfxManager = new PCSpeakerSfxManager(m_Config, mixer->getMixer());
+		m_FallbackSfxManager = new CustomSfxManager(m_Config, mixer->getMixer());
 	}
-//FIXME what to do if unknown sfx_style is entered in config file.
+
+	// For non-custom sfx styles, try to load CustomSfxManager if sfxdir is configured
+	if(sfx_style != "custom")
+	{
+		std::string sfxdir_path;
+		m_Config->pathFromValue("config/ultima6/sfxdir", "", sfxdir_path);
+		if(!sfxdir_path.empty())
+		{
+			m_FallbackSfxManager = new CustomSfxManager(m_Config, mixer->getMixer());
+		}
+	}
+
 	return true;
 }
 
@@ -967,8 +1028,8 @@ void SoundManager::update_map_sfx ()
   Player *p = Game::get_game ()->get_player ();
   MapWindow *mw = Game::get_game ()->get_map_window ();
 
-  DEBUG(0, LEVEL_INFORMATIONAL, "update_map_sfx: ViewableObjects=%d, SfxManager=%p, FallbackSfxManager=%p\n",
-        (int)mw->m_ViewableObjects.size(), m_SfxManager, m_FallbackSfxManager);
+  DEBUG(0, LEVEL_INFORMATIONAL, "update_map_sfx: ViewableObjects=%d, ActiveSounds=%d, SfxManager=%p\n",
+        (int)mw->m_ViewableObjects.size(), (int)m_ActiveSounds.size(), m_SfxManager);
 
   vector < SfxIdType >currentlyActiveSounds;
   map < SfxIdType, float >volumeLevels;
@@ -980,8 +1041,8 @@ void SoundManager::update_map_sfx ()
   //get a list of all the sounds
   for (i = 0; i < mw->m_ViewableObjects.size(); i++)
     {
-      //DEBUG(0,LEVEL_DEBUGGING,"%d %s",mw->m_ViewableObjects[i]->obj_n,Game::get_game()->get_obj_manager()->get_obj_name(mw->m_ViewableObjects[i]));
-      SfxIdType sfx_id = RequestObjectSfxId(mw->m_ViewableObjects[i]->obj_n); //does this object have an associated sound?
+      uint16 obj_n = mw->m_ViewableObjects[i]->obj_n;
+      SfxIdType sfx_id = RequestObjectSfxId(obj_n); //does this object have an associated sound?
       if (sfx_id != NUVIE_SFX_NONE)
         {
           //calculate the volume
@@ -989,8 +1050,9 @@ void SoundManager::update_map_sfx ()
           uint16 oy = mw->m_ViewableObjects[i]->y;
           float dist = sqrtf ((float) (x - ox) * (x - ox) + (float) (y - oy) * (y - oy));
           float vol = (8.0f - dist) / 8.0f;
-          if (vol < 0)
-            vol = 0;
+          if (vol <= 0)
+            continue;  // Too far away, skip this sound
+          DEBUG(0, LEVEL_DEBUGGING, "Found SFX object: obj_n=%d -> sfx_id=%d dist=%.1f\n", obj_n, sfx_id, dist);
           //sp->SetVolume(vol);
           //need the map to adjust volume according to number of active elements
           std::map < SfxIdType, float >::iterator it;
@@ -1008,44 +1070,38 @@ void SoundManager::update_map_sfx ()
           currentlyActiveSounds.push_back (sfx_id);
         }
     }
-  /*
-  for (i = 0; i < mw->m_ViewableTiles.size(); i++)
+  // Tile-based ambient SFX
+  const std::vector<TileInfo> &viewable_tiles = mw->get_viewable_map_tiles();
+  for (i = 0; i < viewable_tiles.size(); i++)
     {
-      Sound *sp = RequestTileSound (mw->m_ViewableTiles[i].t->tile_num);        //does this object have an associated sound?
-      if (sp != NULL)
+      const TileInfo &ti = viewable_tiles[i];
+      if(ti.t == NULL)
+        continue;
+
+      SfxIdType sfx_id = RequestTileSfxId(ti.t->tile_num);
+      if (sfx_id == NUVIE_SFX_NONE)
+        continue;
+
+      sint16 tx = mw->get_cur_x() + (sint16)ti.x;
+      sint16 ty = mw->get_cur_y() + (sint16)ti.y;
+      float dist = sqrtf ((float) (x - tx) * (x - tx) + (float) (y - ty) * (y - ty));
+      float vol = (8.0f - dist) / 8.0f;
+      if (vol <= 0)
+        continue;
+
+      std::map < SfxIdType, float >::iterator it;
+      it = volumeLevels.find (sfx_id);
+      if (it != volumeLevels.end ())
         {
-          //calculate the volume
-          short ox = mw->m_ViewableTiles[i].x - 5;
-          short oy = mw->m_ViewableTiles[i].y - 5;
-//                      DEBUG(0,LEVEL_DEBUGGING,"%d %d\n",ox,oy);
-          float dist = sqrtf ((float) (ox) * (ox) + (float) (oy) * (oy));
-//                      DEBUG(0,LEVEL_DEBUGGING,"%s %f\n",sp->GetName().c_str(),dist);
-          float vol = (7.0f - (dist - 1)) / 7.0f;
-          if (vol < 0)
-            vol = 0;
-          //sp->SetVolume(vol);
-          //need the map to adjust volume according to number of active elements
-          std::map < Sound *, float >::iterator it;
-          it = volumeLevels.find (sp);
-          if (it != volumeLevels.end ())
-            {
-              float old = volumeLevels[sp];
-//                              DEBUG(0,LEVEL_DEBUGGING,"old:%f new:%f\n",old,vol);
-              if (old < vol)
-                {
-                  volumeLevels[sp] = vol;
-                }
-            }
-          else
-            {
-              volumeLevels.insert (std::make_pair (sp, vol));
-            }
-          //add to currently active list
-          currentlyActiveSounds.push_back (sp);
+          if (volumeLevels[sfx_id] < vol)
+            volumeLevels[sfx_id] = vol;
         }
+      else
+        {
+          volumeLevels.insert (std::make_pair (sfx_id, vol));
+        }
+      currentlyActiveSounds.push_back (sfx_id);
     }
-    */
-  //DEBUG(1,LEVEL_DEBUGGING,"\n");
   //is this sound new? - activate it.
   for (i = 0; i < currentlyActiveSounds.size(); i++)
     {
@@ -1058,15 +1114,21 @@ void SoundManager::update_map_sfx ()
           SoundManagerSfx sfx;
           sfx.sfx_id = currentlyActiveSounds[i];
           DEBUG(0, LEVEL_INFORMATIONAL, "Trying to play ambient SFX: %d\n", sfx.sfx_id);
-          if(m_SfxManager->playSfxLooping(sfx.sfx_id, &sfx.handle, 0))
+          SfxManager *first_mgr = m_SfxManager;
+          SfxManager *second_mgr = NULL;
+          if(custom_sfx_enabled && m_FallbackSfxManager)
           {
-        	  DEBUG(0, LEVEL_INFORMATIONAL, "Primary SfxManager played SFX: %d\n", sfx.sfx_id);
-        	  m_ActiveSounds.push_back(sfx);//currentlyActiveSounds[i]);
+        	  first_mgr = m_FallbackSfxManager;
+        	  second_mgr = m_SfxManager;
           }
-          // Try fallback manager if primary failed (for ambient sounds like fountain, fire, etc.)
-          else if(m_FallbackSfxManager && m_FallbackSfxManager->playSfxLooping(sfx.sfx_id, &sfx.handle, 0))
+          if(first_mgr->playSfxLooping(sfx.sfx_id, &sfx.handle, 0))
           {
-        	  DEBUG(0, LEVEL_INFORMATIONAL, "Fallback SfxManager played SFX: %d\n", sfx.sfx_id);
+        	  DEBUG(0, LEVEL_INFORMATIONAL, "First SfxManager played SFX: %d\n", sfx.sfx_id);
+        	  m_ActiveSounds.push_back(sfx);
+          }
+          else if(second_mgr && second_mgr->playSfxLooping(sfx.sfx_id, &sfx.handle, 0))
+          {
+        	  DEBUG(0, LEVEL_INFORMATIONAL, "Second SfxManager played SFX: %d\n", sfx.sfx_id);
         	  m_ActiveSounds.push_back(sfx);
           }
           else
@@ -1086,6 +1148,7 @@ void SoundManager::update_map_sfx ()
       if (fit == currentlyActiveSounds.end ())
         {                       //its not, stop this sound from playing.
           //sfx_id->Stop ();
+          DEBUG(0, LEVEL_INFORMATIONAL, "Stopping ambient SFX: %d\n", sfx.sfx_id);
     	  mixer->getMixer()->stopHandle(sfx.handle);
           it = m_ActiveSounds.erase (it);
         }
@@ -1188,6 +1251,20 @@ uint16 SoundManager::RequestObjectSfxId(uint16 obj_n)
 	return NUVIE_SFX_NONE;
 }
 
+uint16 SoundManager::RequestTileSfxId(uint16 tile_num)
+{
+	uint16 i = 0;
+	for(i=0;i<SOUNDMANAGER_TILESFX_TBL_SIZE;i++)
+	{
+		if(u6_tile_lookup_tbl[i].tile_num == tile_num)
+		{
+			return u6_tile_lookup_tbl[i].sfx_id;
+		}
+	}
+
+	return NUVIE_SFX_NONE;
+}
+
 Sound *SoundManager::RequestSong (string group)
 {
   std::map < string, SoundCollection * >::iterator it;
@@ -1250,11 +1327,23 @@ bool SoundManager::playSfx(uint16 sfx_id, bool async)
 	if(m_SfxManager == NULL || audio_enabled == false || sfx_enabled == false)
 		return false;
 
+	// m_SfxManager = base sfx (PCSpeaker/AdLib/Towns)
+	// m_FallbackSfxManager = CustomSfxManager (wav files)
+	// custom_sfx_enabled ON: try Custom first, fallback to base
+	// custom_sfx_enabled OFF: use base only
+	SfxManager *first = m_SfxManager;
+	SfxManager *second = NULL;
+	if(custom_sfx_enabled && m_FallbackSfxManager)
+	{
+		first = m_FallbackSfxManager;
+		second = m_SfxManager;
+	}
+
 	if(async)
 	{
-		if(m_SfxManager->playSfx(sfx_id, sfx_volume))
+		if(first->playSfx(sfx_id, sfx_volume))
 		{
-			uint32 duration = m_SfxManager->getLastSfxDuration();
+			uint32 duration = first->getLastSfxDuration();
 
 			TimedEffect *timer = new TimedEffect();
 
@@ -1264,10 +1353,9 @@ bool SoundManager::playSfx(uint16 sfx_id, bool async)
 
 			return true;
 		}
-		// Try fallback manager if primary failed
-		else if(m_FallbackSfxManager && m_FallbackSfxManager->playSfx(sfx_id, sfx_volume))
+		else if(second && second->playSfx(sfx_id, sfx_volume))
 		{
-			uint32 duration = m_FallbackSfxManager->getLastSfxDuration();
+			uint32 duration = second->getLastSfxDuration();
 
 			TimedEffect *timer = new TimedEffect();
 
@@ -1280,11 +1368,10 @@ bool SoundManager::playSfx(uint16 sfx_id, bool async)
 	}
 	else
 	{
-		if(m_SfxManager->playSfx(sfx_id, sfx_volume))
+		if(first->playSfx(sfx_id, sfx_volume))
 			return true;
-		// Try fallback manager if primary failed
-		if(m_FallbackSfxManager)
-			return m_FallbackSfxManager->playSfx(sfx_id, sfx_volume);
+		if(second)
+			return second->playSfx(sfx_id, sfx_volume);
 	}
 
 	return false;
@@ -1301,11 +1388,18 @@ bool SoundManager::playInstrumentNote(uint8 instrument_type, uint8 note)
 	// Calculate SFX ID: base + (instrument_type * 10) + note
 	uint16 sfx_id = NUVIE_SFX_INSTRUMENT(instrument_type, note);
 
-	// Try primary manager first, then fallback
-	if(m_SfxManager->playSfx(sfx_id, sfx_volume))
+	SfxManager *first = m_SfxManager;
+	SfxManager *second = NULL;
+	if(custom_sfx_enabled && m_FallbackSfxManager)
+	{
+		first = m_FallbackSfxManager;
+		second = m_SfxManager;
+	}
+
+	if(first->playSfx(sfx_id, sfx_volume))
 		return true;
-	if(m_FallbackSfxManager)
-		return m_FallbackSfxManager->playSfx(sfx_id, sfx_volume);
+	if(second)
+		return second->playSfx(sfx_id, sfx_volume);
 	return false;
 }
 
@@ -1331,4 +1425,29 @@ void SoundManager::set_speech_enabled(bool val)
 {
 	speech_enabled = val;
 	// FIXME - stop speech
+}
+
+void SoundManager::set_custom_sfx_enabled(bool val)
+{
+	custom_sfx_enabled = val;
+	if(val && m_FallbackSfxManager == NULL && mixer)
+	{
+		std::string sfxdir_path;
+		m_Config->pathFromValue("config/ultima6/sfxdir", "", sfxdir_path);
+		if(!sfxdir_path.empty())
+		{
+			m_FallbackSfxManager = new CustomSfxManager(m_Config, mixer->getMixer());
+		}
+	}
+
+	// Stop all active ambient sounds so they restart with the new manager
+	if(mixer)
+	{
+		std::list<SoundManagerSfx>::iterator it = m_ActiveSounds.begin();
+		while(it != m_ActiveSounds.end())
+		{
+			mixer->getMixer()->stopHandle((*it).handle);
+			it = m_ActiveSounds.erase(it);
+		}
+	}
 }

@@ -72,6 +72,15 @@ bool CustomSfxManager::loadSfxMapFile(std::string cfg_filename, std::map<uint16,
 
 	  while ((token1 != NULL) && ((token2 = strtok (NULL, seps)) != NULL))
 	    {
+	      // Skip comment lines (starting with ; or whitespace then ;)
+	      char *p = token1;
+	      while(*p == ' ' || *p == '\t') p++;
+	      if(*p == ';' || *p == '\0')
+	      {
+	        token1 = strtok (NULL, seps);
+	        continue;
+	      }
+
 	      SfxIdType sfx_id = (SfxIdType)atoi(token1);
 	      int custom_wave_id = atoi(token2);
 

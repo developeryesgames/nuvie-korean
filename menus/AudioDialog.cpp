@@ -42,7 +42,7 @@
 #include <math.h>
 
 #define AD_WIDTH 292
-#define AD_HEIGHT 166
+#define AD_HEIGHT 179
 
 static int get_menu_scale() {
 	FontManager *fm = Game::get_game()->get_font_manager();
@@ -95,6 +95,7 @@ bool AudioDialog::init() {
 	std::string txt_group = get_ad_text("Stop music on group change:");
 	std::string txt_sfx = get_ad_text("Enable sfx:");
 	std::string txt_sfxvol = get_ad_text("Sfx volume:");
+	std::string txt_custom_sfx = get_ad_text("Custom sfx:");
 	std::string txt_speech = get_ad_text("Enable speech:");
 	std::string txt_cancel = get_ad_text("Cancel");
 	std::string txt_save = get_ad_text("Save");
@@ -126,6 +127,10 @@ bool AudioDialog::init() {
 	widget = (GUI_Widget *) new GUI_Text(textX[2], textY += row_h, 0, 0, 0, txt_sfxvol.c_str(), font);
 	if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
 	AddWidget(widget);
+	SoundManager *sm = Game::get_game()->get_sound_manager();
+	widget = (GUI_Widget *) new GUI_Text(textX[2], textY += row_h, 0, 0, 0, txt_custom_sfx.c_str(), font);
+	if (scale > 1) ((GUI_Text*)widget)->SetTextScale(scale);
+	AddWidget(widget);
  	bool use_speech_b = (Game::get_game()->get_game_type() == NUVIE_GAME_U6 && has_fmtowns_support(Game::get_game()->get_config()));
 	if(use_speech_b) {
 		widget = (GUI_Widget *) new GUI_Text(textX[1], textY += row_h, 0, 0, 0, txt_speech.c_str(), font);
@@ -134,7 +139,6 @@ bool AudioDialog::init() {
 	}
 	char musicBuff[5], sfxBuff[5];
 	int sfxVol_selection, musicVol_selection, num_of_sfxVol, num_of_musicVol;
-	SoundManager *sm = Game::get_game()->get_sound_manager();
 	const char* const enabled_text[] = { "Disabled", "Enabled" };
 	const char* const yes_no_text[] = { "no", "yes" };
 
@@ -208,6 +212,11 @@ bool AudioDialog::init() {
 	if (scale > 1) { sfxVol_button->SetTextScale(scale); sfxVol_button->ChangeTextButton(-1,-1,-1,-1,sfxVol_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
 	AddWidget(sfxVol_button);
 	button_index[last_index += 1] = sfxVol_button;
+
+	custom_sfx_button = new GUI_TextToggleButton(this, colX[1], buttonY += row_h, 40*scale, height, yes_no_text, 2, sm->is_custom_sfx_enabled(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
+	if (scale > 1) { custom_sfx_button->SetTextScale(scale); custom_sfx_button->ChangeTextButton(-1,-1,-1,-1,custom_sfx_button->GetCurrentText(),BUTTON_TEXTALIGN_CENTER); }
+	AddWidget(custom_sfx_button);
+	button_index[last_index += 1] = custom_sfx_button;
 
 	if(use_speech_b) {
 		speech_b = new GUI_TextToggleButton(this, colX[1], buttonY += row_h, 40*scale, height, yes_no_text, 2, sm->is_speech_enabled(), font, BUTTON_TEXTALIGN_CENTER, this, 0);
@@ -315,6 +324,10 @@ GUI_status AudioDialog::callback(uint16 msg, GUI_CallBack *caller, void *data) {
 		config->set("config/audio/stop_music_on_group_change", group_b->GetSelection() ? "yes" : "no");
 
 		config->set("config/audio/enable_sfx", sfx_button->GetSelection() ? "yes" : "no");
+
+		sm->set_custom_sfx_enabled(custom_sfx_button->GetSelection());
+		config->set("config/audio/custom_sfx_enabled", custom_sfx_button->GetSelection() ? "yes" : "no");
+
 		if(audio_button->GetSelection() != sm->is_audio_enabled())
 			sm->set_audio_enabled(audio_button->GetSelection());
 		config->set("config/audio/enabled", audio_button->GetSelection() ? "yes" : "no");

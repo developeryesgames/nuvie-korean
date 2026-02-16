@@ -26,7 +26,10 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-#define SPKR_VOLUME 10000
+// DOSBox uses SPKR_VOLUME=10000 but mixer default is 100%
+// PC Speaker is typically too loud - DOSBox community recommends SPKR mixer at 25%
+// So we use 10000 * 0.25 = 2500 as effective volume
+#define SPKR_VOLUME 2500
 
 PCSpeaker::PCSpeaker(uint32 mixer_rate)
 {
@@ -56,16 +59,16 @@ PCSpeaker::PCSpeaker(uint32 mixer_rate)
 
 	volcur = 0.0;
 	volwant = 0.0;
-	// DOSBox-X: SPKR_SPEED = (SPKR_VOLUME*2*44100)/(0.010*rate)
+	// DOSBox-X: SPKR_SPEED = (SPKR_VOLUME*2*44100)/(0.050*rate)
 	// This controls the volume slew rate for click removal
-	spkr_speed = (double)((SPKR_VOLUME * 2 * 44100) / (0.010 * rate));
+	spkr_speed = (double)((SPKR_VOLUME * 2 * 44100) / (0.050 * rate));
 
-	// DOSBox-X style lowpass filter: SetLowpassFreq(10000, 3)
-	// 10kHz cutoff, 3rd order filter
+	// DOSBox-X style lowpass filter: SetLowpassFreq(14000, 3)
+	// 14kHz cutoff, 3rd order filter
 	// tau = 1.0 / (freq * 2 * PI)
 	// alpha = timeInterval / (tau + timeInterval)
 	// timeInterval = 1.0 / rate
-	double lowpass_freq = 10000.0;
+	double lowpass_freq = 14000.0;
 	double timeInterval = 1.0 / (double)rate;
 	double tau = 1.0 / (lowpass_freq * 2.0 * M_PI);
 	lowpass_alpha = timeInterval / (tau + timeInterval);

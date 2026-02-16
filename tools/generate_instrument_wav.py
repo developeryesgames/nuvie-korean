@@ -18,19 +18,20 @@ import struct
 import wave
 import math
 
-# Original U6 PIT counter values -> Hz conversion
-# Hz = 1193180 / counter
+# Original U6 frequency table (from seg_27a1.c:1533)
+# These values are already Hz frequencies passed directly to SOUND_FREQ macro
+# Keys 1-9-0 play ascending scale (do-re-mi-fa-sol-la-si-do-re-mi)
 INSTRUMENT_FREQ_TABLE = [
-    (7851, 151),   # note 0: counter=7851, hz=151
-    (3116, 383),   # note 1: counter=3116, hz=383
-    (3497, 341),   # note 2: counter=3497, hz=341
-    (3926, 303),   # note 3: counter=3926, hz=303
-    (4159, 286),   # note 4: counter=4159, hz=286
-    (4668, 255),   # note 5: counter=4668, hz=255
-    (5240, 227),   # note 6: counter=5240, hz=227
-    (5882, 202),   # note 7: counter=5882, hz=202
-    (6231, 191),   # note 8: counter=6231, hz=191
-    (6995, 170),   # note 9: counter=6995, hz=170
+    7851,   # note 0 (key '0'): 7851 Hz - highest
+    3116,   # note 1 (key '1'): 3116 Hz - lowest (do)
+    3497,   # note 2 (key '2'): 3497 Hz (re)
+    3926,   # note 3 (key '3'): 3926 Hz (mi)
+    4159,   # note 4 (key '4'): 4159 Hz (fa)
+    4668,   # note 5 (key '5'): 4668 Hz (sol)
+    5240,   # note 6 (key '6'): 5240 Hz (la)
+    5882,   # note 7 (key '7'): 5882 Hz (si)
+    6231,   # note 8 (key '8'): 6231 Hz (do)
+    6995,   # note 9 (key '9'): 6995 Hz (re) - second highest
 ]
 
 # Instrument configurations
@@ -40,6 +41,10 @@ INSTRUMENT_FREQ_TABLE = [
 #   24 = Acoustic Guitar (nylon) - closest to Lute
 #   75 = Pan Flute
 #   13 = Xylophone
+#
+# target_octave: Target MIDI octave for best sound quality
+#   Octave 3 = C3-B3 (MIDI 48-59), Octave 4 = C4-B4 (MIDI 60-71)
+#   Octave 5 = C5-B5 (MIDI 72-83), Octave 6 = C6-B6 (MIDI 84-95)
 INSTRUMENTS = {
     'harp': {
         'type': 0,
@@ -47,6 +52,7 @@ INSTRUMENTS = {
         'duration_ms': 500,
         'velocity': 80,
         'freq_divisor': 2,  # Original uses di >> 1
+        'target_octave': 4,  # Harp sounds good in mid range
     },
     'harpsichord': {
         'type': 1,
@@ -54,6 +60,7 @@ INSTRUMENTS = {
         'duration_ms': 400,
         'velocity': 100,
         'freq_divisor': 1,
+        'target_octave': 4,  # Harpsichord sounds best in octave 4-5
     },
     'lute': {
         'type': 2,
@@ -61,6 +68,7 @@ INSTRUMENTS = {
         'duration_ms': 450,
         'velocity': 90,
         'freq_divisor': 2,  # Original uses di >> 1
+        'target_octave': 4,  # Guitar natural range
     },
     'panpipes': {
         'type': 3,
@@ -68,6 +76,7 @@ INSTRUMENTS = {
         'duration_ms': 400,
         'velocity': 85,
         'freq_divisor': 4,  # Original uses di >> 2
+        'target_octave': 5,  # Pan flute sounds good higher
     },
     'xylophone': {
         'type': 4,
@@ -75,15 +84,47 @@ INSTRUMENTS = {
         'duration_ms': 200,
         'velocity': 110,
         'freq_divisor': 1,
+        'target_octave': 5,  # Xylophone is a high instrument
     },
 }
 
-def hz_to_midi_note(hz):
-    """Convert frequency in Hz to MIDI note number"""
-    if hz <= 0:
-        return 60  # Default to middle C
-    # MIDI note = 69 + 12 * log2(freq / 440)
-    return int(round(69 + 12 * math.log2(hz / 440.0)))
+def hz_to_midi_note(hz, target_octave=4, note_index=0):
+    """Convert frequency to MIDI note using major scale (do-re-mi-fa-sol-la-si-do-re-mi)
+
+    Original U6 uses 10 notes: do-re-mi-fa-sol-la-si-do-re-mi (1.5 octaves)
+    Keys 1-9-0 map to ascending major scale notes.
+
+    Args:
+        hz: Frequency in Hz (used for reference, not direct conversion)
+        target_octave: Target MIDI octave (4 = C4-B4, middle range)
+        note_index: The note index (0-9) from the original frequency table
+
+    Returns:
+        MIDI note number in major scale
+    """
+    # Major scale intervals from root (in semitones):
+    # do=0, re=2, mi=4, fa=5, sol=7, la=9, si=11, do=12, re=14, mi=16
+    major_scale = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16]
+
+    # Map note indices to scale positions:
+    # Index 0 = key '0' = 10th note (mi, highest)
+    # Index 1 = key '1' = 1st note (do, lowest)
+    # Index 2-9 = keys '2'-'9' = 2nd to 9th notes
+    if note_index == 0:
+        scale_position = 9  # Key '0' -> 10th note (high mi)
+    else:
+        scale_position = note_index - 1  # Key '1' -> 0 (do), '2' -> 1 (re), etc.
+
+    # Base MIDI note for target octave (C of that octave)
+    base_midi = (target_octave + 1) * 12  # Octave 4 -> MIDI 60 (C4)
+
+    # Add major scale interval
+    target_midi = base_midi + major_scale[scale_position]
+
+    # Clamp to valid MIDI range
+    target_midi = max(21, min(108, target_midi))
+
+    return target_midi
 
 def encode_variable_length(value):
     """Encode a value as MIDI variable-length quantity"""
@@ -133,6 +174,37 @@ def create_midi_file(midi_path, program, note, velocity, duration_ms):
         f.write(struct.pack('>I', len(track_data)))
         f.write(track_data)
 
+def convert_stereo_to_mono(wav_path):
+    """Convert stereo WAV to mono (Nuvie requires mono WAV files)"""
+    with wave.open(wav_path, 'rb') as wav_in:
+        params = wav_in.getparams()
+        if params.nchannels == 1:
+            return  # Already mono
+
+        frames = wav_in.readframes(params.nframes)
+
+    # Convert stereo to mono by averaging channels
+    mono_frames = bytearray()
+    sample_width = params.sampwidth
+
+    for i in range(0, len(frames), sample_width * 2):
+        if sample_width == 2:
+            left = struct.unpack('<h', frames[i:i+2])[0]
+            right = struct.unpack('<h', frames[i+2:i+4])[0]
+            mono = (left + right) // 2
+            mono_frames.extend(struct.pack('<h', mono))
+        elif sample_width == 1:
+            left = frames[i]
+            right = frames[i+1]
+            mono = (left + right) // 2
+            mono_frames.append(mono)
+
+    with wave.open(wav_path, 'wb') as wav_out:
+        wav_out.setnchannels(1)
+        wav_out.setsampwidth(params.sampwidth)
+        wav_out.setframerate(params.framerate)
+        wav_out.writeframes(bytes(mono_frames))
+
 def generate_wav_fluidsynth(soundfont, midi_path, wav_path, sample_rate=22050, fluidsynth_path=None):
     """Use FluidSynth to render MIDI to WAV"""
     # Try to find fluidsynth executable
@@ -162,6 +234,8 @@ def generate_wav_fluidsynth(soundfont, midi_path, wav_path, sample_rate=22050, f
     try:
         # Use shell=False and pass absolute paths for Windows compatibility
         result = subprocess.run(cmd, check=True, capture_output=True, shell=False)
+        # Convert stereo to mono (Nuvie requires mono WAV)
+        convert_stereo_to_mono(wav_path)
         return True
     except subprocess.CalledProcessError as e:
         print(f"FluidSynth error: {e.stderr.decode() if e.stderr else 'unknown error'}")
@@ -252,7 +326,7 @@ def main():
         print(f"\nGenerating {inst_name} sounds...")
 
         for note_idx in range(10):
-            counter, base_hz = INSTRUMENT_FREQ_TABLE[note_idx]
+            base_hz = INSTRUMENT_FREQ_TABLE[note_idx]
 
             # Apply instrument-specific frequency divisor
             effective_hz = base_hz // inst_config['freq_divisor']
@@ -263,9 +337,8 @@ def main():
             wav_path = os.path.join(args.output, wav_filename)
 
             if use_fluidsynth:
-                midi_note = hz_to_midi_note(effective_hz)
-                # Clamp to valid MIDI range
-                midi_note = max(21, min(108, midi_note))
+                target_octave = inst_config.get('target_octave', 4)
+                midi_note = hz_to_midi_note(effective_hz, target_octave, note_idx)
 
                 with tempfile.NamedTemporaryFile(suffix='.mid', delete=False) as tmp:
                     midi_path = tmp.name

@@ -2783,8 +2783,16 @@ bool U6UseCode::pass_quest_barrier(Obj *obj, UseCodeEvent ev)
         {
             // block everyone, only print message when player attempts to pass
             if(items.actor_ref == player->get_actor())
-                scroll->message("\n\"Thou art not upon a Sacred Quest!\n"
-                                "Passage denied!\"\n\n");
+            {
+                KoreanTranslation *kt = game->get_korean_translation();
+                bool use_ko = kt && kt->isEnabled();
+                if(use_ko)
+                    scroll->message("\n\"그대는 성스러운 탐색 중이 아니로다!\n"
+                                    "통과 거부!\"\n\n");
+                else
+                    scroll->message("\n\"Thou art not upon a Sacred Quest!\n"
+                                    "Passage denied!\"\n\n");
+            }
             return(false);
         }
     return(true);

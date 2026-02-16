@@ -95,6 +95,8 @@ public:
     void set_speech_enabled(bool val);
     bool is_sfx_enabled() { return sfx_enabled; }
     void set_sfx_enabled(bool val) { sfx_enabled = val; }
+    bool is_custom_sfx_enabled() { return custom_sfx_enabled; }
+    void set_custom_sfx_enabled(bool val);
     uint8 get_sfx_volume() { return sfx_volume; }
     void set_sfx_volume(uint8 val) { sfx_volume = val; }
     uint8 get_music_volume() { return music_volume; }
@@ -127,6 +129,7 @@ private:
 	Sound* RequestSong(string group); //request a song from this group
 
 	uint16 RequestObjectSfxId(uint16 obj_n);
+	uint16 RequestTileSfxId(uint16 tile_num);
 
 	map<int,SoundCollection *> m_TileSampleMap;
 	map<int,SoundCollection *> m_ObjectSampleMap;
@@ -143,6 +146,7 @@ private:
     bool music_enabled;
     bool speech_enabled;
     bool sfx_enabled;
+    bool custom_sfx_enabled;
 
     uint8 music_volume;
     uint8 sfx_volume;

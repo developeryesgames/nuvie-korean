@@ -168,6 +168,7 @@
 #define OBJ_U6_WATER_VASE          161
 #define OBJ_U6_BED                 163
 #define OBJ_U6_FIREPLACE           164
+#define OBJ_U6_FIREPLACE_LIT       165
 
 #define OBJ_U6_REMAINS             168
 
@@ -195,6 +196,7 @@
 #define OBJ_U6_BASKET              191
 #define OBJ_U6_CRATE               192
 
+#define OBJ_U6_FORGE_FIRE          201
 #define OBJ_U6_PLIERS              203
 #define OBJ_U6_HAMMER              204
 
@@ -261,6 +263,7 @@
 #define OBJ_U6_STEEL_DOOR          300
 
 #define OBJ_U6_DOORWAY             301
+#define OBJ_U6_COOK_FIRE           304
 #define OBJ_U6_LADDER              305
 #define OBJ_U6_VOLCANO             307
 #define OBJ_U6_HOLE                308
