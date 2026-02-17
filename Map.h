@@ -115,8 +115,8 @@ public:
     void print_h(DebugLevelType level) { DEBUG(1,level,"%x, %x, %x",x,y,z); }
     void print_s(DebugLevelType level) { DEBUG(1,level,"%d, %d",sx,sy); }
 
-    bool operator==(MapCoord &c2) {return(x == c2.x && y == c2.y && z == c2.z);}
-    bool operator!=(MapCoord &c2) { return(!(*this == c2)); }
+    bool operator==(const MapCoord &c2) const {return(x == c2.x && y == c2.y && z == c2.z);}
+    bool operator!=(const MapCoord &c2) const { return(!(*this == c2)); }
 //    MapCoord operator+(MapCoord &c2) { return(abs_coords(c2)); }
 };
 
