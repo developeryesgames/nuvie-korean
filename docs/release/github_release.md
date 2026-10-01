@@ -10,6 +10,8 @@ A complete Korean localization for Ultima VI: The False Prophet, powered by Nuvi
 - Enter confirms a quantity; empty Enter moves all; Esc cancels.
 - Invalid or excessive quantities are rejected without losing items.
 - Partial moves work between the floor, inventories and containers.
+- Fixed destruction of polymorphic sound-effect objects, which caused a shutdown trap with the current Mac compiler.
+- Verified with 277 actual-engine checks on both Windows and Mac arm64; save/reload preserved 10 items. Mac consumer startup and normal exit also passed.
 - Packages: `Ultima6_Korean_v1.6.1.zip` (Windows), `Ultima6_Korean_v1.6.1_Mac.zip` (Apple Silicon).
 - Existing v1.6 users can replace only `nuvie.exe` (Windows) or `nuvie` (Mac), retaining their configuration and saves.
 
