@@ -150,6 +150,7 @@ friend class Magic; // FIXME
  uint8 rest_guard; // Who will guard?
  Obj *push_obj;
  Actor *push_actor;
+ uint16 push_qty; // zero until a stacked Move quantity is accepted
 
  bool drop_from_key;
  bool showingDialog;
@@ -255,6 +256,9 @@ friend class Magic; // FIXME
  bool attack();
 
  bool push_start();
+ bool is_waiting_for_push_quantity() const { return mode == INPUT_MODE && last_mode == PUSH_MODE && input.get_text && push_qty == 0; }
+ bool request_push_quantity();
+ void request_push_destination();
  bool pushFrom(Obj *obj);
  bool pushFrom(sint16 rel_x, sint16 rel_y);
  bool pushFrom(MapCoord target);

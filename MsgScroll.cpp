@@ -1097,7 +1097,11 @@ GUI_status MsgScroll::KeyDown(SDL_Keysym key)
 
     switch(key.sym)
     {
-        case SDLK_ESCAPE: if(permit_inputescape)
+        case SDLK_ESCAPE: if (Game::get_game()->get_event()->is_waiting_for_push_quantity()) {
+                            Game::get_game()->get_event()->cancelAction();
+                            return GUI_YUM;
+                          }
+                          if(permit_inputescape)
                           {
                             // reset input buffer
                             permit_input = NULL;

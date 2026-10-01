@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
-project(nuvie)
+project(nuvie VERSION 1.6.1)
+set(VERSION "${PROJECT_VERSION}")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${nuvie_SOURCE_DIR}/builds/cmake")
 

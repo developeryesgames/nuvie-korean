@@ -35,6 +35,7 @@
 #include "nuvie.h"
 
 #include "main.h"
+#include "KoreanVersion.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -55,6 +56,7 @@ int main(int argc, char **argv)
  #endif
 
  Nuvie *nuvie;
+ DEBUG(0,LEVEL_INFORMATIONAL,"Ultima VI Korean patch v%s\n", NUVIE_KOREAN_VERSION);
  DEBUG(0,LEVEL_INFORMATIONAL,"Debugging enabled\n");
  DEBUG(1,LEVEL_DEBUGGING,"To disable debugging altogether, recompile with \"WITHOUT_DEBUG\" defined.\n");
  DEBUG(1,LEVEL_DEBUGGING,"To just get less spam, set the default for CurrentDebugLevel in Debug.cpp lower.\n");

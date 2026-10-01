@@ -1,0 +1,4 @@
+#ifndef NUVIE_KOREAN_VERSION_H
+#define NUVIE_KOREAN_VERSION_H
+#define NUVIE_KOREAN_VERSION "1.6.1"
+#endif

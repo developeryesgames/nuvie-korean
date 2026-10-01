@@ -103,6 +103,7 @@ Event::Event(Configuration *cfg) {
   rest_guard = 0;
   push_obj = NULL;
   push_actor = NULL;
+  push_qty = 0;
   drop_from_key = false;
   move_in_inventory = false;
   time_queue = game_time_queue = NULL;
@@ -837,6 +838,8 @@ bool Event::push_start() {
     return false;
   push_obj = NULL;
   push_actor = NULL;
+  push_qty = 0;
+  move_in_inventory = false;
   if (game->get_script()->call_is_ranged_select(MOVE))
     { KoreanTranslation *k = game->get_korean_translation(); get_target(k && k->isEnabled() ? "이동-" : "Move-"); }
   else
@@ -1260,8 +1263,55 @@ bool Event::lookAtCursor(bool delayed, uint16 x, uint16 y, uint8 z, Obj *obj, Ac
   return true;
 }
 
+// Split only while attempting the destination. Failed moves restore the source.
+// Keep the selected part linked so existing reach, weight and usecode checks work.
+class PushStackSplit {
+  ObjManager *manager;
+  Obj *source, *part;
+  bool &moved;
+public:
+  PushStackSplit(ObjManager *m, Obj *&obj, uint16 qty, bool &success)
+      : manager(m), source(obj), part(NULL), moved(success) {
+    if (!obj || !qty || qty >= obj->qty || !manager->is_stackable(obj)) return;
+    part = manager->get_obj_from_stack(source, qty);
+    part->set_noloc();
+    if (source->is_on_map()) manager->add_obj(part, true);
+    else if (source->is_in_container()) source->get_container_obj()->add(part, false);
+    else {
+      Actor *actor = source->get_actor_holding_obj();
+      actor->inventory_add_object_nostack(part);
+    }
+    obj = part;
+  }
+  ~PushStackSplit() {
+    if (part && !moved) {
+      source->qty += part->qty;
+      manager->unlink_from_engine(part, false);
+      delete_obj(part);
+    }
+  }
+};
+
+bool Event::request_push_quantity() {
+  if (game->get_game_type() != NUVIE_GAME_U6 || !push_obj ||
+      !obj_manager->is_stackable(push_obj) || push_obj->qty <= 1) return false;
+  KoreanTranslation *k = game->get_korean_translation();
+  scroll->printf(k && k->isEnabled() ? "\n몇 개? (1-%u, Enter=전부) " : "\nHow many? (1-%u, Enter=all) ", push_obj->qty);
+  // A permitted-character list is single-character input; numbers_only accepts multi-digit quantities.
+  get_scroll_input(NULL, true, false, true);
+  return true;
+}
+
+void Event::request_push_destination() {
+  KoreanTranslation *k = game->get_korean_translation();
+  const char *prompt = k && k->isEnabled() ? "\n어디로? " : "\nTo ";
+  if (move_in_inventory) get_target(prompt);
+  else get_direction(MapCoord(push_obj->x, push_obj->y), prompt);
+}
+
 bool Event::pushTo(Obj *obj, Actor *actor) {
   bool ok = false;
+  PushStackSplit split(obj_manager, push_obj, push_qty, ok);
 
   if (obj) {
     if (game->get_game_type() == NUVIE_GAME_SE || push_obj != obj)
@@ -1273,7 +1323,7 @@ bool Event::pushTo(Obj *obj, Actor *actor) {
         Actor *src_actor = game->get_player()->get_actor();
         Actor *target_actor = obj->get_actor_holding_obj();
         if (can_move_obj_between_actors(push_obj, src_actor, target_actor, false))
-          obj_manager->moveto_container(push_obj, obj);
+          ok = obj_manager->moveto_container(push_obj, obj);
         scroll->message("\n\n");
         endAction();
         return (true);
@@ -1289,7 +1339,7 @@ bool Event::pushTo(Obj *obj, Actor *actor) {
         src_actor = game->get_player()->get_actor();
 
       if (can_move_obj_between_actors(push_obj, src_actor, actor, true))
-        obj_manager->moveto_inventory(push_obj, actor);
+        ok = obj_manager->moveto_inventory(push_obj, actor);
       scroll->message("\n\n");
       endAction();
       return (true);
@@ -1336,6 +1386,7 @@ bool Event::pushTo(Obj *obj, Actor *actor) {
 bool Event::pushTo(sint16 rel_x, sint16 rel_y, bool push_from) {
   Tile *obj_tile;
   bool can_move = false; // some checks must determine if object can_move
+  PushStackSplit split(obj_manager, push_obj, push_qty, can_move);
   Map *map = game->get_game_map();
   MapCoord pusher = player->get_actor()->get_location();
   MapCoord from, to; // absolute locations: object, target
@@ -1372,8 +1423,18 @@ bool Event::pushTo(sint16 rel_x, sint16 rel_y, bool push_from) {
 //            if(src_actor)
       {
         Actor *target_actor = map->get_actor(rel_x, rel_y, src_actor->get_z());
-        if (can_move_obj_between_actors(push_obj, src_actor, target_actor, true)) {
-          obj_manager->moveto_inventory(push_obj, target_actor);
+        if (!target_actor && game->get_game_type() == NUVIE_GAME_U6) {
+          MapCoord dest(rel_x, rel_y, src_actor->get_z());
+          CanDropOrMoveMsg check = map_window->can_drop_or_move_obj(dest.x, dest.y, src_actor, push_obj);
+          if (check == MSG_SUCCESS) {
+            Obj *container = obj_manager->get_obj(dest.x, dest.y, dest.z);
+            if (container && obj_manager->can_store_obj(container, push_obj))
+              can_move = obj_manager->moveto_container(push_obj, container);
+            else can_move = obj_manager->moveto_map(push_obj, dest);
+            script->call_actor_subtract_movement_points(src_actor, 5);
+          } else map_window->display_can_drop_or_move_msg(check, "");
+        } else if (can_move_obj_between_actors(push_obj, src_actor, target_actor, true)) {
+          can_move = obj_manager->moveto_inventory(push_obj, target_actor);
           script->call_actor_subtract_movement_points(src_actor, 5);
         }
       }
@@ -1515,6 +1576,7 @@ bool Event::pushFrom(Obj *obj) {
   if(use_korean) obj_name = korean->translate(obj_name);
   scroll->display_string(obj_name.c_str());
   push_obj = obj;
+  if (request_push_quantity()) return true;
   if (game->get_game_type() == NUVIE_GAME_MD)
     get_target("\nWhere? ");
   else
@@ -1580,7 +1642,8 @@ bool Event::pushFrom(MapCoord target) {
     scroll->display_string(use_korean ? "\n\n손이 닿지 않음\n" : "\n\nCan't reach it\n");
     endAction(true);
   } else {
-    get_direction(MapCoord(target.x, target.y), use_korean ? "\n어디로? " : "\nTo ");
+    if (!request_push_quantity())
+      get_direction(MapCoord(target.x, target.y), use_korean ? "\n어디로? " : "\nTo ");
   }
   return true;
 }
@@ -3291,16 +3354,40 @@ void Event::doAction() {
   } else if (mode == ATTACK_MODE) {
     attack();
   } else if (mode == PUSH_MODE) {
+    if (push_obj && push_qty == 0 && input.str) {
+      // Parse before narrowing to uint16; reject overflow, zero and non-digits.
+      uint32 qty = input.str->empty() ? push_obj->qty : 0;
+      bool valid = true;
+      for (size_t i = 0; i < input.str->size(); ++i) {
+        char c = (*input.str)[i];
+        if (c < '0' || c > '9' || qty > 6553) { valid = false; break; }
+        qty = qty * 10 + c - '0';
+        if (qty > push_obj->qty) { valid = false; break; }
+      }
+      if (!valid || qty == 0) {
+        KoreanTranslation *k = game->get_korean_translation();
+        scroll->display_string(k && k->isEnabled() ? "\n잘못된 수량입니다." : "\nInvalid quantity.");
+        request_push_quantity();
+      } else {
+        push_qty = (uint16)qty;
+        request_push_destination();
+      }
+      return;
+    }
     assert(
         input.type == EVENTINPUT_MAPCOORD_DIR || input.type == EVENTINPUT_OBJECT || input.type == EVENTINPUT_MAPCOORD);
     if (input.type == EVENTINPUT_MAPCOORD_DIR) {
       if (!push_obj && !push_actor)
         pushFrom(input.loc->sx, input.loc->sy);
+      else if (push_obj && input.actor && game->get_game_type() == NUVIE_GAME_U6)
+        pushTo(NULL, input.actor);
       else
         pushTo(input.loc->sx, input.loc->sy, PUSH_FROM_OBJECT);
     } else if (input.type == EVENTINPUT_MAPCOORD && !move_in_inventory) {
       if (!push_obj && !push_actor)
         pushFrom(*input.loc);
+      else if (push_obj && input.actor && game->get_game_type() == NUVIE_GAME_U6)
+        pushTo(NULL, input.actor);
       else
         pushTo(input.loc->x, input.loc->y);
     } else if (input.type == EVENTINPUT_MAPCOORD && move_in_inventory) {
@@ -3313,7 +3400,9 @@ void Event::doAction() {
     } else if (move_in_inventory && push_obj) {
       // In inventory move mode with EVENTINPUT_OBJECT - target selected from inventory view
       // Try to move to the actor holding the selected item, or use input.actor if set
-      if (input.actor) {
+      if (game->get_game_type() == NUVIE_GAME_U6 && input.obj && obj_manager->can_store_obj(input.obj, push_obj)) {
+        pushTo(input.obj, NULL);
+      } else if (input.actor) {
         pushTo(NULL, input.actor);
       } else if (input.obj && input.obj->is_in_inventory()) {
         Actor *target_actor = input.obj->get_actor_holding_obj();
@@ -3508,6 +3597,14 @@ void Event::doAction() {
 
 /* Cancel the action for the current mode, switch back to MOVE_MODE if possible. */
 void Event::cancelAction() {
+  if (is_waiting_for_push_quantity()) {
+    scroll->set_input_mode(false);
+    endAction(); // return to PUSH_MODE so endAction clears its state
+    KoreanTranslation *k = game->get_korean_translation();
+    scroll->display_string(k && k->isEnabled() ? "\n취소됨." : "\nCanceled.");
+    endAction(true);
+    return;
+  }
   if (game->user_paused())
     return;
   if (view_manager->gumps_are_active() && (magic == NULL || !magic->is_waiting_for_inventory_obj()))
@@ -3717,6 +3814,8 @@ void Event::endAction(bool prompt) {
   if (mode == PUSH_MODE) {
     push_obj = NULL;
     push_actor = NULL;
+    push_qty = 0;
+    move_in_inventory = false;
     map_window->reset_mousecenter();
   } else if (mode == DROP_MODE) {
     drop_obj = NULL;

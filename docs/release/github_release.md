@@ -1,8 +1,17 @@
-# Ultima VI Korean Localization Patch v1.5.6
+# Ultima VI Korean Localization Patch v1.6.1
 
 ## Nuvie Korean Translation - AI-Assisted Localization
 
 A complete Korean localization for Ultima VI: The False Prophet, powered by Nuvie engine.
+
+### v1.6.1 Changes
+
+- Move now asks how many items to move from a stack, with a Korean prompt.
+- Enter confirms a quantity; empty Enter moves all; Esc cancels.
+- Invalid or excessive quantities are rejected without losing items.
+- Partial moves work between the floor, inventories and containers.
+- Packages: `Ultima6_Korean_v1.6.1.zip` (Windows), `Ultima6_Korean_v1.6.1_Mac.zip` (Apple Silicon).
+- Existing v1.6 users can replace only `nuvie.exe` (Windows) or `nuvie` (Mac), retaining their configuration and saves.
 
 ### v1.5.6 Changes
 
@@ -70,13 +79,14 @@ A complete Korean localization for Ultima VI: The False Prophet, powered by Nuvi
 ### Requirements
 
 - **Ultima VI original game files** (legally obtained)
-- Windows 10/11
+- Windows 10/11, or macOS on Apple Silicon
+- Mac: SDL2 from Homebrew (`brew install sdl2`), matching the existing v1.6 package
 
 ### Installation
 
 1. Download and extract the patch
 2. Copy your original Ultima VI game files to the `ULTIMA6` folder
-3. Run `nuvie.exe`
+3. Run `nuvie.exe` (Windows), or `./nuvie` from the extracted folder (Mac)
 4. Korean mode is enabled by default
 
 ### Configuration
